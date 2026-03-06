@@ -4,6 +4,12 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  
+  # 🚀 በየቀኑ ንጋት 12:00 ሰዓት (በሃበሻ አቆጣጠር) በራሱ እንዲሮጥ
+  # (3:00 AM UTC = 6:00 AM / 12:00 ንጋት በኢትዮጵያ)
+  schedule:
+    - cron: '0 3 * * *'
+
 jobs:
   test:
     timeout-minutes: 15
