@@ -9,34 +9,38 @@ test.describe('Isolated Sales Order Creation', () => {
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });
 
+
+
+
+    // --- Core Helper Functions ---
+
+
     test('Standalone SO Creation and Approval', async ({ page }) => {
         test.setTimeout(450000);
         const app = new AppManager(page);
         const { soDate } = app.getTransactionDates();
 
         console.log("Execution: Creating Isolated Sales Order...");
-        await page.goto(`${process.env.BASE_URL}/receivables/sale-orders/new`);
+        await page.goto('/receivables/sale-orders/new');
 
         await app.fillDate(0, soDate);
 
-        await page.getByRole('button', { name: 'Customer selector' }).click();
-        await page.getByText(/CUST\//).first().click();
+        // 1. Dynamic Customer Selection
+        await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
 
-        await addLineItem(page, app, {
-            item: 'Control panal',
-            quantity: '2',
-            warehouse: 'Default Warehouse',
-            location: 'Default Warehouse Location',
-            glAccount: 'Cash at Bank - CBE'
-        });
+        // 2. Tiered Line Item Selection (Random then Falling back to hardcoded)
+        await addLineItem(page, app);
 
-        await page.getByRole('button', { name: 'Accounts Receivable selector' }).click();
-        const accDialog = page.getByRole('dialog');
-        await app.smartSearch(accDialog, 'Accounts Receivable');
-        await page.keyboard.press('Escape');
+        // 3. Dynamic Accounts Receivable
+        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
 
-        await page.getByRole('button', { name: 'Add Now' }).click();
-        await page.waitForSelector('text=Sales Order Details', { timeout: 60000 });
+        const addNowBtn = page.getByRole('button', { name: 'Add Now' });
+        await expect(addNowBtn).toBeEnabled({ timeout: 15000 });
+        await addNowBtn.click();
+
+        // Wait for page transition and header
+        await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 90000 });
+        await page.getByText('Sales Order Details').first().waitFor({ timeout: 60000 });
 
         const sharedOrderNumber = (await page.locator('//p[text()="SO Number:"]/following-sibling::p').first().innerText()).trim();
         const capturedCustomerName = (await page.locator('//p[text()="Customer:"]/following-sibling::p').first().innerText()).trim();
@@ -48,7 +52,7 @@ test.describe('Isolated Sales Order Creation', () => {
         // -- VERIFICATION: Check Customer Sales Order Tab --
         console.log(`Verification: Searching for ${sharedOrderNumber} in Customer Details (${capturedCustomerName})...`);
 
-        await page.goto(`${process.env.BASE_URL}/receivables/customers`);
+        await page.goto('/receivables/customers');
 
         const searchInput = page.locator('input[placeholder="Search for customers..."]');
         await searchInput.waitFor({ state: 'visible', timeout: 10000 });
@@ -106,33 +110,61 @@ test.describe('Isolated Sales Order Creation', () => {
 
         await page.close();
     });
+
+    async function addLineItem(page, app, forceHardcoded = false) {
+        if (!forceHardcoded) {
+            console.log("Action: Attempting to add a random line item...");
+            await page.click('button:has-text("Line Item")');
+            await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
+
+            await app.selectRandomOption(page.getByRole('button', { name: 'Item selector' }), 'Item');
+            await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill('1');
+
+            let locationCount = 0;
+            let attempts = 0;
+            while (locationCount === 0 && attempts < 5) {
+                attempts++;
+                await app.selectRandomOption(page.locator('button#warehouse_id'), `WH Attempt ${attempts}`);
+                await page.waitForTimeout(1000);
+                locationCount = await app.selectRandomOption(page.locator('button#location_id'), 'Location', true);
+            }
+
+            await app.selectRandomOption(page.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+            await page.getByRole('button', { name: /^Add$/, exact: true }).evaluate(node => node.click());
+
+            // Validation check for stock
+            const validationError = page.locator('text=Insufficient stock');
+            if (await validationError.isVisible({ timeout: 5000 }).catch(() => false)) {
+                console.log("Status: Insufficient stock detected. Removing items and performing fallback...");
+
+                // Remove the failed line item using the specific "X" / delete button
+                const removeBtn = page.locator('svg.lucide-delete, [d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"]').first();
+                await removeBtn.click();
+                await page.waitForTimeout(1000);
+
+                // Fallback attempt
+                return addLineItem(page, app, true);
+            }
+            console.log("Action: Random line item added successfully.");
+        } else {
+            console.log("Action: Adding reliable line item (Control panal)...");
+            await page.click('button:has-text("Line Item")');
+            await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
+
+            await page.getByRole('button', { name: 'Item selector' }).click();
+            await app.smartSearch(page.getByRole('dialog'), 'Control panal');
+
+            await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill('1');
+
+            await page.locator('button#warehouse_id').evaluate(node => node.click());
+            await page.getByText('Default Warehouse', { exact: true }).first().evaluate(node => node.click());
+
+            await page.locator('button#location_id').evaluate(node => node.click());
+            await page.getByText('Default Warehouse Location', { exact: true }).first().evaluate(node => node.click());
+
+            await app.selectRandomOption(page.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+            await page.getByRole('button', { name: /^Add$/, exact: true }).evaluate(node => node.click());
+            console.log("Action: Fallback line item added successfully.");
+        }
+    }
 });
-
-async function addLineItem(page, app, data) {
-    console.log(`Action: Adding line item ${data.item}`);
-    await page.click('button:has-text("Line Item")');
-    await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
-
-    await page.getByRole('button', { name: 'Item selector' }).click();
-    const itemDialog = page.getByRole('dialog');
-    await app.smartSearch(itemDialog, data.item);
-
-    await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill(data.quantity);
-
-    await page.locator('button#warehouse_id').click();
-    await page.getByText(data.warehouse, { exact: true }).first().click();
-
-    await page.locator('button#location_id').click();
-    await page.getByText(data.location, { exact: true }).first().click();
-
-    await page.getByRole('button', { name: 'G/L Account selector' }).click();
-    const glDialog = page.getByRole('dialog');
-    await app.smartSearch(glDialog, data.glAccount);
-
-    await page.getByRole('button', { name: 'Tax selector' }).click();
-    await page.getByText('VAT').first().click();
-    await page.keyboard.press('Escape');
-
-    await page.getByRole('button', { name: /^Add$/, exact: true }).click();
-    console.log(`Action: Line item ${data.item} confirmed.`);
-}

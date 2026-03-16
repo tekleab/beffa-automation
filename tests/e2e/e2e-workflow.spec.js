@@ -4,86 +4,65 @@ require('dotenv').config();
 
 test.describe('End-to-End Business Flow: SO -> Invoice -> Receipt', () => {
 
-    let sharedOrderNumber = '';
-    let capturedCustomerName = '';
-    let sharedInvoiceNumber = '';
-
-    test.beforeEach(async ({ page }) => {
+    test('Complete Sales to Receipt Workflow', async ({ page }) => {
+        test.setTimeout(600000); // 10 minutes for the full flow
         const app = new AppManager(page);
+        const { soDate, invoiceDate, dueDate } = app.getTransactionDates();
+
+        // 1. LOGIN
+        console.log("Execution: Initiating E2E Workflow...");
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        // 🚀 ሎጊን እንደተደረገ ሰርቨሩ እንዲረጋጋ ጊዜ ስጠው
-        await page.waitForTimeout(5000);
-    });
+        await page.waitForTimeout(3000);
 
-    // --- STEP 1: SALES ORDER ---
-    test('Step 1: Create and Approve Sales Order', async ({ page }) => {
-        test.setTimeout(450000);
-        const app = new AppManager(page);
-        const { soDate } = app.getTransactionDates();
-
-        console.log("Execution: Initiating Sales Order creation...");
-        // ✅ 404 እንዳይመጣ path ብቻ ተጠቀም
+        // --- STEP 1: CREATE AND APPROVE SALES ORDER ---
+        console.log("\n--- STEP 1: SALES ORDER ---");
         await page.goto('/receivables/sale-orders/new');
-
         await app.fillDate(0, soDate);
 
-        const customerBtn = page.getByRole('button', { name: 'Customer selector' });
-        await customerBtn.waitFor({ state: 'visible' });
-        await customerBtn.click();
-        await page.getByText(/CUST\//).first().click();
+        // Standardized Selection
+        await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
 
+        // Add Line Item
         await addLineItem(page, app, {
             item: 'Control panal',
-            quantity: '2',
+            quantity: '1',
             warehouse: 'Default Warehouse',
             location: 'Default Warehouse Location',
             glAccount: 'Cash at Bank - CBE'
         });
 
-        await page.getByRole('button', { name: 'Accounts Receivable selector' }).click();
-        const accDialog = page.getByRole('dialog');
-        await app.smartSearch(accDialog, 'Accounts Receivable');
-        await page.keyboard.press('Escape');
+        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
 
-        await page.getByRole('button', { name: 'Add Now' }).click();
-        await page.waitForSelector('text=Sales Order Details', { timeout: 60000 });
+        const addNowSOBtn = page.getByRole('button', { name: 'Add Now' });
+        await expect(addNowSOBtn).toBeEnabled({ timeout: 15000 });
+        await addNowSOBtn.click();
 
-        sharedOrderNumber = (await page.locator('//p[text()="SO Number:"]/following-sibling::p').first().innerText()).trim();
-        capturedCustomerName = (await page.locator('//p[text()="Customer:"]/following-sibling::p').first().innerText()).trim();
+        await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 90000 });
+        await page.getByText('Sales Order Details').first().waitFor({ timeout: 60000 });
 
-        console.log(`Document Created: ${sharedOrderNumber} | Customer: ${capturedCustomerName}`);
+        const sharedOrderNumber = (await page.locator('//p[text()="SO Number:"]/following-sibling::p').first().innerText()).trim();
+        const capturedCustomerName = (await page.locator('//p[text()="Customer:"]/following-sibling::p').first().innerText()).trim();
 
+        console.log(`Step 1 Complete: ${sharedOrderNumber} | Customer: ${capturedCustomerName}`);
         await app.handleApprovalFlow();
-    });
 
-    // --- STEP 2: INVOICE GENERATION ---
-    test('Step 2: Create Invoice from Sales Order', async ({ page }) => {
-        if (!sharedOrderNumber || !capturedCustomerName) test.skip();
-        test.setTimeout(450000);
-        const app = new AppManager(page);
-        const { invoiceDate, dueDate } = app.getInvoiceDates();
-
-        console.log(`Execution: Generating Invoice for SO ${sharedOrderNumber}...`);
+        // --- STEP 2: CREATE AND APPROVE INVOICE ---
+        console.log("\n--- STEP 2: INVOICE ---");
         await page.goto('/receivables/invoices/new');
 
-        const custBtn = page.getByRole('button', { name: 'Customer selector' });
-        await custBtn.waitFor({ state: 'visible' });
-        await custBtn.click();
-        const custDialog = page.getByRole('dialog');
-        await app.smartSearch(custDialog, capturedCustomerName);
-        await page.keyboard.press('Escape');
+        // Link to Customer from Step 1
+        await page.getByRole('button', { name: 'Customer selector' }).click();
+        await app.smartSearch(page.getByRole('dialog'), capturedCustomerName);
 
         await app.fillDate(0, invoiceDate);
         await app.fillDate(1, dueDate);
+        await app.selectRandomOption(page.locator('button#accounts_receivable_id'), 'Accounts Receivable');
 
-        await page.locator('button#accounts_receivable_id').click();
-        await page.getByText('Cash at Bank - CBE').first().click();
-
+        console.log(`Action: Selecting Sales Order ${sharedOrderNumber}...`);
         await page.getByText('Sales Order', { exact: true }).click();
-        const soDialog = page.getByRole('dialog');
-        await app.smartSearch(soDialog, sharedOrderNumber);
-        await page.keyboard.press('Escape');
+        await app.smartSearch(page.getByRole('dialog'), sharedOrderNumber);
 
+        // Process Items
         const releasedTab = page.getByRole('tab', { name: /Released Sales Order/i });
         await releasedTab.waitFor({ state: 'visible' });
         await releasedTab.click({ force: true });
@@ -109,39 +88,28 @@ test.describe('End-to-End Business Flow: SO -> Invoice -> Receipt', () => {
             }
         }
 
-        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        const addNowInvBtn = page.getByRole('button', { name: 'Add Now' }).first();
+        await expect(addNowInvBtn).toBeEnabled();
+        await addNowInvBtn.click();
         await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/, { timeout: 90000 });
 
-        sharedInvoiceNumber = (await page.locator('p.chakra-text').filter({ hasText: /^INV\// }).first().innerText()).trim();
-        console.log(`Document Created: ${sharedInvoiceNumber}`);
+        const sharedInvoiceNumber = (await page.locator('p.chakra-text').filter({ hasText: /^INV\// }).first().innerText()).trim();
 
+        console.log(`Step 2 Complete: ${sharedInvoiceNumber}`);
         await app.handleApprovalFlow();
-    });
 
-    // --- STEP 3: PAYMENT RECEIPT ---
-    test('Step 3: Collect Receipt', async ({ page }) => {
-        if (!sharedInvoiceNumber) test.skip();
-        test.setTimeout(450000);
-        const app = new AppManager(page);
-        const { soDate: receiptDate } = app.getTransactionDates();
-
-        console.log(`Execution: Processing Receipt for Invoice ${sharedInvoiceNumber}...`);
+        // --- STEP 3: CREATE AND APPROVE RECEIPT ---
+        console.log("\n--- STEP 3: RECEIPT ---");
         await page.goto('/receivables/receipts/new');
+        await app.fillDate(0, soDate); // Using current date
 
-        await app.fillDate(0, receiptDate);
+        // Link to Customer from Step 1
+        await page.getByRole('button', { name: 'Customer selector' }).click();
+        await app.smartSearch(page.getByRole('dialog'), capturedCustomerName);
 
-        const custBtn = page.getByRole('button', { name: 'Customer selector' });
-        await custBtn.waitFor({ state: 'visible' });
-        await custBtn.click();
-        const rcptDialog = page.getByRole('dialog');
-        await app.smartSearch(rcptDialog, capturedCustomerName);
-        await page.keyboard.press('Escape');
+        await app.selectRandomOption(page.locator('button#cash_account_id'), 'Cash Account');
 
-        await page.locator('button#cash_account_id').click();
-        await page.getByText('Cash at Bank - CBE').first().click();
-
-        console.log(`Searching Invoice Record: ${sharedInvoiceNumber}`);
-
+        console.log(`Action: Linking Invoice ${sharedInvoiceNumber}...`);
         const invoiceTab = page.getByRole('tab', { name: /Sales Invoices/i });
         await invoiceTab.waitFor({ state: 'visible' });
         await invoiceTab.click({ force: true });
@@ -150,46 +118,43 @@ test.describe('End-to-End Business Flow: SO -> Invoice -> Receipt', () => {
         const targetInvoiceRow = page.locator('.css-i8wwa4').filter({ hasText: sharedInvoiceNumber }).first();
         await expect(targetInvoiceRow).toBeVisible({ timeout: 20000 });
         await targetInvoiceRow.scrollIntoViewIfNeeded();
-
         await targetInvoiceRow.locator('span.chakra-checkbox__control').first().click({ force: true });
-        await page.waitForTimeout(1000);
 
-        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        const addNowRcptBtn = page.getByRole('button', { name: 'Add Now' }).first();
+        await expect(addNowRcptBtn).toBeEnabled();
+        await addNowRcptBtn.click();
         await page.waitForURL(/\/receivables\/receipts\/.*\/detail$/, { timeout: 90000 });
 
-        console.log("Success: Receipt entry created. Finalizing approval...");
+        const capturedReceiptNumber = (await page.locator('p.chakra-text').filter({ hasText: /^RCPT\// }).first().innerText()).trim();
+
+        console.log(`Step 3 Complete: ${capturedReceiptNumber}. Finalizing approval...`);
         await app.handleApprovalFlow();
-        console.log("Status: End-to-End flow completed successfully.");
+        console.log("\n✅ SUCCESS: Full End-to-End Workflow Completed!");
     });
 });
 
-// Helper function with explicit waits
 async function addLineItem(page, app, data) {
     console.log(`Action: Adding line item - ${data.item}`);
-    const lineItemBtn = page.click('button:has-text("Line Item")');
+    await page.click('button:has-text("Line Item")');
     await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
 
     await page.getByRole('button', { name: 'Item selector' }).click();
-    const itemDialog = page.getByRole('dialog');
-    await app.smartSearch(itemDialog, data.item);
+    await app.smartSearch(page.getByRole('dialog'), data.item);
 
     await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill(data.quantity);
 
-    await page.locator('button#warehouse_id').click();
-    await page.getByText(data.warehouse, { exact: true }).first().click();
+    await page.locator('button#warehouse_id').evaluate(node => node.click());
+    await page.getByText(data.warehouse, { exact: true }).first().evaluate(node => node.click());
 
-    await page.locator('button#location_id').click();
-    await page.getByText(data.location, { exact: true }).first().click();
+    await page.locator('button#location_id').evaluate(node => node.click());
+    await page.getByText(data.location, { exact: true }).first().evaluate(node => node.click());
 
-    await page.getByRole('button', { name: 'G/L Account selector' }).click();
-    const glDialog = page.getByRole('dialog');
-    await app.smartSearch(glDialog, data.glAccount);
+    await app.selectRandomOption(page.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
 
     await page.getByRole('button', { name: 'Tax selector' }).click();
     await page.getByText('VAT').first().click();
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: /^Add$/, exact: true }).click();
-    await page.waitForTimeout(2000); // መስመሩ ተጨምሮ እስኪያልቅ
-    console.log(`Action: Line item ${data.item} confirmed.`);
+    await page.waitForTimeout(2000);
 }

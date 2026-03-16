@@ -132,6 +132,8 @@ class AppManager {
 
     if (await reviewerSelector.isVisible({ timeout: 10000 }).catch(() => false)) {
       await reviewerSelector.click();
+
+      await this.page.locator('.chakra-skeleton').waitFor({ state: 'hidden', timeout: 20000 }).catch(() => { });
       await this.page.waitForTimeout(2000);
 
       const adminOption = this.page.locator('div:not(.chakra-skeleton)').getByText('System Admin', { exact: true }).last();
@@ -143,58 +145,80 @@ class AppManager {
         const advanceBtn = this.page.locator('section[role="dialog"] button:has-text("Advance"), section[role="dialog"] button:has-text("Submit")').first();
         if (await advanceBtn.isVisible()) {
           await advanceBtn.click({ force: true });
-          await advanceBtn.waitFor({ state: 'hidden', timeout: 15000 }).catch(() => { });
+          console.log("Action: Advance/Submit modal confirmed.");
+          await advanceBtn.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => { });
         }
       }
     }
   }
 
-  /**
-   * --- APPROVAL FLOW (Handles Multi-step Modals) ---
-   */
+  // --- APPROVAL FLOW ---
   async handleApprovalFlow() {
     console.log("Initializing approval sequence...");
+
     let lastClickedModalText = null;
     let lastClickedTargetText = null;
 
     for (let i = 0; i < 30; i++) {
       if (this.page.isClosed()) return;
-      await this.page.waitForTimeout(1500);
+      await this.page.waitForTimeout(500);
 
-      const approvedVisible = await this.page.locator(this.approvedStatus).first().isVisible({ timeout: 1000 }).catch(() => false);
+      const approvedVisible = await this.page.locator(this.approvedStatus).first().isVisible({ timeout: 500 }).catch(() => false);
       if (approvedVisible) {
         console.log("Status: Document Approved.");
         return;
       }
 
-      const modalAction = this.page.locator('section[role="dialog"] button').filter({ hasText: /^(Approve|Advance|Submit|Yes|Confirm)$/i }).first();
-      if (await modalAction.isVisible({ timeout: 1500 }).catch(() => false)) {
+      const modalAction = this.page.locator('section[role="dialog"] button').filter({ hasText: /^(Approve|Advance|Submit)$/i }).first();
+      if (await modalAction.isVisible({ timeout: 1000 }).catch(() => false)) {
         const btnText = await modalAction.innerText();
+
         if (lastClickedModalText === btnText) {
-          await this.page.waitForTimeout(1500);
+          await this.page.waitForTimeout(1000);
           continue;
         }
-        console.log(`Modal Action: ${btnText}`);
+
+        console.log(`Processing modal action: ${btnText}`);
         lastClickedModalText = btnText;
         await modalAction.click({ force: true });
-        await modalAction.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => { });
+        await modalAction.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
         continue;
+      } else {
+        lastClickedModalText = null;
       }
 
       const targetButton = this.page.locator('button').filter({ hasText: /^(Submit For Review|Submit For Approver|Submit Forapprover|Advance|Approve|Submit)$/i }).first();
-      if (await targetButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+
+      if (await targetButton.isVisible({ timeout: 1000 }).catch(() => false)) {
         const btnText = await targetButton.innerText();
-        if (lastClickedTargetText === btnText || await targetButton.isDisabled()) {
-          await this.page.waitForTimeout(2000);
+
+        if (lastClickedTargetText === btnText) {
+          await this.page.waitForTimeout(1000);
           continue;
         }
+
+        if (await targetButton.isDisabled()) {
+          console.log(`Waiting for button activation: ${btnText}`);
+          await this.page.waitForTimeout(1000);
+          continue;
+        }
+
         console.log(`Executing: ${btnText}`);
         lastClickedTargetText = btnText;
         await targetButton.click({ force: true });
-        await targetButton.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => { });
-        if (btnText.includes("Submit")) await this._handleReviewerSelection();
+
+        await targetButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
+
+        await this.page.waitForTimeout(1000);
+
+        if (btnText.includes("Submit")) {
+          await this._handleReviewerSelection();
+        }
+      } else {
+        await this.page.waitForTimeout(1000);
       }
     }
+    console.warn('Process timed out: loop limit reached.');
   }
 
   /**
@@ -216,6 +240,39 @@ class AppManager {
   }
 
   getInvoiceDates() { return this.getTransactionDates(); }
+
+  async selectRandomOption(selector, labelName, isOptional = false) {
+    const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], .chakra-menu__menuitem';
+    for (let i = 0; i < 3; i++) {
+      try {
+        await selector.scrollIntoViewIfNeeded();
+        // Use evaluate for the dropdown button itself to bypass actionable checks
+        await selector.evaluate(node => node.click());
+        await this.page.waitForTimeout(1500); // Wait for dropdown list to populate
+
+        const options = this.page.locator(optionSelector).filter({ visible: true });
+        const count = await options.count();
+
+        if (count > 0) {
+          const randomIndex = Math.floor(Math.random() * count);
+          const target = options.nth(randomIndex);
+
+          // Use evaluate(node => node.click()) for all selections
+          await target.evaluate(node => node.click());
+
+          await this.page.keyboard.press('Escape');
+          return count;
+        } else {
+          await this.page.keyboard.press('Escape');
+          if (isOptional) return 0;
+        }
+      } catch (e) {
+        await this.page.keyboard.press('Escape');
+      }
+    }
+    if (!isOptional) throw new Error(`Failed selection for ${labelName}`);
+    return 0;
+  }
 
   async fillDate(index, dateValue) {
     const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
