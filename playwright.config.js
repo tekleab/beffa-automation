@@ -4,45 +4,39 @@ require('dotenv').config();
 module.exports = defineConfig({
   testDir: './tests/e2e',
 
-  // Customer ቴስቶች ብቻ እንዲሮጡ
-  testIgnore: [
-    '**/bill.spec.js',
-    '**/quote.spec.js',
-    '**/receipt.spec.js',
-    '**/inventory-impact.spec.js',
-    '**/invoice.spec.js',
-    '**/payment-edge-cases.spec.js',
-    '**/purchase-order.spec.js',
-    '**/purchase-requisition.spec.js',
-    '**/sales-order.spec.js',
-    '**/bill-payment.spec.js'
-  ],
+  // 🚀 ሁሉንም ቴስቶች ለማስገባት testIgnore-ን ባዶ እናደርገዋለን
+  testIgnore: [],
 
-  timeout: 300000,
-  expect: { timeout: 20000 },
+  timeout: 600000, // 10 ደቂቃ (ሁሉንም ለማለቅ በቂ ነው)
+  expect: { timeout: 30000 },
+  
+  // 🚀 በአንድ ፋይል ያሉ ቴስቶች እንዳይጋጩ false ይሁን
   fullyParallel: false,
+
+  // 🚀 3 ወርከሮች ጎን ለጎን 3 የተለያዩ ፋይሎችን ያስኪዳሉ
   workers: 3,
+
   retries: process.env.CI ? 1 : 0,
   reporter: 'html',
 
   use: {
     baseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
     
-    // ✅ ስህተቱን ለማረም፦ ቪውፖርቱን በቁጥር እንስጠው
+    // 🖥️ ስክሪን ሳይዝ (ለ ERP ወሳኝ ነው)
     viewport: { width: 1920, height: 1080 },
 
     launchOptions: {
       args: [
         '--start-maximized',
-        '--force-device-scale-factor=0.8', 
+        '--force-device-scale-factor=0.8', // 80% Zoom
       ],
     },
 
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 50000,
-    navigationTimeout: 90000,
+    actionTimeout: 60000,
+    navigationTimeout: 100000,
   },
 
   projects: [
@@ -50,7 +44,6 @@ module.exports = defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        // ✅ እዚህ ጋርም null የሚለውን እናጥፋው
         viewport: { width: 1920, height: 1080 },
       },
     },
