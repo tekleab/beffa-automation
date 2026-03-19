@@ -62,7 +62,8 @@ module.exports = defineConfig({
     navigationTimeout: 90000,
   },
 
-  // Run tests in Chromium AND Firefox in parallel.
+  // Run tests in Chromium only.
+  // To add Firefox later, uncomment the second project block below.
   projects: [
     {
       name: 'chromium',
@@ -72,13 +73,13 @@ module.exports = defineConfig({
         deviceScaleFactor: undefined,
       },
     },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        viewport: null,
-      },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //     viewport: null,
+    //   },
+    // },
   ],
 
   // Directory where test artifacts (screenshots, videos, traces) are saved.
