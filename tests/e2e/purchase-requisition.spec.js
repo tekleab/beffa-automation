@@ -10,7 +10,7 @@ test.describe('Purchase Requisition Workflow: Create -> Capture -> Approve', () 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
         // Login with credentials from .env
-        await app.login(process.env.BEFFA_USER || 'admin@beffa.com', process.env.BEFFA_PASS || 'Beff.$#!');
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.waitForTimeout(3000);
     });
 

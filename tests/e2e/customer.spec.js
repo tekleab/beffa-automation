@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
@@ -14,10 +15,10 @@ test('Full Customer CRUD Cycle', async ({ page }) => {
   const customerName = `Kebede-${Math.floor(Math.random() * 10000)}`;
   const updatedName = `${customerName}-Updated`;
 
-  await app.login('admin@beffa.com', 'Beff.$#!');
+  await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
   // --- Step 1: Create ---
-  await page.goto('http://157.180.20.112:4173/receivables/customers/new');
+  await page.goto('/receivables/customers/new');
   await page.getByRole('textbox', { name: 'Customer Name *' }).fill(customerName);
   await page.getByLabel('Customer Type *').selectOption('individual');
   await page.getByRole('textbox', { name: 'Customer TIN *' }).fill(fixedTIN);

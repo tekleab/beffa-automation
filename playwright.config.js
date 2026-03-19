@@ -34,7 +34,7 @@ module.exports = defineConfig({
 
   // Shared settings applied to every test in every project.
   use: {
-    baseURL: 'http://157.180.20.112:4173',
+    baseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
 
     // Start browser maximized instead of a fixed viewport.
     viewport: null,

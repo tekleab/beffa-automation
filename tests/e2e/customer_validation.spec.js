@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
@@ -11,7 +12,7 @@ test('Customer Validation: TIN and Phone Edge Cases', async ({ page }) => {
   test.setTimeout(120000);
   const app = new AppManager(page);
 
-  await app.login('admin@beffa.com', 'Beff.$#!');
+  await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
   const createBtn = page.getByRole('button', { name: /create customer/i });
   const rRegion = addressData[0];
