@@ -27,10 +27,14 @@ test('Customer Validation: TIN and Phone Edge Cases', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Customer TIN *' }).fill("12345");
   await app.mainPhoneInput.fill("0911223344");
 
+  const randomRegion1 = addressData[Math.floor(Math.random() * addressData.length)];
+  const randomZone1 = randomRegion1.zones[Math.floor(Math.random() * randomRegion1.zones.length)];
+  const randomWoreda1 = randomZone1.woredas[Math.floor(Math.random() * randomZone1.woredas.length)];
+
   await app.fillEthiopianAddress(
-    rRegion.region,
-    rRegion.zones[0].name,
-    rRegion.zones[0].woredas[0]
+    randomRegion1.region,
+    randomZone1.name,
+    randomWoreda1
   );
 
   await createBtn.click();
@@ -53,10 +57,14 @@ test('Customer Validation: TIN and Phone Edge Cases', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Customer TIN *' }).fill("9876543210");
   await app.mainPhoneInput.fill("123");
 
+  const randomRegion2 = addressData[Math.floor(Math.random() * addressData.length)];
+  const randomZone2 = randomRegion2.zones[Math.floor(Math.random() * randomRegion2.zones.length)];
+  const randomWoreda2 = randomZone2.woredas[Math.floor(Math.random() * randomZone2.woredas.length)];
+
   await app.fillEthiopianAddress(
-    rRegion.region,
-    rRegion.zones[0].name,
-    rRegion.zones[0].woredas[0]
+    randomRegion2.region,
+    randomZone2.name,
+    randomWoreda2
   );
 
   // check button state first

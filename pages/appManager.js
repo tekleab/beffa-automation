@@ -401,6 +401,24 @@ class AppManager {
       if (entry.credit > 0) await this.verifyLedgerImpact(entry.accountCode, docNumber, entry.credit, 'credit');
     }
   }
+
+  /**
+   * --- ADDRESS MAPPING ---
+   * Fills Region, Zone, and Woreda based on ethiopian administrative hierarchy.
+   */
+  async fillEthiopianAddress(region, zone, woreda) {
+    console.log(`[ACTION] Mapping address: ${region} > ${zone} > ${woreda}`);
+
+    // Use selectOption as these are standard searchable/filterable selects that respond to it
+    await this.page.getByLabel(/Region/i).first().selectOption({ label: region });
+    await this.page.waitForTimeout(1000); // Cascading delay
+
+    await this.page.getByLabel(/Zone/i).first().selectOption({ label: zone });
+    await this.page.waitForTimeout(1000); // Cascading delay
+
+    await this.page.getByLabel(/(Woreda|Wereda)/i).first().selectOption({ label: woreda });
+    await this.page.waitForTimeout(500);
+  }
 }
 
 module.exports = { AppManager };

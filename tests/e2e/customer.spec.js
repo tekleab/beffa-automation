@@ -18,12 +18,16 @@ test('Full Customer CRUD Cycle', async ({ page }) => {
   await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
   // --- Step 1: Create ---
+  const randomRegion = addressData[Math.floor(Math.random() * addressData.length)];
+  const randomZone = randomRegion.zones[Math.floor(Math.random() * randomRegion.zones.length)];
+  const randomWoreda = randomZone.woredas[Math.floor(Math.random() * randomZone.woredas.length)];
+
   await page.goto('/receivables/customers/new');
   await page.getByRole('textbox', { name: 'Customer Name *' }).fill(customerName);
   await page.getByLabel('Customer Type *').selectOption('individual');
   await page.getByRole('textbox', { name: 'Customer TIN *' }).fill(fixedTIN);
   await app.mainPhoneInput.fill(fixedPhone);
-  await app.fillEthiopianAddress(addressData[0].region, addressData[0].zones[0].name, addressData[0].zones[0].woredas[0]);
+  await app.fillEthiopianAddress(randomRegion.region, randomZone.name, randomWoreda);
 
   const createBtn = page.locator('button:has-text("Create customer"), button:has-text("Adding Customer")');
   await createBtn.click();
