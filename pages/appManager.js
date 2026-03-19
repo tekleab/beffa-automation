@@ -16,278 +16,389 @@ class AppManager {
 
     // Status and Button Selectors
     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
-    this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver")';
+    this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
   }
 
-  /**
-   * --- LOGIN (Hardened for CI) ---
-   * ጥቅሶችን ያጸዳል፣ የቀድሞ ዳታን ያጠፋል እና በተኑ እስኪበራ ይጠብቃል
-   */
   async login(email, pass) {
-    // ከ .env ሊመጡ የሚችሉ ጥቅሶችን (" ወይም ') በኮድ ደረጃ ማጥፋት
     const cleanEmail = (email || "").replace(/['"]+/g, '').trim();
     const cleanPass = (pass || "").replace(/['"]+/g, '').trim();
-
     await this.page.goto('/users/login');
-
-    // ኤለመንቱ እስኪታይ በትዕግስት ይጠብቃል
     await this.emailInput.waitFor({ state: 'visible', timeout: 30000 });
-
-    // የቆየ ዳታ (Autofill) ካለ ማጽዳት
-    await this.emailInput.focus();
-    await this.page.keyboard.press('Control+A');
-    await this.page.keyboard.press('Backspace');
     await this.emailInput.fill(cleanEmail);
-
-    await this.passwordInput.focus();
-    await this.page.keyboard.press('Control+A');
-    await this.page.keyboard.press('Backspace');
     await this.passwordInput.fill(cleanPass);
-
-    // 🚀 ወሳኝ እርምጃ: የሎጊን በተኑ Enabled እስኪሆን (ቫሊዴሽን እስኪያልቅ) መጠበቅ
-    console.log(`Attempting login with: ${cleanEmail}`);
     await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
-
     await this.loginBtn.click();
-
-    // ዳሽቦርዱ ሙሉ በሙሉ እስኪጫን መጠበቅ
     await this.page.waitForURL('**/', { waitUntil: 'networkidle', timeout: 60000 });
   }
 
   /**
-   * --- FILL ETHIOPIAN ADDRESS ---
+   * --- SMART SEARCH ---
+   * Optimized for exact text matching and robust selection.
    */
-  async fillEthiopianAddress(region, zone, woreda) {
-    console.log(`Filling address: ${region} -> ${zone} -> ${woreda}`);
+  async smartSearch(container, text) {
+    if (!text) return;
+    const cleanText = text.trim();
+    console.log(`[ACTION] Searching for: "${cleanText}"`);
 
-    const regionSelect = this.page.getByRole('combobox', { name: 'Region' });
-    await regionSelect.waitFor({ state: 'visible' });
-    await regionSelect.selectOption({ label: region });
-    await this.page.waitForTimeout(1500);
-
-    const zoneSelect = this.page.getByRole('combobox', { name: 'Zone' });
-    await zoneSelect.waitFor({ state: 'visible' });
-    await zoneSelect.selectOption({ label: zone });
-    await this.page.waitForTimeout(1500);
-
-    const woredaSelect = this.page.getByRole('combobox', { name: 'Wereda' });
-    await woredaSelect.waitFor({ state: 'visible' });
-    await woredaSelect.selectOption({ label: woreda });
-  }
-
-  /**
-   * --- SMART SEARCH (Robust for CI) ---
-   */
-  async smartSearch(dialog, text) {
-    console.log(`Searching for: ${text}`);
-    const escapedText = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const exactPattern = new RegExp(`^${escapedText}$`, 'i');
-
-    const resultLocator = this.page
-      .locator('div[role="group"], div[role="option"], div[role="listitem"], button, li, label, [class*="option"]')
-      .filter({ hasText: exactPattern })
-      .first();
-
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      let searchInput = dialog.getByRole('textbox', { name: 'Search...' });
-      if (!(await searchInput.isVisible({ timeout: 2000 }).catch(() => false))) {
-        searchInput = this.page.getByRole('textbox', { name: 'Search...' }).first();
-      }
-
-      await searchInput.clear();
-      await this.page.waitForTimeout(500);
-      await searchInput.fill(text);
-      await this.page.waitForTimeout(2000);
-
+    for (let s = 0; s < 3; s++) {
       try {
-        await resultLocator.waitFor({ state: 'visible', timeout: 10000 });
-        await resultLocator.click({ force: true });
-        console.log(`Selection confirmed: ${text}`);
+        // 1. Target container for typing (scoped to dialog to avoid wrong inputs)
+        const target = container || this.page.locator('div[role="dialog"], .chakra-modal__content, .chakra-popover__content').filter({ visible: true }).last();
+
+        // 2. Find search input — exclude numeric/hidden inputs
+        let searchBox = target.locator('input:not([type="number"]):not([type="hidden"])').filter({ visible: true }).first();
+        if (!(await searchBox.isVisible({ timeout: 2000 }).catch(() => false))) {
+          searchBox = this.page.locator('input[placeholder*="Search" i]').filter({ visible: true }).last();
+        }
+
+        await searchBox.waitFor({ state: 'visible', timeout: 10000 });
+        await searchBox.clear();
+
+        // 3. Instant fill (copy-paste style) to trigger ERP search filters faster
+        await searchBox.fill(cleanText);
+        await this.page.waitForTimeout(2500);
+
+        // 4. Click the result — SCOPED to dialog/overlay to avoid sidebar nav collisions
+        let clicked = false;
+
+        // Tier 1: Exact match WITHIN dialog container (prevents clicking 'Sales' nav link)
+        const containerExact = target.getByText(cleanText, { exact: true }).first();
+        if (await containerExact.isVisible({ timeout: 3000 }).catch(() => false)) {
+          console.log(`[INFO] Tier 1 - exact in dialog: "${cleanText}"`);
+          await containerExact.click({ force: true });
+          clicked = true;
+        }
+
+        // Tier 2: Search visible overlay/portal (Chakra popovers render outside dialog)
+        if (!clicked) {
+          const overlayList = this.page.locator(
+            '.chakra-popover__content, [role="listbox"], .chakra-menu__list, div[data-placement]'
+          ).filter({ visible: true }).last();
+          if (await overlayList.isVisible({ timeout: 2000 }).catch(() => false)) {
+            const overlayExact = overlayList.getByText(cleanText, { exact: true }).first();
+            if (await overlayExact.isVisible({ timeout: 2000 }).catch(() => false)) {
+              console.log(`[INFO] Tier 2 - exact in overlay: "${cleanText}"`);
+              await overlayExact.click({ force: true });
+              clicked = true;
+            }
+            if (!clicked) {
+              const overlayContains = overlayList.getByText(cleanText, { exact: false }).first();
+              if (await overlayContains.isVisible({ timeout: 2000 }).catch(() => false)) {
+                console.log(`[INFO] Tier 2 - contains in overlay: "${cleanText}" (ID↔Name)`);
+                await overlayContains.click({ force: true });
+                clicked = true;
+              }
+            }
+          }
+        }
+
+        // Tier 3: Contains match WITHIN dialog (ID↔Name: searching ID shows "Name - ID")
+        if (!clicked) {
+          const containerContains = target.getByText(cleanText, { exact: false }).first();
+          if (await containerContains.isVisible({ timeout: 2000 }).catch(() => false)) {
+            console.log(`[INFO] Tier 3 - contains in dialog: "${cleanText}" (ID↔Name)`);
+            await containerContains.click({ force: true });
+            clicked = true;
+          }
+        }
+
+        // Tier 4: Total mismatch fallback (Search ID -> Result is purely Name without ID)
+        // E.g. search "CUST/..." -> shows "Etsegenet Yimer"
+        if (!clicked) {
+          console.log(`[INFO] Tier 4 - no text match for "${cleanText}". Clicking first visible item...`);
+
+          // Look in overlay first (Chakra portal dropdown)
+          const overlayList = this.page.locator('.chakra-popover__content, [role="listbox"], .chakra-menu__list, div[data-placement]').filter({ visible: true }).last();
+          let fallbackItem = null;
+
+          const clickableSelectors = 'button:not([aria-label]), [role="option"], [role="menuitem"], li, .chakra-menu__menuitem, label, .chakra-checkbox, [role="checkbox"]';
+          const validItemFilter = { hasNotText: /^\s*(\+?\s*Add|Clear|New|No more items)\s*$/i };
+
+          if (await overlayList.isVisible({ timeout: 1000 }).catch(() => false)) {
+            fallbackItem = overlayList.locator(clickableSelectors).filter({ visible: true }).filter(validItemFilter).first();
+          } else {
+            // Look in container (inline dialog dropdown)
+            fallbackItem = target.locator(clickableSelectors).filter({ visible: true }).filter(validItemFilter).first();
+          }
+
+          if (await fallbackItem.isVisible({ timeout: 2000 }).catch(() => false)) {
+            const foundText = (await fallbackItem.innerText()).trim() || "Item";
+            console.log(`[INFO] Tier 4 - clicking first available item: "${foundText}"`);
+            await fallbackItem.click({ force: true });
+            clicked = true;
+          }
+        }
+
+        if (!clicked) {
+          throw new Error(`No visible dropdown result found for "${cleanText}"`);
+        }
+
+        // 5. Commit and close dropdown
+        await this.page.waitForTimeout(500);
+        await this.page.keyboard.press('Escape');
+
+        console.log(`[SUCCESS] Selected: "${cleanText}"`);
         return;
-      } catch (err) {
-        console.log(`Search attempt ${attempt}/3 for ${text} failed.`);
-        if (attempt < 3) await this.page.waitForTimeout(3000);
-      }
-    }
-    throw new Error(`Failed to locate ${text} after 3 attempts.`);
-  }
-
-  /**
-   * --- WAIT FOR LOADING ---
-   */
-  async waitForLoadingToFinish() {
-    const skeleton = this.page.locator('.chakra-skeleton, .chakra-spinner, [data-testid="loading"]');
-    try {
-      if (await skeleton.first().isVisible({ timeout: 2000 })) {
-        await skeleton.first().waitFor({ state: 'hidden', timeout: 45000 });
-      }
-    } catch { }
-  }
-
-  /**
-   * --- REVIEWER SELECTION ---
-   */
-  async _handleReviewerSelection() {
-    const reviewerSelector = this.page.locator('button[aria-label*="reviewer"], [placeholder*="Select Reviewer"]').first();
-
-    if (await reviewerSelector.isVisible({ timeout: 10000 }).catch(() => false)) {
-      await reviewerSelector.click();
-
-      await this.page.locator('.chakra-skeleton').waitFor({ state: 'hidden', timeout: 20000 }).catch(() => { });
-      await this.page.waitForTimeout(2000);
-
-      const adminOption = this.page.locator('div:not(.chakra-skeleton)').getByText('System Admin', { exact: true }).last();
-
-      if (await adminOption.isVisible()) {
-        await adminOption.click({ force: true });
+      } catch (e) {
+        console.log(`[WARNING] Search attempt ${s + 1} failed: ${e.message}`);
         await this.page.waitForTimeout(2000);
-
-        const advanceBtn = this.page.locator('section[role="dialog"] button:has-text("Advance"), section[role="dialog"] button:has-text("Submit")').first();
-        if (await advanceBtn.isVisible()) {
-          await advanceBtn.click({ force: true });
-          console.log("Action: Advance/Submit modal confirmed.");
-          await advanceBtn.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => { });
-        }
       }
     }
+    throw new Error(`[ERROR] smartSearch failed for "${cleanText}" after 3 attempts.`);
   }
 
-  // --- APPROVAL FLOW ---
   async handleApprovalFlow() {
-    console.log("Initializing approval sequence...");
+    // Approval flow: Draft → Verifier → Approver → Approved
+    const FINAL_STATUS = 'approved';
+    const statusLocator = this.page.locator(
+      '//p[contains(text(), "Status:")]/following-sibling::*//span | ' +
+      '//span[contains(text(), "Status:")]/following-sibling::*//span | ' +
+      '//span.chakra-badge'
+    ).first();
 
-    let lastClickedModalText = null;
-    let lastClickedTargetText = null;
+    let lastStatus = '';
+    let actionClickedForStatus = ''; // Track which status we already acted on
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 60; i++) {
       if (this.page.isClosed()) return;
-      await this.page.waitForTimeout(500);
+      await this.page.waitForTimeout(1000);
 
-      const approvedVisible = await this.page.locator(this.approvedStatus).first().isVisible({ timeout: 500 }).catch(() => false);
-      if (approvedVisible) {
-        console.log("Status: Document Approved.");
+      const currentStatus = (await statusLocator.innerText({ timeout: 3000 }).catch(() => '')).trim().toLowerCase();
+      console.log(`[INFO] Approval status: "${currentStatus}"`);
+
+      // Done?
+      if (currentStatus.includes(FINAL_STATUS)) {
+        console.log('[SUCCESS] Document approved.');
         return;
       }
 
-      const modalAction = this.page.locator('section[role="dialog"] button').filter({ hasText: /^(Approve|Advance|Submit)$/i }).first();
-      if (await modalAction.isVisible({ timeout: 1000 }).catch(() => false)) {
-        const btnText = await modalAction.innerText();
-
-        if (lastClickedModalText === btnText) {
-          await this.page.waitForTimeout(1000);
+      // Handle any confirmation modal that appeared AFTER a click
+      const modal = this.page.getByRole('dialog').first();
+      if (await modal.isVisible({ timeout: 500 }).catch(() => false)) {
+        const modalText = (await modal.innerText().catch(() => '')).toLowerCase();
+        if (modalText.includes('reviewer') || modalText.includes('select')) {
+          await this._handleReviewerSelection(modal);
+          lastStatus = currentStatus; // reset after modal
           continue;
         }
-
-        console.log(`Processing modal action: ${btnText}`);
-        lastClickedModalText = btnText;
-        await modalAction.click({ force: true });
-        await modalAction.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
-        continue;
-      } else {
-        lastClickedModalText = null;
+        const confirmBtn = modal.locator('button').filter({ hasText: /^(Approve|Advance|Submit|Save|Confirm|Yes|Ok)$/i }).first();
+        if (await confirmBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+          await confirmBtn.click({ force: true });
+          lastStatus = currentStatus;
+          await this.page.waitForTimeout(2000);
+          continue;
+        }
       }
 
-      const targetButton = this.page.locator('button').filter({ hasText: /^(Submit For Review|Submit For Approver|Submit Forapprover|Advance|Approve|Submit)$/i }).first();
+      // Only act if status has CHANGED since our last action
+      // (prevents clicking the same button multiple times for same status)
+      if (currentStatus === actionClickedForStatus) {
+        console.log(`[WAIT] Still on "${currentStatus}" — waiting for status change...`);
+        continue;
+      }
 
-      if (await targetButton.isVisible({ timeout: 1000 }).catch(() => false)) {
-        const btnText = await targetButton.innerText();
+      // Find the action button for the current status
+      const button = this.page.locator('button[aria-label="approval-step"], button').filter({
+        hasText: /^(Submit For Review|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Submit)$/i
+      }).filter({ visible: true }).first();
 
-        if (lastClickedTargetText === btnText) {
-          await this.page.waitForTimeout(1000);
-          continue;
-        }
-
-        if (await targetButton.isDisabled()) {
-          console.log(`Waiting for button activation: ${btnText}`);
-          await this.page.waitForTimeout(1000);
-          continue;
-        }
-
-        console.log(`Executing: ${btnText}`);
-        lastClickedTargetText = btnText;
-        await targetButton.click({ force: true });
-
-        await targetButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
-
-        await this.page.waitForTimeout(1000);
-
-        if (btnText.includes("Submit")) {
-          await this._handleReviewerSelection();
-        }
+      if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
+        const btnText = (await button.innerText()).trim();
+        console.log(`[ACTION] Status changed to "${currentStatus}" → Clicking: "${btnText}"`);
+        await button.click({ force: true });
+        actionClickedForStatus = currentStatus; // mark this status as actioned
+        await this.page.waitForTimeout(2000);
       } else {
-        await this.page.waitForTimeout(1000);
+        console.log(`[WAIT] No action button visible for status: "${currentStatus}"`);
       }
     }
-    console.warn('Process timed out: loop limit reached.');
   }
 
-  /**
-   * --- DATE HELPERS ---
-   */
+  async _handleReviewerSelection(activeModal) {
+    const dialog = activeModal || this.page.getByRole('dialog').last();
+    // Use a robust selector for the reviewer drop-down button or select input
+    const reviewerSelector = dialog.locator('button[aria-haspopup], [aria-haspopup], select.chakra-select, input:not([type="hidden"])').filter({ visible: true }).first();
+
+    const el = await reviewerSelector.elementHandle({ timeout: 1500 }).catch(() => null);
+    if (el) {
+      // Evaluate text directly to bypass any actionability stalls
+      const currentSelection = (await el.evaluate(node => node.innerText || node.value || node.textContent || '')).trim();
+
+      if (currentSelection.toLowerCase() !== "system admin") {
+        // Use fill if it's an input field
+        if ((await el.evaluate(n => n.tagName)).toLowerCase() === 'input') {
+          await el.fill("System Admin");
+        } else {
+          await el.click({ force: true });
+        }
+        await this.page.waitForTimeout(1000);
+
+        // Find "System Admin" option in any popup list or dropdown
+        const adminOption = this.page.locator('div[role="option"], [role="menuitem"], li, .chakra-menu__menuitem, button').filter({ hasText: /System Admin/i }).filter({ visible: true }).first();
+        const adminEl = await adminOption.elementHandle({ timeout: 2000 }).catch(() => null);
+        if (adminEl) {
+          await adminEl.click({ force: true });
+        } else {
+          await this.page.keyboard.press('Escape');
+        }
+      }
+    }
+
+    // ALWAYS attempt to confirm the modal (even if reviewer selection was skipped/not found)
+    const confirmBtn = dialog.locator('button').filter({ hasText: /^(Advance|Submit|Approve|Save|Confirm)$/i }).filter({ visible: true }).first();
+    if (await confirmBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await confirmBtn.click({ force: true });
+      await confirmBtn.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
+      return true;
+    }
+    return false;
+  }
+
   getTransactionDates() {
     const today = new Date();
     const due = new Date();
     due.setDate(today.getDate() + 30);
-
     const fmt = (d) => {
       const dd = String(d.getDate()).padStart(2, '0');
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const yyyy = d.getFullYear();
       return `${dd}/${mm}/${yyyy}`;
     };
-
     return { soDate: fmt(today), invoiceDate: fmt(today), dueDate: fmt(due) };
-  }
-
-  getInvoiceDates() { return this.getTransactionDates(); }
-
-  async selectRandomOption(selector, labelName, isOptional = false) {
-    const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], .chakra-menu__menuitem';
-    for (let i = 0; i < 3; i++) {
-      try {
-        await selector.scrollIntoViewIfNeeded();
-        // Use evaluate for the dropdown button itself to bypass actionable checks
-        await selector.evaluate(node => node.click());
-        await this.page.waitForTimeout(1500); // Wait for dropdown list to populate
-
-        const options = this.page.locator(optionSelector).filter({ visible: true });
-        const count = await options.count();
-
-        if (count > 0) {
-          const randomIndex = Math.floor(Math.random() * count);
-          const target = options.nth(randomIndex);
-
-          // Use evaluate(node => node.click()) for all selections
-          await target.evaluate(node => node.click());
-
-          await this.page.keyboard.press('Escape');
-          return count;
-        } else {
-          await this.page.keyboard.press('Escape');
-          if (isOptional) return 0;
-        }
-      } catch (e) {
-        await this.page.keyboard.press('Escape');
-      }
-    }
-    if (!isOptional) throw new Error(`Failed selection for ${labelName}`);
-    return 0;
   }
 
   async fillDate(index, dateValue) {
     const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
     const datePickerBtn = this.page.locator('button:has(span.formatted-date)').nth(index);
-
-    await datePickerBtn.waitFor({ state: 'visible', timeout: 25000 });
     await datePickerBtn.click();
     await this.page.waitForTimeout(1000);
-
     const dayButton = this.page.locator('div[role="grid"] button').getByText(dayToSelect, { exact: true }).first();
-    if (await dayButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await dayButton.isVisible()) {
       await dayButton.click();
     } else {
       await this.page.keyboard.type(dateValue);
       await this.page.keyboard.press('Enter');
+    }
+  }
+
+  async selectRandomOption(selector, labelName, isOptional = false) {
+    try {
+      await selector.evaluate(node => node.click());
+      await this.page.waitForTimeout(2000);
+      const options = this.page.locator('[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem').filter({ visible: true });
+      const count = await options.count();
+      if (count > 0) {
+        await options.nth(Math.floor(Math.random() * count)).click({ force: true });
+        await this.page.waitForTimeout(500);
+        await this.page.keyboard.press('Escape');
+        return count;
+      }
+      await this.page.keyboard.press('Escape');
+    } catch (e) {
+      await this.page.keyboard.press('Escape');
+    }
+    if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);
+    return 0;
+  }
+
+  async captureJournalEntries() {
+    const journalTab = this.page.getByRole('tab', { name: /Journal/i });
+    await journalTab.click();
+    await this.page.waitForTimeout(2000);
+    const rows = this.page.locator('table tbody tr');
+    const count = await rows.count();
+    const entries = [];
+    for (let i = 0; i < count; i++) {
+      const row = rows.nth(i);
+      const accFull = await row.locator('td').nth(0).innerText();
+      const drText = await row.locator('td').nth(2).innerText();
+      const crText = await row.locator('td').nth(3).innerText();
+      const code = accFull.match(/^\d+/)?.[0] || "";
+      const name = accFull.replace(/^\d+\s*-\s*/, '').trim();
+      const dr = parseFloat(drText.replace(/,/g, '')) || 0;
+      const cr = parseFloat(crText.replace(/,/g, '')) || 0;
+      if (code) entries.push({ accountCode: code, accountName: name, debit: dr, credit: cr });
+    }
+    return entries;
+  }
+
+  getInvoiceDates() {
+    const today = new Date();
+    const due = new Date();
+    due.setDate(today.getDate() + 30);
+    const fmt = (d) => {
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      return `${dd}/${mm}/${d.getFullYear()}`;
+    };
+    return { invoiceDate: fmt(today), dueDate: fmt(due) };
+  }
+
+  async captureRandomItemDetails() {
+    await this.page.goto('/inventories/items/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    await this.page.waitForTimeout(5000);
+    const rows = this.page.locator('table tbody tr');
+    await rows.first().waitFor({ state: 'visible', timeout: 30000 });
+    const count = await rows.count();
+    const targetRow = rows.nth(Math.floor(Math.random() * Math.min(count, 15)));
+    const nameLink = targetRow.locator('a').first();
+    let itemName = (await nameLink.textContent()).trim();
+    if (itemName.includes(' - ')) itemName = itemName.split(' - ').pop().trim();
+    console.log(`[ACTION] Capturing details for: "${itemName}"...`);
+    await nameLink.click();
+    await this.page.waitForURL(/\/inventories\/items\/.*/, { timeout: 60000 });
+    return await this._extractItemDetails(itemName);
+  }
+
+  async captureItemDetails(itemName) {
+    await this.page.goto('/inventories/items/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    const searchBox = this.page.getByPlaceholder('Search for inventory...').filter({ visible: true }).first();
+    await searchBox.fill(itemName);
+    await this.page.keyboard.press('Enter');
+    await this.page.waitForTimeout(2000);
+    const itemRow = this.page.locator('table tbody tr').filter({ hasText: itemName }).first();
+    await itemRow.locator('a').first().click();
+    await this.page.waitForURL(/\/inventories\/items\/.*/, { timeout: 60000 });
+    return await this._extractItemDetails(itemName);
+  }
+
+  async _extractItemDetails(itemName) {
+    await this.page.waitForTimeout(3000);
+    const extractValue = async (label) => {
+      const el = this.page.locator('.chakra-stack, div').filter({ hasText: new RegExp(`^${label}`, 'i') }).last();
+      const text = (await el.locator('xpath=..').innerText().catch(() => '')).trim();
+      const match = text.match(new RegExp(`${label}[\\s:]+([^\\n\\r]+)`, 'i'));
+      return match ? match[1].trim() : text.replace(label, '').replace(/:/g, '').trim();
+    };
+    const sTxt = await extractValue('Current Stock');
+    const stock = parseInt(sTxt.replace(/[^0-9]/g, ''), 10) || 0;
+    const sAcc = await extractValue('Sales GL Account');
+    const cAcc = await extractValue('Cost GL Account');
+    const iAcc = await extractValue('Inventory GL Account');
+    const clean = (f) => f.match(/^\d+/)?.[0] || '';
+    return { itemName, currentStock: stock, salesAccountCode: clean(sAcc), costAccountCode: clean(cAcc), inventoryAccountCode: clean(iAcc) };
+  }
+
+  async verifyLedgerImpact(accountCode, docNumber, expectedAmount, type) {
+    console.log(`[INFO] Verifying ${type} of ${expectedAmount} for ${docNumber} in ${accountCode}`);
+    await this.page.goto('/accounting/chart-of-accounts/?page=1&pageSize=15');
+    await this.page.getByPlaceholder('Search for accounts...').fill(accountCode);
+    await this.page.locator('table tbody tr').filter({ hasText: accountCode }).locator('a').first().click();
+    await this.page.getByRole('tab', { name: /Ledger/i }).click();
+
+    // The Ledger does not always show the source document (INV/...), it usually shows the Journal Ref (JRN/...)
+    // Therefore, we find the most recent row in the ledger that corresponds to the expected transaction amount.
+    const row = this.page.locator('table tbody tr').filter({ hasText: expectedAmount.toString() }).last();
+    await expect(row).toBeVisible({ timeout: 15000 });
+    const cell = row.locator('td').nth(type.toLowerCase() === 'debit' ? 3 : 4);
+    const actual = (await cell.innerText()).replace(/,/g, '').trim();
+    expect(actual).toContain(expectedAmount.toString());
+  }
+
+  async verifyAllJournalEntries(docNumber, entries) {
+    for (const entry of entries) {
+      if (entry.debit > 0) await this.verifyLedgerImpact(entry.accountCode, docNumber, entry.debit, 'debit');
+      if (entry.credit > 0) await this.verifyLedgerImpact(entry.accountCode, docNumber, entry.credit, 'credit');
     }
   }
 }

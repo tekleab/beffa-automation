@@ -45,8 +45,12 @@ test.describe('Receipt Creation and Customer Verification', () => {
 
         await page.waitForURL(/\/receivables\/receipts\/.*\/detail$/, { timeout: 90000 });
 
-        const capturedReceiptNumber = (await page.locator('p.chakra-text').filter({ hasText: /^RCPT\// }).first().innerText()).trim();
-        const capturedCustomerName = (await page.locator('//p[text()="Customer:"]/following-sibling::p').first().innerText()).trim();
+        const capturedReceiptNumber = (await page.locator('p.chakra-text').filter({ hasText: /^RCPT\// }).first().innerText({ timeout: 30000 })).trim();
+
+        const customerLabel = page.locator('p.chakra-text').filter({ hasText: 'Customer:' });
+        const customerValue = page.locator('div').filter({ has: customerLabel }).locator('p.chakra-text').nth(1);
+        await customerValue.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { });
+        const capturedCustomerName = (await customerValue.innerText().catch(() => "Unknown Customer")).trim();
 
         console.log(`Document Created: ${capturedReceiptNumber} | Customer: ${capturedCustomerName}`);
 

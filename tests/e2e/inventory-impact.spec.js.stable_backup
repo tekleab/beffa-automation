@@ -1,0 +1,299 @@
+const { test, expect } = require('@playwright/test');
+const { AppManager } = require('../../pages/appManager');
+require('dotenv').config();
+
+test.describe('Inventory Impact Verification', () => {
+
+    // Helper: Navigate to the inventory item and capture its stock
+    async function getStockForItem(page, itemSearchTerm) {
+        console.log(`🔍 Navigating to inventory items list to find "${itemSearchTerm}"...`);
+        await page.goto('/inventories/items/?page=1&pageSize=15', { waitUntil: 'networkidle' });
+
+        // Search for the item
+        const searchBox = page.getByRole('textbox', { name: 'Search', exact: true });
+        await searchBox.waitFor({ state: 'visible', timeout: 15000 });
+        await searchBox.fill(itemSearchTerm);
+
+        // Wait for the table to filter and show a matching link
+        const firstLink = page.locator('table tbody tr').first().locator('a').first();
+        await expect(firstLink).toContainText(itemSearchTerm, { timeout: 15000 }).catch(() => {
+            console.log(`⚠️ Search for "${itemSearchTerm}" didn't show exact text in link, but proceeding with first row...`);
+        });
+
+        // Capture item name BEFORE navigating away and clean it (remove "inventory/CODE - ")
+        let itemName = (await firstLink.innerText().catch(() => itemSearchTerm)).trim();
+        if (itemName.includes(' - ')) {
+            itemName = itemName.split(' - ').pop().trim();
+        }
+        console.log(`📦 Found item: "${itemName}"`);
+
+        await firstLink.evaluate(node => node.click());
+        await page.waitForURL(/\/inventories\/items\/.*/, { waitUntil: 'networkidle', timeout: 30000 });
+
+        // Explicitly wait for "Current Stock" text to be visible on the page
+        console.log("⏳ Waiting for product details to load...");
+        const stockLabel = page.locator('body', { hasText: /Current Stock/i });
+        await stockLabel.waitFor({ state: 'visible', timeout: 15000 });
+
+        // Give a short grace period for the numbers to populate if they are loaded via client-side JS
+        await page.waitForTimeout(3000);
+
+        // Capture Current Stock from body text
+        let currentStock = 0;
+        const bodyText = await page.innerText('body');
+        const stockMatch = bodyText.match(/Current Stock[^0-9]*([0-9,]+)/i);
+
+        if (stockMatch) {
+            currentStock = parseInt(stockMatch[1].replace(/,/g, ''), 10) || 0;
+        }
+
+        console.log(`📊 Current Stock for "${itemName}": ${currentStock}`);
+        return { currentStock, itemName };
+    }
+
+    // Helper: Add a line item in an SO using the "Control panal" fallback item
+    async function addLineItem(page, app, quantity, forceHardcoded = false) {
+        if (!forceHardcoded) {
+            console.log("Action: Attempting to add a random line item...");
+            await page.click('button:has-text("Line Item")');
+            await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
+
+            await app.selectRandomOption(page.getByRole('button', { name: 'Item selector' }), 'Item');
+            await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill(quantity.toString());
+
+            let locationCount = 0;
+            let attempts = 0;
+            while (locationCount === 0 && attempts < 5) {
+                attempts++;
+                await app.selectRandomOption(page.locator('button#warehouse_id'), `WH Attempt ${attempts}`);
+                await page.waitForTimeout(1000);
+                locationCount = await app.selectRandomOption(page.locator('button#location_id'), 'Location', true);
+            }
+
+            await app.selectRandomOption(page.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+            await page.getByRole('button', { name: /^Add$/, exact: true }).evaluate(node => node.click());
+
+            const validationError = page.locator('text=Insufficient stock');
+            if (await validationError.isVisible({ timeout: 5000 }).catch(() => false)) {
+                console.log("Status: Insufficient stock detected. Falling back to hardcoded item...");
+                const removeBtn = page.locator('svg.lucide-delete, [d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"]').first();
+                await removeBtn.click();
+                await page.waitForTimeout(1000);
+                return addLineItem(page, app, quantity, true);
+            }
+            console.log("Action: Random line item added successfully.");
+        } else {
+            console.log("Action: Adding reliable line item (Control panal)...");
+            await page.click('button:has-text("Line Item")');
+            await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
+
+            await page.getByRole('button', { name: 'Item selector' }).click();
+            await app.smartSearch(page.getByRole('dialog'), 'Control panal');
+
+            await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill(quantity.toString());
+
+            await page.locator('button#warehouse_id').evaluate(node => node.click());
+            await page.getByText('Default Warehouse', { exact: true }).first().evaluate(node => node.click());
+
+            await page.locator('button#location_id').evaluate(node => node.click());
+            await page.getByText('Default Warehouse Location', { exact: true }).first().evaluate(node => node.click());
+
+            await app.selectRandomOption(page.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+            await page.getByRole('button', { name: /^Add$/, exact: true }).evaluate(node => node.click());
+            console.log("Action: Fallback line item added successfully.");
+        }
+    }
+
+    test('Pre/Post Stock Verification via Sales Order', async ({ page }) => {
+        test.setTimeout(600000);
+        const app = new AppManager(page);
+        const { soDate } = app.getTransactionDates();
+
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
+        // ============================================================
+        // STEP 1: Capture Pre-Sale Stock
+        // ============================================================
+        console.log("\n--- STEP 1: Capturing PRE-SALE Inventory Stock ---");
+        const ITEM_SEARCH_TERM = 'control';
+        const { currentStock: preStock, itemName } = await getStockForItem(page, ITEM_SEARCH_TERM);
+        console.log(`✅ PRE-SALE Stock: ${preStock} for "${itemName}"`);
+
+        if (preStock === 0) throw new Error(`Item has no stock. Cannot proceed.`);
+
+        // ============================================================
+        // STEP 2: Create and Approve a Sales Order
+        // ============================================================
+        console.log("\n--- STEP 2: Creating Sales Order ---");
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'networkidle' });
+
+        await app.fillDate(0, soDate);
+
+        // Select Customer
+        await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
+
+        // Pick a random sale quantity between 1 and 5
+        const saleQty = Math.floor(Math.random() * 5) + 1;
+        console.log(`📦 Sale Quantity selected: ${saleQty}`);
+
+        // Add the exact item verified in inventory: "Control panal" at Default Warehouse
+        console.log(`📦 Adding "${itemName}" (qty: ${saleQty}) to SO...`);
+        await page.click('button:has-text("Line Item")');
+        await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
+        await page.getByRole('button', { name: 'Item selector' }).click();
+        await app.smartSearch(page.getByRole('dialog'), itemName);
+        await page.waitForTimeout(1000);
+        await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill(saleQty.toString());
+        await page.locator('button#warehouse_id').evaluate(node => node.click());
+        await page.getByText('Default Warehouse', { exact: true }).first().evaluate(node => node.click());
+        await page.waitForTimeout(1000);
+        await page.locator('button#location_id').evaluate(node => node.click());
+        await page.getByText('Default Warehouse Location', { exact: true }).first().evaluate(node => node.click());
+        await app.selectRandomOption(page.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+        await page.getByRole('button', { name: /^Add$/, exact: true }).evaluate(node => node.click());
+        console.log(`✅ Line item "${itemName}" added.`);
+
+        // Select Accounts Receivable
+        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+
+        const addNowBtn = page.getByRole('button', { name: 'Add Now' });
+        await expect(addNowBtn).toBeEnabled({ timeout: 15000 });
+        await addNowBtn.click();
+
+        await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 90000 });
+        await page.getByText('Sales Order Details').first().waitFor({ timeout: 60000 });
+
+        const soNumber = (await page.locator('//p[text()="SO Number:"]/following-sibling::p').first().innerText({ timeout: 30000 })).trim();
+        const capturedCustomerName = (await page.locator('//p[text()="Customer:"]/following-sibling::p').first().innerText({ timeout: 30000 })).trim();
+
+        console.log(`📍 Sales Order Created: ${soNumber} | Customer: ${capturedCustomerName}`);
+
+        // Approve the Sales Order
+        console.log("🔐 Approving Sales Order...");
+        await app.handleApprovalFlow();
+        console.log(`✅ SO ${soNumber} Approved.`);
+
+        // ============================================================
+        // STEP 3: Create and Approve Invoice from SO
+        // ============================================================
+        console.log("\n--- STEP 3: Creating Invoice from SO ---");
+        await page.goto('/receivables/invoices/new', { waitUntil: 'networkidle' });
+
+        // Select the same Customer from Step 2
+        console.log(`Action: Selecting Customer "${capturedCustomerName}" for Invoice...`);
+        await page.getByRole('button', { name: 'Customer selector' }).click();
+        await app.smartSearch(page.getByRole('dialog'), capturedCustomerName);
+        await page.waitForTimeout(1000);
+
+        const { invoiceDate, dueDate } = app.getInvoiceDates();
+        await app.fillDate(0, invoiceDate);
+        await app.fillDate(1, dueDate);
+        await app.selectRandomOption(page.locator('button#accounts_receivable_id'), 'Accounts Receivable');
+
+        console.log(`Action: Linking Sales Order ${soNumber}...`);
+        await page.getByText('Sales Order', { exact: true }).click();
+        await app.smartSearch(page.getByRole('dialog'), soNumber);
+        await page.waitForTimeout(1000);
+
+        // Process Released SO Items
+        const releasedTab = page.getByRole('tab', { name: /Released Sales Order/i });
+        await releasedTab.waitFor({ state: 'visible' });
+        await releasedTab.click({ force: true });
+
+        const releasedTabPanel = page.getByRole('tabpanel', { name: 'Released Sales Order' });
+        await releasedTabPanel.locator('tbody').waitFor({ state: 'visible' });
+        const rows = releasedTabPanel.locator('table tbody tr');
+        const rowCount = await rows.count();
+
+        for (let i = 0; i < rowCount; i++) {
+            const currentRow = rows.nth(i);
+            await currentRow.locator('.chakra-checkbox__control').waitFor({ state: 'visible' });
+            await currentRow.locator('.chakra-checkbox__control').click({ force: true });
+
+            // Read remaining qty and fill it to ensure full invoice (e2e-workflow pattern)
+            const remainingVal = await currentRow.locator('td').nth(5).innerText();
+            let qty = remainingVal.replace(/[^0-9.]/g, '').split('.')[0] || "1";
+            const qtyInput = currentRow.locator('input[type="number"], input[id*="quantity"]');
+            if (await qtyInput.isVisible()) {
+                await qtyInput.click({ clickCount: 3 });
+                await qtyInput.fill(qty);
+                await page.keyboard.press('Enter');
+            }
+        }
+
+        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/, { timeout: 90000 });
+
+        const invoiceNumber = (await page.locator('p.chakra-text').filter({ hasText: /^INV\// }).first().innerText({ timeout: 30000 })).trim();
+        console.log(`📍 Invoice Created: ${invoiceNumber}`);
+
+        console.log("🔐 Approving Invoice...");
+        await app.handleApprovalFlow();
+        console.log(`✅ Invoice ${invoiceNumber} Approved.`);
+
+        // ============================================================
+        // STEP 4: Create and Approve Receipt from Invoice
+        // ============================================================
+        console.log("\n--- STEP 4: Creating Receipt from Invoice ---");
+        await page.goto('/receivables/receipts/new', { waitUntil: 'networkidle' });
+
+        // Select the same Customer from Step 2
+        console.log(`Action: Selecting Customer "${capturedCustomerName}" for Receipt...`);
+        await page.getByRole('button', { name: 'Customer selector' }).click();
+        await app.smartSearch(page.getByRole('dialog'), capturedCustomerName);
+        await page.waitForTimeout(1000);
+        const { soDate: receiptDate } = app.getTransactionDates();
+        await app.fillDate(0, receiptDate);
+        await app.selectRandomOption(page.locator('button#cash_account_id'), 'Cash Account');
+
+        console.log(`Action: Linking Invoice ${invoiceNumber}...`);
+        const invoiceTab = page.getByRole('tab', { name: /Sales Invoices/i });
+        await invoiceTab.waitFor({ state: 'visible' });
+        await invoiceTab.click({ force: true });
+        await page.waitForTimeout(3000);
+
+        // Find and select the specific invoice checkbox using e2e-workflow pattern
+        const targetInvoiceRow = page.locator('.css-i8wwa4, tr, [role="row"]').filter({ hasText: invoiceNumber }).first();
+        await expect(targetInvoiceRow).toBeVisible({ timeout: 20000 });
+        await targetInvoiceRow.scrollIntoViewIfNeeded();
+        await targetInvoiceRow.locator('span.chakra-checkbox__control, .chakra-checkbox__control').first().click({ force: true });
+
+        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        await page.waitForURL(/\/receivables\/receipts\/.*\/detail$/, { timeout: 90000 });
+
+        const receiptNumber = (await page.locator('p.chakra-text').filter({ hasText: /^RCPT\// }).first().innerText({ timeout: 30000 })).trim();
+        console.log(`📍 Receipt Created: ${receiptNumber}`);
+
+        console.log("🔐 Approving Receipt...");
+        await app.handleApprovalFlow();
+        console.log(`✅ Receipt ${receiptNumber} Approved.`);
+
+        // ============================================================
+        // STEP 5: Capture Post-Flow Stock and Verify Impact
+        // ============================================================
+        console.log("\n--- STEP 5: Capturing POST-FLOW Inventory Stock ---");
+        await page.waitForTimeout(5000); // give the ERP a moment to process
+        const { currentStock: postStock } = await getStockForItem(page, ITEM_SEARCH_TERM);
+        console.log(`✅ POST-FLOW Stock: ${postStock}`);
+
+        // ============================================================
+        // STEP 6: Assert Stock Was Reduced
+        // ============================================================
+        console.log("\n--- STEP 6: Verifying Stock Impact ---");
+        const stockReduced = postStock < preStock;
+        const expectedPostStock = preStock - saleQty;
+
+        console.log(`------------------------------------------`);
+        console.log(`Pre-Sale  Stock : ${preStock}`);
+        console.log(`Sale Qty        : ${saleQty}`);
+        console.log(`Expected Post   : ${expectedPostStock}`);
+        console.log(`Actual Post     : ${postStock}`);
+        console.log(`Impact Detected : ${stockReduced ? '✅ YES' : '❌ NO'}`);
+        console.log(`------------------------------------------`);
+
+        expect(stockReduced, `Stock should have decreased after full flow. Pre: ${preStock}, Post: ${postStock}`).toBeTruthy();
+        expect(postStock, `Post-sale stock should equal pre-stock minus sold qty`).toBe(expectedPostStock);
+
+        console.log("✅ Full cycle Inventory impact verified successfully!");
+    });
+});
