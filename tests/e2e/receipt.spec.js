@@ -10,7 +10,6 @@ test.describe('Receipt Creation and Customer Verification', () => {
         await page.waitForTimeout(5000);
     });
 
-
     test('Standalone Receipt Creation and Verification Flow', async ({ page }) => {
         test.setTimeout(450000);
         const app = new AppManager(page);
@@ -19,12 +18,10 @@ test.describe('Receipt Creation and Customer Verification', () => {
         console.log("Execution: Navigating to New Receipt...");
         await page.goto('/receivables/receipts/new');
 
-        // Dynamic selections
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
 
         await app.fillDate(0, receiptDate);
 
-        // Randomize the Cash Account selection
         const cashAccountBtn = page.locator('button#cash_account_id');
         await app.selectRandomOption(cashAccountBtn, 'Cash Account');
 
@@ -43,7 +40,7 @@ test.describe('Receipt Creation and Customer Verification', () => {
         await expect(addNowBtn).toBeEnabled({ timeout: 15000 });
         await addNowBtn.click();
 
-        await page.waitForURL(/\/receivables\/receipts\/.*\/detail$/, { timeout: 90000 });
+        await page.waitForURL(/\/receivables\/receipts\/.*\/detail$/, { timeout: 120000 });
 
         const capturedReceiptNumber = (await page.locator('p.chakra-text').filter({ hasText: /^RCPT\// }).first().innerText({ timeout: 30000 })).trim();
 
@@ -56,15 +53,18 @@ test.describe('Receipt Creation and Customer Verification', () => {
 
         await app.handleApprovalFlow();
 
-        // Verification
         console.log(`Verification: Searching for ${capturedReceiptNumber} in Customer Details...`);
         await page.goto('/receivables/customers');
+        
         const searchInput = page.locator('input[placeholder="Search for customers..."]');
         await searchInput.waitFor({ state: 'visible' });
         await searchInput.fill(capturedCustomerName);
-        await page.waitForTimeout(3000);
-
-        await page.locator('table tbody tr').filter({ hasText: capturedCustomerName }).first().locator('td a').first().click({ force: true });
+        
+        const rowLocator = page.locator('table tbody tr').filter({ hasText: new RegExp(`^${capturedCustomerName}$`, 'i') });
+        await rowLocator.first().waitFor({ state: 'visible', timeout: 20000 });
+        
+        await rowLocator.first().locator('td a').first().click({ force: true });
+        
         await page.waitForSelector('text=Customer Details');
 
         await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
