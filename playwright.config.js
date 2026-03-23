@@ -3,32 +3,28 @@ require('dotenv').config();
 
 module.exports = defineConfig({
   testDir: './tests/e2e',
-
-  // 🚀 ሁሉንም ቴስቶች ለማስገባት testIgnore-ን ባዶ እናደርገዋለን
   testIgnore: [],
-
-  timeout: 600000, // 10 ደቂቃ (ሁሉንም ለማለቅ በቂ ነው)
+  
+  timeout: 600000, 
   expect: { timeout: 30000 },
   
-  // 🚀 በአንድ ፋይል ያሉ ቴስቶች እንዳይጋጩ false ይሁን
-  fullyParallel: false,
+  /* Set to true to run tests within a single file in parallel */
+  fullyParallel: true,
 
-  // 🚀 3 ወርከሮች ጎን ለጎን 3 የተለያዩ ፋይሎችን ያስኪዳሉ
-  workers: 3,
+  /* Increased to 4 workers for faster execution */
+  workers: 4,
 
   retries: process.env.CI ? 1 : 0,
   reporter: 'html',
 
   use: {
     baseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
-    
-    // 🖥️ ስክሪን ሳይዝ (ለ ERP ወሳኝ ነው)
     viewport: { width: 1920, height: 1080 },
 
     launchOptions: {
       args: [
         '--start-maximized',
-        '--force-device-scale-factor=0.8', // 80% Zoom
+        '--force-device-scale-factor=0.8', 
       ],
     },
 
