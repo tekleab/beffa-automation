@@ -338,7 +338,7 @@ class AppManager {
     }
 
     // Wait for ANY detail page indicator
-    await this.page.waitForSelector('.chakra-heading, text=Details', { timeout: 30000 });
+    await this.page.waitForSelector('.chakra-heading', { timeout: 30000 });
 
     // Go to relevant tab
     const targetTab = this.page.getByRole('tab', { name: tabNameRegex });
