@@ -327,25 +327,30 @@ class AppManager {
     const rowLocator = this.page.locator('table tbody tr').filter({ hasText: entityName }).first();
     await rowLocator.waitFor({ state: 'visible', timeout: 20000 });
 
-    // Try clicking the first link (Ref) or the row itself
+    // NAVIGATION: Click the Ref link to go to details
     const link = rowLocator.locator('a').first();
-    if (await link.isVisible()) {
-      await link.click({ force: true });
+    const href = await link.getAttribute('href');
+    if (href) {
+      console.log(`[ACTION] Navigating to detail: ${href}`);
+      await this.page.goto(href, { waitUntil: 'networkidle' });
     } else {
-      await rowLocator.click({ force: true });
+      await link.click({ force: true });
     }
 
-    // Wait for detail page
-    await this.page.waitForSelector(`text=${isVendor ? 'Vendor' : 'Customer'} Details`);
+    // Wait for ANY detail page indicator
+    await this.page.waitForSelector('.chakra-heading, text=Details', { timeout: 30000 });
 
     // Go to relevant tab
     const targetTab = this.page.getByRole('tab', { name: tabNameRegex });
-    await targetTab.click();
+    await targetTab.waitFor({ state: 'visible' });
+    await targetTab.click({ force: true });
 
     // Some ERP pages need a reload or a second click to refresh data in tabs
+    await this.page.waitForTimeout(2000);
     await this.page.reload();
     await this.page.waitForTimeout(3000);
-    await targetTab.click();
+    await targetTab.waitFor({ state: 'visible' });
+    await targetTab.click({ force: true });
 
     const docLocator = this.page.locator('table').getByText(docNumber);
     await expect(docLocator.first()).toBeVisible({ timeout: 30000 });
