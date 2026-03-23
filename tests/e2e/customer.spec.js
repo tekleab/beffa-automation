@@ -38,9 +38,11 @@ test.describe('Customer Lifecycle - Validation and CRUD', () => {
 
     // --- PART 2: Successful Creation ---
     console.log("[ACTION] Creating Customer: " + customerName);
-    await page.locator('input[name="tin"], input[placeholder*="TIN"]').fill(fixedTIN);
-    await page.locator('input[name="name"], input[placeholder*="Name"]').clear();
-    await page.locator('input[name="name"], input[placeholder*="Name"]').fill(customerName);
+    const uniquePhone = `09${Math.floor(10000000 + Math.random() * 90000000)}`;
+    await app.customerTinInput.fill(fixedTIN);
+    await app.mainPhoneInput.fill(uniquePhone);
+    await app.customerNameInput.clear();
+    await app.customerNameInput.fill(customerName);
     await createBtn.click();
 
     await page.waitForURL(url => url.href.includes('/detail'), { timeout: 60000 });
