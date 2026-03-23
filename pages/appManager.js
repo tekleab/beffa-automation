@@ -324,9 +324,16 @@ class AppManager {
     await this.page.keyboard.press('Enter');
     await this.page.waitForTimeout(2000);
 
-    const rowLocator = this.page.locator('table tbody tr').filter({ hasText: entityName });
-    await rowLocator.first().waitFor({ state: 'visible', timeout: 20000 });
-    await rowLocator.first().locator('a').first().click({ force: true });
+    const rowLocator = this.page.locator('table tbody tr').filter({ hasText: entityName }).first();
+    await rowLocator.waitFor({ state: 'visible', timeout: 20000 });
+
+    // Try clicking the first link (Ref) or the row itself
+    const link = rowLocator.locator('a').first();
+    if (await link.isVisible()) {
+      await link.click({ force: true });
+    } else {
+      await rowLocator.click({ force: true });
+    }
 
     // Wait for detail page
     await this.page.waitForSelector(`text=${isVendor ? 'Vendor' : 'Customer'} Details`);
