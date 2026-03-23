@@ -27,6 +27,9 @@ This project contains end-to-end automated tests for the **BEFFA ERP** system us
 git clone [https://github.com/tekleab/befffa-automation.git](https://github.com/tekleab/befffa-automation.git)
 cd befffa-automation
 npm install
+### 2. Configure Environment Variables
+Create a file named `.env` in the root directory of the project and add your credentials as shown below:
+```env
 BEFFA_URL=[https://your-erp-link.com](https://your-erp-link.com)
 BEFFA_USER=your_username
 BEFFA_PASS=your_password
