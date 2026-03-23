@@ -4,12 +4,11 @@ require('dotenv').config();
 
 test.describe('Bill Creation - Automated PO Search and Line Item Management', () => {
 
-
     // Wait loop to ensure the selected vendor has an associated PO
     async function ensureVendorWithPO(page, app) {
         const vendorBtn = page.getByRole('button', { name: 'Vendor selector' });
         const poBtn = page.getByRole('button', { name: 'Purchase Order selector' });
-        const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], .chakra-menu__menuitem';
+        const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
 
         for (let i = 0; i < 15; i++) {
             console.log(`\n🔄 Attempt ${i + 1}: Selecting Vendor...`);
@@ -18,28 +17,24 @@ test.describe('Bill Creation - Automated PO Search and Line Item Management', ()
             await app.selectRandomOption(vendorBtn, 'Vendor');
 
             // 2. Wait for the PO list to reflect the new vendor selection
-            // PO Stability: wait for the PO selector to be enabled and the list to fully populate
             await expect(poBtn).toBeEnabled({ timeout: 10000 });
             await page.waitForTimeout(3000);
 
             // 3. Open the PO selector
-            await poBtn.evaluate(node => node.click()); // Bypass actionability
+            await poBtn.evaluate(node => node.click());
 
-            // Wait specifically for the first option to become visible to account for latency
             const poOptions = page.locator(optionSelector).filter({ visible: true });
 
             try {
-                // Wait up to 5 seconds for the list elements to actually populate
                 await poOptions.first().waitFor({ state: 'visible', timeout: 5000 });
             } catch (error) {
-                // If it times out, the list is empty (or extreme latency)
+                // List might be empty
             }
 
             const poCount = await poOptions.count();
 
             if (poCount > 0) {
                 console.log(`✅ Found ${poCount} POs. Selecting one...`);
-                // evaluate for PO selection
                 await poOptions.first().evaluate(node => node.click());
                 await page.keyboard.press('Escape');
                 console.log("🎯 PO Successfully Selected!");
@@ -64,7 +59,7 @@ test.describe('Bill Creation - Automated PO Search and Line Item Management', ()
         // 2. Select Vendor and associated PO
         await ensureVendorWithPO(page, app);
 
-        // 3. Select Dates (Set Due Date and Invoice Date to today)
+        // 3. Select Dates
         console.log("📅 Configuring dates...");
         const datePickers = page.locator('button:has(span.formatted-date), button:has(img)');
         const today = new Date().getDate().toString();
@@ -91,31 +86,22 @@ test.describe('Bill Creation - Automated PO Search and Line Item Management', ()
             await checkbox.evaluate(node => node.click());
             await page.waitForTimeout(1000);
 
-            // Re-fetch the row to get the remaining quantity info (usually the cell right before the input)
-            // It's robust to just find the input and then grab its value or adjacent limit.
-            // Since we know the input has an id with "received_quantity", it typically has a max attribute or we can read the row.
-            // Beffa's setup sometimes puts the max remaining quantity straight into the input value upon clicking the checkbox.
             const qtyInput = page.locator('input[id*="received_quantity"]').first();
-
             if (await qtyInput.isVisible()) {
-                // If it auto-filled with the max remaining quantity upon checking
                 const currentValStr = await qtyInput.inputValue();
                 const currentVal = parseFloat(currentValStr);
-
                 if (!isNaN(currentVal) && currentVal > 1) {
-                    // Just take a portion, e.g., half of what's left, or default back to 1 if it's 1
                     const fillValue = Math.floor(currentVal / 2) || 1;
                     await qtyInput.fill(fillValue.toString());
-                    console.log(`📦 Filled Dynamic Quantity: ${fillValue} (Originally ${currentVal})`);
+                    console.log(`📦 Filled Dynamic Quantity: ${fillValue}`);
                 } else {
-                    // Fallback to 1 if undefined/NaN or already 1
                     await qtyInput.fill('1');
                     console.log(`📦 Filled Fallback Quantity: 1`);
                 }
             }
         }
 
-        // 6. Add Standalone Line Items (Purchases Tab)
+        // 6. Add Standalone Line Items
         console.log("➕ Adding standalone line items in Purchases tab...");
         await page.getByRole('tab', { name: 'Purchases' }).evaluate(node => node.click());
         await page.waitForTimeout(1000);
@@ -136,36 +122,30 @@ test.describe('Bill Creation - Automated PO Search and Line Item Management', ()
         const randomQty = Math.floor(Math.random() * 5) + 1;
         await modal.locator('div.chakra-form-control').filter({ hasText: /^Unit Price \*/ }).getByRole('spinbutton').fill(randomPrice.toString());
         await modal.locator('div.chakra-form-control').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill(randomQty.toString());
-        console.log(`➕ Filled Standalone Line Item: Qty = ${randomQty}, Unit Price = ${randomPrice}`);
         await app.selectRandomOption(modal.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
 
         await modal.getByRole('button', { name: 'Add', exact: true }).evaluate(node => node.click());
         await expect(modal).not.toBeVisible({ timeout: 15000 });
 
-        // 7. Submit (Add Now)
+        // 7. Submit
         console.log("🚀 Submitting the Bill...");
         const addNowBtn = page.getByRole('button', { name: 'Add Now' });
         await page.waitForTimeout(2000);
         await expect(addNowBtn).toBeEnabled();
         await addNowBtn.evaluate(node => node.click());
 
-        // --- 8. Data Capture (Before Approval) ---
+        // --- 8. Data Capture ---
         await page.waitForURL(/\/payables\/bills\/.*\/detail$/, { waitUntil: 'networkidle' });
         console.log("Detail page loaded. Capturing information...");
 
-        // Capture Bill Number
         const billNumLocator = page.locator('p.chakra-text').filter({ hasText: /BILL\/\d{4}/ }).first();
         await billNumLocator.waitFor({ state: 'visible', timeout: 30000 });
-        const capturedBillNumber = await billNumLocator.innerText();
+        const capturedBillNumber = (await billNumLocator.innerText()).trim();
 
-        // Capture Vendor Name
-        const vendorLabel = page.locator('p.chakra-text').filter({ hasText: 'Vendor:' });
-        const vendorValue = page.locator('div').filter({ has: vendorLabel }).locator('p.chakra-text').nth(1);
-
+        const vendorValue = page.locator('p').filter({ hasText: /vendor:/i }).locator('xpath=following-sibling::p').first();
         await vendorValue.waitFor({ state: 'visible', timeout: 15000 });
-        const capturedVendor = await vendorValue.innerText();
+        const capturedVendor = (await vendorValue.innerText()).trim();
 
-        // Display captured report
         console.log("------------------------------------------");
         console.log(`📍 DATA CAPTURED BEFORE APPROVAL:`);
         console.log(`📌 Bill ID: ${capturedBillNumber}`);
@@ -176,7 +156,15 @@ test.describe('Bill Creation - Automated PO Search and Line Item Management', ()
         console.log("Starting Approval process for " + capturedBillNumber);
         await app.handleApprovalFlow();
 
-        // 10. Summary
-        console.log(`✅ Bill ${capturedBillNumber} has been captured and approved!`);
+        // 10. Status Verification
+        const statusValue = page.locator('p').filter({ hasText: /Status:/i }).locator('xpath=following-sibling::p').first();
+        await expect(statusValue).toContainText('Approved', { timeout: 15000 });
+
+        // 11. Vendor Profile Verification
+        await app.verifyDocInProfile('vendor', capturedVendor, capturedBillNumber);
+
+        console.log(`✅ Bill ${capturedBillNumber} has been verified across all tabs!`);
+        await page.screenshot({ path: `Final_Approved_${capturedBillNumber.replace(/\//g, '_')}.png` });
+        await page.close();
     });
 });

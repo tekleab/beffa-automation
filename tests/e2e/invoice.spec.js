@@ -10,7 +10,6 @@ test.describe('Isolated Invoice Creation', () => {
         await page.waitForTimeout(5000);
     });
 
-
     test('SO to Invoice with Financial Verification', async ({ page }) => {
         test.setTimeout(600000);
         const app = new AppManager(page);
@@ -24,7 +23,7 @@ test.describe('Isolated Invoice Creation', () => {
         // Select Customer
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
 
-        // Capture Customer Search Term (Prefer ID if found, otherwise Name)
+        // Capture Customer Search Term
         const customerFullText = (await page.locator('button[aria-label="Customer selector"]').innerText()).trim();
         const idMatch = customerFullText.match(/^([A-Z0-9\/_-]+)\s*-/i);
         const capturedCustomerSearchTerm = idMatch ? idMatch[1] : customerFullText;
@@ -38,7 +37,6 @@ test.describe('Isolated Invoice Creation', () => {
             await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
             await app.selectRandomOption(page.getByRole('button', { name: 'Item selector' }), 'Item');
 
-            // Include Mandatory Fields: Warehouse and Location
             await page.locator('button#warehouse_id').evaluate(node => node.click());
             await page.getByText('Default Warehouse', { exact: true }).first().evaluate(node => node.click());
             await page.waitForTimeout(500);
@@ -47,33 +45,25 @@ test.describe('Isolated Invoice Creation', () => {
             await page.getByText('Default Warehouse Location', { exact: true }).first().evaluate(node => node.click());
             await page.waitForTimeout(500);
 
-            // G/L Account - exact "Sales" selection
             await page.getByRole('button', { name: 'G/L Account selector' }).click();
             await app.smartSearch(page.getByRole('dialog'), 'Sales');
 
             await page.getByRole('group').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill("5");
             await page.getByRole('button', { name: /^Add$/, exact: true }).evaluate(node => node.click());
 
-            // Wait for stock validation async check
-            console.log("[WAIT] Evaluating stock availability...");
             await page.waitForTimeout(3000);
 
-            // Force-close modal if still visible (prevents browser closure)
             const lineModal = page.getByRole('dialog').last();
             if (await lineModal.isVisible({ timeout: 1000 }).catch(() => false)) {
-                console.log("[WAIT] Modal still visible after Add. Closing...");
                 const cancelBtn = lineModal.getByRole('button', { name: 'Cancel' });
                 await cancelBtn.click({ force: true }).catch(() => { });
                 await lineModal.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
                 await page.waitForTimeout(1000);
             }
 
-            // Check for Insufficient Stock in ANY row of the table
             const errorRow = page.locator('table tbody tr').filter({ hasText: /Insufficient stock/i }).first();
             if (await errorRow.isVisible()) {
-                const errorMsg = (await errorRow.innerText()).trim().replace(/\n/g, ' ');
-                console.log(`[WARNING] Attempt ${attempt}: ${errorMsg}`);
-                console.log("[ACTION] Removing insufficient item and retrying...");
+                console.log(`[WARNING] Attempt ${attempt}: Insufficient stock. Retrying...`);
                 const deleteBtn = errorRow.locator('svg.lucide-delete, .lucide-delete, [aria-label*="delete"i]').first();
                 if (await deleteBtn.isVisible()) {
                     await deleteBtn.click({ force: true });
@@ -82,17 +72,13 @@ test.describe('Isolated Invoice Creation', () => {
                 }
                 await page.waitForTimeout(1500);
             } else {
-                console.log("[SUCCESS] Line item added with sufficient stock.");
                 itemFound = true;
                 break;
             }
         }
 
-        if (!itemFound) {
-            throw new Error("[ERROR] Could not find an item with sufficient stock after 5 attempts.");
-        }
+        if (!itemFound) throw new Error("[ERROR] Could not find an item with sufficient stock.");
 
-        // Accounts Receivable Selector
         await page.locator('button#accounts_receivable_id').click();
         await app.smartSearch(page.getByRole('dialog'), 'Accounts Receivable');
 
@@ -101,11 +87,10 @@ test.describe('Isolated Invoice Creation', () => {
         await addNowBtn.click();
 
         await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 90000 });
-        const soNumber = (await page.locator('//p[text()="SO Number:"]/following-sibling::p').first().innerText()).trim();
+        const soNumber = (await page.locator('p').filter({ hasText: /SO Number:/i }).locator('xpath=following-sibling::p').first().innerText()).trim();
         console.log(`[SUCCESS] Sales Order Created: ${soNumber}`);
 
         await app.handleApprovalFlow();
-        console.log(`[SUCCESS] Sales Order Approved: ${soNumber}`);
 
         // STEP 2: Create and Approve Invoice from SO
         console.log("[STEP 2] Creating Invoice from SO");
@@ -117,7 +102,6 @@ test.describe('Isolated Invoice Creation', () => {
         await app.fillDate(0, invoiceDate);
         await app.fillDate(1, dueDate);
 
-        // Accounting Correct: Accounts Receivable
         await page.locator('button#accounts_receivable_id').click();
         await app.smartSearch(page.getByRole('dialog'), 'Accounts Receivable');
 
@@ -126,7 +110,6 @@ test.describe('Isolated Invoice Creation', () => {
         await app.smartSearch(page.getByRole('dialog'), soNumber);
         await page.waitForTimeout(1500);
 
-        // Process Released SO Items
         const releasedTab = page.getByRole('tab', { name: /Released Sales Order/i });
         await releasedTab.waitFor({ state: 'visible' });
         await releasedTab.click({ force: true });
@@ -137,14 +120,9 @@ test.describe('Isolated Invoice Creation', () => {
         const row = releasedTabPanel.locator('table tbody tr').first();
         await row.locator('.chakra-checkbox__control').click({ force: true });
 
-        // Read "Remaining" quantity from table (Column 6 is nth(5))
         const remainingValText = (await row.locator('td').nth(5).innerText()).trim();
-        const remainingVal = parseInt(remainingValText, 10) || 0;
-        console.log(`[INFO] Remaining Quantity found: ${remainingVal}`);
-
-        // Random quantity: 1 to remainingVal, max 10 for safety
+        const remainingVal = parseInt(remainingValText, 10) || 5;
         const randomQty = Math.floor(Math.random() * Math.min(remainingVal, 10)) + 1;
-        console.log(`[INFO] Filling Received Quantity: ${randomQty}`);
 
         const qtyInput = row.locator('input[type="number"]');
         if (await qtyInput.isVisible()) {
@@ -155,19 +133,14 @@ test.describe('Isolated Invoice Creation', () => {
         await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/, { timeout: 90000 });
 
         const invoiceNumber = (await page.locator('p.chakra-text').filter({ hasText: /^INV\// }).first().innerText()).trim();
-
-        // Capture Total Amount from the detail table (Filter by "Item Name" to ensure the correct table)
-        const detailTable = page.locator('table').filter({ hasText: /Item Name/i }).first();
-        const rowAmountText = (await detailTable.locator('tbody tr').first().locator('td').nth(6).innerText()).trim();
-        const totalAmount = rowAmountText.replace(/[^0-9.]/g, '') || "0";
-
-        console.log(`[SUCCESS] Invoice Created: ${invoiceNumber} | Total Amount: ${totalAmount}`);
+        console.log(`[SUCCESS] Invoice Created: ${invoiceNumber}`);
 
         await app.handleApprovalFlow();
-        console.log(`[SUCCESS] Invoice Approved: ${invoiceNumber}`);
 
-        // STEP 3: Financial Verification (Journal -> COA)
-        console.log("[STEP 3] Financial Verification");
+        // STEP 3: Verification
+        await app.verifyDocInProfile('customer', capturedCustomerSearchTerm, invoiceNumber);
+
+        // Financial Verification
         const journalEntries = await app.captureJournalEntries();
         await app.verifyAllJournalEntries(invoiceNumber, journalEntries);
 

@@ -44,7 +44,8 @@ test.describe('Receipt Creation and Customer Verification', () => {
 
         const capturedReceiptNumber = (await page.locator('p.chakra-text').filter({ hasText: /^RCPT\// }).first().innerText({ timeout: 30000 })).trim();
 
-        const customerValueLocator = page.locator('p.chakra-text:below(p.chakra-text:has-text("Customer:"))').first();
+        // Direct sibling locator: finds the <p> that follows the "Customer:" label
+        const customerValueLocator = page.locator('p:has-text("Customer:") + p').first();
         await customerValueLocator.waitFor({ state: 'visible', timeout: 20000 });
         const capturedCustomerName = (await customerValueLocator.innerText()).trim();
 
@@ -52,28 +53,8 @@ test.describe('Receipt Creation and Customer Verification', () => {
 
         await app.handleApprovalFlow();
 
-        console.log(`Verification: Searching for ${capturedReceiptNumber} in Customer Details...`);
-        await page.goto('/receivables/customers');
-        
-        const searchInput = page.locator('input[placeholder="Search for customers..."]');
-        await searchInput.waitFor({ state: 'visible' });
-        await searchInput.fill(capturedCustomerName);
-        
-        const rowLocator = page.locator('table tbody tr').filter({ hasText: new RegExp(`^${capturedCustomerName}$`, 'i') });
-        await rowLocator.first().waitFor({ state: 'visible', timeout: 20000 });
-        
-        await rowLocator.first().locator('td a').first().click({ force: true });
-        
-        await page.waitForSelector('text=Customer Details');
-
-        await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
-        await page.reload();
-        await page.waitForTimeout(3000);
-        await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
-
-        const rcptLocator = page.locator('table').getByText(capturedReceiptNumber);
-        await expect(rcptLocator.first()).toBeVisible({ timeout: 30000 });
-        console.log(`Status: ${capturedReceiptNumber} verified in customer profile.`);
+        // 7. FINAL CROSS-VERIFICATION in Customer Profile
+        await app.verifyDocInProfile('customer', capturedCustomerName, capturedReceiptNumber);
 
         await page.close();
     });

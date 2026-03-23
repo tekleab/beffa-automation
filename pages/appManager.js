@@ -159,12 +159,17 @@ class AppManager {
     let lastStatus = '';
     let actionClickedForStatus = ''; // Track which status we already acted on
 
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 180; i++) {
       if (this.page.isClosed()) return;
       await this.page.waitForTimeout(1000);
 
       const currentStatus = (await statusLocator.innerText({ timeout: 3000 }).catch(() => '')).trim().toLowerCase();
-      console.log(`[INFO] Approval status: "${currentStatus}"`);
+
+      // Only log the status if it actually changed
+      if (currentStatus && currentStatus !== lastStatus) {
+        console.log(`[INFO] Approval status: "${currentStatus}"`);
+        lastStatus = currentStatus;
+      }
 
       // Done?
       if (currentStatus.includes(FINAL_STATUS)) {
@@ -178,28 +183,26 @@ class AppManager {
         const modalText = (await modal.innerText().catch(() => '')).toLowerCase();
         if (modalText.includes('reviewer') || modalText.includes('select')) {
           await this._handleReviewerSelection(modal);
-          lastStatus = currentStatus; // reset after modal
+          lastStatus = ''; // Reset to force status log after modal
           continue;
         }
         const confirmBtn = modal.locator('button').filter({ hasText: /^(Approve|Advance|Submit|Save|Confirm|Yes|Ok)$/i }).first();
         if (await confirmBtn.isVisible({ timeout: 500 }).catch(() => false)) {
           await confirmBtn.click({ force: true });
-          lastStatus = currentStatus;
           await this.page.waitForTimeout(2000);
           continue;
         }
       }
 
       // Only act if status has CHANGED since our last action
-      // (prevents clicking the same button multiple times for same status)
       if (currentStatus === actionClickedForStatus) {
-        console.log(`[WAIT] Still on "${currentStatus}" — waiting for status change...`);
+        // Keep quiet while waiting for status to update
         continue;
       }
 
       // Find the action button for the current status
       const button = this.page.locator('button[aria-label="approval-step"], button').filter({
-        hasText: /^(Submit For Review|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Submit)$/i
+        hasText: /^(Submit For Review|Submit For Reviewer|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Submit)$/i
       }).filter({ visible: true }).first();
 
       if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
@@ -208,8 +211,6 @@ class AppManager {
         await button.click({ force: true });
         actionClickedForStatus = currentStatus; // mark this status as actioned
         await this.page.waitForTimeout(2000);
-      } else {
-        console.log(`[WAIT] No action button visible for status: "${currentStatus}"`);
       }
     }
   }
@@ -282,23 +283,66 @@ class AppManager {
   }
 
   async selectRandomOption(selector, labelName, isOptional = false) {
-    try {
-      await selector.evaluate(node => node.click());
-      await this.page.waitForTimeout(2000);
-      const options = this.page.locator('[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem').filter({ visible: true });
-      const count = await options.count();
-      if (count > 0) {
-        await options.nth(Math.floor(Math.random() * count)).click({ force: true });
-        await this.page.waitForTimeout(500);
+    const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
+    for (let i = 0; i < 3; i++) {
+      try {
+        await selector.scrollIntoViewIfNeeded();
+        await selector.click({ timeout: 5000 });
+        await this.page.waitForTimeout(1500);
+        const options = this.page.locator(optionSelector).filter({ visible: true });
+        const count = await options.count();
+        if (count > 0) {
+          const randomIndex = Math.floor(Math.random() * count);
+          const target = options.nth(randomIndex);
+          await target.evaluate(node => node.click());
+          await this.page.keyboard.press('Escape');
+          return count;
+        } else {
+          await this.page.keyboard.press('Escape');
+          if (isOptional) return 0;
+        }
+      } catch (e) {
         await this.page.keyboard.press('Escape');
-        return count;
       }
-      await this.page.keyboard.press('Escape');
-    } catch (e) {
-      await this.page.keyboard.press('Escape');
     }
     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);
     return 0;
+  }
+
+  async verifyDocInProfile(type, entityName, docNumber) {
+    const isVendor = type.toLowerCase() === 'vendor';
+    const baseUrl = isVendor ? '/payables/vendors' : '/receivables/customers';
+    const searchPlaceholder = isVendor ? 'Search for vendor...' : 'Search for customers...';
+    const tabNameRegex = isVendor ? /Quotes|Bills|Transactions/i : /Receipts|Transactions/i;
+
+    console.log(`[VERIFY] Searching for ${docNumber} in ${type}: ${entityName}...`);
+    await this.page.goto(baseUrl);
+
+    const searchInput = this.page.locator(`input[placeholder="${searchPlaceholder}"]`);
+    await searchInput.waitFor({ state: 'visible' });
+    await searchInput.fill(entityName);
+    await this.page.keyboard.press('Enter');
+    await this.page.waitForTimeout(2000);
+
+    const rowLocator = this.page.locator('table tbody tr').filter({ hasText: entityName });
+    await rowLocator.first().waitFor({ state: 'visible', timeout: 20000 });
+    await rowLocator.first().locator('a').first().click({ force: true });
+
+    // Wait for detail page
+    await this.page.waitForSelector(`text=${isVendor ? 'Vendor' : 'Customer'} Details`);
+
+    // Go to relevant tab
+    const targetTab = this.page.getByRole('tab', { name: tabNameRegex });
+    await targetTab.click();
+
+    // Some ERP pages need a reload or a second click to refresh data in tabs
+    await this.page.reload();
+    await this.page.waitForTimeout(3000);
+    await targetTab.click();
+
+    const docLocator = this.page.locator('table').getByText(docNumber);
+    await expect(docLocator.first()).toBeVisible({ timeout: 30000 });
+    console.log(`[SUCCESS] ${docNumber} verified in ${type} profile.`);
   }
 
   async captureJournalEntries() {

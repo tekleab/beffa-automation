@@ -4,34 +4,6 @@ require('dotenv').config();
 
 test.describe('Quotes Creation - Capture then Approve', () => {
 
-    // የጋራ ምርጫዎችን ለመምረጥ የሚያገለግል ፈንክሽን
-    async function selectRandomOption(page, selector, labelName, isOptional = false) {
-        const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], .chakra-menu__menuitem';
-        for (let i = 0; i < 3; i++) {
-            try {
-                await selector.scrollIntoViewIfNeeded();
-                await selector.click({ timeout: 5000 });
-                await page.waitForTimeout(1500);
-                const options = page.locator(optionSelector).filter({ visible: true });
-                const count = await options.count();
-                if (count > 0) {
-                    const randomIndex = Math.floor(Math.random() * count);
-                    const target = options.nth(randomIndex);
-                    await target.evaluate(node => node.click());
-                    await page.keyboard.press('Escape');
-                    return count;
-                } else {
-                    await page.keyboard.press('Escape');
-                    if (isOptional) return 0;
-                }
-            } catch (e) {
-                await page.keyboard.press('Escape');
-            }
-        }
-        if (!isOptional) throw new Error(`Failed selection for ${labelName}`);
-        return 0;
-    }
-
     test('Create Quote, Capture Data, then Approve', async ({ page }) => {
         test.setTimeout(450000);
         const app = new AppManager(page);
@@ -42,8 +14,8 @@ test.describe('Quotes Creation - Capture then Approve', () => {
 
         await page.locator('button:has(span.formatted-date)').first().click();
         await page.getByRole('button', { name: '2', exact: true }).first().click();
-        await selectRandomOption(page, page.getByRole('button', { name: 'Purchase Requisition selector' }), 'PR');
-        await selectRandomOption(page, page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
+        await app.selectRandomOption(page.getByRole('button', { name: 'Purchase Requisition selector' }), 'PR');
+        await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
 
         // 2. Line Item መሙላት
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -51,22 +23,22 @@ test.describe('Quotes Creation - Capture then Approve', () => {
         await modal.waitFor({ state: 'visible' });
 
         await modal.getByRole('button', { name: 'Item', exact: true }).click();
-        await selectRandomOption(page, modal.getByRole('button', { name: 'Item selector' }), 'Inventory Item');
+        await app.selectRandomOption(modal.getByRole('button', { name: 'Item selector' }), 'Inventory Item');
 
         await page.waitForTimeout(2000);
-        await selectRandomOption(page, modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
+        await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
         await page.waitForTimeout(3000);
-        await selectRandomOption(page, modal.getByRole('button', { name: 'Location selector' }), 'Location');
+        await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
 
         await modal.locator('div.chakra-form-control').filter({ hasText: /^Unit Price \*/ }).getByRole('spinbutton').fill('1250');
         await modal.locator('div.chakra-form-control').filter({ hasText: /^Quantity \*/ }).getByRole('spinbutton').fill('3');
-        await selectRandomOption(page, modal.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+        await app.selectRandomOption(modal.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
 
         await modal.getByRole('button', { name: 'Add', exact: true }).click();
         await expect(modal).not.toBeVisible({ timeout: 15000 });
 
         // 3. Accounts Payable (የመጨረሻ ምርጫ)
-        await selectRandomOption(page, page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
+        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
 
         // 4. Submit (Add Now)
         const addNowBtn = page.getByRole('button', { name: 'Add Now' });
@@ -83,12 +55,10 @@ test.describe('Quotes Creation - Capture then Approve', () => {
         await quoteNumLocator.waitFor({ state: 'visible', timeout: 30000 });
         const capturedQuoteNumber = await quoteNumLocator.innerText();
 
-        // Vendor Name መያዝ (ተለዋዋጭ እንዲሆን በ 'vendor:' ሌብል በኩል መፈለግ)
-        const vendorLabel = page.locator('p.chakra-text').filter({ hasText: /^vendor:$/i });
-        const vendorValue = page.locator('div').filter({ has: vendorLabel }).locator('p.chakra-text').nth(1);
-
+        // Vendor Name Capture: Case-insensitive sibling of "vendor:" label
+        const vendorValue = page.locator('p').filter({ hasText: /vendor:/i }).locator('xpath=following-sibling::p').first();
         await vendorValue.waitFor({ state: 'visible', timeout: 15000 });
-        const capturedVendor = await vendorValue.innerText();
+        const capturedVendor = (await vendorValue.innerText()).trim();
 
         // በሪፖርት መልክ ማሳየት
         console.log("------------------------------------------");
@@ -101,8 +71,15 @@ test.describe('Quotes Creation - Capture then Approve', () => {
         console.log("Starting Approval process for " + capturedQuoteNumber);
         await app.handleApprovalFlow();
 
-        // 7. ማጠቃለያ
-        console.log(`✅ Quote ${capturedQuoteNumber} has been captured and approved!`);
+        // 7. VERIFICATION (Check final status)
+        const statusValue = page.locator('p').filter({ hasText: /Status:/i }).locator('xpath=following-sibling::p').first();
+        await expect(statusValue).toContainText('Approved', { timeout: 15000 });
+
+        // 8. FINAL CROSS-VERIFICATION in Vendor Profile
+        await app.verifyDocInProfile('vendor', capturedVendor, capturedQuoteNumber);
+
+        console.log(`✅ Quote ${capturedQuoteNumber} has been verified across all tabs!`);
         await page.screenshot({ path: `Final_Approved_${capturedQuoteNumber.replace(/\//g, '_')}.png` });
+        await page.close();
     });
 });
