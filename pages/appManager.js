@@ -314,15 +314,14 @@ class AppManager {
     const baseUrl = isVendor ? '/payables/vendors' : '/receivables/customers';
     const searchPlaceholder = isVendor ? 'Search for vendor...' : 'Search for customers...';
 
-    // Choose the best tab based on the document's code prefix
-    let tabName = isVendor ? 'Bills' : 'Receipts';
-    if (docNumber.includes('QTE')) tabName = 'Quotes';
-    if (docNumber.includes('BILL')) tabName = 'Bills';
-    if (docNumber.includes('RCPT')) tabName = 'Receipts';
-    if (docNumber.includes('INV')) tabName = 'Transactions';
-    const tabNameRegex = new RegExp(tabName, 'i');
+    // 1. Precise Tab Selection based on document prefix
+    let targetTabName = 'Transactions';
+    if (docNumber.includes('BILL')) targetTabName = 'Bills';
+    else if (docNumber.includes('QTE')) targetTabName = 'Quotes';
+    else if (docNumber.includes('RCPT')) targetTabName = 'Receipts';
+    else if (docNumber.includes('INV')) targetTabName = isVendor ? 'Transactions' : 'Invoices';
 
-    console.log(`[VERIFY] Searching for ${docNumber} in ${type}: ${entityName}...`);
+    console.log(`[VERIFY] Entity: ${entityName} | Doc: ${docNumber} | Tab: ${targetTabName}`);
     await this.page.goto(baseUrl);
 
     const searchInput = this.page.locator(`input[placeholder="${searchPlaceholder}"]`);
@@ -334,7 +333,7 @@ class AppManager {
     const rowLocator = this.page.locator('table tbody tr').filter({ hasText: entityName }).first();
     await rowLocator.waitFor({ state: 'visible', timeout: 20000 });
 
-    // NAVIGATION: Click the Ref link to go to details
+    // 2. Direct Navigation to Detail page (most robust method)
     const link = rowLocator.locator('a').first();
     const href = await link.getAttribute('href');
     if (href) {
@@ -344,21 +343,22 @@ class AppManager {
       await link.click({ force: true });
     }
 
-    // Wait for ANY detail page indicator
+    // 3. Wait for Detail Page Load
     await this.page.waitForSelector('.chakra-heading', { timeout: 30000 });
 
-    // Go to relevant tab
-    const targetTab = this.page.getByRole('tab', { name: tabNameRegex });
-    await targetTab.waitFor({ state: 'visible' });
-    await targetTab.click({ force: true });
+    // 4. Click the Exact Tab
+    const tabLocator = this.page.getByRole('tab').filter({ hasText: new RegExp(`^${targetTabName}$`, 'i') });
+    await tabLocator.waitFor({ state: 'visible', timeout: 15000 });
+    await tabLocator.click({ force: true });
 
-    // Some ERP pages need a reload or a second click to refresh data in tabs
+    // 5. Trigger Data Refresh (some tabs load empty initially)
     await this.page.waitForTimeout(2000);
     await this.page.reload();
     await this.page.waitForTimeout(3000);
-    await targetTab.waitFor({ state: 'visible' });
-    await targetTab.click({ force: true });
+    const finalTab = this.page.getByRole('tab').filter({ hasText: new RegExp(`^${targetTabName}$`, 'i') });
+    await finalTab.click({ force: true });
 
+    // 6. Assertion
     const docLocator = this.page.locator('table').getByText(docNumber);
     await expect(docLocator.first()).toBeVisible({ timeout: 30000 });
     console.log(`[SUCCESS] ${docNumber} verified in ${type} profile.`);
