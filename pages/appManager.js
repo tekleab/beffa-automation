@@ -313,7 +313,14 @@ class AppManager {
     const isVendor = type.toLowerCase() === 'vendor';
     const baseUrl = isVendor ? '/payables/vendors' : '/receivables/customers';
     const searchPlaceholder = isVendor ? 'Search for vendor...' : 'Search for customers...';
-    const tabNameRegex = isVendor ? /Quotes|Bills|Transactions/i : /Receipts|Transactions/i;
+
+    // Choose the best tab based on the document's code prefix
+    let tabName = isVendor ? 'Bills' : 'Receipts';
+    if (docNumber.includes('QTE')) tabName = 'Quotes';
+    if (docNumber.includes('BILL')) tabName = 'Bills';
+    if (docNumber.includes('RCPT')) tabName = 'Receipts';
+    if (docNumber.includes('INV')) tabName = 'Transactions';
+    const tabNameRegex = new RegExp(tabName, 'i');
 
     console.log(`[VERIFY] Searching for ${docNumber} in ${type}: ${entityName}...`);
     await this.page.goto(baseUrl);
