@@ -12,7 +12,7 @@ module.exports = defineConfig({
   fullyParallel: true,
 
   /* Increased to 4 workers for faster execution */
-  workers: 4,
+  workers: 2,
 
   retries: process.env.CI ? 1 : 0,
   reporter: 'html',
