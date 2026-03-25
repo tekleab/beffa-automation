@@ -20,10 +20,12 @@ test.describe('Inventory Impact Verification', () => {
 
         while (true) {
             itemDetails = await app.captureRandomItemDetails();
-            if (itemDetails.currentStock > 0) {
+            // Ensure we have at least 2 units to allow selling less than total
+            if (itemDetails.currentStock > 1) {
                 console.log(`Status: Selected item with available stock: ${itemDetails.itemName} (${itemDetails.currentStock} units)`);
                 break;
             }
+            console.log(`Info: Item "${itemDetails.itemName}" has insufficient stock (${itemDetails.currentStock}). Retrying...`);
         }
 
         // STEP 2: Create Sales Order
@@ -35,8 +37,9 @@ test.describe('Inventory Impact Verification', () => {
         const customerFullText = (await page.locator('button[aria-label="Customer selector"]').innerText()).trim();
         const capturedCustomerSearchTerm = customerFullText.match(/^([A-Z0-9\/_-]+)\s*-/i)?.[1] || customerFullText;
 
-        const saleQty = Math.floor(Math.random() * Math.min(itemDetails.currentStock, 5)) + 1;
-        console.log(`Info: Targeted Quantity for Sale: ${saleQty}`);
+        // Sale quantity must be at least 1 and strictly less than currentStock
+        const saleQty = Math.max(1, Math.floor(Math.random() * (itemDetails.currentStock - 1)) + 1);
+        console.log(`Info: Targeted Quantity for Sale: ${saleQty} (Stock available: ${itemDetails.currentStock})`);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
@@ -62,7 +65,18 @@ test.describe('Inventory Impact Verification', () => {
         await app.smartSearch(page.getByRole('dialog'), 'Accounts Receivable');
 
         await page.getByRole('button', { name: 'Add Now' }).click();
-        await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 90000 });
+
+        // Enhanced Navigation Handling
+        try {
+            await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 60000 });
+        } catch (error) {
+            const errorToast = page.locator('.chakra-alert__title, [role="alert"]').first();
+            if (await errorToast.isVisible()) {
+                const errorMsg = await errorToast.innerText();
+                throw new Error(`Submission failed with error: "${errorMsg}"`);
+            }
+            throw error;
+        }
 
         const soNumber = (await page.locator('p').filter({ hasText: /SO Number:/i }).locator('xpath=following-sibling::p').first().innerText()).trim();
         console.log(`Status: Sales Order created successfully: ${soNumber}`);
