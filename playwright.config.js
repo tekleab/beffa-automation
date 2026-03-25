@@ -5,18 +5,22 @@ module.exports = defineConfig({
   testDir: './tests/e2e',
   testIgnore: [],
 
+  /* Maximum time one test can run for */
   timeout: 600000,
   expect: { timeout: 30000 },
 
-  /* Set to true to run tests within a single file in parallel */
+  /* Run tests in files in parallel */
   fullyParallel: true,
 
-  /* Increased to 4 workers for faster execution */
-  workers: 2,
+  /* Forcing 3 parallel workers for unrelated tests. 
+     Using 3 workers allows 3 different test files to run simultaneously.
+  */
+  workers: 3,
 
+  /* Retries configuration for CI environments */
   retries: process.env.CI ? 1 : 0,
 
-  // Reporter configuration: List, HTML, and Allure
+  /* Reporter configuration for List, HTML, and Allure */
   reporter: [
     ['list'],
     ['html'],
@@ -51,5 +55,6 @@ module.exports = defineConfig({
     },
   ],
 
+  /* Folder for test artifacts such as screenshots and videos */
   outputDir: 'test-results/',
 });
