@@ -15,19 +15,19 @@ test.describe('Inventory Impact Verification', () => {
         await page.waitForTimeout(5000);
 
         // STEP 1: Capture Pre-Sale Data
-        console.log("[STEP 1] Capturing PRE-SALE Inventory Data (Random Selection)");
+        console.log("Action: Capturing pre-sale inventory data via random selection...");
         let itemDetails = null;
 
         while (true) {
             itemDetails = await app.captureRandomItemDetails();
             if (itemDetails.currentStock > 0) {
-                console.log(`[SUCCESS] Selected item with stock: ${itemDetails.itemName} (${itemDetails.currentStock} units)`);
+                console.log(`Status: Selected item with available stock: ${itemDetails.itemName} (${itemDetails.currentStock} units)`);
                 break;
             }
         }
 
         // STEP 2: Create Sales Order
-        console.log("[STEP 2] Creating Sales Order");
+        console.log("Action: Creating Sales Order...");
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'networkidle' });
         await app.fillDate(0, soDate);
 
@@ -36,13 +36,13 @@ test.describe('Inventory Impact Verification', () => {
         const capturedCustomerSearchTerm = customerFullText.match(/^([A-Z0-9\/_-]+)\s*-/i)?.[1] || customerFullText;
 
         const saleQty = Math.floor(Math.random() * Math.min(itemDetails.currentStock, 5)) + 1;
-        console.log(`[INFO] Targeted Sale Quantity: ${saleQty}`);
+        console.log(`Info: Targeted Quantity for Sale: ${saleQty}`);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         await page.locator('button').filter({ hasText: /^Item$/ }).first().click();
         await app.selectRandomOption(page.getByRole('button', { name: 'Item selector' }), 'Item');
 
-        // Use smart search for the specific item to be sure
+        // Target the specific pre-sale item
         await page.getByRole('button', { name: 'Item selector' }).click();
         await app.smartSearch(page.getByRole('dialog'), itemDetails.itemName);
 
@@ -65,12 +65,12 @@ test.describe('Inventory Impact Verification', () => {
         await page.waitForURL(/\/receivables\/sale-orders\/.*\/detail$/, { timeout: 90000 });
 
         const soNumber = (await page.locator('p').filter({ hasText: /SO Number:/i }).locator('xpath=following-sibling::p').first().innerText()).trim();
-        console.log(`[SUCCESS] Sales Order Created: ${soNumber}`);
+        console.log(`Status: Sales Order created successfully: ${soNumber}`);
 
         await app.handleApprovalFlow();
 
         // STEP 3: Create Invoice from SO
-        console.log("[STEP 3] Creating Invoice from SO");
+        console.log("Action: Generating Invoice from the approved Sales Order...");
         await page.goto('/receivables/invoices/new', { waitUntil: 'networkidle' });
 
         await page.getByRole('button', { name: 'Customer selector' }).click();
@@ -104,7 +104,7 @@ test.describe('Inventory Impact Verification', () => {
         await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/, { timeout: 90000 });
 
         const invoiceNumber = (await page.locator('p.chakra-text').filter({ hasText: /^INV\// }).first().innerText()).trim();
-        console.log(`[SUCCESS] Invoice Created: ${invoiceNumber}`);
+        console.log(`Status: Invoice created successfully: ${invoiceNumber}`);
 
         await app.handleApprovalFlow();
 
@@ -113,17 +113,17 @@ test.describe('Inventory Impact Verification', () => {
         await app.verifyAllJournalEntries(invoiceNumber, journalEntries);
 
         // STEP 5: Post-Flow Stock Verification
-        console.log("[STEP 5] Verifying POST-FLOW Stock Impact");
+        console.log("Action: Verifying post-flow stock impact...");
         const postDetails = await app.captureItemDetails(itemDetails.itemName);
         const expectedStock = itemDetails.currentStock - saleQty;
-        console.log(`[INFO] Pre-Sale: ${itemDetails.currentStock} | Sold: ${saleQty} | Expected: ${expectedStock} | Actual: ${postDetails.currentStock}`);
+        console.log(`Summary: Pre-Sale: ${itemDetails.currentStock} | Sold: ${saleQty} | Expected: ${expectedStock} | Actual: ${postDetails.currentStock}`);
 
         expect(postDetails.currentStock).toBe(expectedStock);
 
-        // STEP 6: Cross-Verification in Profile
+        // STEP 6: Final Verification
         await app.verifyDocInProfile('customer', capturedCustomerSearchTerm, invoiceNumber);
 
-        console.log("[STATUS] Full Inventory Impact and Financial Flow Verified Successfully.");
+        console.log("Status: Full Inventory Impact and Financial Flow Verified.");
         await page.close();
     });
 });

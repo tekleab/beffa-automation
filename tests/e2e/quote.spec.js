@@ -8,8 +8,9 @@ test.describe('Quotes Creation - Capture then Approve', () => {
         test.setTimeout(450000);
         const app = new AppManager(page);
 
-        // 1. መግቢያና መረጃ መሙላት
+        // 1. Entry and Selection
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        console.log("Execution: Navigating to New Quote...");
         await page.goto('/payables/quotes/new', { waitUntil: 'networkidle' });
 
         await page.locator('button:has(span.formatted-date)').first().click();
@@ -17,7 +18,8 @@ test.describe('Quotes Creation - Capture then Approve', () => {
         await app.selectRandomOption(page.getByRole('button', { name: 'Purchase Requisition selector' }), 'PR');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
 
-        // 2. Line Item መሙላት
+        // 2. Line Item configuration
+        console.log("Action: Adding Line Item...");
         await page.getByRole('button', { name: 'Line Item' }).click();
         const modal = page.getByRole('dialog').last();
         await modal.waitFor({ state: 'visible' });
@@ -37,49 +39,48 @@ test.describe('Quotes Creation - Capture then Approve', () => {
         await modal.getByRole('button', { name: 'Add', exact: true }).click();
         await expect(modal).not.toBeVisible({ timeout: 15000 });
 
-        // 3. Accounts Payable (የመጨረሻ ምርጫ)
+        // 3. Accounts Payable selection
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
 
-        // 4. Submit (Add Now)
+        // 4. Submission
+        console.log("Action: Submitting Quote...");
         const addNowBtn = page.getByRole('button', { name: 'Add Now' });
         await page.waitForTimeout(2000);
         await expect(addNowBtn).toBeEnabled();
         await addNowBtn.click();
 
-        // --- 5. DATA CAPTURE (ከ Approval በፊት) ---
+        // --- 5. DATA CAPTURE ---
         await page.waitForURL(/\/payables\/quotes\/.*\/detail$/, { waitUntil: 'networkidle' });
-        console.log("Detail page loaded. Capturing information...");
+        console.log("Status: Detail page loaded. Capturing information...");
 
-        // Quote Number መያዝ
+        // Extract Quote Number
         const quoteNumLocator = page.locator('p.chakra-text').filter({ hasText: /QTE\/\d{4}/ }).first();
         await quoteNumLocator.waitFor({ state: 'visible', timeout: 30000 });
         const capturedQuoteNumber = await quoteNumLocator.innerText();
 
-        // Vendor Name Capture: Case-insensitive sibling of "vendor:" label
+        // Vendor Name Capture
         const vendorValue = page.locator('p').filter({ hasText: /vendor:/i }).locator('xpath=following-sibling::p').first();
         await vendorValue.waitFor({ state: 'visible', timeout: 15000 });
         const capturedVendor = (await vendorValue.innerText()).trim();
 
-        // በሪፖርት መልክ ማሳየት
         console.log("------------------------------------------");
-        console.log(`📍 DATA CAPTURED BEFORE APPROVAL:`);
-        console.log(`📌 Quote ID: ${capturedQuoteNumber}`);
-        console.log(`📌 Vendor: ${capturedVendor}`);
+        console.log(`Summary: Captured Data:`);
+        console.log(`Quote ID: ${capturedQuoteNumber}`);
+        console.log(`Vendor: ${capturedVendor}`);
         console.log("------------------------------------------");
 
         // 6. APPROVAL FLOW
-        console.log("Starting Approval process for " + capturedQuoteNumber);
+        console.log(`Action: Executing approval for ${capturedQuoteNumber}...`);
         await app.handleApprovalFlow();
 
-        // 7. VERIFICATION (Check final status)
+        // 7. VERIFICATION
         const statusValue = page.locator('p').filter({ hasText: /Status:/i }).locator('xpath=following-sibling::p').first();
         await expect(statusValue).toContainText('Approved', { timeout: 15000 });
 
         // 8. FINAL CROSS-VERIFICATION in Vendor Profile
         await app.verifyDocInProfile('vendor', capturedVendor, capturedQuoteNumber);
 
-        console.log(`✅ Quote ${capturedQuoteNumber} has been verified across all tabs!`);
-        await page.screenshot({ path: `Final_Approved_${capturedQuoteNumber.replace(/\//g, '_')}.png` });
+        console.log(`Status: Quote ${capturedQuoteNumber} verified successfully.`);
         await page.close();
     });
 });

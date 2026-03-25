@@ -42,10 +42,10 @@ class AppManager {
 
     for (let s = 0; s < 3; s++) {
       try {
-        // 1. Target container for typing (scoped to dialog to avoid wrong inputs)
+        // 1. Target container for typing (scoped to dialog to avoid incorrect inputs)
         const target = container || this.page.locator('div[role="dialog"], .chakra-modal__content, .chakra-popover__content').filter({ visible: true }).last();
 
-        // 2. Find search input — exclude numeric/hidden inputs
+        // 2. Find search input - exclude numeric or hidden inputs
         let searchBox = target.locator('input:not([type="number"]):not([type="hidden"])').filter({ visible: true }).first();
         if (!(await searchBox.isVisible({ timeout: 2000 }).catch(() => false))) {
           searchBox = this.page.locator('input[placeholder*="Search" i]').filter({ visible: true }).last();
@@ -54,14 +54,14 @@ class AppManager {
         await searchBox.waitFor({ state: 'visible', timeout: 10000 });
         await searchBox.clear();
 
-        // 3. Instant fill (copy-paste style) to trigger ERP search filters faster
+        // 3. Instant fill to trigger search filters
         await searchBox.fill(cleanText);
         await this.page.waitForTimeout(2500);
 
-        // 4. Click the result — SCOPED to dialog/overlay to avoid sidebar nav collisions
+        // 4. Result Selection
         let clicked = false;
 
-        // Tier 1: Exact match WITHIN dialog container (prevents clicking 'Sales' nav link)
+        // Tier 1: Exact match within direct container
         const containerExact = target.getByText(cleanText, { exact: true }).first();
         if (await containerExact.isVisible({ timeout: 3000 }).catch(() => false)) {
           console.log(`[INFO] Tier 1 - exact in dialog: "${cleanText}"`);
@@ -202,7 +202,7 @@ class AppManager {
 
       // Find the action button for the current status
       const button = this.page.locator('button[aria-label="approval-step"], button').filter({
-        hasText: /^(Submit For Review|Submit For Reviewer|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Submit)$/i
+        hasText: /^(Submit For Review|Submir For Review|Submit For Reviewer|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Submit)$/i
       }).filter({ visible: true }).first();
 
       if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
@@ -268,19 +268,70 @@ class AppManager {
     return { soDate: fmt(today), invoiceDate: fmt(today), dueDate: fmt(due) };
   }
 
-  async fillDate(index, dateValue) {
+  async fillDate(labelOrIndex, dateValue) {
     const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
-    const datePickerBtn = this.page.locator('button:has(span.formatted-date)').nth(index);
-    await datePickerBtn.click();
-    await this.page.waitForTimeout(1000);
-    const dayButton = this.page.locator('div[role="grid"] button').getByText(dayToSelect, { exact: true }).first();
-    if (await dayButton.isVisible()) {
-      await dayButton.click();
+    let datePickerBtn;
+
+    if (typeof labelOrIndex === "string") {
+      // Find the button within a container and label
+      const container = this.page.locator('.chakra-form-control, [role="group"], div')
+        .filter({ has: this.page.getByText(new RegExp(`^${labelOrIndex}\\s*\\*?$`, 'i')) })
+        .filter({ has: this.page.locator('button') })
+        .last();
+      datePickerBtn = container.locator('button').first();
     } else {
+      // Fallback to index if needed
+      datePickerBtn = this.page.locator('button:has(span.formatted-date), button:has(img)').filter({ visible: true }).nth(labelOrIndex);
+    }
+
+    await datePickerBtn.click({ force: true });
+    await this.page.waitForTimeout(2000);
+
+    const dayButton = this.page.locator('div[role="grid"] button, button.chakra-datepicker__day').filter({ hasText: new RegExp(`^${dayToSelect}$`) }).first();
+
+    if (await dayButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await dayButton.click({ force: true });
+    } else {
+      // Direct typing fallback
       await this.page.keyboard.type(dateValue);
       await this.page.keyboard.press('Enter');
     }
+
+    await this.page.waitForTimeout(1000); // Sync React state
   }
+
+  /**
+   * pickDate — reusable automatic date picker helper.
+   * Opens the picker identified by its form label, clicks the specified day,
+   * then blurs to commit React state. Uses ARIA role targeting (getByRole('dialog'))
+   * which correctly matches Chakra UI's div[role="dialog"] calendar popup.
+   *
+   * @param {string} label  - The visible label of the date field (e.g. 'Request Date')
+   * @param {number} dayNum - The Ethiopian calendar day number to select
+   */
+  async pickDate(label, dayNum) {
+    const container = this.page.locator('.chakra-form-control, [role="group"], div')
+      .filter({ has: this.page.getByText(new RegExp(`^${label}\\s*\\*?$`, 'i')) })
+      .filter({ has: this.page.locator('button') })
+      .last();
+    const btn = container.locator('button').last(); // last button is usually the actual date button, not an attached icon
+
+    // Open the picker using deep evaluate to bypass Chakra synthetic event locks
+    await btn.evaluate(node => node.click());
+
+    // Calendar renders as div[role="dialog"] (Chakra UI), a popover, or equivalent
+    const cal = this.page.locator('[role="dialog"], .chakra-popover__content, div[id*="popover"]').filter({ has: this.page.locator('button') }).last();
+    await cal.waitFor({ state: 'attached', timeout: 10000 });
+
+    // Click the target day
+    await cal.getByRole('button', { name: String(dayNum), exact: true }).click({ force: true });
+    await this.page.waitForTimeout(600);
+
+    // Blur the label to commit React state
+    await this.page.getByText(new RegExp(`^${label}$`, 'i')).first().click();
+    await this.page.waitForTimeout(600);
+  }
+
 
   async selectRandomOption(selector, labelName, isOptional = false) {
     const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';

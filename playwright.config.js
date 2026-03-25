@@ -4,10 +4,10 @@ require('dotenv').config();
 module.exports = defineConfig({
   testDir: './tests/e2e',
   testIgnore: [],
-  
-  timeout: 600000, 
+
+  timeout: 600000,
   expect: { timeout: 30000 },
-  
+
   /* Set to true to run tests within a single file in parallel */
   fullyParallel: true,
 
@@ -15,7 +15,13 @@ module.exports = defineConfig({
   workers: 2,
 
   retries: process.env.CI ? 1 : 0,
-  reporter: 'html',
+
+  // Reporter configuration: List, HTML, and Allure
+  reporter: [
+    ['list'],
+    ['html'],
+    ['allure-playwright', { outputFolder: 'allure-results' }]
+  ],
 
   use: {
     baseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
@@ -24,7 +30,7 @@ module.exports = defineConfig({
     launchOptions: {
       args: [
         '--start-maximized',
-        '--force-device-scale-factor=0.8', 
+        '--force-device-scale-factor=0.8',
       ],
     },
 

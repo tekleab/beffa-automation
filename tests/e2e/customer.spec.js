@@ -34,10 +34,10 @@ test.describe('Customer Lifecycle - Validation and CRUD', () => {
     const createBtn = page.locator('button:has-text("Create customer"), button:has-text("Adding Customer")');
     await createBtn.click();
     await expect(page.getByText(/10 digit|must be 10/i)).toBeVisible();
-    console.log("✅ System blocked invalid TIN.");
+    console.log("Status: System correctly blocked invalid TIN.");
 
     // --- PART 2: Successful Creation ---
-    console.log("[ACTION] Creating Customer: " + customerName);
+    console.log("Action: Creating Customer: " + customerName);
     const uniquePhone = `09${Math.floor(10000000 + Math.random() * 90000000)}`;
     await app.customerTinInput.fill(fixedTIN);
     await app.mainPhoneInput.fill(uniquePhone);
@@ -46,7 +46,7 @@ test.describe('Customer Lifecycle - Validation and CRUD', () => {
     await createBtn.click();
 
     await page.waitForURL(url => url.href.includes('/detail'), { timeout: 60000 });
-    console.log("✅ Customer Created Successfully.");
+    console.log("Status: Customer successfully created.");
 
     // --- PART 3: Edit ---
     const editBtn = page.locator('button:has-text("Edit")').first();
@@ -61,7 +61,7 @@ test.describe('Customer Lifecycle - Validation and CRUD', () => {
     const saveBtn = page.locator('button:has-text("Save"), button:has-text("Update")').first();
     await saveBtn.click({ force: true });
     await page.waitForTimeout(4000);
-    console.log("✅ Customer Updated.");
+    console.log("Status: Customer successfully updated.");
 
     // --- PART 4: Remove ---
     const removeBtn = page.locator('button:has-text("Remove")');
@@ -74,6 +74,6 @@ test.describe('Customer Lifecycle - Validation and CRUD', () => {
     await confirmBtn.click({ force: true });
 
     await page.waitForURL(url => url.href.includes('/receivables/customers'), { timeout: 30000 });
-    console.log("🚀 FULL CUSTOMER LIFECYCLE VERIFIED!");
+    console.log("Status: FULL CUSTOMER LIFECYCLE VERIFIED.");
   });
 });
