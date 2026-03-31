@@ -44,6 +44,7 @@ test.describe('Payment Creation and Vendor Verification', () => {
         
         console.log(`[ACTION] Selecting Vendor: "${VENDOR_NAME}"...`);
         await page.getByRole('button', { name: 'Vendor selector' }).click();
+        await page.waitForTimeout(2000); // Wait for dropdown list to fully mount
         await app.smartSearch(null, VENDOR_NAME);
         await page.waitForTimeout(3000); // Wait for form to react
 
@@ -52,12 +53,14 @@ test.describe('Payment Creation and Vendor Verification', () => {
             console.log("[WARNING] Page drifted away from /new. Recovering navigation...");
             await page.goto('/payables/payments/new');
             await page.getByRole('button', { name: 'Vendor selector' }).click();
+            await page.waitForTimeout(2000); // Wait for dropdown list to fully mount
             await app.smartSearch(null, VENDOR_NAME);
             await page.waitForTimeout(2000);
         }
 
         console.log("Action: Selecting 'Inventory' as default account...");
         await page.getByRole('button', { name: /Cash Account/i }).first().click();
+        await page.waitForTimeout(2000); // Wait for dropdown list to fully mount
         await app.smartSearch(null, "Inventory");
         await page.waitForTimeout(1500);
 
