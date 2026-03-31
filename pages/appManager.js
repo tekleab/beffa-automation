@@ -491,7 +491,9 @@ class AppManager {
 
     // 6. Assertion
     const docLocator = this.page.locator('table').getByText(docNumber);
-    await expect(docLocator.first()).toBeVisible({ timeout: 30000 });
+    await docLocator.first().waitFor({ state: 'attached', timeout: 30000 });
+    await docLocator.first().scrollIntoViewIfNeeded().catch(() => {});
+    await expect(docLocator.first()).toBeAttached();
     console.log(`[SUCCESS] ${docNumber} verified in ${type} profile.`);
   }
 

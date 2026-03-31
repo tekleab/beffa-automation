@@ -57,7 +57,7 @@ test.describe('Vendor Lifecycle - Validation and CRUD', () => {
 
     // --- PART 3: Edit ---
     console.log("Action: Editing Vendor to: " + updatedName);
-    const editBtn = page.getByRole('button', { name: 'edit', exact: true }).first();
+    const editBtn = page.locator('button:has-text("Edit")').first();
     await editBtn.waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(2000);
     await editBtn.click({ force: true });
