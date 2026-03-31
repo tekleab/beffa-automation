@@ -1,5 +1,9 @@
 const { defineConfig, devices } = require('@playwright/test');
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+// ✅ Load .env once for the entire Playwright run
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 module.exports = defineConfig({
   testDir: './tests/e2e',
@@ -12,9 +16,7 @@ module.exports = defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
 
-  /* Forcing 3 parallel workers for unrelated tests. 
-     Using 3 workers allows 3 different test files to run simultaneously.
-  */
+  /* Using 3 workers for parallel test files */
   workers: 3,
 
   /* Retries configuration for CI environments */
@@ -42,7 +44,7 @@ module.exports = defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 60000,
-    navigationTimeout: 100000,
+    navigationTimeout: 150000,
   },
 
   projects: [

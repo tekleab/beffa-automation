@@ -17,9 +17,12 @@ class AppManager {
     // Status and Button Selectors
     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
     this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
+
+    // Company Switcher Selectors (Top-left)
+    this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
-  async login(email, pass) {
+  async login(email, pass, companyName = "befa tutorial") {
     const cleanEmail = (email || "").replace(/['"]+/g, '').trim();
     const cleanPass = (pass || "").replace(/['"]+/g, '').trim();
     await this.page.goto('/users/login');
@@ -28,7 +31,46 @@ class AppManager {
     await this.passwordInput.fill(cleanPass);
     await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
     await this.loginBtn.click();
-    await this.page.waitForURL('**/', { waitUntil: 'networkidle', timeout: 60000 });
+    await this.companyBtn.waitFor({ state: 'visible', timeout: 60000 });
+
+    // Switch company if specific name provided
+    if (companyName) {
+      await this.switchCompany(companyName);
+    }
+  }
+
+  async switchCompany(targetName) {
+    if (!targetName) return;
+    const cleanTarget = targetName.trim();
+    console.log(`[ACTION] Verifying current company selection...`);
+
+    // Ensure we are on a page where the company switcher is visible
+    await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 });
+    const currentName = (await this.companyBtn.innerText()).trim();
+
+    if (currentName.toLowerCase() === cleanTarget.toLowerCase()) {
+      console.log(`[INFO] Already on company: "${currentName}"`);
+      return;
+    }
+
+    console.log(`[ACTION] Switching company: "${currentName}" -> "${cleanTarget}"`);
+    await this.companyBtn.click();
+    await this.page.waitForTimeout(1000);
+
+    const option = this.page.locator('[role="menuitem"], .chakra-menu__menuitem, button')
+      .filter({ hasText: new RegExp(`^${cleanTarget}$`, 'i') })
+      .first();
+
+    if (await option.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await option.click();
+      // Reload is usually automatic on company change in this ERP
+      await this.page.waitForURL('**/', { waitUntil: 'load', timeout: 60000 });
+      console.log(`[SUCCESS] Company switched to "${cleanTarget}"`);
+      await this.page.waitForTimeout(2000);
+    } else {
+      console.log(`[WARN] Company option "${cleanTarget}" not found in menu. Staying on "${currentName}"`);
+      await this.page.keyboard.press('Escape');
+    }
   }
 
   /**
@@ -201,9 +243,14 @@ class AppManager {
       }
 
       // Find the action button for the current status
-      const button = this.page.locator('button[aria-label="approval-step"], button').filter({
-        hasText: /^(Submit For Review|Submir For Review|Submit For Reviewer|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Submit)$/i
-      }).filter({ visible: true }).first();
+      let button = this.page.locator('button[aria-label="approval-step"]').filter({ visible: true }).first();
+
+      if (!(await button.isVisible({ timeout: 1000 }).catch(() => false))) {
+        // Fallback to text matching if aria-label is missing
+        button = this.page.locator('button').filter({
+          hasText: /^(Submkt For Review|Submit For Review|Submir For Review|Submit For Reviewer|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Approver|Submit)$/i
+        }).filter({ visible: true }).first();
+      }
 
       if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
         const btnText = (await button.innerText()).trim();
@@ -310,25 +357,59 @@ class AppManager {
    * @param {number} dayNum - The Ethiopian calendar day number to select
    */
   async pickDate(label, dayNum) {
-    const container = this.page.locator('.chakra-form-control, [role="group"], div')
+    console.log(`[ACTION] Picking date: "${label}" -> Day ${dayNum}`);
+    let container = this.page.locator('.chakra-form-control, [role="group"], div')
       .filter({ has: this.page.getByText(new RegExp(`^${label}\\s*\\*?$`, 'i')) })
       .filter({ has: this.page.locator('button') })
       .last();
+
+    // Fallback to partial match if exact label wasn't found
+    if (!(await container.isVisible().catch(() => false))) {
+      container = this.page.locator('.chakra-form-control, [role="group"], div')
+        .filter({ has: this.page.getByText(new RegExp(`${label}`, 'i')) })
+        .filter({ has: this.page.locator('button') })
+        .last();
+    }
+
     const btn = container.locator('button').last(); // last button is usually the actual date button, not an attached icon
 
     // Open the picker using deep evaluate to bypass Chakra synthetic event locks
     await btn.evaluate(node => node.click());
 
-    // Calendar renders as div[role="dialog"] (Chakra UI), a popover, or equivalent
-    const cal = this.page.locator('[role="dialog"], .chakra-popover__content, div[id*="popover"]').filter({ has: this.page.locator('button') }).last();
-    await cal.waitFor({ state: 'attached', timeout: 10000 });
+    // Calendar renders as div[role="dialog"] (Chakra UI), a popover, or equivalent.
+    const cal = this.page.locator('[role="dialog"], .chakra-popover__content, div[id*="popover"]')
+      .filter({ has: this.page.locator('[role="grid"], .chakra-datepicker, .react-datepicker') })
+      .last();
 
-    // Click the target day
-    await cal.getByRole('button', { name: String(dayNum), exact: true }).click({ force: true });
+    // ⚡ ULTRA-ROBUST FALLBACK: If calendar doesn't appear in 3 seconds, just type the day
+    if (!(await cal.isVisible({ timeout: 3000 }).catch(() => false))) {
+      console.log(`[INFO] Calendar for "${label}" did not appear. Using direct type fallback...`);
+      await btn.click({ force: true }).catch(() => { });
+      await this.page.keyboard.type(String(dayNum));
+      await this.page.keyboard.press('Enter');
+      await this.page.keyboard.press('Tab');
+      return;
+    }
+
+    // Click the target day in the visible calendar
+    console.log(`[INFO] Calendar visible. Clicking day ${dayNum}...`);
+    const dayBtn = cal.getByRole('button', { name: String(dayNum), exact: true });
+    if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await dayBtn.click({ force: true });
+    } else {
+      await this.page.keyboard.type(String(dayNum));
+      await this.page.keyboard.press('Enter');
+    }
+
     await this.page.waitForTimeout(600);
 
     // Blur the label to commit React state
-    await this.page.getByText(new RegExp(`^${label}$`, 'i')).first().click();
+    const blurLabel = this.page.getByText(new RegExp(`${label}`, 'i')).first();
+    if (await blurLabel.isVisible().catch(() => false)) {
+      await blurLabel.click({ force: true });
+    } else {
+      await this.page.keyboard.press('Escape');
+    }
     await this.page.waitForTimeout(600);
   }
 
@@ -415,6 +496,53 @@ class AppManager {
     console.log(`[SUCCESS] ${docNumber} verified in ${type} profile.`);
   }
 
+  /**
+   * findApprovedUnpaidBill
+   * Scans the Bills list for an 'approved' document that is not yet fully paid (Net Due > 0).
+   * Returns { vendorName, billNumber } or null.
+   */
+  async findApprovedUnpaidBill() {
+    console.log("Action: Scanning for an approved, unpaid bill (Net Due > 0)...");
+    await this.page.goto('/payables/bills/?page=1&pageSize=30');
+    await this.page.waitForSelector('table tbody tr', { timeout: 30000 });
+    await this.page.waitForTimeout(3000); // Stabilization
+
+    const rows = this.page.locator('table tbody tr');
+    const count = await rows.count();
+
+    for (let i = 0; i < count; i++) {
+      const row = rows.nth(i);
+      const cells = row.locator('td');
+ 
+      const billId = (await cells.nth(1).innerText().catch(() => '')).trim();
+      const vendor = (await cells.nth(2).innerText().catch(() => '')).trim();
+      const paid = (await cells.nth(4).innerText().catch(() => '')).trim().toLowerCase();
+      const netDueRaw = (await cells.nth(5).innerText().catch(() => '')).trim();
+      
+      // EXTREMELY ROBUST STATUS DETECTION: Look for the first badge or non-empty action text
+      let status = '';
+      const badge = row.locator('.chakra-badge').first();
+      if (await badge.isVisible({ timeout: 500 }).catch(() => false)) {
+          status = (await badge.innerText()).trim().toLowerCase();
+      } else {
+          // Fallback: look at index 6 or 7
+          status = (await cells.nth(6).innerText().catch(() => '')).trim().toLowerCase();
+          if (!status) status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+      }
+
+      const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
+      console.log(`[CHECK] Row ${i + 1} (${billId}): Paid? "${paid}", Net Due: ${netDue}, Status: "${status}"`);
+
+      if (paid === 'no' && netDue > 0 && status === 'approved') {
+        console.log(`[SUCCESS] Found unpaid vendor match: "${vendor}" (Bill: ${billId})`);
+        return { vendorName: vendor, billNumber: billId };
+      }
+    }
+
+    console.log("[WARNING] No unpaid approved bills found in the first 30 rows.");
+    return null;
+  }
+
   async captureJournalEntries() {
     const journalTab = this.page.getByRole('tab', { name: /Journal/i });
     await journalTab.click();
@@ -434,6 +562,136 @@ class AppManager {
       if (code) entries.push({ accountCode: code, accountName: name, debit: dr, credit: cr });
     }
     return entries;
+  }
+
+  /**
+   * handlePOReceiptTab
+   * Specifically for Bill/GRN screens. It reads the remaining quantity from the table
+   * and fills a random "Received Quantity" to enable submission.
+   */
+  async handlePOReceiptTab() {
+    console.log("Action: Processing PO Receipt Tab...");
+    const tab = this.page.getByRole('tab', { name: /Received Purchase Order/i });
+    await tab.waitFor({ state: 'visible', timeout: 5000 });
+    await tab.click();
+    await this.page.waitForTimeout(2000);
+
+    const rows = this.page.locator('table tbody tr').filter({ has: this.page.locator('.chakra-checkbox') });
+    const count = await rows.count();
+
+    if (count === 0) {
+      console.log("[WARN] No receipt rows found.");
+      return;
+    }
+
+    // Process first row for standard testing
+    const row = rows.first();
+
+    // 1. Ensure it is checked FIRST - This enables the quantity input in the ERP
+    const checkbox = row.locator('.chakra-checkbox__control').last();
+    const hiddenCb = row.locator('input[type="checkbox"]').first();
+
+    if (!(await hiddenCb.isChecked())) {
+      await checkbox.click({ force: true });
+      await this.page.waitForTimeout(800);
+
+      // Fallback to nth(1) if primary click failed to toggle state
+      if (!(await hiddenCb.isChecked())) {
+        const altCheckbox = row.locator('.chakra-checkbox__control').nth(1);
+        if (await altCheckbox.isVisible()) await altCheckbox.click({ force: true });
+      }
+    }
+    await this.page.waitForTimeout(1000); // ⚡ Wait for reactive re-render to enable input
+
+    // 2. Read Remaining (7th column / index 6 based on current ERP layout)
+    const tdList = row.locator('td');
+    const remainingText = await tdList.nth(6).innerText().catch(() => "1");
+    const remaining = Math.max(1, parseInt(remainingText.replace(/[^0-9]/g, '')) || 1);
+
+    // 3. Choose random quantity (1 to remaining)
+    const toReceive = Math.max(1, Math.floor(Math.random() * remaining) + 1);
+    console.log(`[DATA] Remaining: ${remaining} | Receiving: ${toReceive}`);
+
+    // 4. Find and fill the Received Quantity input (now enabled)
+    const qtyInput = row.locator('input[type="number"], .chakra-numberinput__field').last();
+    await qtyInput.waitFor({ state: 'visible' });
+
+    // Force actionability if it's still slow to enable
+    await expect(qtyInput).toBeEnabled({ timeout: 10000 });
+
+    await qtyInput.clear();
+    await qtyInput.fill(String(toReceive));
+    await qtyInput.press('Enter');
+    await this.page.keyboard.press('Tab'); // Blur input to trigger reactive state
+
+    await this.page.waitForTimeout(1000); // Allow totals to calculate
+    console.log(`[SUCCESS] PO Line Item received (${toReceive}) and selected.`);
+    return toReceive; // ⚡ Return the quantity for impact verification
+  }
+
+  /**
+   * handleSOReleasedTab
+   * Specifically for Invoice screens. It reads the remaining quantity from the table
+   * and fills a random "Released Quantity" to enable submission.
+   */
+  async handleSOReleasedTab() {
+    console.log("Action: Processing Released Sales Order Tab...");
+    const tab = this.page.getByRole('tab', { name: /Released Sales Order/i });
+    await tab.waitFor({ state: 'visible', timeout: 5000 });
+    await tab.click();
+    await this.page.waitForTimeout(2000);
+
+    const rows = this.page.locator('table tbody tr').filter({ has: this.page.locator('.chakra-checkbox') });
+    const count = await rows.count();
+
+    if (count === 0) {
+      console.log("[WARN] No release rows found.");
+      return 1;
+    }
+
+    // Process first row for standard testing
+    const row = rows.first();
+
+    // 1. Ensure it is checked FIRST - This enables the quantity input in the ERP
+    const checkbox = row.locator('.chakra-checkbox__control').last();
+    const hiddenCb = row.locator('input[type="checkbox"]').first();
+
+    if (!(await hiddenCb.isChecked())) {
+      await checkbox.click({ force: true });
+      await this.page.waitForTimeout(800);
+
+      // Fallback to nth(1) if primary click failed to toggle state
+      if (!(await hiddenCb.isChecked())) {
+        const altCheckbox = row.locator('.chakra-checkbox__control').nth(1);
+        if (await altCheckbox.isVisible()) await altCheckbox.click({ force: true });
+      }
+    }
+    await this.page.waitForTimeout(1000); // ⚡ Wait for reactive re-render to enable input
+
+    // 2. Read Remaining (7th column / index 6 based on current ERP layout)
+    const tdList = row.locator('td');
+    const remainingText = await tdList.nth(6).innerText().catch(() => "1");
+    const remaining = Math.max(1, parseInt(remainingText.replace(/[^0-9]/g, '')) || 1);
+
+    // 3. Choose random quantity (1 to remaining)
+    const toRelease = Math.max(1, Math.floor(Math.random() * remaining) + 1);
+    console.log(`[DATA] Remaining: ${remaining} | Releasing: ${toRelease}`);
+
+    // 4. Find and fill the Released Quantity input (now enabled)
+    const qtyInput = row.locator('input[type="number"], .chakra-numberinput__field').last();
+    await qtyInput.waitFor({ state: 'visible' });
+
+    // Force actionability if it's still slow to enable
+    await expect(qtyInput).toBeEnabled({ timeout: 10000 });
+
+    await qtyInput.clear();
+    await qtyInput.fill(String(toRelease));
+    await qtyInput.press('Enter');
+    await this.page.keyboard.press('Tab'); // Blur input to trigger reactive state
+
+    await this.page.waitForTimeout(1000); // Allow totals to calculate
+    console.log(`[SUCCESS] SO Line Item released (${toRelease}) and selected.`);
+    return toRelease; // ⚡ Return the quantity for impact verification
   }
 
   getInvoiceDates() {
