@@ -2,8 +2,8 @@ const { defineConfig, devices } = require('@playwright/test');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// ✅ Load .env once for the entire Playwright run
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+// ✅ Load .env once for the entire Playwright run (silencing noisy console updates)
+dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
 
 module.exports = defineConfig({
   testDir: './tests/e2e',

@@ -1,6 +1,5 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
-require('dotenv').config();
 
 test.describe('Purchase Order - Standalone Workflow', () => {
 
