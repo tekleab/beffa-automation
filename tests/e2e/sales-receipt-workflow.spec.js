@@ -16,64 +16,79 @@ test.describe('Receipt Creation and Customer Verification', () => {
 
         const app = new AppManager(page);
         const { soDate: receiptDate } = app.getTransactionDates();
-        // --- Step 0: Find a customer with an existing invoice ---
-        console.log("Action: Finding a customer with an existing invoice...");
-        await page.goto('/receivables/invoices');
-        await page.waitForTimeout(3000); // Wait for table to load
+        // --- Step 1: Data Scanning (Finding an Unpaid Invoice) ---
+        const target = await app.findApprovedUnpaidInvoice();
         
-        // Target the second column (Customer Name) of the first row (assuming column 0 is checkbox/ID)
-        const firstRow = page.locator('table tbody tr').first();
-        await firstRow.waitFor({ state: 'visible', timeout: 15000 });
-        
-        // We scan across the columns of the first row to reliably find the Customer Name
-        // (Ignoring Invoice IDs like "INV/...", Dates like "03/30/2026", Amounts, and Statuses)
-        const cols = firstRow.locator('td');
-        const numCols = await cols.count();
         let CUSTOMER_NAME = "";
-        
-        for (let i = 1; i < numCols; i++) {
-            const text = (await cols.nth(i).innerText()).trim();
-            // Basic heuristic to skip non-customer fields
-            if (text && !text.includes('INV/') && !text.match(/^(\d{2}\/\d{2}\/\d{4}|[A-Za-z]{3}\s*\d{1,2},\s*\d{4})$/) && !text.match(/^[\d,]+\.\d{2}/) && !['Draft', 'Approved', 'Posted', 'Void', 'Paid', 'Partially Paid'].includes(text) && !text.includes('ETB')) {
-                CUSTOMER_NAME = text;
-                break;
-            }
-        }
-        
-        if (!CUSTOMER_NAME) CUSTOMER_NAME = "Base Ethiopia"; // Ultra-safe fallback
-        console.log(`[DATA] Found dynamic customer with invoice: "${CUSTOMER_NAME}"`);
+        let INVOICE_ID = null;
 
-        // --- Step 1: Receipt Creation ---
+        if (target) {
+            CUSTOMER_NAME = target.customerName;
+            INVOICE_ID = target.invoiceId;
+            console.log(`[DATA] Found unpaid customer match: "${CUSTOMER_NAME}" (Invoice: ${INVOICE_ID})`);
+        } else {
+            console.log("[WARNING] No unpaid approved invoices found. Using Standalone Fallback.");
+            CUSTOMER_NAME = "Base Ethiopia"; 
+        }
+
+        // --- Step 2: Receipt Creation ---
         console.log("Execution: Navigating to New Receipt...");
-        // Use relative path since baseURL is defined in config
         await page.goto('/receivables/receipts/new');
 
         // Select Customer
         const customerBtn = page.getByRole('button', { name: 'Customer selector' });
         await customerBtn.waitFor({ state: 'visible' });
         await customerBtn.click();
-        await page.waitForTimeout(2000); // Wait for dropdown data to load
-        await page.getByText(CUSTOMER_NAME).first().click({ force: true });
+        await app.smartSearch(null, CUSTOMER_NAME);
+        await page.waitForTimeout(2000);
 
         // Fill Date and Account
         await app.fillDate(0, receiptDate);
-        const accountBtn = page.locator('button#cash_account_id');
+        const accountBtn = page.locator('button#cash_account_id, button:has-text("Cash Account")').first();
         await accountBtn.waitFor({ state: 'visible' });
         await accountBtn.click();
-        await page.getByText('Cash at Bank - CBE').first().click({ force: true });
+        await app.smartSearch(null, 'Cash at Bank - CBE');
 
-        // Select Invoice
-        console.log("Action: Opening Sales Invoices tab...");
-        const invoiceTab = page.getByRole('tab', { name: /Sales Invoices/i });
-        await invoiceTab.waitFor({ state: 'visible' });
-        await invoiceTab.click({ force: true });
-        await page.waitForTimeout(3000); // Wait for invoice table to populate
+        if (INVOICE_ID) {
+            // SCENARIO A: Linked Receipt (Invoice exists)
+            console.log(`Action: Linking Invoice ${INVOICE_ID}...`);
+            const invoiceTab = page.getByRole('tab', { name: /Sales Invoices/i });
+            await invoiceTab.waitFor({ state: 'visible' });
+            await invoiceTab.click({ force: true });
+            await page.waitForTimeout(3000);
 
-        // Select the first specific invoice checkbox (index 1 is usually the first row, 0 is header)
-        console.log("Action: Selecting the first specific invoice checkbox...");
-        const invoiceCheckbox = page.locator('div[role="tabpanel"]:not([hidden]) .chakra-checkbox__control').nth(1);
-        await invoiceCheckbox.waitFor({ state: 'attached', timeout: 30000 });
-        await invoiceCheckbox.evaluate(node => node.click());
+            // Find the specific invoice checkbox
+            const invoiceRow = page.locator('table tbody tr').filter({ hasText: INVOICE_ID }).first();
+            if (await invoiceRow.isVisible({ timeout: 10000 }).catch(() => false)) {
+                const checkbox = invoiceRow.locator('.chakra-checkbox__control').first();
+                await checkbox.click({ force: true });
+                console.log(`[SUCCESS] Invoice ${INVOICE_ID} selected.`);
+            } else {
+                console.log(`[WARN] Invoice ${INVOICE_ID} not found in receipt dropdown. Falling back to first row.`);
+                await page.locator('div[role="tabpanel"]:not([hidden]) .chakra-checkbox__control').nth(1).click({ force: true });
+            }
+        } else {
+            // SCENARIO B: Standalone Receipt (No Invoice)
+            console.log("Action: Creating Standalone Receipt via manual Row entry...");
+            // Click "Add Row" or "Add Item" in the distribution/items tab
+            const addRowBtn = page.getByRole('button', { name: /Add Row|Add Item|New/i }).filter({ visible: true }).first();
+            if (await addRowBtn.isVisible().catch(() => false)) {
+                await addRowBtn.click({ force: true });
+                await page.waitForTimeout(1000);
+                
+                // Select a default G/L account for the credit side
+                const lastRowCells = page.locator('table tbody tr').last().locator('td');
+                await lastRowCells.nth(1).click({ force: true });
+                await app.smartSearch(null, "Other Income"); // Common generic account
+                
+                // Set Amount
+                const qtyInput = page.locator('table tbody tr').last().locator('input[type="number"]').first();
+                await qtyInput.fill("1000");
+                await qtyInput.press('Enter');
+            } else {
+                console.log("[ERROR] Could not find 'Add Row' button for standalone receipt.");
+            }
+        }
 
         // Save Receipt
         console.log("Action: Committing Receipt...");

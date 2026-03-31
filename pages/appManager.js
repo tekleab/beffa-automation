@@ -264,28 +264,27 @@ class AppManager {
 
   async _handleReviewerSelection(activeModal) {
     const dialog = activeModal || this.page.getByRole('dialog').last();
-    // Use a robust selector for the reviewer drop-down button or select input
-    const reviewerSelector = dialog.locator('button[aria-haspopup], [aria-haspopup], select.chakra-select, input:not([type="hidden"])').filter({ visible: true }).first();
+    // Use locator directly to avoid detachment issues
+    const reviewerBtn = dialog.locator('button[aria-haspopup], [aria-haspopup], select[class*="select"], input:not([type="hidden"])').filter({ visible: true }).first();
 
-    const el = await reviewerSelector.elementHandle({ timeout: 1500 }).catch(() => null);
-    if (el) {
-      // Evaluate text directly to bypass any actionability stalls
-      const currentSelection = (await el.evaluate(node => node.innerText || node.value || node.textContent || '')).trim();
+    if (await reviewerBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      // Evaluate text directly or use innerText if not an input
+      const currentSelection = (await reviewerBtn.inputValue().catch(() => null)) 
+                               || (await reviewerBtn.innerText().catch(() => '')).trim();
 
       if (currentSelection.toLowerCase() !== "system admin") {
         // Use fill if it's an input field
-        if ((await el.evaluate(n => n.tagName)).toLowerCase() === 'input') {
-          await el.fill("System Admin");
+        if (await reviewerBtn.evaluate(n => n.tagName.toLowerCase() === 'input')) {
+          await reviewerBtn.fill("System Admin");
         } else {
-          await el.click({ force: true });
+          await reviewerBtn.click({ force: true });
         }
         await this.page.waitForTimeout(1000);
 
         // Find "System Admin" option in any popup list or dropdown
         const adminOption = this.page.locator('div[role="option"], [role="menuitem"], li, .chakra-menu__menuitem, button').filter({ hasText: /System Admin/i }).filter({ visible: true }).first();
-        const adminEl = await adminOption.elementHandle({ timeout: 2000 }).catch(() => null);
-        if (adminEl) {
-          await adminEl.click({ force: true });
+        if (await adminOption.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await adminOption.click({ force: true });
         } else {
           await this.page.keyboard.press('Escape');
         }
@@ -540,6 +539,46 @@ class AppManager {
     }
 
     console.log("[WARNING] No unpaid approved bills found in the first 30 rows.");
+    return null;
+  }
+
+  /**
+   * findApprovedUnpaidInvoice
+   * Scans the Sales Invoices list for an 'approved' document that is not yet fully paid (Net Due > 0).
+   * Returns { customerName, invoiceId } or null.
+   * Indices based on user screenshot: 1=Invoice#, 2=Customer, 5=Paid, 6=NetDue, 7=Status
+   */
+  async findApprovedUnpaidInvoice() {
+    console.log("Action: Scanning for an approved, unpaid invoice (Net Due > 0)...");
+    await this.page.goto('/receivables/invoices/?page=1&pageSize=30');
+    await this.page.waitForSelector('table tbody tr', { timeout: 30000 });
+    await this.page.waitForTimeout(3000); // Stabilization
+
+    const rows = this.page.locator('table tbody tr');
+    const count = await rows.count();
+
+    for (let i = 0; i < count; i++) {
+        const row = rows.nth(i);
+        const cells = row.locator('td');
+        
+        const invId = (await cells.nth(1).innerText().catch(() => '')).trim();
+        const customer = (await cells.nth(2).innerText().catch(() => '')).trim();
+        const paid = (await cells.nth(5).innerText().catch(() => '')).trim().toLowerCase();
+        const netDueRaw = (await cells.nth(6).innerText().catch(() => '')).trim();
+        
+        // Status Detection (Index 7 based on Due Date presence)
+        const status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+
+        const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
+        console.log(`[CHECK] Row ${i + 1} (${invId}): Paid? "${paid}", Net Due: ${netDue}, Status: "${status}"`);
+
+        if (paid === 'no' && netDue > 0 && status === 'approved') {
+            console.log(`[SUCCESS] Found unpaid customer match: "${customer}" (Invoice: ${invId})`);
+            return { customerName: customer, invoiceId: invId };
+        }
+    }
+    
+    console.log("[WARNING] No unpaid approved invoices found in the first 30 rows.");
     return null;
   }
 
