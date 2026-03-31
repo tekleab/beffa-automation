@@ -76,11 +76,36 @@ test.describe('Payment Creation and Vendor Verification', () => {
         await billTab.click({ force: true });
         await page.waitForTimeout(4000); 
 
-        console.log("Action: Selecting the first bill checkbox...");
-        const billPanel = page.locator('[role="tabpanel"]:not([hidden])');
-        const firstCheckbox = billPanel.getByRole('checkbox').first();
-        await firstCheckbox.waitFor({ state: 'visible' });
-        await firstCheckbox.click({ force: true });
+        console.log("Action: Selecting the target bill checkbox...");
+        if (BILL_NUMBER) {
+            console.log(`Action: Locating visible text for target bill: ${BILL_NUMBER}...`);
+            await page.waitForTimeout(2000); // Give rows time to fully render
+            
+            // Step 1: Find the exact visible text node on the screen
+            const visibleBillText = page.getByText(BILL_NUMBER, { exact: false }).filter({ visible: true }).first();
+            
+            if (await visibleBillText.isVisible({ timeout: 10000 }).catch(() => false)) {
+                console.log(`[SUCCESS] Found visible text for Bill ${BILL_NUMBER}. Navigating to parent row...`);
+                // Step 2: Use an intersecting layout query to find the nearest container holding both the exact text and a checkbox
+                const targetRow = page.locator('div, tr, [role="row"]').filter({ hasText: BILL_NUMBER }).filter({ has: page.locator('.chakra-checkbox__control, [role="checkbox"], input[type="checkbox"]') }).last();
+                
+                // Once the row boundary is found, extract and click its checkbox control
+                const targetCheckbox = targetRow.locator('.chakra-checkbox__control, [role="checkbox"]').first();
+                await targetCheckbox.click({ force: true });
+            } else {
+                console.log(`[WARN] Bill ${BILL_NUMBER} is not explicitly visible. Falling back to first available row.`);
+                // Secure fallback explicitly isolated to the active Invoices panel
+                const activePanel = page.locator('[role="tabpanel"]').filter({ visible: true }).first();
+                const firstRowCb = activePanel.locator('.chakra-checkbox__control, [role="checkbox"]').first();
+                if (await firstRowCb.isVisible()) await firstRowCb.click({ force: true });
+            }
+        } else {
+            console.log("Action: Selecting the first explicitly visible bill checkbox (Fallback)...");
+            const activePanel = page.locator('[role="tabpanel"]').filter({ visible: true }).first();
+            const firstRowCb = activePanel.locator('.chakra-checkbox__control, [role="checkbox"]').first();
+            await firstRowCb.waitFor({ state: 'visible' });
+            await firstRowCb.click({ force: true });
+        }
         await page.waitForTimeout(1500);
 
         console.log("Action: Finalizing Payment (Process)...");
