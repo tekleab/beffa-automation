@@ -2,31 +2,41 @@ const { defineConfig, devices } = require('@playwright/test');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// ✅ Load .env once for the entire Playwright run (silencing noisy console updates)
+// ✅ Load .env once
 dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
 
 module.exports = defineConfig({
   testDir: './tests/e2e',
   testIgnore: [],
 
-  /* Maximum time one test can run for */
-  timeout: 600000,
+  /* Long timeout for complex ERP workflows */
+  timeout: 600000, 
   expect: { timeout: 30000 },
 
-  /* Run tests in files in parallel */
   fullyParallel: true,
-
-  /* Using 3 workers for parallel test files */
   workers: 3,
 
-  /* Retries configuration for CI environments */
+  /* CI Configuration */
   retries: process.env.CI ? 1 : 0,
 
-  /* Reporter configuration for List, HTML, and Allure */
+  /* 📊 ASTONISHING REPORTING CONFIGURATION */
   reporter: [
     ['list'],
-    ['html'],
-    ['allure-playwright', { outputFolder: 'allure-results' }]
+    ['html', { open: 'never' }], // Generates standard HTML report
+    [
+      'allure-playwright', 
+      { 
+        outputFolder: 'allure-results',
+        detail: true,
+        suiteTitle: true,
+        environmentInfo: {
+          OS: process.platform,
+          NodeVersion: process.version,
+          BaseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
+          Project: 'BEFFFA ERP Automation'
+        }
+      }
+    ]
   ],
 
   use: {
@@ -40,9 +50,11 @@ module.exports = defineConfig({
       ],
     },
 
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    /* Capture data for the graphs */
+    trace: 'retain-on-failure',     // Traces make Allure reports interactive
+    screenshot: 'on',               // 'on' ensures visuals appear in your dashboard
+    video: 'on-first-retry',
+    
     actionTimeout: 60000,
     navigationTimeout: 150000,
   },
@@ -57,6 +69,5 @@ module.exports = defineConfig({
     },
   ],
 
-  /* Folder for test artifacts such as screenshots and videos */
   outputDir: 'test-results/',
 });
