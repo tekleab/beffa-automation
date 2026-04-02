@@ -84,98 +84,103 @@ class AppManager {
 
     for (let s = 0; s < 3; s++) {
       try {
-        // 1. Target container for typing (scoped to dialog to avoid incorrect inputs)
         const target = container || this.page.locator('div[role="dialog"], .chakra-modal__content, .chakra-popover__content').filter({ visible: true }).last();
 
-        // 2. Find search input - exclude numeric or hidden inputs
         let searchBox = target.locator('input:not([type="number"]):not([type="hidden"])').filter({ visible: true }).first();
         if (!(await searchBox.isVisible({ timeout: 2000 }).catch(() => false))) {
           searchBox = this.page.locator('input[placeholder*="Search" i]').filter({ visible: true }).last();
         }
 
         await searchBox.waitFor({ state: 'visible', timeout: 10000 });
+        await searchBox.click();
         await searchBox.clear();
 
-        // 3. Instant fill to trigger search filters
         await searchBox.fill(cleanText);
-        await this.page.waitForTimeout(2500);
+        await this.page.waitForTimeout(2000);
 
-        // 4. Result Selection
-        let clicked = false;
+        const trySelection = async () => {
+          let clicked = false;
+          const overlayList = this.page.locator('.chakra-popover__content, [role="listbox"], .chakra-menu__list, div[data-placement]').filter({ visible: true }).last();
 
-        // Tier 1: Exact match within direct container
-        const containerExact = target.getByText(cleanText, { exact: true }).first();
-        if (await containerExact.isVisible({ timeout: 3000 }).catch(() => false)) {
-          console.log(`[INFO] Tier 1 - exact in dialog: "${cleanText}"`);
-          await containerExact.click({ force: true });
-          clicked = true;
-        }
+          // Tier 1: Exact match within direct container
+          const containerExact = target.getByText(cleanText, { exact: true }).first();
+          if (await containerExact.isVisible({ timeout: 1000 }).catch(() => false)) {
+            console.log(`[INFO] Tier 1 - exact in dialog: "${cleanText}"`);
+            await containerExact.click({ force: true });
+            return true;
+          }
 
-        // Tier 2: Search visible overlay/portal (Chakra popovers render outside dialog)
-        if (!clicked) {
-          const overlayList = this.page.locator(
-            '.chakra-popover__content, [role="listbox"], .chakra-menu__list, div[data-placement]'
-          ).filter({ visible: true }).last();
-          if (await overlayList.isVisible({ timeout: 2000 }).catch(() => false)) {
+          // Tier 2: Search visible overlay/portal
+          if (await overlayList.isVisible({ timeout: 1000 }).catch(() => false)) {
             const overlayExact = overlayList.getByText(cleanText, { exact: true }).first();
-            if (await overlayExact.isVisible({ timeout: 2000 }).catch(() => false)) {
+            if (await overlayExact.isVisible({ timeout: 1000 }).catch(() => false)) {
               console.log(`[INFO] Tier 2 - exact in overlay: "${cleanText}"`);
               await overlayExact.click({ force: true });
-              clicked = true;
+              return true;
             }
-            if (!clicked) {
-              const overlayContains = overlayList.getByText(cleanText, { exact: false }).first();
-              if (await overlayContains.isVisible({ timeout: 2000 }).catch(() => false)) {
-                console.log(`[INFO] Tier 2 - contains in overlay: "${cleanText}" (ID↔Name)`);
-                await overlayContains.click({ force: true });
-                clicked = true;
-              }
+            const overlayContains = overlayList.getByText(cleanText, { exact: false }).first();
+            if (await overlayContains.isVisible({ timeout: 1000 }).catch(() => false)) {
+              console.log(`[INFO] Tier 2 - contains in overlay: "${cleanText}"`);
+              await overlayContains.click({ force: true });
+              return true;
             }
           }
-        }
 
-        // Tier 3: Contains match WITHIN dialog (ID↔Name: searching ID shows "Name - ID")
-        if (!clicked) {
+          // Tier 3: Contains match WITHIN dialog
           const containerContains = target.getByText(cleanText, { exact: false }).first();
-          if (await containerContains.isVisible({ timeout: 2000 }).catch(() => false)) {
-            console.log(`[INFO] Tier 3 - contains in dialog: "${cleanText}" (ID↔Name)`);
+          if (await containerContains.isVisible({ timeout: 1000 }).catch(() => false)) {
+            console.log(`[INFO] Tier 3 - contains in dialog: "${cleanText}"`);
             await containerContains.click({ force: true });
-            clicked = true;
+            return true;
           }
-        }
 
-        // Tier 4: Total mismatch fallback (Search ID -> Result is purely Name without ID)
-        // E.g. search "CUST/..." -> shows "Etsegenet Yimer"
+          // Tier 4: ID vs Name fallback (Allow this blind click for Document IDs OR Numeric Codes)
+          // E.g. search "CUST/..." or "1005" -> returns Name results
+          const isIdOrCode = cleanText.includes('/') || /^\d+$/.test(cleanText);
+          if (isIdOrCode) {
+            console.log(`[INFO] Tier 4 - no exact match for "${cleanText}" (ID/Code). Clicking first visible item assuming Name returned...`);
+            let fallbackItem = null;
+            const clickableSelectors = 'button:not([aria-label]), [role="option"], [role="menuitem"], li, .chakra-menu__menuitem, label, .chakra-checkbox, [role="checkbox"]';
+            const validItemFilter = { hasNotText: /^\s*(\+?\s*Add|Clear|New|No more items)\s*$/i };
+
+            if (await overlayList.isVisible({ timeout: 1000 }).catch(() => false)) {
+              fallbackItem = overlayList.locator(clickableSelectors).filter({ visible: true }).filter(validItemFilter).first();
+            } else {
+              fallbackItem = target.locator(clickableSelectors).filter({ visible: true }).filter(validItemFilter).first();
+            }
+
+            if (await fallbackItem.isVisible({ timeout: 1000 }).catch(() => false)) {
+              const foundText = (await fallbackItem.innerText()).trim() || "Item";
+              console.log(`[INFO] Tier 4 - clicking first available item: "${foundText}"`);
+              await fallbackItem.click({ force: true });
+              return true;
+            }
+          }
+          return false;
+        };
+
+        // Attempt 1: Normal Search
+        let clicked = await trySelection();
+
+        // Attempt 2 (Fallback trick if backend hung): Backspace one char to trigger state
         if (!clicked) {
-          console.log(`[INFO] Tier 4 - no text match for "${cleanText}". Clicking first visible item...`);
-
-          // Look in overlay first (Chakra portal dropdown)
-          const overlayList = this.page.locator('.chakra-popover__content, [role="listbox"], .chakra-menu__list, div[data-placement]').filter({ visible: true }).last();
-          let fallbackItem = null;
-
-          const clickableSelectors = 'button:not([aria-label]), [role="option"], [role="menuitem"], li, .chakra-menu__menuitem, label, .chakra-checkbox, [role="checkbox"]';
-          const validItemFilter = { hasNotText: /^\s*(\+?\s*Add|Clear|New|No more items)\s*$/i };
-
-          if (await overlayList.isVisible({ timeout: 1000 }).catch(() => false)) {
-            fallbackItem = overlayList.locator(clickableSelectors).filter({ visible: true }).filter(validItemFilter).first();
-          } else {
-            // Look in container (inline dialog dropdown)
-            fallbackItem = target.locator(clickableSelectors).filter({ visible: true }).filter(validItemFilter).first();
-          }
-
-          if (await fallbackItem.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const foundText = (await fallbackItem.innerText()).trim() || "Item";
-            console.log(`[INFO] Tier 4 - clicking first available item: "${foundText}"`);
-            await fallbackItem.click({ force: true });
-            clicked = true;
-          }
+          console.log(`[WARN] Original search didn't bring up "${cleanText}". Pressing backspace to wake up backend fetch...`);
+          await searchBox.press('Backspace');
+          await this.page.waitForTimeout(3000); // Allow backend to hit
+          clicked = await trySelection();
         }
 
         if (!clicked) {
-          throw new Error(`No visible dropdown result found for "${cleanText}"`);
+          throw new Error(`No visible accurate dropdown result found for "${cleanText}"`);
         }
 
-        // 5. Commit and close dropdown
+        // ⚡ NEW: Verification check - Ensure the selection "sticks"
+        // We wait a moment for reactive frameworks to update the field or close the dialog
+        await this.page.waitForTimeout(800);
+        
+        // If the dialog is still open and we clicked something, maybe it didn't register?
+        // We try hitting Enter as a final "commit" signal for some ERP inputs
+        await this.page.keyboard.press('Enter');
         await this.page.waitForTimeout(500);
         await this.page.keyboard.press('Escape');
 
@@ -186,7 +191,7 @@ class AppManager {
         await this.page.waitForTimeout(2000);
       }
     }
-    throw new Error(`[ERROR] smartSearch failed for "${cleanText}" after 3 attempts.`);
+    throw new Error(`[ERROR] smartSearch failed to find and click "${cleanText}" accurately after 3 attempts.`);
   }
 
   async handleApprovalFlow() {
@@ -584,23 +589,24 @@ class AppManager {
     return null;
   }
 
-  async captureJournalEntries() {
-    const journalTab = this.page.getByRole('tab', { name: /Journal/i });
+  async captureJournalEntries(tabNameRegex = /Journal|CRJ|CDJ/i) {
+    const journalTab = this.page.getByRole('tab', { name: tabNameRegex }).first();
+    await journalTab.scrollIntoViewIfNeeded();
     await journalTab.click();
     await this.page.waitForTimeout(2000);
     const rows = this.page.locator('table tbody tr');
     const count = await rows.count();
     const entries = [];
     for (let i = 0; i < count; i++) {
-      const row = rows.nth(i);
-      const accFull = await row.locator('td').nth(0).innerText();
-      const drText = await row.locator('td').nth(2).innerText();
-      const crText = await row.locator('td').nth(3).innerText();
-      const code = accFull.match(/^\d+/)?.[0] || "";
-      const name = accFull.replace(/^\d+\s*-\s*/, '').trim();
-      const dr = parseFloat(drText.replace(/,/g, '')) || 0;
-      const cr = parseFloat(crText.replace(/,/g, '')) || 0;
-      if (code) entries.push({ accountCode: code, accountName: name, debit: dr, credit: cr });
+        const row = rows.nth(i);
+        const accFull = await row.locator('td').nth(0).innerText();
+        const drText = await row.locator('td').nth(2).innerText();
+        const crText = await row.locator('td').nth(3).innerText();
+        const code = accFull.match(/^\d+/)?.[0] || "";
+        const name = accFull.replace(/^\d+\s*-\s*/, '').trim();
+        const dr = parseFloat(drText.replace(/,/g, '')) || 0;
+        const cr = parseFloat(crText.replace(/,/g, '')) || 0;
+        if (code) entries.push({ accountCode: code, accountName: name, debit: dr, credit: cr });
     }
     return entries;
   }
@@ -769,8 +775,20 @@ class AppManager {
     await searchBox.fill(itemName);
     await this.page.keyboard.press('Enter');
     await this.page.waitForTimeout(2000);
-    const itemRow = this.page.locator('table tbody tr').filter({ hasText: itemName }).first();
-    await itemRow.locator('a').first().click();
+    
+    // We want to match exactly the itemName, but it might be prepended by an ID like "inventory/RWT-18 - "
+    // We escape special chars and ensure the link text ENDS with the item name.
+    const safeName = itemName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const exactLink = this.page.locator('table tbody tr a').filter({ hasText: new RegExp(`(?:^| - )${safeName}\\s*$`, 'i') }).first();
+    
+    if (await exactLink.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await exactLink.click();
+    } else {
+        // Fallback: original partial match just in case
+        const itemRow = this.page.locator('table tbody tr').filter({ hasText: itemName }).first();
+        await itemRow.locator('a').first().click();
+    }
+    
     await this.page.waitForURL(/\/inventories\/items\/.*/, { timeout: 60000 });
     return await this._extractItemDetails(itemName);
   }
@@ -831,6 +849,86 @@ class AppManager {
 
     await this.page.getByLabel(/(Woreda|Wereda)/i).first().selectOption({ label: woreda });
     await this.page.waitForTimeout(500);
+  }
+
+  // --- API Helpers ---
+
+  async _getAuthToken() {
+    return await this.page.evaluate(() => {
+        const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
+        for (const key of keys) {
+           const val = localStorage.getItem(key) || sessionStorage.getItem(key);
+           if (val && val.length > 50) return val; 
+        }
+        for (let i = 0; i < localStorage.length; i++) {
+           const k = localStorage.key(i);
+           const v = localStorage.getItem(k);
+           if (v && v.startsWith('ey')) return v; 
+        }
+        return null;
+     });
+  }
+
+  async createReceiptAPI(data = {}) {
+     const apiBase = "http://157.180.20.112:8001/api";
+     const amount = data.amount || Math.floor(Math.random() * 1500000) + 500000;
+     
+     const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
+     const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
+     const glAccounts = ['8b313729-d6cb-4a33-af8b-7f5c880d86c0', '998df511-68ea-48b9-b405-9419eb78145b'];
+     const taxes = ['8da036a5-9185-4043-bfb5-b146aac78412', 'b017352f-f454-45e2-85ef-e327f90d8f9c'];
+
+     const payload = {
+        amount,
+        cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
+        customer_id: customers[Math.floor(Math.random() * customers.length)],
+        date: new Date().toISOString(),
+        payment_method: "cash",
+        currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+        receipt_items: [{
+              amount,
+              general_ledger_account_id: glAccounts[Math.floor(Math.random() * glAccounts.length)],
+              tax_id: taxes[Math.floor(Math.random() * taxes.length)],
+              unit_price: amount, quantity: 1, description: "E2E Speed Track"
+        }]
+     };
+
+     const token = await this._getAuthToken();
+     const response = await this.page.request.post(`${apiBase}/receipts`, {
+        data: payload,
+        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+     });
+
+     if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
+     const json = await response.json();
+     console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id})`);
+     return { ref: json.ref, id: json.id };
+  }
+
+  async getJournalEntriesAPI(receiptId) {
+     const apiBase = "http://157.180.20.112:8001/api";
+     const token = await this._getAuthToken();
+     
+     console.log(`[ACTION] Fetching Journal via API for UUID: ${receiptId}`);
+     const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}`, {
+        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+     });
+
+     if (!response.ok()) throw new Error(`API Fetch Failed: ${response.status()}`);
+     const json = await response.json();
+     const journal = json.cash_disbursement_journal;
+
+     if (!journal || !journal.journal_entries) {
+        console.log("[WARNING] No journal entries found in API response yet.");
+        return [];
+     }
+
+     return journal.journal_entries.map(entry => ({
+        accountCode: entry.account.account_id,
+        accountName: entry.account.name,
+        debit: entry.debit.toString(),
+        credit: entry.credit.toString()
+     }));
   }
 }
 

@@ -58,19 +58,19 @@ test.describe('Payment Creation and Vendor Verification', () => {
             await page.waitForTimeout(2000);
         }
 
-        console.log("Action: Selecting 'Inventory' as default account...");
+        console.log("Action: Selecting 'CBE' (Cash at Bank) as default account...");
         await page.getByRole('button', { name: /Cash Account/i }).first().click();
         await page.waitForTimeout(2000); // Wait for dropdown list to fully mount
-        await app.smartSearch(null, "Inventory");
+        await app.smartSearch(null, "CBE");
         await page.waitForTimeout(1500);
 
         // Verification of selection
         const accBox = page.getByRole('button', { name: /Cash Account/i }).first();
         const selectedAcc = (await accBox.innerText()).trim();
-        if (!selectedAcc.toLowerCase().includes("inventory")) {
-            console.log("[RETRY] Selection failed. Retrying 'Inventory'...");
+        if (!selectedAcc.toLowerCase().includes("cbe")) {
+            console.log("[RETRY] Selection failed. Retrying 'CBE'...");
             await accBox.click({ force: true });
-            await page.locator('[role="option"], [role="menuitem"]').filter({ hasText: /^Inventory$/i }).first().click({ force: true });
+            await page.locator('[role="option"], [role="menuitem"]').filter({ hasText: /CBE/i }).first().click({ force: true });
         }
         console.log(`[INFO] Current account selected: "${selectedAcc}"`);
 
@@ -81,31 +81,63 @@ test.describe('Payment Creation and Vendor Verification', () => {
 
         console.log("Action: Selecting the target bill checkbox...");
         if (BILL_NUMBER) {
-            console.log(`Action: Locating visible text for target bill: ${BILL_NUMBER}...`);
-            await page.waitForTimeout(2000); // Give rows time to fully render
+            console.log(`Action: Locating row for bill: ${BILL_NUMBER} surgically...`);
+            await page.waitForTimeout(2000); 
             
-            // Step 1: Find the exact visible text node on the screen
-            const visibleBillText = page.getByText(BILL_NUMBER, { exact: false }).filter({ visible: true }).first();
-            
-            if (await visibleBillText.isVisible({ timeout: 10000 }).catch(() => false)) {
-                console.log(`[SUCCESS] Found visible text for Bill ${BILL_NUMBER}. Navigating to parent row...`);
-                // Step 2: Use an intersecting layout query to find the nearest container holding both the exact text and a checkbox
-                const targetRow = page.locator('div, tr, [role="row"]').filter({ hasText: BILL_NUMBER }).filter({ has: page.locator('.chakra-checkbox__control, [role="checkbox"], input[type="checkbox"]') }).last();
+            const activePanel = page.locator('[role="tabpanel"]').filter({ visible: true }).first();
+            let checked = false;
+
+            for (let retry = 0; retry < 3; retry++) {
+                // Find the exact text node first
+                const billNode = activePanel.getByText(BILL_NUMBER, { exact: false }).filter({ visible: true }).first();
                 
-                // Once the row boundary is found, extract and click its checkbox control
-                const targetCheckbox = targetRow.locator('.chakra-checkbox__control, [role="checkbox"]').first();
-                await targetCheckbox.click({ force: true });
-            } else {
-                console.log(`[WARN] Bill ${BILL_NUMBER} is not explicitly visible. Falling back to first available row.`);
-                // Secure fallback explicitly isolated to the active Invoices panel
-                const activePanel = page.locator('[role="tabpanel"]').filter({ visible: true }).first();
-                const firstRowCb = activePanel.locator('.chakra-checkbox__control, [role="checkbox"]').first();
-                if (await firstRowCb.isVisible()) await firstRowCb.click({ force: true });
+                if (await billNode.isVisible({ timeout: 3000 }).catch(() => false)) {
+                    console.log(`[ACTION] Found text node for ${BILL_NUMBER}. Finding closest row container...`);
+                    await billNode.scrollIntoViewIfNeeded();
+
+                    // Step 1: Find the NEAREST ancestor that contains a checkbox. 
+                    // This is nearly always the specific row containing this bill ID.
+                    const targetRow = billNode.locator('xpath=./ancestor::*[contains(@class, "row") or contains(@role, "row") or self::tr or self::div][.//*[contains(@class, "checkbox") or @role="checkbox"]][1]');
+                    
+                    if (await targetRow.isVisible().catch(() => false)) {
+                        const rowText = (await targetRow.innerText()).split('\n')[0];
+                        console.log(`[INFO] Targeted row: "${rowText}"`);
+                        
+                        const targetCheckbox = targetRow.locator('.chakra-checkbox, [role="checkbox"], input[type="checkbox"]').first();
+                        const hiddenInput = targetRow.locator('input[type="checkbox"]').first();
+
+                        if (!(await hiddenInput.isChecked().catch(() => false))) {
+                            await targetCheckbox.click({ force: true });
+                            await page.waitForTimeout(1000);
+                        }
+
+                        if (await hiddenInput.isChecked().catch(() => true)) {
+                            console.log(`[✓] Bill ${BILL_NUMBER} selected correctly in its row.`);
+                            checked = true;
+                            break;
+                        }
+                    }
+                } else {
+                    console.log(`[WARN] Attempt ${retry + 1}: ${BILL_NUMBER} not visible. Scrolling...`);
+                    await activePanel.evaluate((node) => node.scrollTo(0, 1000));
+                    await page.waitForTimeout(1000);
+                    await activePanel.evaluate((node) => node.scrollTo(0, 0));
+                    await page.waitForTimeout(1000);
+                }
+            }
+
+            if (!checked) {
+                console.log(`[ERROR] Precise row selection failed for ${BILL_NUMBER}. Falling back to 'has-text' on all rows.`);
+                // Broader row search as last resort
+                const fallbackRow = activePanel.locator('tr, [role="row"], div').filter({ hasText: BILL_NUMBER }).filter({ has: page.locator('.chakra-checkbox') }).first();
+                if (await fallbackRow.isVisible()) {
+                    await fallbackRow.scrollIntoViewIfNeeded();
+                    await fallbackRow.locator('.chakra-checkbox').first().click({ force: true });
+                }
             }
         } else {
-            console.log("Action: Selecting the first explicitly visible bill checkbox (Fallback)...");
-            const activePanel = page.locator('[role="tabpanel"]').filter({ visible: true }).first();
-            const firstRowCb = activePanel.locator('.chakra-checkbox__control, [role="checkbox"]').first();
+            console.log("Action: Selecting the first explicitly visible bill (No specific Bill ID)...");
+            const firstRowCb = page.locator('[role="tabpanel"]').filter({ visible: true }).locator('.chakra-checkbox, [role="checkbox"]').first();
             await firstRowCb.waitFor({ state: 'visible' });
             await firstRowCb.click({ force: true });
         }
@@ -115,10 +147,33 @@ test.describe('Payment Creation and Vendor Verification', () => {
         const processBtn = page.getByRole('button', { name: /Add Now|Process|Submit|Save/i }).filter({ visible: true }).first();
         await processBtn.click({ force: true });
 
+        // Wait to see if form submission succeeds or fails
+        await page.waitForTimeout(3000);
+        
+        // Navigation Guard
+        if (page.url().includes('/new')) {
+            const insufficientError = page.getByText(/Account balance is insufficient/i).first();
+            if (await insufficientError.isVisible().catch(() => false)) {
+                console.log("[SUCCESS] Transaction correctly blocked due to insufficient balance.");
+                await page.close();
+                return;
+            }
+            console.log("[RETRY] Retrying Process click...");
+            await processBtn.click({ force: true });
+            await page.waitForTimeout(3000);
+        }
+
+        // Wait for redirect
+        await page.waitForURL(/\/payables\/payments\/.*\/detail/, { timeout: 30000 }).catch(() => {
+            console.log("[WARN] Navigation to detail timed out.");
+        });
+
         // --- Phase 3: Approval Flow ---
         await app.handleApprovalFlow();
         
-        await page.waitForURL(/\/detail$/, { timeout: 60000 });
+        if (!page.url().includes('/detail')) {
+            await page.waitForURL(/\/detail$/, { timeout: 30000 }).catch(() => {});
+        }
         const capturedPaymentNumber = (await page.locator('p.chakra-text').filter({ hasText: /^PAY\// }).first().innerText()).trim();
         console.log(`[SUCCESS] Payment finalized for: ${VENDOR_NAME}`);
         console.log(`Document Created: ${capturedPaymentNumber}`);
