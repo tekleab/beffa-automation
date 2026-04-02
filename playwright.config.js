@@ -14,7 +14,7 @@ module.exports = defineConfig({
   expect: { timeout: 30000 },
 
   fullyParallel: true,
-  workers: 4,
+  workers: process.env.CI ? 2 : 3,
 
   /* CI Configuration */
   retries: process.env.CI ? 1 : 0,
@@ -67,13 +67,14 @@ module.exports = defineConfig({
         viewport: { width: 1920, height: 1080 },
       },
     },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
+    // Future: Uncomment to enable cross-browser testing
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //     viewport: { width: 1920, height: 1080 },
+    //   },
+    // },
   ],
 
   outputDir: 'test-results/',
