@@ -981,7 +981,87 @@ class AppManager {
      if (!response.ok()) throw new Error(`Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
      const json = await response.json();
      console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
-     return { ref: json.invoice_number, id: json.id };
+     return { ref: json.invoice_number, id: json.id, amountDue: payload.released_sales_order_items[0].released_quantity * 10993.05 };
+  }
+
+  async createStandaloneInvoiceAPI(data = {}) {
+     const apiBase = "http://157.180.20.112:8001/api";
+     const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
+     const custId = data.customerId || customers[1];
+     
+     const unitPrice = data.unitPrice || 10993.05;
+     const q = data.quantity || 1;
+     const amount = q * unitPrice;
+
+     const payload = {
+        accounts_receivable_id: "998df511-68ea-48b9-b405-9419eb78145b",
+        customer_id: custId,
+        invoice_date: new Date().toISOString(),
+        due_date: new Date(Date.now() + 86400000 * 2).toISOString(),
+        currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+        items: [{
+             amount: amount,
+             general_ledger_account_id: "998df511-68ea-48b9-b405-9419eb78145b",
+             item_id: data.itemId,
+             location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+             quantity: q,
+             tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
+             unit_price: unitPrice,
+             warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+        }],
+        released_sales_order_items: [],
+        sales_order_id: "00000000-0000-0000-0000-000000000000"
+     };
+
+     const token = await this._getAuthToken();
+     const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+        data: payload,
+        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+     });
+
+     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
+     const json = await response.json();
+     console.log(`[SUCCESS] Standalone Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
+     return { ref: json.invoice_number, id: json.id, amountDue: amount, customerId: custId };
+  }
+
+  async createInvoiceReceiptAPI(data = {}) {
+     const apiBase = "http://157.180.20.112:8001/api";
+     const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
+
+     const payload = {
+        amount: data.amount,
+        cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
+        customer_id: data.customerId, // MUST match the invoice customer
+        date: new Date().toISOString(),
+        payment_method: "cash",
+        currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+        invoice_receipts: [{
+              amount: data.amount,
+              invoice_id: data.invoiceId // The target invoice UUID
+        }]
+     };
+
+     const token = await this._getAuthToken();
+     const response = await this.page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
+        data: payload,
+        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+     });
+
+     if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
+     const json = await response.json();
+     console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id}) for Invoice ${data.invoiceId}`);
+     return { ref: json.ref, id: json.id };
+  }
+
+  async getInvoiceAPI(invoiceId) {
+     const apiBase = "http://157.180.20.112:8001/api";
+     const token = await this._getAuthToken();
+     const response = await this.page.request.get(`${apiBase}/invoices/${invoiceId}?year=2018&period=yearly&calendar=ec`, {
+        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+     });
+     if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(()=>'No Response')}`);
+     return await response.json();
   }
 
   async createReceiptAPI(data = {}) {

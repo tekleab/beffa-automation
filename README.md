@@ -41,7 +41,9 @@ Tests cover the core financial and supply chain modules. Each test creates real 
 | `sales-receipt-workflow` | Full sales flow: SO → Invoice → Receipt |
 | `invoice-reversal-impact` | Reverses an approved invoice, verifies inventory is restored |
 | `receipt-reversal-impact` | Reverses an approved receipt, verifies G/L offsets |
-| `customer` | Creates a customer, checks profile data |
+| `invoice-receipt-balance` | High-speed API logic validating rigorous fractional balance computations |
+| `customer-accounting-duplication`| Dedicated Accounting Compliance sequence; strictly enforces Double-Entry business logic restrictions |
+| `customer` | Creates a customer, checks profile data and lifecycle |
 | `vendor` | Creates a vendor, checks account integrity |
 
 ## Full ERP Module Map
