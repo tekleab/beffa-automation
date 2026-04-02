@@ -14,15 +14,15 @@ module.exports = defineConfig({
   expect: { timeout: 30000 },
 
   fullyParallel: true,
-  workers: 3,
+  workers: 4,
 
   /* CI Configuration */
   retries: process.env.CI ? 1 : 0,
 
-  /* 📊 ASTONISHING REPORTING CONFIGURATION */
+  /* 📊 REPORTING CONFIGURATION */
   reporter: [
     ['list'],
-    ['html', { open: 'never' }], // Generates standard HTML report
+    ['html', { open: 'never' }],
     [
       'allure-playwright', 
       { 
@@ -50,9 +50,9 @@ module.exports = defineConfig({
       ],
     },
 
-    /* Capture data for the graphs */
-    trace: 'retain-on-failure',     // Traces make Allure reports interactive
-    screenshot: 'on',               // 'on' ensures visuals appear in your dashboard
+    /* Capture data for reports */
+    trace: 'retain-on-failure',
+    screenshot: 'on',
     video: 'on-first-retry',
     
     actionTimeout: 60000,
@@ -64,6 +64,13 @@ module.exports = defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
         viewport: { width: 1920, height: 1080 },
       },
     },
