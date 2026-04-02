@@ -12,7 +12,7 @@ module.exports = defineConfig({
   expect: { timeout: 30000 },
 
   fullyParallel: true,
-  workers: 4,
+  workers: 3,
 
   retries: 0,
 
