@@ -1,30 +1,8 @@
-# BEFFA ERP — End-to-End Automation Suite
+# BEFFA ERP — Automated Testing
 
-## 🚀 Overview
-Production-grade E2E test suite for the **BEFFA ERP** system built with Playwright. Validates real-world business workflows across Sales, Procurement, Payments, and Accounting — ensuring data integrity, inventory accuracy, and ledger consistency.
+Playwright-based E2E test suite for the BEFFA ERP system. Covers financial workflows, inventory tracking, and accounting verification against a live environment.
 
-> **Scope**: This suite currently covers the core financial and inventory modules. It is designed to scale across the full BEFFA ERP platform as new modules are developed.
-
----
-
-## 🛠 Tech Stack
-| Technology | Purpose |
-|:--|:--|
-| **Playwright** | E2E Browser Automation |
-| **JavaScript (Node.js)** | Test Logic & API Integration |
-| **GitHub Actions** | CI/CD Pipeline |
-| **Allure** | Visual Test Reporting |
-| **Dotenv** | Environment Configuration |
-
----
-
-## 📋 Prerequisites
-- **Node.js** v20.0.0+
-- **npm** v10.0.0+
-
----
-
-## ⚙️ Setup
+## Setup
 
 ```bash
 git clone https://github.com/tekleab/befffa-automation.git
@@ -33,102 +11,96 @@ npm install
 npx playwright install
 ```
 
-Create a `.env` file:
-```env
+Create `.env` in root:
+```
 BASE_URL=http://your-erp-url:4173
 BEFFA_USER=your_username
 BEFFA_PASS=your_password
 ```
 
----
-
-## 🧪 Test Coverage
-
-### Current Modules (v1.0)
-
-| Module | Suite | Description | Method |
-|:--|:--|:--|:--|
-| **Payments** | `payment-cycle.spec.js` | Vendor payment with bill selection & balance validation | UI |
-| **Sales** | `sales-inventory-impact.spec.js` | SO → Invoice → Stock & Ledger verification | ⚡ API+UI |
-| **Sales** | `sales-receipt-workflow.spec.js` | Full Sales cycle (SO → Invoice → Receipt) | UI |
-| **Procurement** | `purchase-order-to-bill.spec.js` | Full Procurement cycle (PO → GRN → Bill) | UI |
-| **Procurement** | `purchase-inventory-impact.spec.js` | Stock addition on purchase receipt | UI |
-| **Reversals** | `invoice-reversal-impact.spec.js` | Invoice reversal with inventory restoration | UI |
-| **Reversals** | `receipt-reversal-impact.spec.js` | Receipt reversal with G/L ledger impact | ⚡ API+UI |
-| **Master Data** | `customer.spec.js` | Customer creation & profile integrity | UI |
-| **Master Data** | `vendor.spec.js` | Vendor creation & account verification | UI |
-
-### Future Expansion (Roadmap)
-
-| Module | Planned Coverage |
-|:--|:--|
-| **Fixed Assets** | Asset registration, depreciation, disposal |
-| **HR & Payroll** | Employee onboarding, salary processing, leave management |
-| **Budget Management** | Budget creation, allocation, variance tracking |
-| **Tax & Compliance** | WHT calculation, VAT reporting, fiscal year close |
-| **Multi-Currency** | Foreign exchange transactions, rate adjustments |
-| **Reporting** | Trial balance, P&L, balance sheet accuracy |
-| **User Management** | Role-based access control, permission validation |
-
----
-
-## 🏃 Running Tests
+## Running
 
 ```bash
-# Run all tests (2 workers in CI, 3 locally)
-npx playwright test
-
-# Run a specific test
-npx playwright test payment-cycle.spec.js --headed
-
-# Show HTML report
-npx playwright show-report
-
-# Generate Allure report
-npx allure generate allure-results --clean && npx allure open
+npx playwright test                                    # full suite
+npx playwright test payment-cycle.spec.js --headed     # single test, visible browser
+npx playwright show-report                             # HTML report
 ```
 
----
+CI runs with 2 workers to avoid overloading the remote server. Locally it defaults to 3.
 
-## 🏗 Architecture
+## What's Tested
+
+Tests cover the core financial and supply chain modules. Each test creates real documents, pushes them through the full approval chain, and verifies downstream effects (inventory counts, ledger entries).
+
+| Test | What it does |
+|:--|:--|
+| `payment-cycle` | Picks an unpaid bill, creates a vendor payment, verifies it in the vendor profile |
+| `sales-inventory-impact` | Creates SO + Invoice via API, approves both, checks stock deduction and ledger |
+| `purchase-inventory-impact` | Receives goods against a PO, verifies stock addition |
+| `purchase-order-to-bill` | Full procurement flow: PO → GRN → Bill |
+| `sales-receipt-workflow` | Full sales flow: SO → Invoice → Receipt |
+| `invoice-reversal-impact` | Reverses an approved invoice, verifies inventory is restored |
+| `receipt-reversal-impact` | Reverses an approved receipt, verifies G/L offsets |
+| `customer` | Creates a customer, checks profile data |
+| `vendor` | Creates a vendor, checks account integrity |
+
+## Full ERP Module Map
+
+Below is the complete BEFFA ERP module structure. Checked items have test coverage today, unchecked items are planned.
+
+**Accounting**
+- [x] General Ledger — Chart of Accounts, General Journal
+- [ ] Period Control
+- [x] Account Payables — Bills, Payments
+- [x] Account Receivables — Invoices, Receipts
+- [ ] Asset — Asset Classes, Asset Items
+- [ ] Budgeting — Posted Budgets, Calendars, Limits, Worksheets, Encumbrances, Controls, Supplements, Adjustments
+- [ ] Account Reconciliation — Statements, Reconciliation, History
+
+**CRM / Sales**
+- [x] Sale Orders
+- [x] Customers
+- [x] Vendors
+
+**HRM**
+- [ ] Organization Chart, Employees, Timesheets, Attendances, Leaves
+- [ ] Payroll — Payroll Run, Payroll Settings
+
+**Project Management**
+- [ ] Workspaces, Projects
+
+**SCM (Supply Chain)**
+- [x] Inventory — Items, Adjustments
+- [ ] Warehouse Management, Locations, Shipments
+- [ ] Move Orders — Location Transfer, Internal Request
+- [x] Procurement — Purchase Orders
+
+**Lease Management**
+- [ ] Leases
+
+**Service Management**
+- [ ] Services, Service Events
+
+**Reports**
+- [ ] Financial Statements, Sales, Purchases, Budget Report, Payroll
+
+**Settings**
+- [ ] User Management
+
+## Project Structure
 
 ```
-beffa-automation/
-├── pages/
-│   └── appManager.js          # Page Object Model (all ERP interactions)
-├── tests/
-│   └── e2e/                   # All test suites (9 files)
-├── playwright.config.js       # CI: 2 workers | Local: 3 workers
-├── .env                       # Credentials (not committed)
-├── .github/
-│   └── workflows/             # CI/CD pipeline
-└── README.md
+pages/appManager.js       — all ERP interactions (search, approval, API calls)
+tests/e2e/                — test files
+playwright.config.js      — 2 workers (CI), 3 (local), failure-only capture
+.env                      — credentials
 ```
 
-### Core Patterns
-- **Page Object Model** — Centralized `AppManager` class for all ERP interactions
-- **Smart Search** — Handles reactive UI lag with retry and commit sequences
-- **API Speed Track** — SO/Invoice/Receipt creation via REST API for fast setup
-- **Surgical Selection** — Ancestor-based checkbox targeting to avoid header clicks
-- **Navigation Guards** — URL-based waits to ensure form submission completion
-- **Ledger Verification** — Comma-aware numeric comparison for accounting tables
+Key implementation details:
+- Documents are created via REST API where possible to cut setup time
+- Approval flows are handled through the UI to maintain E2E integrity
+- Screenshots, video, and traces are captured only on failure to keep runs fast
 
----
+## License
 
-## 📊 CI/CD Configuration
-
-| Setting | CI | Local |
-|:--|:--|:--|
-| Workers | 2 | 3 |
-| Browser | Chromium | Chromium |
-| Retries | 1 | 0 |
-| Timeout | 10 min/test | 10 min/test |
-| Screenshots | Always | Always |
-| Traces | On failure | On failure |
-
-> **Why 2 workers in CI?** ERP tests hit a shared remote server. More workers means more concurrent connections, which increases timeout risk under network latency.
-
----
-
-## 📄 License
 MIT

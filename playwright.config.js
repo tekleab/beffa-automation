@@ -2,24 +2,20 @@ const { defineConfig, devices } = require('@playwright/test');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// ✅ Load .env once
 dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
 
 module.exports = defineConfig({
   testDir: './tests/e2e',
   testIgnore: [],
 
-  /* Long timeout for complex ERP workflows */
   timeout: 600000, 
   expect: { timeout: 30000 },
 
   fullyParallel: true,
   workers: process.env.CI ? 2 : 3,
 
-  /* CI Configuration */
   retries: process.env.CI ? 1 : 0,
 
-  /* 📊 REPORTING CONFIGURATION */
   reporter: [
     ['list'],
     ['html', { open: 'never' }],
@@ -50,10 +46,9 @@ module.exports = defineConfig({
       ],
     },
 
-    /* Capture data for reports */
     trace: 'retain-on-failure',
-    screenshot: 'on',
-    video: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
     
     actionTimeout: 60000,
     navigationTimeout: 150000,
@@ -67,14 +62,6 @@ module.exports = defineConfig({
         viewport: { width: 1920, height: 1080 },
       },
     },
-    // Future: Uncomment to enable cross-browser testing
-    // {
-    //   name: 'firefox',
-    //   use: {
-    //     ...devices['Desktop Firefox'],
-    //     viewport: { width: 1920, height: 1080 },
-    //   },
-    // },
   ],
 
   outputDir: 'test-results/',
