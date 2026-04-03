@@ -43,9 +43,10 @@ test.describe.serial('Isolated Invoice Reversal & Inventory Impact', () => {
         await app.pickDate('Due Date', dueDay);
         console.log(`[INFO] Dates set: Invoice Day ${currentDay}, Due Day ${dueDay}`);
 
-        // Fill AR Account
+        // Fill AR Account - back to random as requested
         const arBtn = page.getByRole('button', { name: /Account(s)? Receivable selector/i });
         await app.selectRandomOption(arBtn, 'AR Account');
+        await page.waitForTimeout(500);
 
         // Add Direct Line Item for our target item
         console.log(`Action: Adding Line Item for "${initialInfo.itemName}"...`);
@@ -56,23 +57,30 @@ test.describe.serial('Isolated Invoice Reversal & Inventory Impact', () => {
         await modal.getByRole('button', { name: 'Item', exact: true }).click();
         const itemSelector = modal.getByRole('button', { name: 'Item selector' });
         await itemSelector.click();
+        // ⚡ PRECISION: Always use the captured item name
         await app.smartSearch(null, initialInfo.itemName);
-        await page.waitForTimeout(800);
+        await page.waitForTimeout(1000);
 
         await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
         await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
-        await app.selectRandomOption(modal.getByRole('button', { name: 'G/L Account selector' }), 'Sales Account');
+        
+        // Use random Sales account 
+        const salesGLBtn = modal.getByRole('button', { name: 'G/L Account selector' });
+        await app.selectRandomOption(salesGLBtn, 'Sales Account');
 
-        invoicedQty = 1;
-        await modal.getByRole('group').filter({ hasText: /^Quantity/i }).getByRole('spinbutton').fill(String(invoicedQty));
+        await modal.getByRole('group').filter({ hasText: /^Quantity/i }).getByRole('spinbutton').fill("1");
 
-        await modal.getByRole('button', { name: 'Add', exact: true }).click();
+        console.log("Action: Submitting Line Item modal...");
+        const modalAddBtn = modal.getByRole('button', { name: 'Add', exact: true });
+        await modalAddBtn.click();
         await expect(modal).not.toBeVisible();
+        await page.waitForTimeout(1000); // Allow grid to refresh
+        invoicedQty = 1;
 
         // Submit Invoice
         console.log("Action: Submitting Invoice...");
         const invSubmitBtn = page.getByRole('button', { name: 'Add Now' }).first();
-        await expect(invSubmitBtn).toBeEnabled();
+        await expect(invSubmitBtn).toBeEnabled({ timeout: 15000 });
         await invSubmitBtn.click();
 
         // 4. Extract Invoice ID & Approve
