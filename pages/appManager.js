@@ -830,6 +830,24 @@ class AppManager {
     return match ? match[1].trim() : text.replace(new RegExp(`${label}`, 'i'), '').replace(/:/g, '').trim();
   }
 
+  async captureRandomCustomerDetails() {
+    await this.page.goto('/contacts/customers/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    await this.page.waitForTimeout(3000);
+    const rows = this.page.locator('table tbody tr');
+    await rows.first().waitFor({ state: 'visible', timeout: 30000 });
+    const count = await rows.count();
+    const targetRow = rows.nth(Math.floor(Math.random() * Math.min(count, 15)));
+    
+    // Extract ID from detail link
+    const nameLink = targetRow.locator('td a').first();
+    const customerName = (await nameLink.innerText()).trim();
+    const href = await nameLink.getAttribute('href');
+    const customerId = href.match(/\/contacts\/customers\/([a-f0-9-]+)/)?.[1];
+    
+    console.log(`[DATA] Captured Customer: "${customerName}" (ID: ${customerId})`);
+    return { customerName, customerId };
+  }
+
   async captureRandomVendorDetails() {
     await this.page.goto('/contacts/vendors/?page=1&pageSize=30', { waitUntil: 'networkidle' });
     const rows = this.page.locator('table tbody tr');
@@ -1138,6 +1156,86 @@ class AppManager {
     const json = await response.json();
     console.log(`[SUCCESS] PO created via API: ${json.po_number} (ID: ${json.id})`);
     return { poNumber: json.po_number, poId: json.id };
+  }
+
+  async createBillAPI(itemData = {}, qty = 10, unitPrice = 5000, vendorId = null) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const payload = {
+      accounts_payable_id: "998df511-68ea-48b9-b405-9419eb78145b",
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      invoice_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      due_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      items: [{
+        item_id: itemData.itemId,
+        general_ledger_account_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64",
+        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+        quantity: qty,
+        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
+        unit_price: unitPrice,
+        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+        description: `Direct Bill of ${itemData.itemName}`,
+        amount: qty * unitPrice
+      }],
+      vendor_id: vendorId || "a8b71572-ff1b-4bbb-8bdd-f548359b46f3",
+      status: "draft"
+    };
+
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/bills?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: {
+        'x-company': 'befa tutorial',
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] Bill created via API: ${json.invoice_number} (ID: ${json.id})`);
+    return { billNumber: json.invoice_number, billId: json.id };
+  }
+
+  async createInvoiceAPI(itemData = {}, qty = 1, unitPrice = 5000, customerId = null) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const payload = {
+      accounts_receivable_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64", // Trade Receivable (Common ID)
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      invoice_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      due_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      items: [{
+        item_id: itemData.itemId,
+        general_ledger_account_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64", // Sales Account
+        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+        quantity: qty,
+        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
+        unit_price: unitPrice,
+        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+        description: `API Sale to Zero: ${itemData.itemName}`,
+        amount: qty * unitPrice
+      }],
+      customer_id: customerId || "80a87611-6450-4828-912b-3e5bf0d41829", // Default Customer
+      status: "draft"
+    };
+
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: {
+        'x-company': 'befa tutorial',
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) {
+        const errorText = await response.text();
+        return { success: false, status: response.status(), error: errorText };
+    }
+
+    const json = await response.json();
+    console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
+    return { success: true, ref: json.invoice_number, id: json.id };
   }
 
   async createInvoiceReceiptAPI(data = {}) {
