@@ -36,9 +36,12 @@ test.describe.serial('Isolated Invoice Reversal & Inventory Impact', () => {
         const selectedCustomer = (await invCustBtn.innerText()).trim();
         console.log(`[DATA] Selected Customer: "${selectedCustomer}"`);
 
-        // Fill Mandatory Dates
-        await app.pickDate('Invoice Date', 21);
-        await app.pickDate('Due Date', 21);
+        // Fill Mandatory Dates using Smart Calendar logic (EC/GC)
+        const currentDay = await app.getActiveCalendarDay();
+        const dueDay = Math.min(30, currentDay + 5);
+        await app.pickDate('Invoice Date', currentDay);
+        await app.pickDate('Due Date', dueDay);
+        console.log(`[INFO] Dates set: Invoice Day ${currentDay}, Due Day ${dueDay}`);
 
         // Fill AR Account
         const arBtn = page.getByRole('button', { name: /Account(s)? Receivable selector/i });

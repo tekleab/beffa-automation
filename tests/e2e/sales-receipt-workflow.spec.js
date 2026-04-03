@@ -17,7 +17,7 @@ test.describe('Receipt Creation and Customer Verification', () => {
         const { soDate: receiptDate } = app.getTransactionDates();
         // --- Step 1: Data Scanning (Finding an Unpaid Invoice) ---
         const target = await app.findApprovedUnpaidInvoice();
-        
+
         let CUSTOMER_NAME = "";
         let INVOICE_ID = null;
 
@@ -27,7 +27,7 @@ test.describe('Receipt Creation and Customer Verification', () => {
             console.log(`[DATA] Found unpaid customer match: "${CUSTOMER_NAME}" (Invoice: ${INVOICE_ID})`);
         } else {
             console.log("[WARNING] No unpaid approved invoices found. Using Standalone Fallback.");
-            CUSTOMER_NAME = "Base Ethiopia"; 
+            CUSTOMER_NAME = "Base Ethiopia";
         }
 
         // --- Step 2: Receipt Creation ---
@@ -56,15 +56,34 @@ test.describe('Receipt Creation and Customer Verification', () => {
             await invoiceTab.click({ force: true });
             await page.waitForTimeout(3000);
 
-            // Find the specific invoice checkbox
-            const invoiceRow = page.locator('table tbody tr').filter({ hasText: INVOICE_ID }).first();
-            if (await invoiceRow.isVisible({ timeout: 10000 }).catch(() => false)) {
-                const checkbox = invoiceRow.locator('.chakra-checkbox__control').first();
+            // Precise Grid Selection: Find the div container that contains our specific Invoice ID span
+            const activePanel = page.locator('div[role="tabpanel"]:not([hidden])');
+            // We look for a row-like div that contains exactly our ID text
+            const targetRow = activePanel.locator('> div > div').filter({
+                has: page.locator('span').getByText(INVOICE_ID, { exact: true })
+            }).first();
+
+            try {
+                // Wait for the specific ID to be physically present in the grid
+                await targetRow.waitFor({ state: 'visible', timeout: 20000 });
+                await targetRow.scrollIntoViewIfNeeded();
+
+                // Locate the checkbox within this specific row-container
+                const checkbox = targetRow.locator('.chakra-checkbox__control, input[type="checkbox"]').first();
+                console.log(`[ACTION] Linking Invoice ${INVOICE_ID} found in custom grid...`);
+
                 await checkbox.click({ force: true });
-                console.log(`[SUCCESS] Invoice ${INVOICE_ID} selected.`);
-            } else {
-                console.log(`[WARN] Invoice ${INVOICE_ID} not found in receipt dropdown. Falling back to first row.`);
-                await page.locator('div[role="tabpanel"]:not([hidden]) .chakra-checkbox__control').nth(1).click({ force: true });
+                console.log(`[SUCCESS] Invoice ${INVOICE_ID} accurately selected and linked.`);
+            } catch (e) {
+                // 🛠 Debugger: If missing, log what the automation DOES see in the spans
+                const allSpans = await activePanel.locator('span').allTextContents();
+                const visibleInvoices = allSpans.filter(t => t.includes('INV/'));
+
+                console.error(`[CRITICAL ERROR] Could not find ${INVOICE_ID} in the grid.`);
+                console.error(`[DEBUG] Found these other Invoices instead: ${visibleInvoices.join(', ') || 'None'}`);
+
+                console.log(`[WARN] Falling back to first available row to prevent total block...`);
+                await activePanel.locator('.chakra-checkbox__control, input[type="checkbox"]').nth(1).click({ force: true });
             }
         } else {
             // SCENARIO B: Standalone Receipt (No Invoice)
@@ -74,12 +93,12 @@ test.describe('Receipt Creation and Customer Verification', () => {
             if (await addRowBtn.isVisible().catch(() => false)) {
                 await addRowBtn.click({ force: true });
                 await page.waitForTimeout(1000);
-                
+
                 // Select a default G/L account for the credit side
                 const lastRowCells = page.locator('table tbody tr').last().locator('td');
                 await lastRowCells.nth(1).click({ force: true });
                 await app.smartSearch(null, "Other Income"); // Common generic account
-                
+
                 // Set Amount
                 const qtyInput = page.locator('table tbody tr').last().locator('input[type="number"]').first();
                 await qtyInput.fill("1000");

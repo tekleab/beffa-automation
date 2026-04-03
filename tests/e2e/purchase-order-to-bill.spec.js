@@ -12,19 +12,8 @@ test.describe('Purchase Order - Standalone Workflow', () => {
         console.log('Execution: Navigating to New Purchase Order...');
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'networkidle' });
 
-        // 2. Order Date Setup
-        console.log('Action: Setting Order Date...');
-        // Parse the day number from the date button text (e.g. "Month 16, Year")
-        const orderBtn = page.locator('div, [role="group"]')
-            .filter({ has: page.getByText(/^Purchase Order Date$/i) })
-            .last()
-            .locator('button').first();
-        const orderBtnName = await orderBtn.getAttribute('aria-label')
-            .catch(() => null)
-            || await orderBtn.locator('generic, div, span').last().textContent({ timeout: 5000 }).catch(() => '');
-        const orderDay = parseInt((orderBtnName || '').trim().split(/[\s,]+/)[1], 10) || 16;
-        await app.pickDate('Purchase Order Date', orderDay);
-        console.log(`Status: Order Date set to day ${orderDay}.`);
+        await app.pickDate('Purchase Order Date'); 
+        console.log(`Status: Order Date set via Smart Calendar Logic.`);
 
 
         // 3. Vendor Selection
@@ -187,11 +176,17 @@ test.describe('Purchase Order - Standalone Workflow', () => {
         await app.smartSearch(null, poNumber);
         await page.keyboard.press('Escape');
 
-        // Date configuration
+        // Date configuration using smart calendar logic (EC or GC)
         console.log("Action: Configuring Bill dates...");
-        const todayNum = new Date().getDate();
-        await app.pickDate('Invoice Date', todayNum);
-        await app.pickDate('Due Date', todayNum);
+        const todayDay = await app.getActiveCalendarDay();
+        const dueOffset = Math.floor(Math.random() * 4) + 2; 
+        const dueDay = Math.min(30, todayDay + dueOffset);
+        
+        await app.pickDate('Invoice Date', todayDay);
+        console.log(`[INFO] Invoice Date set to current day: ${todayDay}`);
+        
+        await app.pickDate('Due Date', dueDay);
+        console.log(`[INFO] Due Date set with random offset: day ${dueDay}`);
 
         // Accounts Payable
         console.log("Action: Selecting Accounts Payable...");

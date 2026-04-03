@@ -6,86 +6,27 @@ test.describe('Purchase Inventory & Ledger Impact', () => {
     test('Verify Stock and Journal Impact for Purchase Workflow', async ({ page }) => {
         test.setTimeout(600000);
         const app = new AppManager(page);
+        let poID = null;
+        let selectedVendor = "";
 
-        // 1. Login and Identify a Random Item
+        // 1. Identify Random Item
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const initial = await app.captureRandomItemDetails();
         console.log(`[TARGET] Item: "${initial.itemName}" | Initial Stock: ${initial.currentStock}`);
 
-        // 2. Create Purchase Order for this item
-        console.log("Action: Navigating to New Purchase Order...");
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'load' });
-        await page.waitForURL(/\/payables\/purchase-orders\/new/);
-
-        // Setup Vendor - Save the selected vendor name for Bill creation match
-        const vendorBtn = page.getByRole('button', { name: 'Vendor selector' });
-        await app.selectRandomOption(vendorBtn, 'Vendor');
-        const selectedVendor = (await vendorBtn.innerText()).trim();
-        console.log(`[DATA] Saved Vendor: "${selectedVendor}"`);
-
-        // Set Date (Matches Ethiopian Cal logic in appManager)
-        await app.pickDate('Purchase Order Date', 21);
-        await page.waitForTimeout(600);
-
-        // Fill mandatory form fields for the PO
-        console.log("Action: Selecting Accounts Payable and Purchase Type...");
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Purchase Type selector' }), 'Purchase Type');
+        // 2. Create Purchase Order VIA API (Fast & Stable)
+        console.log(`Action: Creating PO via API for "${initial.itemName}"...`);
+        const poData = await app.createPurchaseOrderAPI(initial, 10, 5000);
+        poID = poData.poNumber;
+        const poUUID = poData.poId;
         
-        await page.waitForTimeout(1000);
-
-        // Add Line Item specifically for our captured item
-        console.log(`Action: Adding Line Item for "${initial.itemName}"...`);
-        await page.getByRole('tab', { name: /Purchase Order Items/i }).click();
-        await page.getByRole('button', { name: 'Line Item' }).click();
-        const modal = page.getByRole('dialog').last();
-        await modal.waitFor({ state: 'visible' });
-
-        await modal.getByRole('button', { name: 'Item', exact: true }).click();
+        console.log(`[SUCCESS] PO Created: ${poID}. Navigating to Approval UI...`);
+        await page.goto(`/payables/purchase-orders/${poUUID}/detail`, { waitUntil: 'load' });
         
-        // ⚡ EXACT SEARCH - smartSearch handles the click automatically
-        const itemSelector = modal.getByRole('button', { name: 'Item selector' });
-        await itemSelector.click();
-        await app.smartSearch(null, initial.itemName);
-        await page.waitForTimeout(1000);
+        // ⚡ PRECISION LIVE VENDOR CAPTURE
+        selectedVendor = await app.extractDetailValue('Vendor');
+        console.log(`[DATA] Captured Live Vendor: "${selectedVendor}"`);
 
-        await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
-        await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
-        
-        // ⚡ Use the specific G/L Account captured from the item (if available) or random if not
-        const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
-        if (initial.inventoryAccountCode) {
-            await glBtn.click();
-            await app.smartSearch(null, initial.inventoryAccountCode);
-        } else {
-            await app.selectRandomOption(glBtn, 'G/L Account');
-        }
-
-        // Quantity (random 1-5 to be safe)
-        const qtyToOrder = "10";
-        await modal.getByRole('group').filter({ hasText: /^Quantity/i }).getByRole('spinbutton').fill(qtyToOrder);
-        await modal.getByRole('group').filter({ hasText: /Unit Price/i }).getByRole('spinbutton').fill("5000");
-
-        await modal.getByRole('button', { name: 'Add', exact: true }).click();
-        await expect(modal).not.toBeVisible();
-
-        // Submit PO
-        console.log("Action: Submitting PO...");
-        const addNowBtn = page.getByRole('button', { name: 'Add Now' }).first();
-        await expect(addNowBtn).toBeEnabled();
-        await addNowBtn.click();
-
-        // 3. Capture and Approve PO
-        await page.waitForURL(/\/payables\/purchase-orders\/.*\/detail$/, { timeout: 120000 });
-        
-        // Robust PO Number Extraction (matches purchase-order.spec logic)
-        const poElement = page.locator('p, span, div, h1, h2, h3, h4, h5').filter({ hasText: /^PO\/\d{4}\// }).first();
-        await poElement.waitFor({ state: 'attached', timeout: 30000 });
-        const poText = await poElement.textContent();
-        const poMatch = poText.match(/PO\/\d{4}\/\d{2}\/\d{2}\/\d+/);
-        const poID = poMatch ? poMatch[0] : (poText || '').trim();
-        
-        console.log(`[ACTION] Document Created: ${poID}. Starting Approval...`);
         await app.handleApprovalFlow();
         console.log(`[✓] PO ${poID} workflow completed.`);
 
@@ -107,7 +48,7 @@ test.describe('Purchase Inventory & Ledger Impact', () => {
         await page.waitForTimeout(1000);
 
         // Dates & Accounts
-        await app.pickDate('Invoice Date', 21);
+        await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Account');
 
         // ⚡ Handle the Receipt Tab (Crucial for Stock impact!)
@@ -138,10 +79,19 @@ test.describe('Purchase Inventory & Ledger Impact', () => {
             await app.verifyLedgerImpact(entries[0].accountCode, billID, entries[0].debit || entries[0].credit, entries[0].debit > 0 ? 'debit' : 'credit');
         }
 
-        // Verification B: Final Stock Impact
+        // Verification B: Final Stock Impact (with Retry for background processing)
         console.log(`[VERIFY] Final Stock Check for "${initial.itemName}"...`);
-        const final = await app.captureItemDetails(initial.itemName);
-        const expectedStock = initial.currentStock + receivedQty;
+        let final = null;
+        let expectedStock = initial.currentStock + receivedQty;
+        
+        // 🔄 Retry loop: ERP background ledger might take a few seconds to update stock
+        for (let i = 0; i < 3; i++) {
+            await page.waitForTimeout(5000); // Wait 5s for ledger sync
+            final = await app.captureItemDetails(initial.itemName);
+            console.log(`[CHECK] Attempt ${i+1}: Stock is ${final.currentStock} (Expected: ${expectedStock})`);
+            if (final.currentStock === expectedStock) break;
+            console.log(`[WARN] Stock not updated yet. Retrying in 5s...`);
+        }
         
         console.log(`------------------------------------------`);
         console.log(`Item: ${initial.itemName}`);

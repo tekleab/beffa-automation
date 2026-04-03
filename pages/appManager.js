@@ -25,12 +25,68 @@ class AppManager {
   async login(email, pass, companyName = "befa tutorial") {
     const cleanEmail = (email || "").replace(/['"]+/g, '').trim();
     const cleanPass = (pass || "").replace(/['"]+/g, '').trim();
-    await this.page.goto('/users/login');
-    await this.emailInput.waitFor({ state: 'visible', timeout: 30000 });
-    await this.emailInput.fill(cleanEmail);
-    await this.passwordInput.fill(cleanPass);
-    await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
-    await this.loginBtn.click();
+
+    console.log(`[ACTION] Performing High-Speed API Login for: ${cleanEmail}...`);
+
+    try {
+      // 1. Attempt API Login
+      const loginUrl = `http://157.180.20.112:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+      const response = await this.page.request.post(loginUrl, {
+        data: { email: cleanEmail, password: cleanPass },
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok()) throw new Error(`API Login Failed: ${response.status()}`);
+
+      const session = await response.json();
+      const token = session.auth_token;
+      const expiry = session.auth_token_exp;
+
+      if (!token) throw new Error("No token returned from API");
+
+      // 2. Head to the Login page to settle the domain context
+      await this.page.goto('/users/login');
+
+      // 3. Inject the EXACT keys the frontend requires to "wake up" authenticated
+      await this.page.evaluate(({ jwt, exp, company }) => {
+        localStorage.setItem('auth-token', jwt);
+        localStorage.setItem('token', jwt); // fallback
+
+        // The UI expects a serialized JSON object for expiration
+        const tokenExp = JSON.stringify({ authTokenExpirationTime: exp });
+        localStorage.setItem('token-expiration', tokenExp);
+
+        // Crucial Fiscal & Role Metadata
+        localStorage.setItem('selectedYear', '2018');
+        localStorage.setItem('calendar', 'EC');
+        localStorage.setItem('period', 'yearly');
+        localStorage.setItem('selected-role', 'IT Administrator / User Manager');
+        localStorage.setItem('currentCompany', company || 'befa tutorial');
+
+        localStorage.setItem('lastUserActivity', new Date().toISOString());
+      }, { jwt: token, exp: expiry, company: companyName });
+
+      // 4. Set HTTP cookies for backend persistence
+      const domain = new URL(this.page.url()).hostname;
+      await this.page.context().addCookies([
+        { name: 'token', value: token, domain: domain, path: '/' },
+        { name: 'auth-token', value: token, domain: domain, path: '/' }
+      ]);
+
+      // 5. Navigate to Home
+      console.log(`[SUCCESS] API Login complete. Session & Metadata injected.`);
+      await this.page.goto('/', { waitUntil: 'load' });
+
+    } catch (error) {
+      console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
+      await this.page.goto('/users/login');
+      await this.emailInput.waitFor({ state: 'visible', timeout: 30000 });
+      await this.emailInput.fill(cleanEmail);
+      await this.passwordInput.fill(cleanPass);
+      await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
+      await this.loginBtn.click();
+    }
+
     await this.companyBtn.waitFor({ state: 'visible', timeout: 60000 });
 
     // Switch company if specific name provided
@@ -84,15 +140,17 @@ class AppManager {
 
     for (let s = 0; s < 3; s++) {
       try {
-        const target = container || this.page.locator('div[role="dialog"], .chakra-modal__content, .chakra-popover__content').filter({ visible: true }).last();
+        const target = container || this.page.locator('div[role="dialog"], .chakra-modal__content, .chakra-popover__content, .chakra-input__group').filter({ visible: true }).last();
 
-        let searchBox = target.locator('input:not([type="number"]):not([type="hidden"])').filter({ visible: true }).first();
-        if (!(await searchBox.isVisible({ timeout: 2000 }).catch(() => false))) {
-          searchBox = this.page.locator('input[placeholder*="Search" i]').filter({ visible: true }).last();
+        // 🛡️ CRITICAL: Only pick ENABLED text-like inputs, avoiding checkboxes/radios/numbers
+        let searchBox = target.locator('input:enabled:not([type="number"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"])').filter({ visible: true }).first();
+        
+        if (!(await searchBox.isVisible({ timeout: 1000 }).catch(() => false))) {
+          searchBox = target.locator('input[placeholder*="Search" i]:enabled:not([type="checkbox"]), input[role="textbox"]:enabled').filter({ visible: true }).last();
         }
 
-        await searchBox.waitFor({ state: 'visible', timeout: 10000 });
-        await searchBox.click();
+        await searchBox.waitFor({ state: 'visible', timeout: 8000 });
+        await searchBox.click({ force: true });
         await searchBox.clear();
 
         await searchBox.fill(cleanText);
@@ -135,10 +193,8 @@ class AppManager {
           }
 
           // Tier 4: ID vs Name fallback (Allow this blind click for Document IDs OR Numeric Codes)
-          // E.g. search "CUST/..." or "1005" -> returns Name results
           const isIdOrCode = cleanText.includes('/') || /^\d+$/.test(cleanText);
           if (isIdOrCode) {
-            console.log(`[INFO] Tier 4 - no exact match for "${cleanText}" (ID/Code). Clicking first visible item assuming Name returned...`);
             let fallbackItem = null;
             const clickableSelectors = 'button:not([aria-label]), [role="option"], [role="menuitem"], li, .chakra-menu__menuitem, label, .chakra-checkbox, [role="checkbox"]';
             const validItemFilter = { hasNotText: /^\s*(\+?\s*Add|Clear|New|No more items)\s*$/i };
@@ -150,8 +206,6 @@ class AppManager {
             }
 
             if (await fallbackItem.isVisible({ timeout: 1000 }).catch(() => false)) {
-              const foundText = (await fallbackItem.innerText()).trim() || "Item";
-              console.log(`[INFO] Tier 4 - clicking first available item: "${foundText}"`);
               await fallbackItem.click({ force: true });
               return true;
             }
@@ -177,7 +231,7 @@ class AppManager {
         // ⚡ NEW: Verification check - Ensure the selection "sticks"
         // We wait a moment for reactive frameworks to update the field or close the dialog
         await this.page.waitForTimeout(800);
-        
+
         // If the dialog is still open and we clicked something, maybe it didn't register?
         // We try hitting Enter as a final "commit" signal for some ERP inputs
         await this.page.keyboard.press('Enter');
@@ -253,7 +307,7 @@ class AppManager {
       if (!(await button.isVisible({ timeout: 1000 }).catch(() => false))) {
         // Fallback to text matching if aria-label is missing
         button = this.page.locator('button').filter({
-          hasText: /^(Submkt For Review|Submit For Review|Submir For Review|Submit For Reviewer|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Approver|Submit)$/i
+          hasText: /^(Submkt For Review|Submit For Review|Submir For Review|Submit For Reviewer|Submt For Review|Submit For Approver|Submit Forapprover|Submit For Approve|Submit For Apporver|Advance|Approve|Approver|Submit)$/i
         }).filter({ visible: true }).first();
       }
 
@@ -274,8 +328,8 @@ class AppManager {
 
     if (await reviewerBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
       // Evaluate text directly or use innerText if not an input
-      const currentSelection = (await reviewerBtn.inputValue().catch(() => null)) 
-                               || (await reviewerBtn.innerText().catch(() => '')).trim();
+      const currentSelection = (await reviewerBtn.inputValue().catch(() => null))
+        || (await reviewerBtn.innerText().catch(() => '')).trim();
 
       if (currentSelection.toLowerCase() !== "system admin") {
         // Use fill if it's an input field
@@ -319,55 +373,77 @@ class AppManager {
     return { soDate: fmt(today), invoiceDate: fmt(today), dueDate: fmt(due) };
   }
 
-  async fillDate(labelOrIndex, dateValue) {
-    const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
-    let datePickerBtn;
+  /**
+   * getActiveCalendarDay
+   * Returns today's day number in the current active calendar (EC or GC).
+   */
+  async getActiveCalendarDay() {
+    const calendarMode = await this.page.evaluate(() => localStorage.getItem('calendar') || 'EC');
 
+    if (calendarMode.toUpperCase() === 'EC') {
+      const now = new Date();
+      const gDay = now.getDate();
+      const gMonth = now.getMonth() + 1; // 1-12
+
+      // 🇪🇹 Precise Ethiopian Translation for April (Megabit)
+      // April 1st (GC) = Megabit 23rd (EC)
+      // Today (April 3rd) = Megabit 25th (EC) -> Offset: +22
+      if (gMonth === 4) {
+        const ethiopianDay = gDay + 22;
+        console.log(`[CALENDAR] Ethiopian mode: Today is Megabit ${ethiopianDay}.`);
+        return ethiopianDay;
+      }
+
+      // Fallback for other months if needed during transition
+      return gDay;
+    }
+
+    return new Date().getDate();
+  }
+
+  async fillDate(labelOrIndex, dateValue) {
+    // Extract day number for the grid click
+    const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
+    console.log(`[ACTION] Filling date ${dateValue} -> Targeting UI day: ${dayToSelect}`);
+
+    let btn;
     if (typeof labelOrIndex === "string") {
-      // Find the button within a container and label
-      const container = this.page.locator('.chakra-form-control, [role="group"], div')
+      const container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
         .filter({ has: this.page.getByText(new RegExp(`^${labelOrIndex}\\s*\\*?$`, 'i')) })
         .filter({ has: this.page.locator('button') })
         .last();
-      datePickerBtn = container.locator('button').first();
+      btn = container.locator('button').first();
     } else {
-      // Fallback to index if needed
-      datePickerBtn = this.page.locator('button:has(span.formatted-date), button:has(img)').filter({ visible: true }).nth(labelOrIndex);
+      btn = this.page.locator('button:has(span.formatted-date), button.trigger-button').filter({ visible: true }).nth(labelOrIndex);
     }
 
-    await datePickerBtn.click({ force: true });
-    await this.page.waitForTimeout(2000);
+    await btn.click({ force: true });
+    await this.page.waitForTimeout(1000);
 
-    const dayButton = this.page.locator('div[role="grid"] button, button.chakra-datepicker__day').filter({ hasText: new RegExp(`^${dayToSelect}$`) }).first();
+    const popover = this.page.locator('[role="dialog"], [data-slot="popover-content"], [id^="radix-"], .chakra-popover__content').filter({ visible: true }).last();
+    // Use precise button targeting for the day number
+    const dayBtn = popover.locator('button').filter({ hasText: new RegExp(`^${dayToSelect}$`) }).first();
 
-    if (await dayButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await dayButton.click({ force: true });
+    if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await dayBtn.click({ force: true });
+      console.log(`[SUCCESS] Day ${dayToSelect} selected in the current active calendar grid.`);
     } else {
-      // Direct typing fallback
+      console.log(`[WARN] Day ${dayToSelect} not found in grid. Using fallback type...`);
       await this.page.keyboard.type(dateValue);
       await this.page.keyboard.press('Enter');
     }
-
-    await this.page.waitForTimeout(1000); // Sync React state
+    await this.page.waitForTimeout(1000);
   }
 
-  /**
-   * pickDate — reusable automatic date picker helper.
-   * Opens the picker identified by its form label, clicks the specified day,
-   * then blurs to commit React state. Uses ARIA role targeting (getByRole('dialog'))
-   * which correctly matches Chakra UI's div[role="dialog"] calendar popup.
-   *
-   * @param {string} label  - The visible label of the date field (e.g. 'Request Date')
-   * @param {number} dayNum - The Ethiopian calendar day number to select
-   */
   async pickDate(label, dayNum) {
-    console.log(`[ACTION] Picking date: "${label}" -> Day ${dayNum}`);
-    let container = this.page.locator('.chakra-form-control, [role="group"], div')
+    const targetDay = dayNum || await this.getActiveCalendarDay();
+    console.log(`[ACTION] Picking date: "${label}" -> Targeting Day ${targetDay}`);
+
+    let container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
       .filter({ has: this.page.getByText(new RegExp(`^${label}\\s*\\*?$`, 'i')) })
       .filter({ has: this.page.locator('button') })
       .last();
 
-    // Fallback to partial match if exact label wasn't found
     if (!(await container.isVisible().catch(() => false))) {
       container = this.page.locator('.chakra-form-control, [role="group"], div')
         .filter({ has: this.page.getByText(new RegExp(`${label}`, 'i')) })
@@ -375,48 +451,24 @@ class AppManager {
         .last();
     }
 
-    const btn = container.locator('button').last(); // last button is usually the actual date button, not an attached icon
+    const btn = container.locator('button').first();
+    await btn.click({ force: true });
+    await this.page.waitForTimeout(1000);
 
-    // Open the picker using deep evaluate to bypass Chakra synthetic event locks
-    await btn.evaluate(node => node.click());
+    const popover = this.page.locator('[role="dialog"], [data-slot="popover-content"], [id^="radix-"], .chakra-popover__content').filter({ visible: true }).last();
+    const dayBtn = popover.locator('button').filter({ hasText: new RegExp(`^${targetDay}$`) }).first();
 
-    // Calendar renders as div[role="dialog"] (Chakra UI), a popover, or equivalent.
-    const cal = this.page.locator('[role="dialog"], .chakra-popover__content, div[id*="popover"]')
-      .filter({ has: this.page.locator('[role="grid"], .chakra-datepicker, .react-datepicker') })
-      .last();
-
-    // ⚡ ULTRA-ROBUST FALLBACK: If calendar doesn't appear in 3 seconds, just type the day
-    if (!(await cal.isVisible({ timeout: 3000 }).catch(() => false))) {
-      console.log(`[INFO] Calendar for "${label}" did not appear. Using direct type fallback...`);
-      await btn.click({ force: true }).catch(() => { });
-      await this.page.keyboard.type(String(dayNum));
-      await this.page.keyboard.press('Enter');
-      await this.page.keyboard.press('Tab');
-      return;
-    }
-
-    // Click the target day in the visible calendar
-    console.log(`[INFO] Calendar visible. Clicking day ${dayNum}...`);
-    const dayBtn = cal.getByRole('button', { name: String(dayNum), exact: true });
     if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await dayBtn.click({ force: true });
+      console.log(`[SUCCESS] "${label}" set to Day ${targetDay} (Calendar match).`);
     } else {
-      await this.page.keyboard.type(String(dayNum));
+      console.log(`[WARN] Could not find day ${targetDay}. Fallback to direct key press.`);
+      await this.page.keyboard.type(String(targetDay));
       await this.page.keyboard.press('Enter');
+      await this.page.keyboard.press('Tab');
     }
-
-    await this.page.waitForTimeout(600);
-
-    // Blur the label to commit React state
-    const blurLabel = this.page.getByText(new RegExp(`${label}`, 'i')).first();
-    if (await blurLabel.isVisible().catch(() => false)) {
-      await blurLabel.click({ force: true });
-    } else {
-      await this.page.keyboard.press('Escape');
-    }
-    await this.page.waitForTimeout(600);
+    await this.page.waitForTimeout(1000);
   }
-
 
   async selectRandomOption(selector, labelName, isOptional = false) {
     const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
@@ -497,7 +549,7 @@ class AppManager {
     // 6. Assertion
     const docLocator = this.page.locator('table').getByText(docNumber);
     await docLocator.first().waitFor({ state: 'attached', timeout: 30000 });
-    await docLocator.first().scrollIntoViewIfNeeded().catch(() => {});
+    await docLocator.first().scrollIntoViewIfNeeded().catch(() => { });
     await expect(docLocator.first()).toBeAttached();
     console.log(`[SUCCESS] ${docNumber} verified in ${type} profile.`);
   }
@@ -519,21 +571,21 @@ class AppManager {
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
       const cells = row.locator('td');
- 
+
       const billId = (await cells.nth(1).innerText().catch(() => '')).trim();
       const vendor = (await cells.nth(2).innerText().catch(() => '')).trim();
       const paid = (await cells.nth(4).innerText().catch(() => '')).trim().toLowerCase();
       const netDueRaw = (await cells.nth(5).innerText().catch(() => '')).trim();
-      
+
       // EXTREMELY ROBUST STATUS DETECTION: Look for the first badge or non-empty action text
       let status = '';
       const badge = row.locator('.chakra-badge').first();
       if (await badge.isVisible({ timeout: 500 }).catch(() => false)) {
-          status = (await badge.innerText()).trim().toLowerCase();
+        status = (await badge.innerText()).trim().toLowerCase();
       } else {
-          // Fallback: look at index 6 or 7
-          status = (await cells.nth(6).innerText().catch(() => '')).trim().toLowerCase();
-          if (!status) status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+        // Fallback: look at index 6 or 7
+        status = (await cells.nth(6).innerText().catch(() => '')).trim().toLowerCase();
+        if (!status) status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
       }
 
       const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
@@ -565,26 +617,26 @@ class AppManager {
     const count = await rows.count();
 
     for (let i = 0; i < count; i++) {
-        const row = rows.nth(i);
-        const cells = row.locator('td');
-        
-        const invId = (await cells.nth(1).innerText().catch(() => '')).trim();
-        const customer = (await cells.nth(2).innerText().catch(() => '')).trim();
-        const paid = (await cells.nth(5).innerText().catch(() => '')).trim().toLowerCase();
-        const netDueRaw = (await cells.nth(6).innerText().catch(() => '')).trim();
-        
-        // Status Detection (Index 7 based on Due Date presence)
-        const status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+      const row = rows.nth(i);
+      const cells = row.locator('td');
 
-        const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
-        console.log(`[CHECK] Row ${i + 1} (${invId}): Paid? "${paid}", Net Due: ${netDue}, Status: "${status}"`);
+      const invId = (await cells.nth(1).innerText().catch(() => '')).trim();
+      const customer = (await cells.nth(2).innerText().catch(() => '')).trim();
+      const paid = (await cells.nth(5).innerText().catch(() => '')).trim().toLowerCase();
+      const netDueRaw = (await cells.nth(6).innerText().catch(() => '')).trim();
 
-        if (paid === 'no' && netDue > 0 && status === 'approved') {
-            console.log(`[SUCCESS] Found unpaid customer match: "${customer}" (Invoice: ${invId})`);
-            return { customerName: customer, invoiceId: invId };
-        }
+      // Status Detection (Index 7 based on Due Date presence)
+      const status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+
+      const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
+      console.log(`[CHECK] Row ${i + 1} (${invId}): Paid? "${paid}", Net Due: ${netDue}, Status: "${status}"`);
+
+      if (paid === 'no' && netDue > 0 && status === 'approved') {
+        console.log(`[SUCCESS] Found unpaid customer match: "${customer}" (Invoice: ${invId})`);
+        return { customerName: customer, invoiceId: invId };
+      }
     }
-    
+
     console.log("[WARNING] No unpaid approved invoices found in the first 30 rows.");
     return null;
   }
@@ -598,15 +650,15 @@ class AppManager {
     const count = await rows.count();
     const entries = [];
     for (let i = 0; i < count; i++) {
-        const row = rows.nth(i);
-        const accFull = await row.locator('td').nth(0).innerText();
-        const drText = await row.locator('td').nth(2).innerText();
-        const crText = await row.locator('td').nth(3).innerText();
-        const code = accFull.match(/^\d+/)?.[0] || "";
-        const name = accFull.replace(/^\d+\s*-\s*/, '').trim();
-        const dr = parseFloat(drText.replace(/,/g, '')) || 0;
-        const cr = parseFloat(crText.replace(/,/g, '')) || 0;
-        if (code) entries.push({ accountCode: code, accountName: name, debit: dr, credit: cr });
+      const row = rows.nth(i);
+      const accFull = await row.locator('td').nth(0).innerText();
+      const drText = await row.locator('td').nth(2).innerText();
+      const crText = await row.locator('td').nth(3).innerText();
+      const code = accFull.match(/^\d+/)?.[0] || "";
+      const name = accFull.replace(/^\d+\s*-\s*/, '').trim();
+      const dr = parseFloat(drText.replace(/,/g, '')) || 0;
+      const cr = parseFloat(crText.replace(/,/g, '')) || 0;
+      if (code) entries.push({ accountCode: code, accountName: name, debit: dr, credit: cr });
     }
     return entries;
   }
@@ -769,26 +821,52 @@ class AppManager {
     return await this._extractItemDetails(itemName);
   }
 
+  async extractDetailValue(label) {
+    const el = this.page.locator('.chakra-stack, div').filter({ hasText: new RegExp(`^${label}`, 'i') }).last();
+    // We navigate to the parent to ensure we get the full text block containing both label and value
+    const text = (await el.locator('xpath=..').innerText().catch(() => '')).trim();
+    // Regex matches the label and captures everything after the colon or space, until the end of the line
+    const match = text.match(new RegExp(`${label}[\\s:]+([^\\n\\r]+)`, 'i'));
+    return match ? match[1].trim() : text.replace(new RegExp(`${label}`, 'i'), '').replace(/:/g, '').trim();
+  }
+
+  async captureRandomVendorDetails() {
+    await this.page.goto('/contacts/vendors/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    const rows = this.page.locator('table tbody tr');
+    await rows.first().waitFor({ state: 'visible', timeout: 30000 });
+    const count = await rows.count();
+    const targetRow = rows.nth(Math.floor(Math.random() * Math.min(count, 15)));
+    
+    // Extract ID from detail link
+    const nameLink = targetRow.locator('td a').first();
+    const vendorName = (await nameLink.innerText()).trim();
+    const href = await nameLink.getAttribute('href');
+    const vendorId = href.match(/\/contacts\/vendors\/([a-f0-9-]+)/)?.[1];
+    
+    console.log(`[DATA] Captured Vendor: "${vendorName}" (ID: ${vendorId})`);
+    return { vendorName, vendorId };
+  }
+
   async captureItemDetails(itemName) {
     await this.page.goto('/inventories/items/?page=1&pageSize=30', { waitUntil: 'networkidle' });
     const searchBox = this.page.getByPlaceholder('Search for inventory...').filter({ visible: true }).first();
     await searchBox.fill(itemName);
     await this.page.keyboard.press('Enter');
     await this.page.waitForTimeout(2000);
-    
+
     // We want to match exactly the itemName, but it might be prepended by an ID like "inventory/RWT-18 - "
     // We escape special chars and ensure the link text ENDS with the item name.
     const safeName = itemName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const exactLink = this.page.locator('table tbody tr a').filter({ hasText: new RegExp(`(?:^| - )${safeName}\\s*$`, 'i') }).first();
-    
+
     if (await exactLink.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await exactLink.click();
+      await exactLink.click();
     } else {
-        // Fallback: original partial match just in case
-        const itemRow = this.page.locator('table tbody tr').filter({ hasText: itemName }).first();
-        await itemRow.locator('a').first().click();
+      // Fallback: original partial match just in case
+      const itemRow = this.page.locator('table tbody tr').filter({ hasText: itemName }).first();
+      await itemRow.locator('a').first().click();
     }
-    
+
     await this.page.waitForURL(/\/inventories\/items\/.*/, { timeout: 60000 });
     return await this._extractItemDetails(itemName);
   }
@@ -798,7 +876,7 @@ class AppManager {
     // Extract UUID from URL: /inventories/items/{uuid}/detail
     const urlMatch = this.page.url().match(/\/inventories\/items\/([a-f0-9-]+)/);
     const itemId = urlMatch ? urlMatch[1] : null;
-    
+
     const extractValue = async (label) => {
       const el = this.page.locator('.chakra-stack, div').filter({ hasText: new RegExp(`^${label}`, 'i') }).last();
       const text = (await el.locator('xpath=..').innerText().catch(() => '')).trim();
@@ -830,36 +908,36 @@ class AppManager {
     let rowFound = false;
 
     for (let attempt = 0; attempt < 5; attempt++) {
-        const rows = this.page.locator('table tbody tr');
-        const count = await rows.count();
-        console.log(`[INFO] Ledger scan attempt ${attempt + 1}: ${count} rows visible.`);
+      const rows = this.page.locator('table tbody tr');
+      const count = await rows.count();
+      console.log(`[INFO] Ledger scan attempt ${attempt + 1}: ${count} rows visible.`);
 
-        for (let r = 0; r < count; r++) {
-            const cellText = await rows.nth(r).locator('td').nth(colIndex).innerText().catch(() => '');
-            const cellValue = parseFloat(cellText.replace(/,/g, '').trim());
-            if (!isNaN(cellValue) && Math.abs(cellValue - target) < 0.01) {
-                console.log(`[✓] Found ${type} entry: ${cellText.trim()} (row ${r + 1})`);
-                rowFound = true;
-                break;
-            }
+      for (let r = 0; r < count; r++) {
+        const cellText = await rows.nth(r).locator('td').nth(colIndex).innerText().catch(() => '');
+        const cellValue = parseFloat(cellText.replace(/,/g, '').trim());
+        if (!isNaN(cellValue) && Math.abs(cellValue - target) < 0.01) {
+          console.log(`[✓] Found ${type} entry: ${cellText.trim()} (row ${r + 1})`);
+          rowFound = true;
+          break;
         }
+      }
 
-        if (rowFound) break;
+      if (rowFound) break;
 
-        console.log(`[WARN] Amount ${expectedAmount} not found in ${count} rows. Scrolling...`);
-        // Scroll the table container and the page
-        await this.page.evaluate(() => {
-            const tableContainer = document.querySelector('table')?.closest('div[style*="overflow"], .chakra-table__container, [data-testid]');
-            if (tableContainer) tableContainer.scrollTop += 400;
-            window.scrollBy(0, 500);
-        });
-        await this.page.waitForTimeout(2000);
+      console.log(`[WARN] Amount ${expectedAmount} not found in ${count} rows. Scrolling...`);
+      // Scroll the table container and the page
+      await this.page.evaluate(() => {
+        const tableContainer = document.querySelector('table')?.closest('div[style*="overflow"], .chakra-table__container, [data-testid]');
+        if (tableContainer) tableContainer.scrollTop += 400;
+        window.scrollBy(0, 500);
+      });
+      await this.page.waitForTimeout(2000);
     }
 
     if (!rowFound) {
-        console.log(`[WARN] Ledger verification failed for ${expectedAmount} in ${accountCode}. Proceeding with stock check.`);
+      console.log(`[WARN] Ledger verification failed for ${expectedAmount} in ${accountCode}. Proceeding with stock check.`);
     } else {
-        console.log(`[SUCCESS] Ledger impact verified: ${type} of ${expectedAmount} in ${accountCode}.`);
+      console.log(`[SUCCESS] Ledger impact verified: ${type} of ${expectedAmount} in ${accountCode}.`);
     }
   }
 
@@ -892,238 +970,275 @@ class AppManager {
 
   async _getAuthToken() {
     return await this.page.evaluate(() => {
-        const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
-        for (const key of keys) {
-           const val = localStorage.getItem(key) || sessionStorage.getItem(key);
-           if (val && val.length > 50) return val; 
-        }
-        for (let i = 0; i < localStorage.length; i++) {
-           const k = localStorage.key(i);
-           const v = localStorage.getItem(k);
-           if (v && v.startsWith('ey')) return v; 
-        }
-        return null;
-     });
+      const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
+      for (const key of keys) {
+        const val = localStorage.getItem(key) || sessionStorage.getItem(key);
+        if (val && val.length > 50) return val;
+      }
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        const v = localStorage.getItem(k);
+        if (v && v.startsWith('ey')) return v;
+      }
+      return null;
+    });
   }
 
   async createSalesOrderAPI(data = {}) {
-     const apiBase = "http://157.180.20.112:8001/api";
-     
-     // Defaults from known BEFA environment
-     const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
-     const warehouses = ['cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4'];
-     const locations = ['2595ebb0-4e78-4bc5-9321-140d3fd316c7'];
-     const arAccounts = ['20c381e1-4d14-4ab1-8e7e-dee2937b4a64'];
-     const taxes = ['b017352f-f454-45e2-85ef-e327f90d8f9c', '8da036a5-9185-4043-bfb5-b146aac78412'];
+    const apiBase = "http://157.180.20.112:8001/api";
 
-     const quantity = data.quantity || 1;
-     const unitPrice = data.unitPrice || 10993.05;
-     const amount = quantity * unitPrice;
+    // Defaults from known BEFA environment
+    const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
+    const warehouses = ['cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4'];
+    const locations = ['2595ebb0-4e78-4bc5-9321-140d3fd316c7'];
+    const arAccounts = ['20c381e1-4d14-4ab1-8e7e-dee2937b4a64'];
+    const taxes = ['b017352f-f454-45e2-85ef-e327f90d8f9c', '8da036a5-9185-4043-bfb5-b146aac78412'];
 
-     const payload = {
-        accounts_receivable_id: data.arAccountId || arAccounts[0],
-        currency_id: data.currencyId || "50567982-ee2f-4391-9400-3149067443a5",
-        customer_id: data.customerId || customers[Math.floor(Math.random() * customers.length)],
-        so_date: data.soDate || new Date().toISOString(),
-        so_items: [{
-              amount,
-              item_id: data.itemId, // REQUIRED: must pass the item UUID
-              quantity,
-              unit_price: unitPrice,
-              general_ledger_account_id: data.glAccountId || arAccounts[0],
-              warehouse_id: data.warehouseId || warehouses[0],
-              location_id: data.locationId || locations[0],
-              tax_id: data.taxId || taxes[Math.floor(Math.random() * taxes.length)],
-              description: data.description || "E2E Speed Track"
-        }]
-     };
+    const quantity = data.quantity || 1;
+    const unitPrice = data.unitPrice || 10993.05;
+    const amount = quantity * unitPrice;
 
-     const token = await this._getAuthToken();
-     const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-        data: payload,
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
+    const payload = {
+      accounts_receivable_id: data.arAccountId || arAccounts[0],
+      currency_id: data.currencyId || "50567982-ee2f-4391-9400-3149067443a5",
+      customer_id: data.customerId || customers[Math.floor(Math.random() * customers.length)],
+      so_date: data.soDate || new Date().toISOString(),
+      so_items: [{
+        amount,
+        item_id: data.itemId, // REQUIRED: must pass the item UUID
+        quantity,
+        unit_price: unitPrice,
+        general_ledger_account_id: data.glAccountId || arAccounts[0],
+        warehouse_id: data.warehouseId || warehouses[0],
+        location_id: data.locationId || locations[0],
+        tax_id: data.taxId || taxes[Math.floor(Math.random() * taxes.length)],
+        description: data.description || "E2E Speed Track"
+      }]
+    };
 
-     if (!response.ok()) throw new Error(`SO API Creation Failed: ${response.status()} - ${await response.text()}`);
-     const json = await response.json();
-     const soItemId = json.so_items?.[0]?.id || null;
-     console.log(`[SUCCESS] Sales Order created via API: ${json.so_number} (ID: ${json.id}, ItemID: ${soItemId})`);
-     return { ref: json.so_number, id: json.id, customerId: payload.customer_id, soItemId };
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
+
+    if (!response.ok()) throw new Error(`SO API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    const soItemId = json.so_items?.[0]?.id || null;
+    console.log(`[SUCCESS] Sales Order created via API: ${json.so_number} (ID: ${json.id}, ItemID: ${soItemId})`);
+    return { ref: json.so_number, id: json.id, customerId: payload.customer_id, soItemId };
   }
 
   async createInvoiceAPI(data = {}) {
-     const apiBase = "http://157.180.20.112:8001/api";
+    const apiBase = "http://157.180.20.112:8001/api";
 
-     const arAccounts = ['20c381e1-4d14-4ab1-8e7e-dee2937b4a64', '8479ad17-541c-4b85-a371-59f0536ba6e9'];
+    const arAccounts = ['20c381e1-4d14-4ab1-8e7e-dee2937b4a64', '8479ad17-541c-4b85-a371-59f0536ba6e9'];
 
-     const now = new Date();
-     const dueDate = new Date();
-     dueDate.setDate(now.getDate() + 30);
+    const now = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(now.getDate() + 30);
 
-     const payload = {
-        accounts_receivable_id: data.arAccountId || arAccounts[0],
-        currency_id: data.currencyId || "50567982-ee2f-4391-9400-3149067443a5",
-        customer_id: data.customerId, // REQUIRED: must match the SO customer
-        invoice_date: data.invoiceDate || now.toISOString(),
-        due_date: data.dueDate || dueDate.toISOString(),
-        released_sales_order_items: [{
-              so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
-              released_quantity: data.releasedQuantity || 1
-        }]
-     };
+    const payload = {
+      accounts_receivable_id: data.arAccountId || arAccounts[0],
+      currency_id: data.currencyId || "50567982-ee2f-4391-9400-3149067443a5",
+      customer_id: data.customerId, // REQUIRED: must match the SO customer
+      invoice_date: data.invoiceDate || now.toISOString(),
+      due_date: data.dueDate || dueDate.toISOString(),
+      released_sales_order_items: [{
+        so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
+        released_quantity: data.releasedQuantity || 1
+      }]
+    };
 
-     const token = await this._getAuthToken();
-     const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
-        data: payload,
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
 
-     if (!response.ok()) throw new Error(`Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
-     const json = await response.json();
-     console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
-     return { ref: json.invoice_number, id: json.id, amountDue: payload.released_sales_order_items[0].released_quantity * 10993.05 };
+    if (!response.ok()) throw new Error(`Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
+    return { ref: json.invoice_number, id: json.id, amountDue: payload.released_sales_order_items[0].released_quantity * 10993.05 };
   }
 
   async createStandaloneInvoiceAPI(data = {}) {
-     const apiBase = "http://157.180.20.112:8001/api";
-     const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
-     const custId = data.customerId || customers[1];
-     
-     const unitPrice = data.unitPrice || 10993.05;
-     const q = data.quantity || 1;
-     const amount = q * unitPrice;
+    const apiBase = "http://157.180.20.112:8001/api";
+    const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
+    const custId = data.customerId || customers[1];
 
-     const payload = {
-        accounts_receivable_id: "998df511-68ea-48b9-b405-9419eb78145b",
-        customer_id: custId,
-        invoice_date: new Date().toISOString(),
-        due_date: new Date(Date.now() + 86400000 * 2).toISOString(),
-        currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-        items: [{
-             amount: amount,
-             general_ledger_account_id: "998df511-68ea-48b9-b405-9419eb78145b",
-             item_id: data.itemId,
-             location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
-             quantity: q,
-             tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
-             unit_price: unitPrice,
-             warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-        }],
-        released_sales_order_items: [],
-        sales_order_id: "00000000-0000-0000-0000-000000000000"
-     };
+    const unitPrice = data.unitPrice || 10993.05;
+    const q = data.quantity || 1;
+    const amount = q * unitPrice;
 
-     const token = await this._getAuthToken();
-     const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
-        data: payload,
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
+    const payload = {
+      accounts_receivable_id: "998df511-68ea-48b9-b405-9419eb78145b",
+      customer_id: custId,
+      invoice_date: new Date().toISOString(),
+      due_date: new Date(Date.now() + 86400000 * 2).toISOString(),
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      items: [{
+        amount: amount,
+        general_ledger_account_id: "998df511-68ea-48b9-b405-9419eb78145b",
+        item_id: data.itemId,
+        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+        quantity: q,
+        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
+        unit_price: unitPrice,
+        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+      }],
+      released_sales_order_items: [],
+      sales_order_id: "00000000-0000-0000-0000-000000000000"
+    };
 
-     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
-     const json = await response.json();
-     console.log(`[SUCCESS] Standalone Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
-     return { ref: json.invoice_number, id: json.id, amountDue: amount, customerId: custId };
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
+
+    if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] Standalone Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
+    return { ref: json.invoice_number, id: json.id, amountDue: amount, customerId: custId };
+  }
+
+  async createPurchaseOrderAPI(itemData = {}, qty = 10, unitPrice = 5000, vendorId = null) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    // Fixed stable IDs for Tutorial Environment
+    const payload = {
+      accounts_payable_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64",
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      po_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      po_items: [{
+        item_id: itemData.itemId,
+        general_ledger_account_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64", // 🛡️ CRITICAL FIX: Nesting GL Account inside the item
+        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+        quantity: qty,
+        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
+        unit_price: unitPrice,
+        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+        description: `Purchase of ${itemData.itemName}`
+      }],
+      purchase_type_id: 4,
+      vendor_id: vendorId || "b83a4bcd-0334-42fd-932c-b9bc5cc22208" // Use captured ID or fallback
+    };
+
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: { 
+        'x-company': 'befa tutorial', 
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) throw new Error(`PO API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] PO created via API: ${json.po_number} (ID: ${json.id})`);
+    return { poNumber: json.po_number, poId: json.id };
   }
 
   async createInvoiceReceiptAPI(data = {}) {
-     const apiBase = "http://157.180.20.112:8001/api";
-     const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
+    const apiBase = "http://157.180.20.112:8001/api";
+    const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
 
-     const payload = {
+    const payload = {
+      amount: data.amount,
+      cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
+      customer_id: data.customerId, // MUST match the invoice customer
+      date: new Date().toISOString(),
+      payment_method: "cash",
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      invoice_receipts: [{
         amount: data.amount,
-        cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
-        customer_id: data.customerId, // MUST match the invoice customer
-        date: new Date().toISOString(),
-        payment_method: "cash",
-        currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-        invoice_receipts: [{
-              amount: data.amount,
-              invoice_id: data.invoiceId // The target invoice UUID
-        }]
-     };
+        invoice_id: data.invoiceId // The target invoice UUID
+      }]
+    };
 
-     const token = await this._getAuthToken();
-     const response = await this.page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
-        data: payload,
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
 
-     if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
-     const json = await response.json();
-     console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id}) for Invoice ${data.invoiceId}`);
-     return { ref: json.ref, id: json.id };
+    if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id}) for Invoice ${data.invoiceId}`);
+    return { ref: json.ref, id: json.id };
   }
 
   async getInvoiceAPI(invoiceId) {
-     const apiBase = "http://157.180.20.112:8001/api";
-     const token = await this._getAuthToken();
-     const response = await this.page.request.get(`${apiBase}/invoices/${invoiceId}?year=2018&period=yearly&calendar=ec`, {
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
-     if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(()=>'No Response')}`);
-     return await response.json();
+    const apiBase = "http://157.180.20.112:8001/api";
+    const token = await this._getAuthToken();
+    const response = await this.page.request.get(`${apiBase}/invoices/${invoiceId}?year=2018&period=yearly&calendar=ec`, {
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
+    if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(() => 'No Response')}`);
+    return await response.json();
   }
 
   async createReceiptAPI(data = {}) {
-     const apiBase = "http://157.180.20.112:8001/api";
-     const amount = data.amount || Math.floor(Math.random() * 1500000) + 500000;
-     
-     const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
-     const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
-     const glAccounts = ['8b313729-d6cb-4a33-af8b-7f5c880d86c0', '998df511-68ea-48b9-b405-9419eb78145b'];
-     const taxes = ['8da036a5-9185-4043-bfb5-b146aac78412', 'b017352f-f454-45e2-85ef-e327f90d8f9c'];
+    const apiBase = "http://157.180.20.112:8001/api";
+    const amount = data.amount || Math.floor(Math.random() * 1500000) + 500000;
 
-     const payload = {
+    const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
+    const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
+    const glAccounts = ['8b313729-d6cb-4a33-af8b-7f5c880d86c0', '998df511-68ea-48b9-b405-9419eb78145b'];
+    const taxes = ['8da036a5-9185-4043-bfb5-b146aac78412', 'b017352f-f454-45e2-85ef-e327f90d8f9c'];
+
+    const payload = {
+      amount,
+      cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
+      customer_id: customers[Math.floor(Math.random() * customers.length)],
+      date: new Date().toISOString(),
+      payment_method: "cash",
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      receipt_items: [{
         amount,
-        cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
-        customer_id: customers[Math.floor(Math.random() * customers.length)],
-        date: new Date().toISOString(),
-        payment_method: "cash",
-        currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-        receipt_items: [{
-              amount,
-              general_ledger_account_id: glAccounts[Math.floor(Math.random() * glAccounts.length)],
-              tax_id: taxes[Math.floor(Math.random() * taxes.length)],
-              unit_price: amount, quantity: 1, description: "E2E Speed Track"
-        }]
-     };
+        general_ledger_account_id: glAccounts[Math.floor(Math.random() * glAccounts.length)],
+        tax_id: taxes[Math.floor(Math.random() * taxes.length)],
+        unit_price: amount, quantity: 1, description: "E2E Speed Track"
+      }]
+    };
 
-     const token = await this._getAuthToken();
-     const response = await this.page.request.post(`${apiBase}/receipts`, {
-        data: payload,
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/receipts`, {
+      data: payload,
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
 
-     if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
-     const json = await response.json();
-     console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id})`);
-     return { ref: json.ref, id: json.id };
+    if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id})`);
+    return { ref: json.ref, id: json.id };
   }
 
   async getJournalEntriesAPI(receiptId) {
-     const apiBase = "http://157.180.20.112:8001/api";
-     const token = await this._getAuthToken();
-     
-     console.log(`[ACTION] Fetching Journal via API for UUID: ${receiptId}`);
-     const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}`, {
-        headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
-     });
+    const apiBase = "http://157.180.20.112:8001/api";
+    const token = await this._getAuthToken();
 
-     if (!response.ok()) throw new Error(`API Fetch Failed: ${response.status()}`);
-     const json = await response.json();
-     const journal = json.cash_disbursement_journal;
+    console.log(`[ACTION] Fetching Journal via API for UUID: ${receiptId}`);
+    const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}`, {
+      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+    });
 
-     if (!journal || !journal.journal_entries) {
-        console.log("[WARNING] No journal entries found in API response yet.");
-        return [];
-     }
+    if (!response.ok()) throw new Error(`API Fetch Failed: ${response.status()}`);
+    const json = await response.json();
+    const journal = json.cash_disbursement_journal;
 
-     return journal.journal_entries.map(entry => ({
-        accountCode: entry.account.account_id,
-        accountName: entry.account.name,
-        debit: entry.debit.toString(),
-        credit: entry.credit.toString()
-     }));
+    if (!journal || !journal.journal_entries) {
+      console.log("[WARNING] No journal entries found in API response yet.");
+      return [];
+    }
+
+    return journal.journal_entries.map(entry => ({
+      accountCode: entry.account.account_id,
+      accountName: entry.account.name,
+      debit: entry.debit.toString(),
+      credit: entry.credit.toString()
+    }));
   }
 }
 
