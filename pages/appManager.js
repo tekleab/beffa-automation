@@ -144,7 +144,7 @@ class AppManager {
 
         // 🛡️ CRITICAL: Only pick ENABLED text-like inputs, avoiding checkboxes/radios/numbers
         let searchBox = target.locator('input:enabled:not([type="number"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"])').filter({ visible: true }).first();
-        
+
         if (!(await searchBox.isVisible({ timeout: 1000 }).catch(() => false))) {
           searchBox = target.locator('input[placeholder*="Search" i]:enabled:not([type="checkbox"]), input[role="textbox"]:enabled').filter({ visible: true }).last();
         }
@@ -830,20 +830,48 @@ class AppManager {
     return match ? match[1].trim() : text.replace(new RegExp(`${label}`, 'i'), '').replace(/:/g, '').trim();
   }
 
+  async captureSODetailData() {
+    console.log("[ACTION] Capturing Customer Name from SO Detail UI...");
+    // 🛡️ Hardened selector for the specific layout in befa tutorial
+    const label = this.page.locator('div').filter({ hasText: /^Customer:$/ }).first();
+    await label.waitFor({ state: 'visible', timeout: 30000 });
+    
+    // The value is in the next div sibling based on the 2-column grid or container
+    const value = await this.page.locator('div:has-text("Customer:") + div').first().innerText();
+    const cleanName = value.trim();
+    console.log(`[DATA] Captured Customer: "${cleanName}"`);
+    return cleanName;
+  }
+
+  async getCustomerNameAPI(customerId) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const token = await this._getAuthToken();
+    const response = await this.page.request.get(`${apiBase}/contacts/customers?search=${customerId}`, {
+      headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok()) return "System Customer";
+    const json = await response.json();
+    const name = json.items?.[0]?.name || "System Customer";
+    return name;
+  }
+
   async captureRandomCustomerDetails() {
     await this.page.goto('/contacts/customers/?page=1&pageSize=30', { waitUntil: 'networkidle' });
-    await this.page.waitForTimeout(3000);
+    // 🛡️ HARDENING: Wait for the table and bypass any loading skeletons
+    await this.page.locator('table').waitFor({ state: 'visible', timeout: 30000 });
+    await this.page.waitForTimeout(5000);
+
     const rows = this.page.locator('table tbody tr');
     await rows.first().waitFor({ state: 'visible', timeout: 30000 });
     const count = await rows.count();
     const targetRow = rows.nth(Math.floor(Math.random() * Math.min(count, 15)));
-    
+
     // Extract ID from detail link
     const nameLink = targetRow.locator('td a').first();
     const customerName = (await nameLink.innerText()).trim();
     const href = await nameLink.getAttribute('href');
     const customerId = href.match(/\/contacts\/customers\/([a-f0-9-]+)/)?.[1];
-    
+
     console.log(`[DATA] Captured Customer: "${customerName}" (ID: ${customerId})`);
     return { customerName, customerId };
   }
@@ -854,13 +882,13 @@ class AppManager {
     await rows.first().waitFor({ state: 'visible', timeout: 30000 });
     const count = await rows.count();
     const targetRow = rows.nth(Math.floor(Math.random() * Math.min(count, 15)));
-    
+
     // Extract ID from detail link
     const nameLink = targetRow.locator('td a').first();
     const vendorName = (await nameLink.innerText()).trim();
     const href = await nameLink.getAttribute('href');
     const vendorId = href.match(/\/contacts\/vendors\/([a-f0-9-]+)/)?.[1];
-    
+
     console.log(`[DATA] Captured Vendor: "${vendorName}" (ID: ${vendorId})`);
     return { vendorName, vendorId };
   }
@@ -1145,8 +1173,8 @@ class AppManager {
     const token = await this._getAuthToken();
     const response = await this.page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
       data: payload,
-      headers: { 
-        'x-company': 'befa tutorial', 
+      headers: {
+        'x-company': 'befa tutorial',
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       }
@@ -1196,25 +1224,25 @@ class AppManager {
     return { billNumber: json.invoice_number, billId: json.id };
   }
 
-  async createInvoiceAPI(itemData = {}, qty = 1, unitPrice = 5000, customerId = null) {
+  async createInvoiceAPI(data = {}) {
     const apiBase = "http://157.180.20.112:8001/api";
     const payload = {
-      accounts_receivable_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64", // Trade Receivable (Common ID)
+      accounts_receivable_id: "07b6b790-3ff4-4d88-b955-930b6750835a", // Verified AR Account
       currency_id: "50567982-ee2f-4391-9400-3149067443a5",
       invoice_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
       due_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
       items: [{
-        item_id: itemData.itemId,
-        general_ledger_account_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64", // Sales Account
+        item_id: data.itemId || data.soItemId,
+        general_ledger_account_id: "892c37c6-e7ba-4178-a8a7-48e57a846080", // Verified Sales Account
         location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
-        quantity: qty,
+        quantity: data.quantity || data.releasedQuantity || 1,
         tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
-        unit_price: unitPrice,
+        unit_price: 6000,
         warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-        description: `API Sale to Zero: ${itemData.itemName}`,
-        amount: qty * unitPrice
+        description: data.description || "API Invoice linked to SO",
+        amount: (data.quantity || data.releasedQuantity || 1) * 6000
       }],
-      customer_id: customerId || "80a87611-6450-4828-912b-3e5bf0d41829", // Default Customer
+      customer_id: data.customerId || "ecda2a3d-88ee-4bd9-bb7c-924ee69bab5a", // Verified Customer
       status: "draft"
     };
 
@@ -1229,13 +1257,55 @@ class AppManager {
     });
 
     if (!response.ok()) {
-        const errorText = await response.text();
-        return { success: false, status: response.status(), error: errorText };
+      const errorText = await response.text();
+      return { success: false, status: response.status(), error: errorText };
     }
 
     const json = await response.json();
     console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
     return { success: true, ref: json.invoice_number, id: json.id };
+  }
+
+  async createSalesOrderAPI(data = {}) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const payload = {
+      accounts_receivable_id: "07b6b790-3ff4-4d88-b955-930b6750835a", // Verified AR Account
+      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
+      order_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      so_items: [{
+        item_id: data.itemId,
+        general_ledger_account_id: "892c37c6-e7ba-4178-a8a7-48e57a846080", // Verified Sales account
+        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+        quantity: data.quantity || 1,
+        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
+        unit_price: 6000,
+        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+        description: "API Sales Workflow",
+        amount: (data.quantity || 1) * 6000
+      }],
+      customer_id: data.customerId || "ecda2a3d-88ee-4bd9-bb7c-924ee69bab5a", // Verified Customer
+      status: "draft"
+    };
+
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: {
+        'x-company': 'befa tutorial',
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) throw new Error(`SO API Failed: ${response.status()} - ${await response.text()}`);
+    const json = await response.json();
+    console.log(`[SUCCESS] SO Created via API: ${json.so_number} (ID: ${json.id})`);
+    return {
+      ref: json.so_number,
+      id: json.id,
+      customerId: json.customer_id,
+      soItemId: json.so_items[0].id
+    };
   }
 
   async createInvoiceReceiptAPI(data = {}) {

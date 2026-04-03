@@ -35,12 +35,11 @@ Tests cover the core financial and supply chain modules. Each test creates real 
 | Test | What it does |
 |:--|:--|
 | `payment-cycle` | Picks an unpaid bill, creates a vendor payment, verifies it in the vendor profile |
-| `sales-inventory-impact` | Creates SO + Invoice via API, approves both, checks stock deduction and ledger |
-| `purchase-inventory-impact` | Receives goods against a PO, verifies stock addition |
+| `sales-impact` | Creates SO + Invoice via API, approves both, checks stock deduction and ledger |
+| `bill-impact` | Creates PO + Bill via API, approves both, checks stock addition and ledger |
+| `reversal-impact` | Reverses an approved invoice, verifies inventory is restored |
 | `purchase-order-to-bill` | Full procurement flow: PO → GRN → Bill |
 | `sales-receipt-workflow` | Full sales flow: SO → Invoice → Receipt |
-| `invoice-reversal-impact` | Reverses an approved invoice, verifies inventory is restored |
-| `receipt-reversal-impact` | Reverses an approved receipt, verifies G/L offsets |
 | `invoice-receipt-balance` | High-speed API logic validating rigorous fractional balance computations |
 | `customer-accounting-duplication`| Dedicated Accounting Compliance sequence; strictly enforces Double-Entry business logic restrictions |
 | `customer` | Creates a customer, checks profile data and lifecycle |
