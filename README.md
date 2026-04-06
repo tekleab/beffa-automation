@@ -83,7 +83,22 @@ Key implementation details:
 - Documents are created via REST API where possible to cut setup time
 - Approval flows are handled through the UI to maintain E2E integrity
 - Screenshots, video, and traces are captured only on failure
-- Sequential execution prevents inventory race conditions
+## Docker Containerization
+
+The project is containerized for consistent execution across environments.
+
+### 1. Build the image
+```bash
+docker build -t beffa-automation .
+```
+
+### 3. Run the tests
+Pass your `.env` file at runtime to keep secrets secure:
+```bash
+docker run --rm -v $(pwd)/test-results:/app/test-results --env-file .env beffa-automation
+```
+
+Note: The volume mapping `-v $(pwd)/test-results:/app/test-results` ensures you can see the reports on your host machine after the container exits.
 
 ## License
 
