@@ -17,6 +17,7 @@ module.exports = defineConfig({
 
   reporter: [
     ['list'],
+    ['./reporters/summary-reporter.js'],
     ['html', { open: 'never' }],
     [
       'allure-playwright',
