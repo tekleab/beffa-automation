@@ -31,6 +31,7 @@ test.describe('Sales Impact — SO → Invoice → Stock Deduction', () => {
             quantity: saleQty,
         });
         const soID = soResult.ref;
+        const soItemId = soResult.soItemId;
         console.log(`[OK] SO created: ${soID} | Customer: ${soResult.customerId}`);
 
         // Phase 3: Approve SO
@@ -42,13 +43,18 @@ test.describe('Sales Impact — SO → Invoice → Stock Deduction', () => {
         // Phase 4: Create Invoice via API
         console.log(`[STEP] Phase 4: Creating Invoice via API from SO ${soID}`);
         const invResult = await app.createInvoiceAPI({
-            itemId: initial.itemId,
-            quantity: saleQty,
-            customerId: soResult.customerId
+            customerId: soResult.customerId,
+            soItemId: soItemId, // Use SO Item ID for linking
+            releasedQuantity: saleQty
         });
+
+        if (!invResult.success) {
+            throw new Error(`Invoice Creation Failed: ${invResult.error}`);
+        }
+
         const invID = invResult.ref;
         const invUUID = invResult.id;
-        console.log(`[OK] Invoice created: ${invID}`);
+        console.log(`[OK] Invoice created: ${invID} (UUID: ${invUUID})`);
 
         // Phase 5: Approve Invoice
         console.log(`[STEP] Phase 5: Approving Invoice ${invID}`);
