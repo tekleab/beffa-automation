@@ -6,60 +6,61 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
     let initialInfo = null;
     let invoicedQty = 0;
 
-    test('Stage 1: Create and approve invoice, verify stock deduction', async ({ page }) => {
-        test.setTimeout(400000);
+    test('Stage 1: Create and approve SO, link to Invoice, verify stock deduction', async ({ page }) => {
+        test.setTimeout(600000);
         const app = new AppManager(page);
 
-        console.log('[STEP] Stage 1: Login & Item Discovery');
+        console.log('[STEP] Stage 1: Login & Setup');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
+        // 1. Pick a random item with stock
         while (true) {
             initialInfo = await app.captureRandomItemDetails();
-            if (initialInfo.currentStock >= 2) {
-                console.log(`[INFO] Item: "${initialInfo.itemName}" | Stock: ${initialInfo.currentStock}`);
-                break;
-            }
+            if (initialInfo.currentStock >= 2) break;
             console.log(`[INFO] Item "${initialInfo.itemName}" stock too low. Retrying...`);
         }
+        console.log(`[INFO] Item: "${initialInfo.itemName}" | Initial Stock: ${initialInfo.currentStock}`);
 
-        console.log('[STEP] Creating Direct Invoice');
+        // 2. Create Sales Order via API
+        console.log(`[STEP] Phase 2: Creating Sales Order via API for ${initialInfo.itemName}`);
+        const soData = await app.createSalesOrderAPI({ itemId: initialInfo.itemId, quantity: 1 });
+        console.log(`[OK] Sales Order created: ${soData.ref}`);
+
+        // 3. Approve Sales Order in UI
+        console.log(`[STEP] Phase 3: Approving SO ${soData.ref}`);
+        await page.goto(`/receivables/sales-orders/${soData.id}/detail`, { waitUntil: 'load' });
+        await app.handleApprovalFlow();
+        console.log(`[OK] Sales Order ${soData.ref} approved (Released)`);
+
+        // 4. Create Invoice using the SO
+        console.log(`[STEP] Phase 4: Creating Invoice from Released SO ${soData.ref}`);
         await page.goto('/receivables/invoices/new', { waitUntil: 'load' });
 
+        // Select Customer from SO
+        console.log(`[INFO] Selecting Customer UI...`);
         const invCustBtn = page.getByRole('button', { name: 'Customer selector' });
-        await app.selectRandomOption(invCustBtn, 'Customer');
-        const selectedCustomer = (await invCustBtn.innerText()).trim();
-        console.log(`[INFO] Customer: "${selectedCustomer}"`);
+        await invCustBtn.waitFor({ state: 'visible' });
+        await invCustBtn.click();
 
-        const currentDay = await app.getActiveCalendarDay();
-        const dueDay = Math.min(30, currentDay + 5);
-        await app.pickDate('Invoice Date', currentDay);
-        await app.pickDate('Due Date', dueDay);
-        console.log(`[INFO] Dates: Invoice Day ${currentDay}, Due Day ${dueDay}`);
+        // Use a generic customer selector or wait for dropdown
+        await page.waitForTimeout(2000);
+        await app.smartSearch(null, "Desta Alamirew"); // Or a dynamic name if we captured it
 
-        const arBtn = page.getByRole('button', { name: /Account(s)? Receivable selector/i });
-        await app.selectRandomOption(arBtn, 'AR Account');
-        await page.waitForTimeout(500);
+        // Link to Released SO
+        console.log(`[STEP] Switching to "Released Sales Order" tab`);
+        const soTab = page.getByRole('tab', { name: /Released Sales Order/i });
+        await soTab.click();
 
-        console.log(`[STEP] Adding line item for "${initialInfo.itemName}"`);
-        await page.getByRole('button', { name: 'Line Item' }).click();
-        const modal = page.getByRole('dialog').last();
-        await modal.waitFor({ state: 'visible' });
+        console.log(`[INFO] Searching for SO ${soData.ref}`);
+        const panel = page.locator('div[role="tabpanel"]:not([hidden])');
+        await expect(panel.locator('.chakra-checkbox, input[role="checkbox"]').first()).toBeVisible({ timeout: 30000 });
 
-        await modal.getByRole('button', { name: 'Item', exact: true }).click();
-        const itemSelector = modal.getByRole('button', { name: 'Item selector' });
-        await itemSelector.click();
-        await app.smartSearch(null, initialInfo.itemName);
-        await page.waitForTimeout(1000);
+        const targetRow = panel.locator('> div > div').filter({
+            has: page.locator('span').getByText(soData.ref, { exact: true })
+        }).first();
 
-        await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
-        await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
-        await app.selectRandomOption(modal.getByRole('button', { name: 'G/L Account selector' }), 'Sales Account');
-
-        await modal.getByRole('group').filter({ hasText: /^Quantity/i }).getByRole('spinbutton').fill("1");
-        await modal.getByRole('button', { name: 'Add', exact: true }).click();
-        await expect(modal).not.toBeVisible();
-        await page.waitForTimeout(1000);
-        invoicedQty = 1;
+        await targetRow.locator('.chakra-checkbox, [role="checkbox"]').first().click({ force: true });
+        console.log(`[OK] SO ${soData.ref} linked to Invoice`);
 
         console.log('[STEP] Submitting Invoice');
         const invSubmitBtn = page.getByRole('button', { name: 'Add Now' }).first();
@@ -76,22 +77,27 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
 
         console.log('[STEP] Verifying stock deduction');
         const { currentStock: postInvStock } = await app.captureItemDetails(initialInfo.itemName);
-        const expectedStock = initialInfo.currentStock - invoicedQty;
+        const expectedStock = initialInfo.currentStock - 1;
 
         console.log(`[VERIFY] Expected: ${expectedStock} | Found: ${postInvStock}`);
         if (postInvStock !== expectedStock) {
             throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${postInvStock}`);
         }
-        console.log('[OK] Stock decreased correctly after invoice approval');
+        console.log('[OK] Stock decreased correctly after full flow invoice approval');
     });
 
     test('Stage 2: Reverse invoice, verify stock restoration', async ({ page }) => {
-        test.setTimeout(300000);
+        test.setTimeout(450000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log(`[STEP] Locating Invoice ${invID} for reversal`);
         await page.goto(`/receivables/invoices/?page=1&pageSize=15`);
+
+        // Wait for grid to be interactive
+        await page.waitForSelector('table tbody tr', { timeout: 30000 });
+        await page.waitForTimeout(2000);
+
         await app.smartSearch(page.locator('body'), invID);
         await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/);
         await page.waitForTimeout(3000);

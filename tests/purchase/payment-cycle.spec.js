@@ -66,7 +66,12 @@ test.describe('Payment Cycle — Bill Payment & Vendor Verification', () => {
         console.log('[STEP] Selecting bill');
         const billTab = page.getByRole('tab').filter({ hasText: /Invoices|Bills/i }).first();
         await billTab.click({ force: true });
-        await page.waitForTimeout(4000);
+        
+        // Wait for grid to populate
+        const activePanel = page.locator('[role="tabpanel"]').filter({ visible: true }).first();
+        await expect(activePanel.locator('.chakra-checkbox, [role="checkbox"], input[type="checkbox"]').first()).toBeVisible({ timeout: 30000 });
+        
+        await page.waitForTimeout(2000);
 
         if (BILL_NUMBER) {
             console.log(`[INFO] Locating bill: ${BILL_NUMBER}`);

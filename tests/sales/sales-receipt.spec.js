@@ -54,6 +54,10 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile', (
             await page.waitForTimeout(3000);
 
             const activePanel = page.locator('div[role="tabpanel"]:not([hidden])');
+            
+            // Wait for at least one checkbox to appear (grid loaded)
+            await expect(activePanel.locator('.chakra-checkbox__control, input[type="checkbox"]').first()).toBeVisible({ timeout: 30000 });
+
             const targetRow = activePanel.locator('> div > div').filter({
                 has: page.locator('span').getByText(INVOICE_ID, { exact: true })
             }).first();

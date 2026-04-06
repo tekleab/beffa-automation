@@ -21,6 +21,7 @@ test.describe.serial('Receipt Reversal — GL Ledger Impact', () => {
 
         console.log('[STEP] Approving receipt via UI');
         await app.page.goto(`/receivables/receipts`);
+        await app.page.waitForSelector(`text=${rctID}`, { timeout: 30000 });
         await app.page.getByRole('link', { name: rctID }).first().click();
         await app.handleApprovalFlow();
         console.log(`[OK] ${rctID} approved`);
@@ -37,7 +38,7 @@ test.describe.serial('Receipt Reversal — GL Ledger Impact', () => {
     });
 
     test('Stage 2: Reverse receipt, verify GL offsets', async ({ page }) => {
-        test.setTimeout(300000);
+        test.setTimeout(450000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 

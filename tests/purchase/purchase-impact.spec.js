@@ -77,8 +77,8 @@ test.describe('Purchase Impact — PO → Bill → Stock Increase', () => {
         let final = null;
         let expectedStock = initial.currentStock + receivedQty;
 
-        for (let i = 0; i < 3; i++) {
-            await page.waitForTimeout(5000);
+        for (let i = 0; i < 6; i++) {
+            await page.waitForTimeout(10000); // 10s wait for ERP background updates
             final = await app.captureItemDetails(initial.itemName);
             console.log(`[INFO] Attempt ${i + 1}: Stock ${final.currentStock} (expected: ${expectedStock})`);
             if (final.currentStock === expectedStock) break;

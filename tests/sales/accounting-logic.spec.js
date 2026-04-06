@@ -46,8 +46,9 @@ test.describe('Accounting Logic — Duplicate Transaction Validation', () => {
         // Approve Invoice 1
         console.log(`[STEP] Approving Invoice 1: ${duplicateInvoice1.ref}`);
         await page.goto(`/receivables/invoices/Detail`);
+        await page.waitForSelector('text=Invoice Details', { timeout: 30000, state: 'attached' }).catch(() => {});
         await page.evaluate((id) => { window.location.href = `/receivables/invoices/${id}`; }, duplicateInvoice1.id);
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(5000);
         await app.handleApprovalFlow();
         console.log(`[OK] Invoice ${duplicateInvoice1.ref} approved`);
 
