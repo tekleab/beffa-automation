@@ -3,10 +3,10 @@ const { AppManager } = require('../../pages/appManager');
 
 test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stock Restoration', () => {
     let invID = null;
+    let invUUID = null;
     let initialInfo = null;
-    let invoicedQty = 0;
 
-    test('Stage 1: Create and approve SO, link to Invoice, verify stock deduction', async ({ page }) => {
+    test('Stage 1: Setup via API (SO & Invoice), verify stock deduction', async ({ page }) => {
         test.setTimeout(600000);
         const app = new AppManager(page);
 
@@ -21,59 +21,26 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         }
         console.log(`[INFO] Item: "${initialInfo.itemName}" | Initial Stock: ${initialInfo.currentStock}`);
 
-        // 2. Create Sales Order via API
+        // 2. Create Sales Order via API & Approve in UI
         console.log(`[STEP] Phase 2: Creating Sales Order via API for ${initialInfo.itemName}`);
         const soData = await app.createSalesOrderAPI({ itemId: initialInfo.itemId, quantity: 1 });
-        console.log(`[OK] Sales Order created: ${soData.ref}`);
-
-        // 3. Approve Sales Order in UI
-        console.log(`[STEP] Phase 3: Approving SO ${soData.ref}`);
-        await page.goto(`/receivables/sales-orders/${soData.id}/detail`, { waitUntil: 'load' });
+        await page.goto(`/receivables/sale-orders/${soData.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
         console.log(`[OK] Sales Order ${soData.ref} approved (Released)`);
 
-        // 4. Create Invoice using the SO
-        console.log(`[STEP] Phase 4: Creating Invoice from Released SO ${soData.ref}`);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'load' });
-
-        // Select Customer from SO
-        console.log(`[INFO] Selecting Customer UI...`);
-        const invCustBtn = page.getByRole('button', { name: 'Customer selector' });
-        await invCustBtn.waitFor({ state: 'visible' });
-        await invCustBtn.click();
-
-        // Use a generic customer selector or wait for dropdown
-        await page.waitForTimeout(2000);
-        await app.smartSearch(null, "Desta Alamirew"); // Or a dynamic name if we captured it
-
-        // Link to Released SO
-        console.log(`[STEP] Switching to "Released Sales Order" tab`);
-        const soTab = page.getByRole('tab', { name: /Released Sales Order/i });
-        await soTab.click();
-
-        console.log(`[INFO] Searching for SO ${soData.ref}`);
-        const panel = page.locator('div[role="tabpanel"]:not([hidden])');
-        await expect(panel.locator('.chakra-checkbox, input[role="checkbox"]').first()).toBeVisible({ timeout: 30000 });
-
-        const targetRow = panel.locator('> div > div').filter({
-            has: page.locator('span').getByText(soData.ref, { exact: true })
-        }).first();
-
-        await targetRow.locator('.chakra-checkbox, [role="checkbox"]').first().click({ force: true });
-        console.log(`[OK] SO ${soData.ref} linked to Invoice`);
-
-        console.log('[STEP] Submitting Invoice');
-        const invSubmitBtn = page.getByRole('button', { name: 'Add Now' }).first();
-        await expect(invSubmitBtn).toBeEnabled({ timeout: 15000 });
-        await invSubmitBtn.click();
-
-        await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/, { timeout: 120000 });
-        const invElement = page.locator('p, span, div, h1, h2, h3, h4, h5').filter({ hasText: /^INV\// }).first();
-        invID = (await invElement.textContent()).match(/INV\/\d{4}\/\d{2}\/\d{2}\/\d+/)[0];
-        console.log(`[OK] Invoice created: ${invID}`);
-
+        // 3. Create Invoice via API (linked to SO) & Approve in UI
+        console.log(`[STEP] Phase 3: Creating Invoice via API from SO ${soData.ref}`);
+        const invData = await app.createInvoiceAPI({
+            customerId: soData.customerId,
+            soItemId: soData.soItemId,
+            releasedQuantity: 1
+        });
+        
+        await page.goto(`/receivables/invoices/${invData.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
-        console.log(`[OK] Invoice ${invID} approved`);
+        invID = invData.ref;
+        invUUID = invData.id;
+        console.log(`[OK] Invoice ${invID} created and approved via API+UI flow`);
 
         console.log('[STEP] Verifying stock deduction');
         const { currentStock: postInvStock } = await app.captureItemDetails(initialInfo.itemName);
@@ -83,7 +50,7 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         if (postInvStock !== expectedStock) {
             throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${postInvStock}`);
         }
-        console.log('[OK] Stock decreased correctly after full flow invoice approval');
+        console.log('[OK] Stock decreased correctly after pure setup flow');
     });
 
     test('Stage 2: Reverse invoice, verify stock restoration', async ({ page }) => {
@@ -91,15 +58,8 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        console.log(`[STEP] Locating Invoice ${invID} for reversal`);
-        await page.goto(`/receivables/invoices/?page=1&pageSize=15`);
-
-        // Wait for grid to be interactive
-        await page.waitForSelector('table tbody tr', { timeout: 30000 });
-        await page.waitForTimeout(2000);
-
-        await app.smartSearch(page.locator('body'), invID);
-        await page.waitForURL(/\/receivables\/invoices\/.*\/detail$/);
+        console.log(`[STEP] Navigating directly to Invoice ${invID} (${invUUID})`);
+        await page.goto(`/receivables/invoices/${invUUID}/detail`, { waitUntil: 'load' });
         await page.waitForTimeout(3000);
 
         console.log(`[STEP] Triggering reversal for ${invID}`);

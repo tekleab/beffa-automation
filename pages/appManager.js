@@ -1055,7 +1055,7 @@ class AppManager {
       accounts_receivable_id: data.arAccountId || arAccounts[0],
       currency_id: data.currencyId || "50567982-ee2f-4391-9400-3149067443a5",
       customer_id: data.customerId || customers[Math.floor(Math.random() * customers.length)],
-      so_date: data.soDate || new Date().toISOString(),
+      so_date: new Date().toISOString().split('T')[0] + "T00:00:00Z", // 📅 FIXED FIELD
       so_items: [{
         amount,
         item_id: data.itemId, // REQUIRED: must pass the item UUID
@@ -1066,7 +1066,8 @@ class AppManager {
         location_id: data.locationId || locations[0],
         tax_id: data.taxId || taxes[Math.floor(Math.random() * taxes.length)],
         description: data.description || "E2E Speed Track"
-      }]
+      }],
+      status: "draft"
     };
 
     const token = await this._getAuthToken();
@@ -1095,12 +1096,13 @@ class AppManager {
       accounts_receivable_id: data.arAccountId || arAccounts[0],
       currency_id: data.currencyId || "50567982-ee2f-4391-9400-3149067443a5",
       customer_id: data.customerId, // REQUIRED: must match the SO customer
-      invoice_date: data.invoiceDate || now.toISOString(),
-      due_date: data.dueDate || dueDate.toISOString(),
+      invoice_date: now.toISOString().split('T')[0] + "T00:00:00Z",
+      due_date: dueDate.toISOString().split('T')[0] + "T00:00:00Z",
       released_sales_order_items: [{
         so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
         released_quantity: data.releasedQuantity || 1
-      }]
+      }],
+      status: "draft"
     };
 
     const token = await this._getAuthToken();
@@ -1109,10 +1111,14 @@ class AppManager {
       headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
-    if (!response.ok()) throw new Error(`Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
+    if (!response.ok()) {
+        const err = await response.text();
+        console.error(`[ERROR] Invoice API Failed: ${response.status()} - ${err}`);
+        return { success: false, status: response.status(), error: err };
+    }
     const json = await response.json();
     console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
-    return { ref: json.invoice_number, id: json.id, amountDue: payload.released_sales_order_items[0].released_quantity * 10993.05 };
+    return { success: true, ref: json.invoice_number, id: json.id };
   }
 
   async createStandaloneInvoiceAPI(data = {}) {
@@ -1229,90 +1235,6 @@ class AppManager {
     const json = await response.json();
     console.log(`[SUCCESS] Bill created via API: ${json.invoice_number} (ID: ${json.id})`);
     return { billNumber: json.invoice_number, billId: json.id };
-  }
-
-  async createInvoiceAPI(data = {}) {
-    const apiBase = "http://157.180.20.112:8001/api";
-    const payload = {
-      accounts_receivable_id: "07b6b790-3ff4-4d88-b955-930b6750835a", // Verified AR Account
-      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-      invoice_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
-      due_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
-      items: [{
-        item_id: data.itemId || data.soItemId,
-        general_ledger_account_id: "892c37c6-e7ba-4178-a8a7-48e57a846080", // Verified Sales Account
-        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
-        quantity: data.quantity || data.releasedQuantity || 1,
-        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
-        unit_price: 6000,
-        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-        description: data.description || "API Invoice linked to SO",
-        amount: (data.quantity || data.releasedQuantity || 1) * 6000
-      }],
-      customer_id: data.customerId || "ecda2a3d-88ee-4bd9-bb7c-924ee69bab5a", // Verified Customer
-      status: "draft"
-    };
-
-    const token = await this._getAuthToken();
-    const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
-      data: payload,
-      headers: {
-        'x-company': 'befa tutorial',
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok()) {
-      const errorText = await response.text();
-      return { success: false, status: response.status(), error: errorText };
-    }
-
-    const json = await response.json();
-    console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
-    return { success: true, ref: json.invoice_number, id: json.id };
-  }
-
-  async createSalesOrderAPI(data = {}) {
-    const apiBase = "http://157.180.20.112:8001/api";
-    const payload = {
-      accounts_receivable_id: "07b6b790-3ff4-4d88-b955-930b6750835a", // Verified AR Account
-      currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-      so_date: new Date().toISOString().split('T')[0] + "T00:00:00Z", // 📅 FIXED FIELD: so_date
-      so_items: [{
-        item_id: data.itemId,
-        general_ledger_account_id: "892c37c6-e7ba-4178-a8a7-48e57a846080", // Verified Sales account
-        location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
-        quantity: data.quantity || 1,
-        tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
-        unit_price: 10993.05,
-        warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-        description: data.description || "API Sales Workflow",
-        amount: (data.quantity || 1) * 10993.05
-      }],
-      customer_id: data.customerId || "ecda2a3d-88ee-4bd9-bb7c-924ee69bab5a", // Verified Customer
-      status: "draft"
-    };
-
-    const token = await this._getAuthToken();
-    const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-      data: payload,
-      headers: {
-        'x-company': 'befa tutorial',
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok()) throw new Error(`SO API Failed: ${response.status()} - ${await response.text()}`);
-    const json = await response.json();
-    console.log(`[SUCCESS] SO Created via API: ${json.so_number} (ID: ${json.id})`);
-    return {
-      ref: json.so_number,
-      id: json.id,
-      customerId: json.customer_id,
-      soItemId: json.so_items[0].id
-    };
   }
 
   async createInvoiceReceiptAPI(data = {}) {
