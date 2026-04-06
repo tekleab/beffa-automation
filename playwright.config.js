@@ -35,7 +35,7 @@ module.exports = defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
+    baseURL: (process.env.BASE_URL || 'http://157.180.20.112:4173').replace(/['"]+/g, ''),
     viewport: { width: 1920, height: 1080 },
 
     launchOptions: {
