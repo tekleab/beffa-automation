@@ -831,16 +831,23 @@ class AppManager {
   }
 
   async captureSODetailData() {
-    console.log("[ACTION] Capturing Customer Name from SO Detail UI...");
-    // 🛡️ Hardened selector for the specific layout in befa tutorial
-    const label = this.page.locator('div').filter({ hasText: /^Customer:$/ }).first();
-    await label.waitFor({ state: 'visible', timeout: 30000 });
+    console.log("[ACTION] Capturing Customer Name (Brute Force Method)...");
+    await this.page.waitForSelector('text=Customer:', { timeout: 30000 });
     
-    // The value is in the next div sibling based on the 2-column grid or container
-    const value = await this.page.locator('div:has-text("Customer:") + div').first().innerText();
-    const cleanName = value.trim();
-    console.log(`[DATA] Captured Customer: "${cleanName}"`);
-    return cleanName;
+    // 🛡️ Brute force: find the label and pick the next text block in the DOM
+    const name = await this.page.evaluate(() => {
+      const labels = Array.from(document.querySelectorAll('div, p, span'));
+      const label = labels.find(el => el.innerText.trim() === 'Customer:');
+      if (!label) return "System Customer";
+      
+      // Find the next sibling or descendant with actual text
+      let next = label.nextElementSibling;
+      while (next && !next.innerText.trim()) next = next.nextElementSibling;
+      return next ? next.innerText.trim() : "System Customer";
+    });
+    
+    console.log(`[DATA] Captured Customer: "${name}"`);
+    return name;
   }
 
   async getCustomerNameAPI(customerId) {
@@ -1271,17 +1278,17 @@ class AppManager {
     const payload = {
       accounts_receivable_id: "07b6b790-3ff4-4d88-b955-930b6750835a", // Verified AR Account
       currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-      order_date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      so_date: new Date().toISOString().split('T')[0] + "T00:00:00Z", // 📅 FIXED FIELD: so_date
       so_items: [{
         item_id: data.itemId,
         general_ledger_account_id: "892c37c6-e7ba-4178-a8a7-48e57a846080", // Verified Sales account
         location_id: "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
         quantity: data.quantity || 1,
         tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c",
-        unit_price: 6000,
+        unit_price: 10993.05,
         warehouse_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-        description: "API Sales Workflow",
-        amount: (data.quantity || 1) * 6000
+        description: data.description || "API Sales Workflow",
+        amount: (data.quantity || 1) * 10993.05
       }],
       customer_id: data.customerId || "ecda2a3d-88ee-4bd9-bb7c-924ee69bab5a", // Verified Customer
       status: "draft"

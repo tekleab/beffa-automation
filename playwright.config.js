@@ -5,13 +5,12 @@ const dotenv = require('dotenv');
 dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
 
 module.exports = defineConfig({
-  testDir: './tests/e2e',
-  testIgnore: [],
+  testDir: './tests',
 
-  timeout: 600000, 
+  timeout: 600000,
   expect: { timeout: 30000 },
 
-  fullyParallel: true,
+  fullyParallel: false,
   workers: 3,
 
   retries: 0,
@@ -20,8 +19,8 @@ module.exports = defineConfig({
     ['list'],
     ['html', { open: 'never' }],
     [
-      'allure-playwright', 
-      { 
+      'allure-playwright',
+      {
         outputFolder: 'allure-results',
         detail: true,
         suiteTitle: true,
@@ -49,7 +48,7 @@ module.exports = defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    
+
     actionTimeout: 60000,
     navigationTimeout: 150000,
   },

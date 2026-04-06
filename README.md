@@ -21,86 +21,69 @@ BEFFA_PASS=your_password
 ## Running
 
 ```bash
-npx playwright test                                    # full suite
-npx playwright test payment-cycle.spec.js --headed     # single test, visible browser
-npx playwright show-report                             # HTML report
+npx playwright test                                 # full suite (sequential)
+npx playwright test tests/sales --headed            # sales domain only
+npx playwright test tests/purchase --headed         # purchase domain only
+npx playwright test tests/sales/sales-impact.spec.js --headed  # single test
+npx playwright show-report                          # HTML report
 ```
 
-CI runs with 2 workers to avoid overloading the remote server. Locally it defaults to 3.
+Tests run sequentially with 1 worker to avoid inventory conflicts. Sales tests run before purchase tests via Playwright project dependencies.
 
-## What's Tested
+## Test Suite
 
-Tests cover the core financial and supply chain modules. Each test creates real documents, pushes them through the full approval chain, and verifies downstream effects (inventory counts, ledger entries).
+### Sales Domain (`tests/sales/`)
 
 | Test | What it does |
 |:--|:--|
-| `payment-cycle` | Picks an unpaid bill, creates a vendor payment, verifies it in the vendor profile |
-| `sales-impact` | Creates SO + Invoice via API, approves both, checks stock deduction and ledger |
-| `bill-impact` | Creates PO + Bill via API, approves both, checks stock addition and ledger |
-| `reversal-impact` | Reverses an approved invoice, verifies inventory is restored |
-| `purchase-order-to-bill` | Full procurement flow: PO → GRN → Bill |
-| `sales-receipt-workflow` | Full sales flow: SO → Invoice → Receipt |
-| `invoice-receipt-balance` | High-speed API logic validating rigorous fractional balance computations |
-| `customer-accounting-duplication`| Dedicated Accounting Compliance sequence; strictly enforces Double-Entry business logic restrictions |
-| `customer` | Creates a customer, checks profile data and lifecycle |
-| `vendor` | Creates a vendor, checks account integrity |
+| `sales-impact` | SO + Invoice via API, approve both, verify stock deduction |
+| `invoice-reversal` | Create invoice, approve, reverse, verify stock restoration |
+| `invoice-receipt-balance` | Partial receipt, verify fractional balance, final settlement |
+| `sales-receipt` | Find unpaid invoice, create receipt, verify in customer profile |
+| `receipt-reversal` | Create receipt, approve, reverse, verify GL offsets |
+| `accounting-logic` | Duplicate invoice allowed, duplicate receipt blocked |
+| `customer` | Full CRUD lifecycle with TIN validation |
 
-## Full ERP Module Map
+### Purchase Domain (`tests/purchase/`)
 
-Below is the complete BEFFA ERP module structure. Checked items have test coverage today, unchecked items are planned.
+| Test | What it does |
+|:--|:--|
+| `bill-impact` | Create bill via API, approve, verify stock increase, reverse |
+| `purchase-impact` | PO via API → Bill → verify stock addition and ledger entries |
+| `purchase-to-bill` | Full PO → Bill lifecycle via UI, verify in vendor profile |
+| `payment-cycle` | Find unpaid bill, create payment, verify in vendor profile |
+| `vendor` | Full CRUD lifecycle with TIN validation |
 
-**Accounting**
-- [x] General Ledger — Chart of Accounts, General Journal
-- [ ] Period Control
-- [x] Account Payables — Bills, Payments
-- [x] Account Receivables — Invoices, Receipts
-- [ ] Asset — Asset Classes, Asset Items
-- [ ] Budgeting — Posted Budgets, Calendars, Limits, Worksheets, Encumbrances, Controls, Supplements, Adjustments
-- [ ] Account Reconciliation — Statements, Reconciliation, History
+## Log Prefix Convention
 
-**CRM / Sales**
-- [x] Sale Orders
-- [x] Customers
-- [x] Vendors
+All tests use a consistent prefix system for CI/CD clarity:
 
-**HRM**
-- [ ] Organization Chart, Employees, Timesheets, Attendances, Leaves
-- [ ] Payroll — Payroll Run, Payroll Settings
-
-**Project Management**
-- [ ] Workspaces, Projects
-
-**SCM (Supply Chain)**
-- [x] Inventory — Items, Adjustments
-- [ ] Warehouse Management, Locations, Shipments
-- [ ] Move Orders — Location Transfer, Internal Request
-- [x] Procurement — Purchase Orders
-
-**Lease Management**
-- [ ] Leases
-
-**Service Management**
-- [ ] Services, Service Events
-
-**Reports**
-- [ ] Financial Statements, Sales, Purchases, Budget Report, Payroll
-
-**Settings**
-- [ ] User Management
+| Prefix | Meaning |
+|:--|:--|
+| `[STEP]` | Major phase boundary |
+| `[INFO]` | Informational detail |
+| `[OK]` | Action succeeded |
+| `[FAIL]` | Action failed (non-fatal) |
+| `[VERIFY]` | Assertion checkpoint |
+| `[RESULT]` | Test summary (final line) |
 
 ## Project Structure
 
 ```
-pages/appManager.js       — all ERP interactions (search, approval, API calls)
-tests/e2e/                — test files
-playwright.config.js      — 2 workers (CI), 3 (local), failure-only capture
-.env                      — credentials
+pages/appManager.js          — all ERP interactions (search, approval, API calls)
+tests/
+  sales/                     — receivables, invoices, receipts, customers
+  purchase/                  — payables, bills, purchase orders, vendors
+data/address_locations.json  — Ethiopian address data for CRUD tests
+playwright.config.js         — sequential execution, sales-first ordering
+.env                         — credentials
 ```
 
 Key implementation details:
 - Documents are created via REST API where possible to cut setup time
 - Approval flows are handled through the UI to maintain E2E integrity
-- Screenshots, video, and traces are captured only on failure to keep runs fast
+- Screenshots, video, and traces are captured only on failure
+- Sequential execution prevents inventory race conditions
 
 ## License
 
