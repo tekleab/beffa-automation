@@ -12,7 +12,6 @@ module.exports = defineConfig({
 
   fullyParallel: false,
   workers: 3,
-  test.describe.configure({ mode: 'serial' });
   retries: 0,
 
   reporter: [
