@@ -1,15 +1,16 @@
 name: Playwright Tests
 on:
-  # This makes it manual only. It won't run on push or pull_request anymore.
+  # Manual trigger only - no auto-run on push
   workflow_dispatch:
     inputs:
       test_type:
-        description: 'Select Test Suite'
+        description: 'Select Test Suite to Run'
         required: true
         default: 'smoke'
         type: choice
         options:
           - smoke
+          - regression
           - full
 
 concurrency:
@@ -44,12 +45,15 @@ jobs:
 
     - name: Run Playwright tests
       run: |
-        if [ "${{ github.event.inputs.test_type }}" == "full" ]; then
-          echo "Executing Full Regression Suite..."
-          npx playwright test --project=chromium
-        else
-          echo "Executing Smoke Test Suite (@smoke)..."
+        if [ "${{ github.event.inputs.test_type }}" == "smoke" ]; then
+          echo "Executing Smoke Suite (@smoke)..."
           npx playwright test --project=chromium --grep @smoke
+        elif [ "${{ github.event.inputs.test_type }}" == "regression" ]; then
+          echo "Executing Regression Suite (@regression)..."
+          npx playwright test --project=chromium --grep @regression
+        else
+          echo "Executing Full Suite (All Tests)..."
+          npx playwright test --project=chromium
         fi
 
     - name: Upload Artifacts
