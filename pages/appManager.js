@@ -811,7 +811,7 @@ class AppManager {
     const token = await this._getAuthToken();
     // 🛡️ ERP system is currently in 2018 Ethiopian Calendar (2026 GC)
     const params = "page=1&pageSize=50&year=2018&period=yearly&calendar=ec";
-    
+
     console.log("[ACTION] Discovering random item via API (Year 2018)...");
     const response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
       headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }

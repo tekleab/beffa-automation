@@ -7,15 +7,23 @@ test.describe('Sales — Credit Note (Return Flow)', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        // Stage 1: Setup Invoice via API
+        // Stage 1: Setup Invoice via API (High Speed)
         console.log('[STEP] Stage 1: Creating fresh Invoice via API');
-        const itemResult = await app.captureRandomItemDetails();
+        const itemResult = await app.captureRandomItemDataAPI();
         const so = await app.createSalesOrderAPI({ itemId: itemResult.itemId });
-        await page.goto(`/receivables/sale-orders/${so.id}/detail`);
+        await page.goto(`/receivables/sale-orders/${so.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
         
-        const inv = await app.createInvoiceAPI({ soId: so.id, soItemId: so.soItemId });
-        await page.goto(`/receivables/invoices/${inv.id}/detail`);
+        const inv = await app.createInvoiceAPI({
+            customerId: so.customerId,
+            soId: so.id, 
+            soItemId: so.soItemId,
+            releasedQuantity: 1
+        });
+        
+        if (!inv.success) throw new Error(`Invoice setup failed: ${inv.error}`);
+
+        await page.goto(`/receivables/invoices/${inv.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
         console.log(`[OK] Base Invoice Approved: ${inv.ref}`);
 
