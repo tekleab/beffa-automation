@@ -4,6 +4,17 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  # ይህ ክፍል በእጅህ መርጠህ እንድታሮጥ (Manual Trigger) ይረዳሃል
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'የትኛውን ቴስት ላሩጥ?'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - full
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +37,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '24' # ወደ 24 
+        node-version: '24'
         cache: 'npm'
 
     - name: Install dependencies
@@ -36,13 +47,21 @@ jobs:
       run: npx playwright install chromium --with-deps
 
     - name: Run Playwright tests
-      run: npx playwright test --project=chromium
+      run: |
+        # በእጅህ 'full' ብለህ ካልመረጥክ በስተቀር ሁሌም 'smoke' ብቻ እንዲሮጥ ያደርጋል
+        if [ "${{ github.event.inputs.test_type }}" == "full" ]; then
+          echo "Running Full Regression Suite..."
+          npx playwright test --project=chromium
+        else
+          echo "Running Smoke Test Suite (@smoke)..."
+          npx playwright test --project=chromium --grep @smoke
+        fi
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: all-reports
+        name: test-results-${{ github.run_id }}
         path: |
           playwright-report/
           allure-results/
