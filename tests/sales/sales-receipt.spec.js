@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile', () => {
+test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @regression', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);

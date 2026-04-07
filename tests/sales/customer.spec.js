@@ -5,7 +5,7 @@ const path = require('path');
 
 const addressData = JSON.parse(fs.readFileSync(path.join(__dirname, '../../data/address_locations.json'), 'utf8'));
 
-test.describe('Customer Lifecycle — Validation & CRUD', () => {
+test.describe('Customer Lifecycle — Validation & CRUD @smoke', () => {
     test.setTimeout(480000);
 
     test('Validate TIN, create customer, edit, remove', async ({ page }) => {

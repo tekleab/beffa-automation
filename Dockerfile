@@ -17,6 +17,16 @@ COPY . .
 # Ensure the app has permissions to write results if running as non-root (optional but good practice)
 RUN mkdir -p /app/test-results /app/allure-results && chmod -R 777 /app
 
+# Set environment variables for reporting
+ENV TEST_RESULTS=/app/test-results/
+
 # Set the default command to run playwright tests
-# We use --project=chromium by default, but this can be overridden
-CMD ["npx", "playwright", "test"]
+# Dynamic support for TEST_TAG=smoke or TEST_TAG=full
+CMD sh -c "\
+if [ \"$TEST_TAG\" = \"smoke\" ]; then \
+  npx playwright test --grep @smoke; \
+elif [ \"$TEST_TAG\" = \"regression\" ]; then \
+  npx playwright test --grep @regression; \
+else \
+  npx playwright test; \
+fi"

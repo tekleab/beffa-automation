@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Purchase Impact — PO → Bill → Stock Increase', () => {
+test.describe('Purchase Impact Flow @regression', () => {
 
     test('Create PO via API, convert to Bill, verify stock addition', async ({ page }) => {
         test.setTimeout(600000);

@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Accounting Logic — Duplicate Transaction Validation', () => {
+test.describe('Accounting Logic Flow @regression', () => {
 
     test('Verify duplicate invoice creation allowed, duplicate receipt blocked', async ({ page }) => {
         test.setTimeout(400000);

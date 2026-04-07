@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Sales — Credit Note (Return Flow)', () => {
+test.describe('Sales — Credit Note (Return Flow) @regression', () => {
 
     test('Create Invoice, Approve, then Create Credit Note and Verify Stock', async ({ page }) => {
         const app = new AppManager(page);

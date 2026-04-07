@@ -63,5 +63,5 @@ module.exports = defineConfig({
     },
   ],
 
-  outputDir: 'test-results/',
+  outputDir: process.env.TEST_RESULTS || 'test-results/',
 });

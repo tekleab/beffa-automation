@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Invoice-Receipt Balance — Partial Payment & Settlement', () => {
+test.describe('Invoice-Receipt Balance Flow @regression', () => {
 
     test('Verify partial receipt correctly updates invoice amount due', async ({ page }) => {
         test.setTimeout(600000);

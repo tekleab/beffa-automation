@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Payment Cycle — Bill Payment & Vendor Verification', () => {
+test.describe('Payment Cycle Flow @regression', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);

@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe.serial('Receipt Reversal — GL Ledger Impact', () => {
+test.describe.serial('Receipt Reversal — GL Ledger Impact @regression', () => {
     let rctID = null;
     let rctUUID = null;
     let initialEntries = [];

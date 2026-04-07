@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Inventory — Manual Adjustment & Stock Impact', () => {
+test.describe.serial('Inventory Adjustment Flow @regression', () => {
 
     test('Create Inventory Adjustment (Write-down), approve, verify stock deduction', async ({ page }) => {
         test.setTimeout(400000);

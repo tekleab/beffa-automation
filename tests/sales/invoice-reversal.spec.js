@@ -1,12 +1,12 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stock Restoration', () => {
+test.describe.serial('Invoice Reversal Flow @regression', () => {
     let invID = null;
     let invUUID = null;
     let initialInfo = null;
 
-    test('Stage 1: Setup via API (SO & Invoice), verify stock deduction', async ({ page }) => {
+    test('Stage 1: Setup via API (SO & Invoice), verify stock deduction @smoke', async ({ page }) => {
         test.setTimeout(600000);
         const app = new AppManager(page);
 
@@ -49,7 +49,7 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         console.log('[OK] Stock decreased correctly after pure setup flow');
     });
 
-    test('Stage 2: Reverse invoice, verify stock restoration', async ({ page }) => {
+    test('Stage 2: Reverse invoice, verify stock restoration @regression', async ({ page }) => {
         test.setTimeout(450000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);

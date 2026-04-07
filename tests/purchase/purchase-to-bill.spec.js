@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe('Purchase to Bill — Full PO → Bill Lifecycle', () => {
+test.describe.serial('Purchase to Bill Flow @smoke', () => {
 
     test('Create PO via UI, approve, create linked bill, verify in vendor profile', async ({ page }) => {
         test.setTimeout(450000);

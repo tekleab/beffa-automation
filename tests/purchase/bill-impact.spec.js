@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { AppManager } = require('../../pages/appManager');
 
-test.describe.serial('Bill Impact — Create Bill, Verify Stock Increase, Reverse, Verify Restoration', () => {
+test.describe.serial('Bill Impact Flow @regression', () => {
     let billID = null;
     let billUUID = null;
     let initialInfo = null;
