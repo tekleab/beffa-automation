@@ -805,20 +805,38 @@ class AppManager {
     return { invoiceDate: fmt(today), dueDate: fmt(due) };
   }
 
+  /** Discover and return item data purely via API (High-Speed) */
+  async captureRandomItemDataAPI() {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const token = await this._getAuthToken();
+    // 🛡️ ERP system is currently in 2018 Ethiopian Calendar (2026 GC)
+    const params = "page=1&pageSize=50&year=2018&period=yearly&calendar=ec";
+    
+    console.log("[ACTION] Discovering random item via API (Year 2018)...");
+    const response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
+      headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok()) throw new Error(`Item API discovery failed: ${response.status()}`);
+
+    const json = await response.json();
+    const list = json.data || json.items || [];
+    const items = list.filter(i => (i.current_stock > 0) || (i.quantity > 0));
+    if (items.length === 0) throw new Error("No items with stock found via API");
+
+    const target = items[Math.floor(Math.random() * Math.min(items.length, 10))];
+    // 🛡️ CRITICAL: Call the detail API immediately to get the absolute source of truth for initial stock
+    const trueDetails = await this.getItemDetailsAPI(target.id);
+    console.log(`[DEBUG] Initial Source of Truth (API): current_stock=${trueDetails.currentStock}`);
+    return trueDetails;
+  }
+
   async captureRandomItemDetails() {
-    await this.page.goto('/inventories/items/?page=1&pageSize=30', { waitUntil: 'networkidle' });
-    await this.page.waitForTimeout(5000);
-    const rows = this.page.locator('table tbody tr');
-    await rows.first().waitFor({ state: 'visible', timeout: 30000 });
-    const count = await rows.count();
-    const targetRow = rows.nth(Math.floor(Math.random() * Math.min(count, 15)));
-    const nameLink = targetRow.locator('a').first();
-    let itemName = (await nameLink.textContent()).trim();
-    if (itemName.includes(' - ')) itemName = itemName.split(' - ').pop().trim();
-    console.log(`[ACTION] Capturing details for: "${itemName}"...`);
-    await nameLink.click();
-    await this.page.waitForURL(/\/inventories\/items\/.*/, { timeout: 60000 });
-    return await this._extractItemDetails(itemName);
+    // 🛡️ Optimized: Discover via API then jump to detail page
+    const target = await this.captureRandomItemDataAPI();
+    console.log(`[OK] Discovered: "${target.itemName}" via API. Navigating to detail...`);
+    await this.page.goto(`/inventories/items/${target.itemId}/detail`, { waitUntil: 'load' });
+    return await this._extractItemDetails(target.itemName);
   }
 
   async extractDetailValue(label) {
@@ -833,19 +851,19 @@ class AppManager {
   async captureSODetailData() {
     console.log("[ACTION] Capturing Customer Name (Brute Force Method)...");
     await this.page.waitForSelector('text=Customer:', { timeout: 30000 });
-    
+
     // 🛡️ Brute force: find the label and pick the next text block in the DOM
     const name = await this.page.evaluate(() => {
       const labels = Array.from(document.querySelectorAll('div, p, span'));
       const label = labels.find(el => el.innerText.trim() === 'Customer:');
       if (!label) return "System Customer";
-      
+
       // Find the next sibling or descendant with actual text
       let next = label.nextElementSibling;
       while (next && !next.innerText.trim()) next = next.nextElementSibling;
       return next ? next.innerText.trim() : "System Customer";
     });
-    
+
     console.log(`[DATA] Captured Customer: "${name}"`);
     return name;
   }
@@ -924,9 +942,48 @@ class AppManager {
     return await this._extractItemDetails(itemName);
   }
 
+  async getItemDetailsAPI(itemId) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const token = await this._getAuthToken();
+    const params = "year=2018&period=yearly&calendar=ec";
+
+    let response = await this.page.request.get(`${apiBase}/inventory-item/${itemId}?${params}`, {
+      headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok()) {
+      console.log(`[INFO] Direct Item API for ${itemId} failed (${response.status()}). Trying search...`);
+      // 🛡️ Try search with the plural endpoint (guessed based on singular)
+      const searchResp = await this.page.request.get(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
+        headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+      });
+      if (!searchResp.ok()) {
+        console.log(`[INFO] Search Item API failed: ${searchResp.status()}`);
+        return null;
+      }
+      const searchJson = await searchResp.json();
+      const item = searchJson.items?.[0] || searchJson.data?.[0]; // Support different response keys
+      if (!item) return null;
+      return { itemName: item.name, itemId: item.id, currentStock: item.current_stock || 0, unitCost: item.unit_cost || 0 };
+    }
+
+    const json = await response.json();
+    const cStock = json.current_stock ?? 0;
+    const qty = json.quantity ?? 0;
+
+    console.log(`[DEBUG] API Item Data: current_stock=${cStock}, quantity=${qty}`);
+
+    return {
+      itemName: json.name,
+      itemId: json.id,
+      currentStock: json.current_stock || json.quantity || 0,
+      unitCost: json.unit_cost || 0
+    };
+  }
+
   async _extractItemDetails(itemName) {
-    await this.page.waitForTimeout(3000);
-    // Extract UUID from URL: /inventories/items/{uuid}/detail
+    await this.page.locator('text=Item Name:').waitFor({ state: 'visible', timeout: 30000 });
+
     const urlMatch = this.page.url().match(/\/inventories\/items\/([a-f0-9-]+)/);
     const itemId = urlMatch ? urlMatch[1] : null;
 
@@ -941,8 +998,15 @@ class AppManager {
     const sAcc = await extractValue('Sales GL Account');
     const cAcc = await extractValue('Cost GL Account');
     const iAcc = await extractValue('Inventory GL Account');
+
+    // 🛡️ HARDENING: Handle BRR and comma-formatted costs
+    const costLocator = this.page.locator('.chakra-stack, div').filter({ hasText: /^(Cost:|Current Unit Cost:)/i }).last();
+    const costText = (await costLocator.locator('xpath=..').innerText().catch(() => '')).trim();
+    const costMatch = costText.match(/(?:Cost|Current Unit Cost)[\s:BRR]+([0-9,.]+)/i);
+    const unitCost = costMatch ? parseFloat(costMatch[1].replace(/,/g, '')) : 0;
+
     const clean = (f) => f.match(/^\d+/)?.[0] || '';
-    return { itemName, itemId, currentStock: stock, salesAccountCode: clean(sAcc), costAccountCode: clean(cAcc), inventoryAccountCode: clean(iAcc) };
+    return { itemName, itemId, currentStock: stock, unitCost, salesAccountCode: clean(sAcc), costAccountCode: clean(cAcc), inventoryAccountCode: clean(iAcc) };
   }
 
   async verifyLedgerImpact(accountCode, docNumber, expectedAmount, type) {
@@ -1112,9 +1176,9 @@ class AppManager {
     });
 
     if (!response.ok()) {
-        const err = await response.text();
-        console.error(`[ERROR] Invoice API Failed: ${response.status()} - ${err}`);
-        return { success: false, status: response.status(), error: err };
+      const err = await response.text();
+      console.error(`[ERROR] Invoice API Failed: ${response.status()} - ${err}`);
+      return { success: false, status: response.status(), error: err };
     }
     const json = await response.json();
     console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
@@ -1237,6 +1301,90 @@ class AppManager {
     return { billNumber: json.invoice_number, billId: json.id };
   }
 
+  async createInventoryAdjustmentUI(itemName, adjQty = 1) {
+    console.log(`[STEP] Starting UI Adjustment for "${itemName}"`);
+    await this.captureItemDetails(itemName); // Takes us to detail page
+
+    // 1. Locate the Adjust link in the Locations tab
+    const adjustLink = this.page.locator('table tbody tr').filter({ hasText: 'Default Warehouse Location' }).locator('text=Adjust').first();
+    await adjustLink.waitFor({ state: 'visible' });
+    await adjustLink.click();
+
+    await this.page.waitForSelector('text=Update Inventory', { timeout: 30000 });
+
+    // 2. Capture remaining quantities from disabled inputs as requested
+    const currentQty = await this.page.locator('#current_quantity').getAttribute('value');
+    const locationQty = await this.page.locator('#location_quantity').getAttribute('value');
+    console.log(`[INFO] Current Quantity (Global): ${currentQty} | Location Quantity: ${locationQty}`);
+
+    // 3. Fill the adjustment
+    await this.page.locator('input[name="adjusted_quantity"]').fill(String(adjQty));
+    await this.page.locator('input[name="reason"]').fill("Automated Audit Adjustment");
+
+    // 4. Set account if not pre-filled
+    const accountBtn = this.page.getByRole('button', { name: /Adjustment Account/i });
+    if (await accountBtn.isVisible()) {
+      await accountBtn.click();
+      await this.smartSearch(null, 'Cash at Hand'); // Or something standard
+    }
+
+    // 5. Submit
+    const addNowBtn = this.page.getByRole('button', { name: 'Add Now' }).first();
+    await addNowBtn.click();
+
+    await this.page.waitForURL(/\/inventories\/adjustments\/.*\/detail$/, { timeout: 60000 });
+    const adjID = (await this.page.locator('p.chakra-text').filter({ hasText: /^ADJ\// }).first().innerText()).trim();
+    const adjUUID = this.page.url().match(/\/adjustments\/([a-f0-9-]+)/)[1];
+
+    console.log(`[SUCCESS] UI Adjustment created: ${adjID} (UUID: ${adjUUID})`);
+    return { ref: adjID, id: adjUUID };
+  }
+
+  async createInventoryAdjustmentAPI(data = {}) {
+    const apiBase = "http://157.180.20.112:8001/api";
+
+    // Defaults from user capture
+    const warehouseId = data.warehouseId || "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4";
+    const locationId = data.locationId || "2595ebb0-4e78-4bc5-9321-140d3fd316c7";
+    const adjustmentAccountId = data.adjustmentAccountId || "f17570eb-6533-4249-8eba-e77a4ea92d43";
+
+    const payload = {
+      adjusted_by: "quantity",
+      adjusted_cost: 0,
+      adjusted_quantity: data.adjustedQuantity || 10,
+      adjustment_account_id: adjustmentAccountId,
+      inventory_item_id: data.itemId, // REQUIRED
+      is_write_down: data.isWriteDown !== undefined ? String(data.isWriteDown) : "true",
+      location_id: locationId,
+      warehouse_id: warehouseId,
+      date: new Date().toISOString().split('T')[0] + "T00:00:00Z",
+      reason: data.reason || "Automated E2E Adjustment",
+      note: "",
+      skip_draft: false,
+      status: "draft"
+    };
+
+    const token = await this._getAuthToken();
+    const response = await this.page.request.post(`${apiBase}/inventory-adjustments?year=2018&period=yearly&calendar=ec`, {
+      data: payload,
+      headers: {
+        'x-company': 'befa tutorial',
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) {
+      const err = await response.text();
+      console.error(`[ERROR] Adjustment API Failed: ${response.status()} - ${err}`);
+      return { success: false, error: err };
+    }
+
+    const json = await response.json();
+    console.log(`[SUCCESS] Adjustment created via API: ${json.ref} (ID: ${json.id})`);
+    return { success: true, ref: json.ref, id: json.id };
+  }
+
   async createInvoiceReceiptAPI(data = {}) {
     const apiBase = "http://157.180.20.112:8001/api";
     const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
@@ -1336,6 +1484,28 @@ class AppManager {
       debit: entry.debit.toString(),
       credit: entry.credit.toString()
     }));
+  }
+
+  async reverseInvoiceAPI(invoiceId) {
+    const apiBase = "http://157.180.20.112:8001/api";
+    const token = await this._getAuthToken();
+    const params = "year=2018&period=yearly&calendar=ec";
+
+    const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
+      data: { status: "reversed" },
+      headers: {
+        'x-company': 'befa tutorial',
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) {
+      console.error(`[ERROR] Reversal API failed: ${response.status()}`);
+      return false;
+    }
+    console.log(`[SUCCESS] Invoice ${invoiceId} reversed via API`);
+    return true;
   }
 }
 

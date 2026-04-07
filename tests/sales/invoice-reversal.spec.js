@@ -13,13 +13,9 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         console.log('[STEP] Stage 1: Login & Setup');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        // 1. Pick a random item with stock
-        while (true) {
-            initialInfo = await app.captureRandomItemDetails();
-            if (initialInfo.currentStock >= 2) break;
-            console.log(`[INFO] Item "${initialInfo.itemName}" stock too low. Retrying...`);
-        }
-        console.log(`[INFO] Item: "${initialInfo.itemName}" | Initial Stock: ${initialInfo.currentStock}`);
+        // 1. Pick a random item with stock via API (High Speed)
+        initialInfo = await app.captureRandomItemDataAPI();
+        console.log(`[OK] Discovered: "${initialInfo.itemName}" via API | Initial Stock: ${initialInfo.currentStock}`);
 
         // 2. Create Sales Order via API & Approve in UI
         console.log(`[STEP] Phase 2: Creating Sales Order via API for ${initialInfo.itemName}`);
@@ -42,13 +38,13 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         invUUID = invData.id;
         console.log(`[OK] Invoice ${invID} created and approved via API+UI flow`);
 
-        console.log('[STEP] Verifying stock deduction');
-        const { currentStock: postInvStock } = await app.captureItemDetails(initialInfo.itemName);
+        console.log('[STEP] Verifying stock deduction via API');
+        const postInv = await app.getItemDetailsAPI(initialInfo.itemId);
         const expectedStock = initialInfo.currentStock - 1;
 
-        console.log(`[VERIFY] Expected: ${expectedStock} | Found: ${postInvStock}`);
-        if (postInvStock !== expectedStock) {
-            throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${postInvStock}`);
+        console.log(`[VERIFY] Expected: ${expectedStock} | Found: ${postInv.currentStock}`);
+        if (postInv.currentStock !== expectedStock) {
+            throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${postInv.currentStock}`);
         }
         console.log('[OK] Stock decreased correctly after pure setup flow');
     });
@@ -62,7 +58,7 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         await page.goto(`/receivables/invoices/${invUUID}/detail`, { waitUntil: 'load' });
         await page.waitForTimeout(3000);
 
-        console.log(`[STEP] Triggering reversal for ${invID}`);
+        console.log(`[STEP] Triggering reversal for ${invID} via UI (API deferred)`);
         await page.getByRole('button', { name: 'Reverse' }).click();
         await page.getByRole('dialog').getByRole('button', { name: 'Reverse' }).click();
         await page.waitForTimeout(6000);
@@ -70,18 +66,16 @@ test.describe.serial('Invoice Reversal — Create, Approve, Reverse, Verify Stoc
         const badge = page.locator('.chakra-badge').filter({ hasText: /Reversed/i }).first();
         if (await badge.isVisible({ timeout: 5000 }).catch(() => false)) {
             console.log(`[OK] ${invID} status changed to Reversed`);
-        } else {
-            console.log(`[INFO] Reversal badge not visible yet, proceeding to verify stock`);
         }
 
-        console.log('[STEP] Verifying stock restoration');
-        const { currentStock: finalStock } = await app.captureItemDetails(initialInfo.itemName);
+        console.log('[STEP] Verifying stock restoration via API');
+        const finalInfo = await app.getItemDetailsAPI(initialInfo.itemId);
 
-        console.log(`[VERIFY] Expected (restored): ${initialInfo.currentStock} | Found: ${finalStock}`);
-        if (finalStock !== initialInfo.currentStock) {
-            throw new Error(`Stock restoration failed. Expected ${initialInfo.currentStock}, found ${finalStock}`);
+        console.log(`[VERIFY] Expected (restored): ${initialInfo.currentStock} | Found: ${finalInfo.currentStock}`);
+        if (finalInfo.currentStock !== initialInfo.currentStock) {
+            throw new Error(`Stock restoration failed. Expected ${initialInfo.currentStock}, found ${finalInfo.currentStock}`);
         }
-        console.log(`[RESULT] Invoice Reversal: PASSED — Stock restored to ${finalStock}`);
+        console.log(`[RESULT] Invoice Reversal: PASSED — Stock restored to ${finalInfo.currentStock}`);
         await page.close();
     });
 });

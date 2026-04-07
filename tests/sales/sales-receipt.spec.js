@@ -9,26 +9,31 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile', (
         await page.waitForTimeout(5000);
     });
 
-    test('Find unpaid invoice, create receipt, approve, verify in profile', async ({ page }) => {
+    test('Create fresh invoice via API, then create receipt and link it', async ({ page }) => {
         test.setTimeout(450000);
         const app = new AppManager(page);
         const { soDate: receiptDate } = app.getTransactionDates();
 
-        // Phase 1: Find Unpaid Invoice
-        console.log('[STEP] Phase 1: Scanning for unpaid approved invoice');
-        const target = await app.findApprovedUnpaidInvoice();
+        // Phase 1: API Setup (Guarantees document for linkage)
+        console.log('[STEP] Phase 1: Creating fresh Sales Order & Invoice via API');
+        const itemResult = await app.captureRandomItemDetails();
+        const soResult = await app.createSalesOrderAPI({ itemId: itemResult.itemId });
+        if (!soResult.success) throw new Error("SO API Failed");
 
-        let CUSTOMER_NAME = "";
-        let INVOICE_ID = null;
+        // Approve SO to make it linkable
+        await page.goto(`/receivables/sale-orders/${soResult.id}/detail`);
+        await app.handleApprovalFlow();
 
-        if (target) {
-            CUSTOMER_NAME = target.customerName;
-            INVOICE_ID = target.invoiceId;
-            console.log(`[INFO] Found unpaid match: "${CUSTOMER_NAME}" (Invoice: ${INVOICE_ID})`);
-        } else {
-            console.log('[INFO] No unpaid approved invoices found. Using fallback customer.');
-            CUSTOMER_NAME = "Base Ethiopia";
-        }
+        const invResult = await app.createInvoiceAPI({ soId: soResult.id, soItemId: soResult.soItemId });
+        if (!invResult.success) throw new Error("Invoice API Failed");
+
+        // Approve Invoice
+        await page.goto(`/receivables/invoices/${invResult.id}/detail`);
+        await app.handleApprovalFlow();
+
+        const CUSTOMER_NAME = itemResult.customerName || "System Customer";
+        const INVOICE_ID = invResult.ref;
+        console.log(`[INFO] Document Setup Complete: ${INVOICE_ID} for ${CUSTOMER_NAME}`);
 
         // Phase 2: Create Receipt
         console.log('[STEP] Phase 2: Creating receipt');
