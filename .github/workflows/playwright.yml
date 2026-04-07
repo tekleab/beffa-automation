@@ -1,14 +1,10 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  # ይህ ክፍል በእጅህ መርጠህ እንድታሮጥ (Manual Trigger) ይረዳሃል
+  # This makes it manual only. It won't run on push or pull_request anymore.
   workflow_dispatch:
     inputs:
       test_type:
-        description: 'የትኛውን ቴስት ላሩጥ?'
+        description: 'Select Test Suite'
         required: true
         default: 'smoke'
         type: choice
@@ -48,12 +44,11 @@ jobs:
 
     - name: Run Playwright tests
       run: |
-        # በእጅህ 'full' ብለህ ካልመረጥክ በስተቀር ሁሌም 'smoke' ብቻ እንዲሮጥ ያደርጋል
         if [ "${{ github.event.inputs.test_type }}" == "full" ]; then
-          echo "Running Full Regression Suite..."
+          echo "Executing Full Regression Suite..."
           npx playwright test --project=chromium
         else
-          echo "Running Smoke Test Suite (@smoke)..."
+          echo "Executing Smoke Test Suite (@smoke)..."
           npx playwright test --project=chromium --grep @smoke
         fi
 
