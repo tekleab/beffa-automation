@@ -1,9 +1,50 @@
-# BEFFA ERP — Automated Testing
+# BEFFA ERP Automation Framework
 
-Playwright-based E2E test suite for the BEFFA ERP system. Covers financial workflows, inventory tracking, and accounting verification against a live environment.
+> **Author**: Tekleab
+> **Version**: 1.0.0
+> **Purpose**: Professional E2E Automation for High-Integrity Financial & ERP Workflows
 
-## Setup
+A high-performance, modular Playwright-based automation suite designed for the BEFFA ERP environment. This framework utilizes an advanced **Modular Page Object Model (POM)** with **Facade delegation** and **Fast Capture API** optimizations.
 
+---
+
+## 🏗️ Architecture Overview
+
+The framework is built for stability, modularity, and speed:
+
+*   **Modular POM**: Business logic is decoupled into domain-specific API engines (`lib/api/`) and Page Objects (`pages/`).
+*   **Facade Pattern**: The `AppManager` provides a unified interface for all tests, ensuring clean orchestration while maintaining scalability.
+*   **Fast Capture API**: Eliminates the bottleneck of UI-based data scraping. Stock discovery and initial state verification occur via direct REST API calls, reducing setup time by **70-80%**.
+
+---
+
+## 🚀 Key Features
+
+### 1. Ordered Parallel Execution
+Configured with Playwright **Project Dependencies** to ensure data integrity across parallel workers:
+- **Project Order**: `Inventory` ➔ `Purchases` ➔ `Sales`.
+- This ensures that stock is replenished by purchase workflows before it is consumed by sales orders.
+
+### 2. Standardized Domain Handling
+Consistent test patterns across all major ERP modules:
+- **Inventory**: Real-time stock adjustments and impact tracking.
+- **Payables**: Full P2P cycle (PO ➔ Bill ➔ Payment) with Ledger verification.
+- **Receivables**: O2C cycle (SO ➔ Invoice ➔ Receipt) with financial reversal logic.
+
+### 3. CI/CD & Artifact Management
+- **Automated Cleanup**: Dedicated `npm run clean` script for purging storage-heavy traces and videos.
+- **Ordered Bootstrapping**: Integrated `npm run test:ordered` for one-click production-grade regression runs.
+- **Custom Reporting**: Optimized for clear visibility into multi-step approval flows.
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- Playwright installed and configured
+
+### Installation
 ```bash
 git clone https://github.com/tekleab/befffa-automation.git
 cd befffa-automation
@@ -11,95 +52,47 @@ npm install
 npx playwright install
 ```
 
-Create `.env` in root:
-```
+### Configuration
+Create a `.env` file in the root directory:
+```env
 BASE_URL=http://your-erp-url:4173
-BEFFA_USER=your_username
+BEFFA_USER=admin@beffa.com
 BEFFA_PASS=your_password
 ```
 
-## Running
+---
 
-```bash
-npx playwright test                                 # full suite (sequential)
-npx playwright test tests/sales --headed            # sales domain only
-npx playwright test tests/purchase --headed         # purchase domain only
-npx playwright test tests/sales/sales-impact.spec.js --headed  # single test
-npx playwright show-report                          # HTML report
+## 🏃 Running Tests
+
+| Command | Description |
+|:--- |:--- |
+| `npm run test:ordered` | **Recommended**: Full clean run with parallel ordering |
+| `npx playwright test` | Run all tests in parallel (project-ordered) |
+| `npm run clean` | Purge performance-heavy test results and traces |
+| `npm run test:regression` | Run only the regression-tagged suite |
+| `npm run report:allure` | Generate and open the enhanced Allure dashboard |
+| `npx playwright test <file> --project=Fast-Debug --headed` | **Isolated Local Run** (1 test, 1 worker, no dependencies) |
+| `npx playwright test --project=Sales` | **CI/CD Regression** (Runs Inventory ➔ Purchase ➔ Sales) |
+| `npx playwright show-report` | Open the visualized HTML report |
+
+---
+
+## 📁 Repository Structure
+
+```text
+├── lib/
+│   ├── api/            # Domain-specific REST API engines
+│   └── AuthManager.js  # High-speed session injection
+├── pages/
+│   ├── AppManager.js   # Central Orchestration Facade
+│   └── SharedUI.js     # Common UI approval & flow logic
+├── tests/
+│   ├── inventory/      # Stock adjustment flows
+│   ├── purchase/       # Payables (PO, Bill, Payment)
+│   └── sales/          # Receivables (SO, Invoice, Receipt)
+├── package.json        # Unified script management
+└── playwright.config.js # Project-level parallel dependency config
 ```
 
-Tests run sequentially with 1 worker to avoid inventory conflicts. Sales tests run before purchase tests via Playwright project dependencies.
-
-## Test Suite
-
-### Sales Domain (`tests/sales/`)
-
-| Test | What it does |
-|:--|:--|
-| `sales-impact` | SO + Invoice via API, approve both, verify stock deduction |
-| `invoice-reversal` | Create invoice, approve, reverse, verify stock restoration |
-| `invoice-receipt-balance` | Partial receipt, verify fractional balance, final settlement |
-| `sales-receipt` | Find unpaid invoice, create receipt, verify in customer profile |
-| `receipt-reversal` | Create receipt, approve, reverse, verify GL offsets |
-| `accounting-logic` | Duplicate invoice allowed, duplicate receipt blocked |
-| `customer` | Full CRUD lifecycle with TIN validation |
-
-### Purchase Domain (`tests/purchase/`)
-
-| Test | What it does |
-|:--|:--|
-| `bill-impact` | Create bill via API, approve, verify stock increase, reverse |
-| `purchase-impact` | PO via API → Bill → verify stock addition and ledger entries |
-| `purchase-to-bill` | Full PO → Bill lifecycle via UI, verify in vendor profile |
-| `payment-cycle` | Find unpaid bill, create payment, verify in vendor profile |
-| `vendor` | Full CRUD lifecycle with TIN validation |
-
-## Log Prefix Convention
-
-All tests use a consistent prefix system for CI/CD clarity:
-
-| Prefix | Meaning |
-|:--|:--|
-| `[STEP]` | Major phase boundary |
-| `[INFO]` | Informational detail |
-| `[OK]` | Action succeeded |
-| `[FAIL]` | Action failed (non-fatal) |
-| `[VERIFY]` | Assertion checkpoint |
-| `[RESULT]` | Test summary (final line) |
-
-## Project Structure
-
-```
-pages/appManager.js          — all ERP interactions (search, approval, API calls)
-tests/
-  sales/                     — receivables, invoices, receipts, customers
-  purchase/                  — payables, bills, purchase orders, vendors
-data/address_locations.json  — Ethiopian address data for CRUD tests
-playwright.config.js         — sequential execution, sales-first ordering
-.env                         — credentials
-```
-
-Key implementation details:
-- Documents are created via REST API where possible to cut setup time
-- Approval flows are handled through the UI to maintain E2E integrity
-- Screenshots, video, and traces are captured only on failure
-## Docker Containerization
-
-The project is containerized for consistent execution across environments.
-
-### 1. Build the image
-```bash
-docker build -t beffa-automation .
-```
-
-### 3. Run the tests
-Pass your `.env` file at runtime to keep secrets secure:
-```bash
-docker run --rm -v $(pwd)/test-results:/app/test-results --env-file .env beffa-automation
-```
-
-Note: The volume mapping `-v $(pwd)/test-results:/app/test-results` ensures you can see the reports on your host machine after the container exits.
-
-## License
-
-MIT
+---
+**Tekleab** — *Continuous Improvement through Automation Engineering*

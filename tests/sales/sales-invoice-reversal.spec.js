@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { AppManager } = require('../../pages/appManager');
+const { AppManager } = require('../../pages/AppManager');
 
 test.describe.serial('Invoice Reversal Flow @regression', () => {
     let invID = null;

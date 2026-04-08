@@ -10,7 +10,7 @@ module.exports = defineConfig({
   timeout: 600000,
   expect: { timeout: 30000 },
 
-  fullyParallel: false,
+  fullyParallel: true,
   workers: 3,
   retries: 0,
 
@@ -55,7 +55,24 @@ module.exports = defineConfig({
 
   projects: [
     {
-      name: 'chromium',
+      name: 'Inventory',
+      testMatch: /inventory\/.*\.spec\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: 'Purchases',
+      testMatch: /purchase\/.*\.spec\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: 'Sales',
+      testMatch: /sales\/.*\.spec\.js/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },

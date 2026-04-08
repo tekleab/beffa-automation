@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { AppManager } = require('../../pages/appManager');
+const { AppManager } = require('../../pages/AppManager');
 
 test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @regression', () => {
 
@@ -24,7 +24,11 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         await page.goto(`/receivables/sale-orders/${soResult.id}/detail`);
         await app.handleApprovalFlow();
 
-        const invResult = await app.createInvoiceAPI({ soId: soResult.id, soItemId: soResult.soItemId });
+        const invResult = await app.createInvoiceAPI({ 
+            customerId: soResult.customerId,
+            soId: soResult.id, 
+            soItemId: soResult.soItemId 
+        });
         if (!invResult.success) throw new Error("Invoice API Failed");
 
         // Approve Invoice

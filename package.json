@@ -9,10 +9,14 @@
     "test": "npx playwright test",
     "test:smoke": "npx playwright test --grep @smoke",
     "test:regression": "npx playwright test --grep @regression",
-    "test:full": "npx playwright test"
+    "test:full": "npx playwright test",
+    "test:ordered": "npm run clean && npx playwright test --project=Inventory && npx playwright test --project=Purchases && npx playwright test --project=Sales",
+    "clean": "rm -rf test-results/ allure-results/ recordings/ artifacts/",
+    "allure:generate": "npx allure generate allure-results --clean -o allure-report",
+    "report:allure": "npm run allure:generate && npx allure open allure-report"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tekleab",
   "license": "ISC",
   "description": "",
   "devDependencies": {
