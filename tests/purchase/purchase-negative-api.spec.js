@@ -57,7 +57,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
+        expect(response.status()).toBe(400);
     });
 
     // --- BILL NEGATIVE TESTS ---
