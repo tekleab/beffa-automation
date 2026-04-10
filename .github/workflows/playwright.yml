@@ -1,6 +1,5 @@
 name: Playwright Tests
 on:
-  # Manual trigger only - no auto-run on push
   workflow_dispatch:
     inputs:
       test_type:
@@ -12,6 +11,12 @@ on:
           - smoke
           - regression
           - full
+
+# 🛡️ ሪፖርቱን ለመጻፍ የሚያስፈልግ ፈቃድ
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -55,8 +60,34 @@ jobs:
           echo "Executing Full Suite (All Tests)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales
         fi
+      continue-on-error: true # 🚨 ቴስት ቢወድቅም ሪፖርቱ እንዲሰራ ይሄ አስፈላጊ ነው
 
-    - name: Upload Artifacts
+    # 📊 ALLURE MAGIC STARTS HERE
+    - name: Load Allure history
+      uses: actions/checkout@v4
+      if: always()
+      continue-on-error: true
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Build Allure Report
+      uses: simple-elf/allure-report-action@master
+      if: always()
+      with:
+        allure_results: allure-results
+        allure_history: allure-history
+        keep_histories: 20
+
+    - name: Deploy Allure Report to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: always()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: allure-history
+        publish_branch: gh-pages
+
+    - name: Upload Artifacts (Backup)
       uses: actions/upload-artifact@v4
       if: always()
       with:
