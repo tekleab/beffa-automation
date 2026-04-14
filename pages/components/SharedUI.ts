@@ -59,12 +59,13 @@ export class SharedUI {
       if (currentStatus && currentStatus !== lastStatus) {
         console.log(`[INFO] Approval status: "${currentStatus}"`);
         lastStatus = currentStatus;
+        actionClickedForStatus = ''; // NEW STATUS, meaning we can interact again
         emptyStatusStreak = 0;
       } else if (!currentStatus) {
         emptyStatusStreak++;
         if (emptyStatusStreak > 30) {
-            console.log('[WARN] No status badge found for 30 seconds. Exiting approval loop.');
-            return;
+          console.log('[WARN] No status badge found for 30 seconds. Exiting approval loop.');
+          return;
         }
       }
 
@@ -74,9 +75,9 @@ export class SharedUI {
         return;
       }
 
-      // 🚨 FAST ERROR DETECTION: If the ERP throws a toast error (like E1481), fail immediately
-      const errorToast = this.page.locator('div[role="alert"], .chakra-toast, .chakra-alert').filter({ hasText: /error|failed|went wrong/i }).first();
-      if (await errorToast.isVisible({ timeout: 500 }).catch(() => false)) {
+      // 🚨 FAST ERROR DETECTION: Catch toasts that spawn late due to backend lockups
+      const errorToast = this.page.locator('#chakra-toast-manager-top-right, #chakra-toast-manager-bottom, div[role="alert"], div[role="status"], .chakra-toast, .chakra-alert, .go395831515').filter({ hasText: /error|failed|went wrong/i }).first();
+      if (await errorToast.isVisible({ timeout: 200 }).catch(() => false)) {
         const errorText = (await errorToast.innerText().catch(() => 'Unknown backend error')).replace(/\n/g, ' ').trim();
         throw new Error(`[CRITICAL] Backend Error Prevented Approval: "${errorText}"`);
       }
@@ -87,15 +88,22 @@ export class SharedUI {
         const modalText = (await modal.innerText().catch(() => '')).toLowerCase();
         if (modalText.includes('reviewer') || modalText.includes('select')) {
           await this._handleReviewerSelection(modal);
-          lastStatus = ''; // Reset to force status log after modal
-          actionClickedForStatus = ''; // Allow re-clicking main buttons after modal
+          actionClickedForStatus = currentStatus; // Lock to prevent re-opening the modal
+          await this._waitForActionAndCheckErrors();
           continue;
         }
+
+        const processingBtn = modal.locator('button').filter({ hasText: /Processing|Loading|Waiting/i }).first();
+        if (await processingBtn.isVisible({ timeout: 200 }).catch(() => false)) {
+          // Silent spin while waiting for ERP to process
+          continue;
+        }
+
         const confirmBtn = modal.locator('button').filter({ hasText: /^(Approve|Advance|Submit|Save|Confirm|Yes|Ok)$/i }).first();
         if (await confirmBtn.isVisible({ timeout: 500 }).catch(() => false)) {
           await confirmBtn.click({ force: true });
-          await this.page.waitForTimeout(2000);
-          actionClickedForStatus = ''; // Reset to allow continuing pipeline
+          await this._waitForActionAndCheckErrors();
+          // We intentionally DO NOT reset actionClickedForStatus here so it waits patiently for the UI to update.
           continue;
         }
       }
@@ -120,10 +128,21 @@ export class SharedUI {
         console.log(`[ACTION] Status changed to "${currentStatus}" → Clicking: "${btnText}"`);
         await button.click({ force: true });
         actionClickedForStatus = currentStatus; // mark this status as actioned
-        await this.page.waitForTimeout(2000);
+        await this._waitForActionAndCheckErrors();
       }
     }
     console.log('[WARN] Approval flow timed out before reaching final status.');
+  }
+
+  // 🚨 FAST ERROR DETECTION: Polls for quick-fading toast errors
+  async _waitForActionAndCheckErrors(): Promise<void> {
+    for (let w = 0; w < 10; w++) {
+      const errorToast = this.page.locator('#chakra-toast-manager-top-right, #chakra-toast-manager-bottom, div[role="alert"], div[role="status"], .chakra-toast, .chakra-alert, .go395831515').filter({ hasText: /error|failed|went wrong/i }).first();
+      if (await errorToast.isVisible({ timeout: 200 }).catch(() => false)) {
+        const errorText = (await errorToast.innerText().catch(() => 'Unknown backend error')).replace(/\n/g, ' ').trim();
+        throw new Error(`[CRITICAL] Backend Error Prevented Approval: "${errorText}"`);
+      }
+    }
   }
 
   async verifyLedgerImpact(accountCode: string, docNumber: string, expectedAmount: number, type: string): Promise<void> {
