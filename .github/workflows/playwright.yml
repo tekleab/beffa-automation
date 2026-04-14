@@ -11,8 +11,13 @@ on:
           - smoke
           - regression
           - full
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# 🛡️ ሪፖርቱን ለመጻፍ የሚያስፈልግ ፈቃድ
 permissions:
   contents: write
   pages: write
@@ -24,11 +29,10 @@ concurrency:
 
 jobs:
   test:
-    timeout-minutes: 45 
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       BASE_URL: ${{ secrets.BASE_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
@@ -39,7 +43,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '24'
+        node-version: '20' # LTS version recommended
         cache: 'npm'
 
     - name: Install dependencies
@@ -50,7 +54,7 @@ jobs:
 
     - name: Run Playwright tests
       run: |
-        if [ "${{ github.event.inputs.test_type }}" == "smoke" ]; then
+        if [ "${{ github.event.inputs.test_type }}" == "smoke" ] || [ "${{ github.event_name }}" == "push" ] || [ "${{ github.event_name }}" == "pull_request" ]; then
           echo "Executing Smoke Suite (@smoke)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @smoke
         elif [ "${{ github.event.inputs.test_type }}" == "regression" ]; then
@@ -60,10 +64,9 @@ jobs:
           echo "Executing Full Suite (All Tests)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales
         fi
-      continue-on-error: true # 🚨 ቴስት ቢወድቅም ሪፖርቱ እንዲሰራ ይሄ አስፈላጊ ነው
+      continue-on-error: true # Keep going to generate report even if tests fail
 
-    # 📊 ALLURE MAGIC STARTS HERE
-    - name: Load Allure history
+    - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
       continue-on-error: true
@@ -71,23 +74,32 @@ jobs:
         ref: gh-pages
         path: gh-pages
 
-    - name: Build Allure Report
-      uses: simple-elf/allure-report-action@master
+    - name: Allure Report action
+      uses: simple-elf/allure-report-action@v1.9
       if: always()
+      id: allure-report
       with:
         allure_results: allure-results
+        gh_pages: gh-pages
+        allure_report: allure-report
         allure_history: allure-history
-        keep_histories: 20
 
     - name: Deploy Allure Report to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
       if: always()
+      uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: allure-history
         publish_branch: gh-pages
+        
+    - name: Ensure custom domain is preserved (if any)
+      if: always()
+      run: |
+        # If there's a custom domain or specific gh-pages setup needed, add it here.
+        # For default github pages, simple-elf and peaceiris handle the branch updating nicely.
+        echo "Report should be visible at https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
 
-    - name: Upload Artifacts (Backup)
+    - name: Upload Test Results Artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
