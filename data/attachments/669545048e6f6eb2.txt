@@ -1,0 +1,59 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "steam door 78x2.02" via API | Stock: 58
+[INFO] Item: "steam door 78x2.02" | Stock: 58
+[STEP] Phase 2: Creating PO via API for "steam door 78x2.02"
+[SUCCESS] PO created via API: PO/2026/04/14/000184 (ID: 395d93c4-4042-45a2-bb34-5c6328596253)
+[OK] PO created: PO/2026/04/14/000184
+[STEP] Approving PO PO/2026/04/14/000184
+[INFO] Vendor: "Manenderas"
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewr"
+[ACTION] Status changed to "reviewr" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approver"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] PO PO/2026/04/14/000184 approved
+[STEP] Phase 3: Converting PO PO/2026/04/14/000184 to Bill
+[INFO] Matching vendor: "Manenderas"
+[ACTION] Searching for: "Manenderas"
+[INFO] Tier 2 - exact in overlay: "Manenderas"
+[SUCCESS] Selected: "Manenderas"
+[ACTION] Searching for: "PO/2026/04/14/000184"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/14/000184"
+[SUCCESS] Selected: "PO/2026/04/14/000184"
+[CALENDAR] Ethiopian mode: Today is Megabit 36.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 36
+[WARN] Could not find day 36. Fallback to direct key press.
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 10 | Receiving: 8
+[SUCCESS] PO Line Item received (8) and selected.
+[INFO] Received 8 items
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/14/000208
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/14/000208 approved
+[STEP] Phase 4: Ledger verification
+[INFO] Captured 6 ledger entries
+[INFO] Sample: Cash at Bank - Zemen (1003)
+[INFO] Verifying debit of 50000 for BILL/2026/04/14/000208 in 1003
+[INFO] Ledger scan attempt 1: 286 rows visible.
+[✓] Found debit entry: 50000.00 (row 74)
+[SUCCESS] Ledger impact verified: debit of 50000 in 1003.
+[STEP] Phase 5: Verifying stock for "steam door 78x2.02"
+[INFO] Attempt 1: Stock 66 (expected: 66)
+[VERIFY] Item: steam door 78x2.02 | Initial: 58 | Received: 8 | Final: 66 | Expected: 66
+[RESULT] Purchase Impact: PASSED
