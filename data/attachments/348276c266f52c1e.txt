@@ -1,0 +1,70 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "steam door 78x2.02" via API | Stock: 67
+[INFO] Item: "steam door 78x2.02" | Stock: 67
+[STEP] Fetching random customer via API
+[INFO] Customer: Yonas Alemu (UUID: beedcbc8-ca49-49ec-98b2-bf32ce9d68b1)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[SUCCESS] Sales Order created via API: SO/2026/04/14/000181 (ID: 8c7f15dc-252e-4f2b-a826-48af9e18cbf7, ItemID: a5965c62-c92d-496f-9bb0-5a3460dfc3eb)
+[OK] Sales Order created: SO/2026/04/14/000181
+[STEP] Approving Sales Order: SO/2026/04/14/000181
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/14/000181 approved
+[SUCCESS] Invoice created via API: INV/2026/04/14/000330 (ID: b53097ff-03e8-4886-ad9c-eb39c86c6087)
+[SUCCESS] Invoice created via API: INV/2026/04/14/000331 (ID: bd6b17db-77b4-4c44-858a-f889cfe0d9bf)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/14/000330 & INV/2026/04/14/000331
+[STEP] Approving Invoice 1: INV/2026/04/14/000330
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/14/000330 approved
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/14/000331
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[STEP] Phase 3: Testing duplicate receipt blocking
+[SUCCESS] Receipt created via API: RCPT/2026/04/14/000268 (ID: 4386ff8a-6513-439a-9fee-ae7b32bac872) for Invoice b53097ff-03e8-4886-ad9c-eb39c86c6087
+[OK] Initial receipt accepted: RCPT/2026/04/14/000268. Approving via UI...
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Receipt 1 Approved.
+[STEP] Negative test: Attempting duplicate receipt on fully-paid invoice
+[SUCCESS] Receipt created via API: RCPT/2026/04/14/000269 (ID: 5882a732-dd5a-48c3-ba52-b9bd3161d0eb) for Invoice b53097ff-03e8-4886-ad9c-eb39c86c6087
+[WARNING] System allowed Draft duplicate: RCPT/2026/04/14/000269. Attempting illegal UI Approval...
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[SUCCESS] UI correctly blocked or prevented approval of duplicate receipt.
+[RESULT] Accounting Logic: PASSED (Strict Approval Flow)

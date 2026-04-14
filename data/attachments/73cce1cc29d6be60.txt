@@ -1,0 +1,38 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "fifo-master" via API | Stock: 45
+[INFO] Item: "fifo-master" | UUID: 1d4b3733-000e-4939-abdb-5f2e3df55c1b | Stock: 45
+[STEP] Phase 2: Creating SO via API for 2 x "fifo-master"
+[SUCCESS] Sales Order created via API: SO/2026/04/14/000183 (ID: 87a7e782-16f1-4388-8ade-77a72b69e8b5, ItemID: 8cca7102-e700-4105-9021-ee8e5e1ad375)
+[OK] SO created: SO/2026/04/14/000183 | Customer: 256ce173-d504-4345-a6b7-70cead86f135
+[STEP] Phase 3: Approving SO SO/2026/04/14/000183
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/14/000183 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/14/000183
+[SUCCESS] Invoice created via API: INV/2026/04/14/000334 (ID: 7443c785-59ed-4867-8ff7-01518b2c03cb)
+[OK] Invoice created: INV/2026/04/14/000334 (UUID: 7443c785-59ed-4867-8ff7-01518b2c03cb)
+[STEP] Phase 5: Approving Invoice INV/2026/04/14/000334
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/14/000334 approved
+[STEP] Phase 6: Verifying stock for "fifo-master"
+[VERIFY] Item: fifo-master
+[VERIFY] Initial: 45 | Sold: 2 | Final: 43 | Expected: 43
+[RESULT] Sales Impact: PASSED
