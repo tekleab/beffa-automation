@@ -41,28 +41,44 @@ export class SharedUI {
     const statusLocator = this.page.locator(
       '//p[contains(text(), "Status:")]/following-sibling::*//span | ' +
       '//span[contains(text(), "Status:")]/following-sibling::*//span | ' +
-      '//span[@class and contains(@class, "chakra-badge")]'
-    ).first();
+      '//span[contains(@class, "chakra-badge")]'
+    ).filter({ visible: true }).first();
 
     let lastStatus = '';
     let actionClickedForStatus = ''; // Track which status we already acted on
+    let emptyStatusStreak = 0;
 
-    for (let i = 0; i < 180; i++) {
+    for (let i = 0; i < 90; i++) { // Max 90 loops * ~2s = ~180 seconds max
       if (this.page.isClosed()) return;
       await this.page.waitForTimeout(1000);
 
-      const currentStatus = (await statusLocator.innerText({ timeout: 3000 }).catch(() => '')).trim().toLowerCase();
+      // Fast check for status. If no visible badge, it throws quickly and we get ''
+      const currentStatus = (await statusLocator.innerText({ timeout: 500 }).catch(() => '')).trim().toLowerCase();
 
-      // Only log the status if it actually changed
+      // Only log the status if it actually changed and is not empty
       if (currentStatus && currentStatus !== lastStatus) {
         console.log(`[INFO] Approval status: "${currentStatus}"`);
         lastStatus = currentStatus;
+        emptyStatusStreak = 0;
+      } else if (!currentStatus) {
+        emptyStatusStreak++;
+        if (emptyStatusStreak > 30) {
+            console.log('[WARN] No status badge found for 30 seconds. Exiting approval loop.');
+            return;
+        }
       }
 
       // Done?
       if (currentStatus.includes(FINAL_STATUS)) {
         console.log('[SUCCESS] Document approved.');
         return;
+      }
+
+      // 🚨 FAST ERROR DETECTION: If the ERP throws a toast error (like E1481), fail immediately
+      const errorToast = this.page.locator('div[role="alert"], .chakra-toast, .chakra-alert').filter({ hasText: /error|failed|went wrong/i }).first();
+      if (await errorToast.isVisible({ timeout: 500 }).catch(() => false)) {
+        const errorText = (await errorToast.innerText().catch(() => 'Unknown backend error')).replace(/\n/g, ' ').trim();
+        throw new Error(`[CRITICAL] Backend Error Prevented Approval: "${errorText}"`);
       }
 
       // Handle any confirmation modal that appeared AFTER a click
@@ -72,19 +88,20 @@ export class SharedUI {
         if (modalText.includes('reviewer') || modalText.includes('select')) {
           await this._handleReviewerSelection(modal);
           lastStatus = ''; // Reset to force status log after modal
+          actionClickedForStatus = ''; // Allow re-clicking main buttons after modal
           continue;
         }
         const confirmBtn = modal.locator('button').filter({ hasText: /^(Approve|Advance|Submit|Save|Confirm|Yes|Ok)$/i }).first();
         if (await confirmBtn.isVisible({ timeout: 500 }).catch(() => false)) {
           await confirmBtn.click({ force: true });
           await this.page.waitForTimeout(2000);
+          actionClickedForStatus = ''; // Reset to allow continuing pipeline
           continue;
         }
       }
 
-      // Only act if status has CHANGED since our last action
-      if (currentStatus === actionClickedForStatus) {
-        // Keep quiet while waiting for status to update
+      // If status is empty, or we already clicked for this status, keep waiting
+      if (!currentStatus || currentStatus === actionClickedForStatus) {
         continue;
       }
 
@@ -98,7 +115,7 @@ export class SharedUI {
         }).filter({ visible: true }).first();
       }
 
-      if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
+      if (await button.isVisible({ timeout: 500 }).catch(() => false)) {
         const btnText = (await button.innerText()).trim();
         console.log(`[ACTION] Status changed to "${currentStatus}" → Clicking: "${btnText}"`);
         await button.click({ force: true });
@@ -106,6 +123,7 @@ export class SharedUI {
         await this.page.waitForTimeout(2000);
       }
     }
+    console.log('[WARN] Approval flow timed out before reaching final status.');
   }
 
   async verifyLedgerImpact(accountCode: string, docNumber: string, expectedAmount: number, type: string): Promise<void> {

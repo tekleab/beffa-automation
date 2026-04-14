@@ -107,7 +107,7 @@ export class InventoryAPI {
 
     // Extract stock from locations for the selected target
     const stock = (target.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
-                || target.current_stock || target.quantity || 0;
+      || target.current_stock || target.quantity || 0;
 
     return {
       itemName: target.name,
@@ -144,7 +144,7 @@ export class InventoryAPI {
 
     const json = await response.json();
     const stock = (json.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
-                || json.current_stock || json.quantity || 0;
+      || json.current_stock || json.quantity || 0;
 
     return {
       itemName: json.name,
