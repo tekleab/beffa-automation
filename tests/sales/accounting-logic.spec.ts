@@ -28,33 +28,66 @@ test.describe('Accounting Logic Flow @regression', () => {
         const customerUUID = randomCustomer.id;
         console.log(`[INFO] Customer: ${randomCustomer.name || 'Unknown'} (UUID: ${customerUUID})`);
 
-        // Phase 2: Duplicate Invoice Recognition (should be allowed)
-        console.log('[STEP] Phase 2: Testing duplicate invoice creation (should succeed)');
-        const invPayload = {
+        // Phase 2: Duplicate Invoice Recognition (Against a Single SO)
+        console.log('[STEP] Phase 2: Testing duplicate invoice creation against a single SO');
+        
+        // Create an SO for a quantity of 1
+        const soPayload = {
             itemId: initialInfo.itemId,
             quantity: 1,
             unitPrice: 1545.50,
             customerId: customerUUID
         };
+        const so = await app.createSalesOrderAPI(soPayload);
+        console.log(`[OK] Sales Order created: ${so.ref}`);
 
-        const duplicateInvoice1 = await app.createStandaloneInvoiceAPI(invPayload);
-        const duplicateInvoice2 = await app.createStandaloneInvoiceAPI(invPayload);
+        // Approve the SO
+        console.log(`[STEP] Approving Sales Order: ${so.ref}`);
+        await page.goto(`/receivables/sale-orders/${so.id}/detail`, { waitUntil: 'load' });
+        await app.handleApprovalFlow();
+        console.log(`[OK] Sales Order ${so.ref} approved`);
 
-        console.log(`[OK] Two identical invoices created: ${duplicateInvoice1.ref} & ${duplicateInvoice2.ref}`);
+        // Create two invoices linking to the exact same SO items
+        const duplicateInvoice1 = await app.createInvoiceAPI({
+            customerId: so.customerId,
+            soItemId: so.soItemId,
+            releasedQuantity: 1
+        });
+        const duplicateInvoice2 = await app.createInvoiceAPI({
+            customerId: so.customerId,
+            soItemId: so.soItemId,
+            releasedQuantity: 1
+        });
+
+        console.log(`[OK] Two identical draft invoices created for the same SO: ${duplicateInvoice1.ref} & ${duplicateInvoice2.ref}`);
         expect(duplicateInvoice1.id).not.toEqual(duplicateInvoice2.id);
 
         // Approve Invoice 1
         console.log(`[STEP] Approving Invoice 1: ${duplicateInvoice1.ref}`);
-        await page.goto(`/receivables/invoices/Detail`);
-        await page.waitForSelector('text=Invoice Details', { timeout: 30000, state: 'attached' }).catch(() => { });
-        await page.evaluate((id: string) => { window.location.href = `/receivables/invoices/${id}`; }, duplicateInvoice1.id);
-        await page.waitForTimeout(5000);
+        await page.goto(`/receivables/invoices/${duplicateInvoice1.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
         console.log(`[OK] Invoice ${duplicateInvoice1.ref} approved`);
 
+        // Attempt to approve Invoice 2 (Should Fail!)
+        console.log(`[STEP] Negative test: Attempting to approve duplicate Invoice 2: ${duplicateInvoice2.ref}`);
+        try {
+            await page.goto(`/receivables/invoices/${duplicateInvoice2.id}/detail`, { waitUntil: 'load' });
+            await app.handleApprovalFlow();
+            
+            // If it reaches here, the ERP failed to block it!
+            const statusBadge = page.locator('span.chakra-badge').filter({ hasText: /Approved/i }).first();
+            if (await statusBadge.isVisible({ timeout: 5000 })) {
+                console.error(`[FAIL] CRITICAL BUSINESS LOGIC ERROR: Duplicate Invoice APPROVED via UI.`);
+                throw new Error(`Business Logic Violation: Allowed multiple APPROVED invoices for a fully invoiced Sales Order.`);
+            }
+        } catch (error: any) {
+            if (error.message.includes('Business Logic Violation')) throw error;
+            console.log(`[SUCCESS] System correctly blocked duplicate invoice approval: ${error.message}`);
+        }
+
         // Phase 3: Duplicate Receipt Blocking (should be rejected)
         console.log('[STEP] Phase 3: Testing duplicate receipt blocking');
-        const validReceiptAmount = duplicateInvoice1.amountDue;
+        const validReceiptAmount = 1545.50; // Use the exact unit price created in the SO
 
         const rct1 = await app.createInvoiceReceiptAPI({
             amount: validReceiptAmount,

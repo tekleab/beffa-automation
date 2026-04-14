@@ -64,8 +64,6 @@ jobs:
           echo "Executing Full Suite (All Tests)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales
         fi
-      continue-on-error: true # Keep going to generate report even if tests fail
-
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
