@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { AppManager } = require('../../pages/AppManager');
+import { test, expect } from '@playwright/test';
+import { AppManager } from '../../pages/AppManager';
 
 test.describe('Sales Order Negative API Tests @negative', () => {
 
@@ -250,5 +250,4 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         // System should handle overflow or have a limit
         expect(response.status()).toBeGreaterThanOrEqual(400);
     });
-
 });

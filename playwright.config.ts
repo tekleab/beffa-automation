@@ -1,22 +1,22 @@
-const { defineConfig, devices } = require('@playwright/test');
-const path = require('path');
-const dotenv = require('dotenv');
+import { defineConfig, devices } from '@playwright/test';
+import * as path from 'path';
+import * as dotenv from 'dotenv';
 
-dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './tests',
 
   timeout: 600000,
   expect: { timeout: 30000 },
 
   fullyParallel: true,
-  workers: 3,
+  workers: 4,
   retries: 0,
 
   reporter: [
     ['list'],
-    ['./reporters/summary-reporter.js'],
+    ['./reporters/summary-reporter.ts'],
     ['html', { open: 'never' }],
     [
       'allure-playwright',
@@ -56,7 +56,7 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'Inventory',
-      testMatch: /inventory\/.*\.spec\.js/,
+      testMatch: /inventory\/.*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },
@@ -64,7 +64,7 @@ module.exports = defineConfig({
     },
     {
       name: 'Purchases',
-      testMatch: /purchase\/.*\.spec\.js/,
+      testMatch: /purchase\/.*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },
@@ -72,7 +72,7 @@ module.exports = defineConfig({
     },
     {
       name: 'Sales',
-      testMatch: /sales\/.*\.spec\.js/,
+      testMatch: /sales\/.*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },
