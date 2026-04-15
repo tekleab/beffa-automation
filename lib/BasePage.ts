@@ -168,8 +168,9 @@ export class BasePage {
       // April 1st (GC) = Megabit 23rd (EC)
       // Today (April 3rd) = Megabit 25th (EC) -> Offset: +22
       if (gMonth === 4) {
-        const ethiopianDay = gDay + 22;
-        console.log(`[CALENDAR] Ethiopian mode: Today is Megabit ${ethiopianDay}.`);
+        // Handle Megabit -> Miyazya overflow correctly (30 days max per EC month)
+        const ethiopianDay = (gDay + 22) % 30 || 30; 
+        console.log(`[CALENDAR] Ethiopian mode: Today is mapped to EC Day ${ethiopianDay}.`);
         return ethiopianDay;
       }
 
