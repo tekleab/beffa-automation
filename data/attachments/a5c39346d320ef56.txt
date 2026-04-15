@@ -1,0 +1,32 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "Jacuzzi Lanzarote" via API | Initial Stock: 68
+[STEP] Phase 2: Creating Sales Order via API for Jacuzzi Lanzarote
+[SUCCESS] Sales Order created via API: SO/2026/04/15/000214 (ID: 82a8c5da-beac-44fb-9c59-cff2d1301c38, ItemID: 7612fb4d-5d60-431a-87d1-9141501b10ab)
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/15/000214 approved (Released)
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/15/000214
+[SUCCESS] Invoice created via API: INV/2026/04/15/000371 (ID: 5a684f01-cc39-404d-9986-ec0bd86a5a70)
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/15/000371 created and approved via API+UI flow
+[STEP] Verifying stock deduction via API
+[VERIFY] Expected: 67 | Found: 67
+[OK] Stock decreased correctly after pure setup flow
