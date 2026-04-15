@@ -1,0 +1,37 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "fifo-master" via API | Stock: 45
+[STEP] Phase 2: Creating standalone invoice for "fifo-master"
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/15/000357 (ID: ac4efcc6-b211-4009-8231-40989dc6b6ab)
+[STEP] Phase 3: Approving Invoice INV/2026/04/15/000357
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/15/000357 approved | Total Due: 10993.05
+[STEP] Phase 4: Creating partial receipt for 5496
+[SUCCESS] Receipt created via API: RCPT/2026/04/15/000278 (ID: 8c2d4151-8751-4b5d-91df-29baec5fc19e) for Invoice ac4efcc6-b211-4009-8231-40989dc6b6ab
+[OK] Partial receipt created: RCPT/2026/04/15/000278
+[STEP] Phase 5: Settling remaining balance of 5497.049999999999
+[VERIFY] Invoice: INV/2026/04/15/000357 | Original: 10993.05 | Paid: 5496 | Remaining: 5497.049999999999
+[SUCCESS] Receipt created via API: RCPT/2026/04/15/000279 (ID: 4ee64d4a-e1ff-4fdd-981d-3c3bed6d74ef) for Invoice ac4efcc6-b211-4009-8231-40989dc6b6ab
+[OK] Final receipt created: RCPT/2026/04/15/000279
+[STEP] Phase 6: Approving final receipt RCPT/2026/04/15/000279
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Final receipt RCPT/2026/04/15/000279 approved
+[RESULT] Invoice-Receipt Balance: PASSED

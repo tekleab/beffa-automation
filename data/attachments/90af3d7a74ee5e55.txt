@@ -1,0 +1,20 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered via API: "fifoitem4" | Stock: 42
+[INFO] Item Unit Cost: 100 | Chosen Adjustment Qty: 5 (Total: 500)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[SUCCESS] Adjustment created via API: ADJ/2026/04/15/000051 (ID: 98d7583e-f5a3-4a7e-9e79-956e6bea1d03)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/15/000051
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Adjustment ADJ/2026/04/15/000051 approved
+[STEP] Phase 4: Verifying stock impact for "fifoitem4" (via API)
+[VERIFY] Item: fifoitem4
+[VERIFY] Initial: 42 | Adjusted: +5 | Final: 47 | Expected: 47
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units

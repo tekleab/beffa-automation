@@ -1,0 +1,36 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[INFO] Item: "Pipe" | UUID: 8588fbdd-2eae-462b-93a0-016d934d7f5e | Stock: 59
+[STEP] Phase 2: Creating SO via API for 2 x "Pipe"
+[SUCCESS] Sales Order created via API: SO/2026/04/15/000202 (ID: cfe4d781-595b-4d50-aa79-8a97f3b61d65, ItemID: 1496c1a3-7282-43b4-82ef-39e02836c74c)
+[OK] SO created: SO/2026/04/15/000202 | Customer: 256ce173-d504-4345-a6b7-70cead86f135
+[STEP] Phase 3: Approving SO SO/2026/04/15/000202
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/15/000202 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/15/000202
+[SUCCESS] Invoice created via API: INV/2026/04/15/000358 (ID: 087552a2-78fd-4339-babb-c28cee0f6a92)
+[OK] Invoice created: INV/2026/04/15/000358 (UUID: 087552a2-78fd-4339-babb-c28cee0f6a92)
+[STEP] Phase 5: Approving Invoice INV/2026/04/15/000358
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/15/000358 approved
+[STEP] Phase 6: Verifying stock for "Pipe" via API
+[VERIFY] Item: Pipe | Initial: 59 | Sold: 2 | Final: 57 | Expected: 57
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 59 to 57
