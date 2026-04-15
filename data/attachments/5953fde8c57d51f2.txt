@@ -1,0 +1,37 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "test2" via API | Stock: 30
+[STEP] Phase 2: Creating standalone invoice for "test2"
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/15/000386 (ID: 06ed1e7a-b276-4701-bc78-c8fe24020e31)
+[STEP] Phase 3: Approving Invoice INV/2026/04/15/000386
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/15/000386 approved | Total Due: 10993.05
+[STEP] Phase 4: Creating partial receipt for 5496
+[SUCCESS] Receipt created via API: RCPT/2026/04/15/000289 (ID: 3fcfbff5-c1b7-4e40-8a34-3782f6bad5ae) for Invoice 06ed1e7a-b276-4701-bc78-c8fe24020e31
+[OK] Partial receipt created: RCPT/2026/04/15/000289
+[STEP] Phase 5: Settling remaining balance of 5497.049999999999
+[VERIFY] Invoice: INV/2026/04/15/000386 | Original: 10993.05 | Paid: 5496 | Remaining: 5497.049999999999
+[SUCCESS] Receipt created via API: RCPT/2026/04/15/000290 (ID: 73f165f9-7842-4bfd-9644-bfee3c525246) for Invoice 06ed1e7a-b276-4701-bc78-c8fe24020e31
+[OK] Final receipt created: RCPT/2026/04/15/000290
+[STEP] Phase 6: Approving final receipt RCPT/2026/04/15/000290
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Final receipt RCPT/2026/04/15/000290 approved
+[RESULT] Invoice-Receipt Balance: PASSED
