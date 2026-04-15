@@ -35,7 +35,8 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         await page.goto(`/receivables/invoices/${invResult.id}/detail`);
         await app.handleApprovalFlow();
 
-        const CUSTOMER_NAME = (itemResult as any).customerName || "System Customer";
+        // Read customer name directly from the invoice detail page (most reliable)
+        const CUSTOMER_NAME = await page.locator('p.chakra-text.css-0').first().innerText().catch(() => '');
         const INVOICE_ID = invResult.ref;
         console.log(`[INFO] Document Setup Complete: ${INVOICE_ID} for ${CUSTOMER_NAME}`);
 

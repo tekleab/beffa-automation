@@ -68,18 +68,20 @@ test.describe('Accounting Logic Flow @regression', () => {
         await app.handleApprovalFlow();
         console.log(`[OK] Invoice ${duplicateInvoice1.ref} approved`);
 
-        // Attempt to approve Invoice 2 (Should Fail!)
+        // Attempt to approve Invoice 2 (Should Fail - ERP must block duplicate invoicing of same SO)
         console.log(`[STEP] Negative test: Attempting to approve duplicate Invoice 2: ${duplicateInvoice2.ref}`);
         try {
             await page.goto(`/receivables/invoices/${duplicateInvoice2.id}/detail`, { waitUntil: 'load' });
             await app.handleApprovalFlow();
-            
-            // If it reaches here, the ERP failed to block it!
-            const statusBadge = page.locator('span.chakra-badge').filter({ hasText: /Approved/i }).first();
-            if (await statusBadge.isVisible({ timeout: 5000 })) {
-                console.error(`[FAIL] CRITICAL BUSINESS LOGIC ERROR: Duplicate Invoice APPROVED via UI.`);
-                throw new Error(`Business Logic Violation: Allowed multiple APPROVED invoices for a fully invoiced Sales Order.`);
+
+            // If handleApprovalFlow() did NOT throw, check the actual status badge
+            // Uses the real ERP status badge class (same as handleApprovalFlow reads)
+            const statusText = await page.locator('span.css-1ny2kle').first().innerText({ timeout: 3000 }).catch(() => '');
+            if (statusText.toLowerCase().includes('approved')) {
+                console.error(`[FAIL] CRITICAL BUSINESS LOGIC ERROR: Duplicate Invoice reached APPROVED state.`);
+                throw new Error(`Business Logic Violation: ERP allowed multiple APPROVED invoices for fully invoiced Sales Order.`);
             }
+            console.log(`[OK] Invoice 2 did not reach approved state. Status: "${statusText}"`);
         } catch (error: any) {
             if (error.message.includes('Business Logic Violation')) throw error;
             console.log(`[SUCCESS] System correctly blocked duplicate invoice approval: ${error.message}`);

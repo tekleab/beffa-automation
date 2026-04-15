@@ -11,16 +11,8 @@ test.describe('Sales Impact Flow @regression', () => {
         console.log('[STEP] Phase 1: Login & Item Discovery');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        let initial: Awaited<ReturnType<typeof app.captureRandomItemDetails>> | null = null;
-        while (initial === null) {
-            initial = await app.captureRandomItemDetails();
-            if (initial.currentStock > 2 && initial.itemId) {
-                console.log(`[INFO] Item: "${initial.itemName}" | UUID: ${initial.itemId} | Stock: ${initial.currentStock}`);
-                break;
-            }
-            console.log(`[INFO] Item "${initial.itemName}" stock too low (${initial.currentStock}). Retrying...`);
-            initial = null;
-        }
+        const initial = await app.captureRandomItemDataAPI();
+        console.log(`[INFO] Item: "${initial.itemName}" | UUID: ${initial.itemId} | Stock: ${initial.currentStock}`);
 
         // Phase 2: Create Sales Order via API
         const saleQty = Math.floor(Math.random() * 2) + 1;
@@ -62,16 +54,18 @@ test.describe('Sales Impact Flow @regression', () => {
         await app.handleApprovalFlow();
         console.log(`[OK] Invoice ${invID} approved`);
 
-        // Phase 6: Stock Verification
-        console.log(`[STEP] Phase 6: Verifying stock for "${initial.itemName}"`);
-        const final = await app.captureItemDetails(initial.itemName);
+        // Phase 6: Verify stock decrease via API (fast, no UI navigation needed)
+        console.log(`[STEP] Phase 6: Verifying stock for "${initial.itemName}" via API`);
+        await page.waitForTimeout(3000); // Allow backend to settle post-approval
+        const final = await app.getItemDetailsAPI(initial.itemId);
         const expectedStock = initial.currentStock - saleQty;
 
-        console.log(`[VERIFY] Item: ${initial.itemName}`);
-        console.log(`[VERIFY] Initial: ${initial.currentStock} | Sold: ${saleQty} | Final: ${final.currentStock} | Expected: ${expectedStock}`);
+        console.log(`[VERIFY] Item: ${initial.itemName} | Initial: ${initial.currentStock} | Sold: ${saleQty} | Final: ${final!.currentStock} | Expected: ${expectedStock}`);
 
-        expect(final.currentStock).toBe(expectedStock);
-        console.log(`[RESULT] Sales Impact: PASSED`);
+        if (final!.currentStock !== expectedStock) {
+            throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${final!.currentStock}`);
+        }
+        console.log(`[RESULT] Sales Impact: PASSED - Stock correctly decreased from ${initial.currentStock} to ${final!.currentStock}`);
 
         await page.close();
     });
