@@ -1,0 +1,36 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[INFO] Item: "steam door 78x2.02" | UUID: 16e9a024-10be-478e-9e5a-1116a1ffe8f2 | Stock: 65
+[STEP] Phase 2: Creating SO via API for 1 x "steam door 78x2.02"
+[SUCCESS] Sales Order created via API: SO/2026/04/15/000210 (ID: cd12ecb6-177b-4e49-b369-8688eb8972c4, ItemID: 3b1ce8d7-9f20-4925-bafd-216a6b9feaca)
+[OK] SO created: SO/2026/04/15/000210 | Customer: 256ce173-d504-4345-a6b7-70cead86f135
+[STEP] Phase 3: Approving SO SO/2026/04/15/000210
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/15/000210 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/15/000210
+[SUCCESS] Invoice created via API: INV/2026/04/15/000367 (ID: fde855b5-c578-4270-b5d4-340e9f235b2d)
+[OK] Invoice created: INV/2026/04/15/000367 (UUID: fde855b5-c578-4270-b5d4-340e9f235b2d)
+[STEP] Phase 5: Approving Invoice INV/2026/04/15/000367
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/15/000367 approved
+[STEP] Phase 6: Verifying stock for "steam door 78x2.02" via API
+[VERIFY] Item: steam door 78x2.02 | Initial: 65 | Sold: 1 | Final: 64 | Expected: 64
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 65 to 64

@@ -1,0 +1,59 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "fifoitem4" via API | Stock: 47
+[INFO] Item: "fifoitem4" | Stock: 47
+[STEP] Phase 2: Creating PO via API for "fifoitem4"
+[SUCCESS] PO created via API: PO/2026/04/15/000205 (ID: 4d8282f9-b585-403e-a060-4a3fa5733f05)
+[OK] PO created: PO/2026/04/15/000205
+[STEP] Approving PO PO/2026/04/15/000205
+[INFO] Vendor: "Manenderas"
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewr"
+[ACTION] Status changed to "reviewr" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approver"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] PO PO/2026/04/15/000205 approved
+[STEP] Phase 3: Converting PO PO/2026/04/15/000205 to Bill
+[INFO] Matching vendor: "Manenderas"
+[ACTION] Searching for: "Manenderas"
+[INFO] Tier 2 - exact in overlay: "Manenderas"
+[SUCCESS] Selected: "Manenderas"
+[ACTION] Searching for: "PO/2026/04/15/000205"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/15/000205"
+[SUCCESS] Selected: "PO/2026/04/15/000205"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 7.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 7
+[SUCCESS] "Invoice Date" set to Day 7 (Calendar match).
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 10 | Receiving: 7
+[SUCCESS] PO Line Item received (7) and selected.
+[INFO] Received 7 items
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/15/000240
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/15/000240 approved
+[STEP] Phase 4: Ledger verification
+[INFO] Captured 6 ledger entries
+[INFO] Sample: Cash at Bank - Zemen (1003)
+[INFO] Verifying debit of 50000 for BILL/2026/04/15/000240 in 1003
+[INFO] Ledger scan attempt 1: 370 rows visible.
+[✓] Found debit entry: 50000.00 (row 73)
+[SUCCESS] Ledger impact verified: debit of 50000 in 1003.
+[STEP] Phase 5: Verifying stock for "fifoitem4"
+[INFO] Attempt 1: Stock 54 (expected: 54)
+[VERIFY] Item: fifoitem4 | Initial: 47 | Received: 7 | Final: 54 | Expected: 54
+[RESULT] Purchase Impact: PASSED
