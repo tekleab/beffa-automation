@@ -12,7 +12,7 @@ export default defineConfig({
 
   fullyParallel: true,
   workers: 4,
-  retries: 0,
+  retries: 1, // Automatically retry flaky tests once
 
   reporter: [
     ['list'],
