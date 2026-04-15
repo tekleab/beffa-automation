@@ -1,0 +1,47 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[WARN] API Login failed (apiRequestContext.post: Timeout 60000ms exceeded.
+Call log:
+  - → POST http://157.180.20.112:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.7632.6 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+). Falling back to UI Login...
+[ACTION] Verifying current company selection...
+[ACTION] Switching company: "Construction BM" -> "befa tutorial"
+[SUCCESS] Company switched to "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "april15" via API | Stock: 24
+[INFO] Item: "april15" | Stock: 24
+[STEP] Fetching random customer via API
+[INFO] Customer: Hana Teshome (UUID: 34dcca0f-792e-4eae-b751-95bdaad895cd)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[SUCCESS] Sales Order created via API: SO/2026/04/15/000219 (ID: 83263485-34c9-4ef4-800e-17732f44e10f, ItemID: 4cd1cf2f-6d72-4bc0-8216-3f96abef43f2)
+[OK] Sales Order created: SO/2026/04/15/000219
+[STEP] Approving Sales Order: SO/2026/04/15/000219
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/15/000219 approved
+[SUCCESS] Invoice created via API: INV/2026/04/15/000378 (ID: be40d172-12c8-4f8c-99d8-80775ced68b0)
+[SUCCESS] Invoice created via API: INV/2026/04/15/000379 (ID: ed198192-4b93-412b-abea-7c3c2a851f24)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/15/000378 & INV/2026/04/15/000379
+[STEP] Approving Invoice 1: INV/2026/04/15/000378
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice INV/2026/04/15/000378 approved
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/15/000379
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.

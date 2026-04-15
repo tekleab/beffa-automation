@@ -1,0 +1,42 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "steam door 78x2.02" via API | Stock: 64
+[INFO] Item: "steam door 78x2.02" | Stock: 64
+[STEP] Fetching random customer via API
+[INFO] Customer: GTAK Construction (UUID: d57b33ed-830b-4727-b889-0d61d7f87e9b)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[SUCCESS] Sales Order created via API: SO/2026/04/15/000215 (ID: 576a2b14-ee10-4cb6-bb0d-fd90c61fd580, ItemID: f92a5de7-9709-4325-84be-c1c2ef91eef7)
+[OK] Sales Order created: SO/2026/04/15/000215
+[STEP] Approving Sales Order: SO/2026/04/15/000215
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/15/000215 approved
+[SUCCESS] Invoice created via API: INV/2026/04/15/000372 (ID: 9bb420dc-bd81-4c2e-bd91-f7ac4d4a0ae2)
+[SUCCESS] Invoice created via API: INV/2026/04/15/000373 (ID: 2d25650a-1038-44cc-866c-39cc7401e084)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/15/000372 & INV/2026/04/15/000373
+[STEP] Approving Invoice 1: INV/2026/04/15/000372
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/15/000372 approved
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/15/000373
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice 2 did not reach approved state. Status: ""
+[STEP] Phase 3: Testing duplicate receipt blocking
