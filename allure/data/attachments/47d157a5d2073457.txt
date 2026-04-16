@@ -1,0 +1,36 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[INFO] Item: "test2" | UUID: 4a10ff17-37b8-4276-be6e-a20a57ca5072 | Stock: 21
+[STEP] Phase 2: Creating SO via API for 2 x "test2"
+[SUCCESS] Sales Order created via API: SO/2026/04/16/000293 (ID: f5ad128c-2e9f-414d-8bc5-269625cd19a2, ItemID: 892f6e58-3633-4999-aeeb-ac979fd8d655)
+[OK] SO created: SO/2026/04/16/000293 | Customer: 256ce173-d504-4345-a6b7-70cead86f135
+[STEP] Phase 3: Approving SO SO/2026/04/16/000293
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/16/000293 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/16/000293
+[SUCCESS] Invoice created via API: INV/2026/04/16/000455 (ID: 121129c1-815d-4d92-9a93-68efbb6e9be2)
+[OK] Invoice created: INV/2026/04/16/000455 (UUID: 121129c1-815d-4d92-9a93-68efbb6e9be2)
+[STEP] Phase 5: Approving Invoice INV/2026/04/16/000455
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/16/000455 approved
+[STEP] Phase 6: Verifying stock for "test2" via API
+[VERIFY] Item: test2 | Initial: 21 | Sold: 2 | Final: 19 | Expected: 19
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 21 to 19

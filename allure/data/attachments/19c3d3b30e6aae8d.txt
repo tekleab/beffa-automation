@@ -1,0 +1,35 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[INFO] Item: "fifo-master" | UUID: 1d4b3733-000e-4939-abdb-5f2e3df55c1b | Stock: 50
+[STEP] Phase 2: Creating SO via API for 1 x "fifo-master"
+[SUCCESS] Sales Order created via API: SO/2026/04/16/000290 (ID: 1a59607c-66a1-4684-8755-da72a62b940f, ItemID: c07f1d8a-db18-4214-8224-019151a6495a)
+[OK] SO created: SO/2026/04/16/000290 | Customer: 32f1aeb4-531f-4104-ad07-f3761a97dd06
+[STEP] Phase 3: Approving SO SO/2026/04/16/000290
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/16/000290 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/16/000290
+[SUCCESS] Invoice created via API: INV/2026/04/16/000451 (ID: 92b69750-f8c8-4141-bd16-e2ccce742507)
+[OK] Invoice created: INV/2026/04/16/000451 (UUID: 92b69750-f8c8-4141-bd16-e2ccce742507)
+[STEP] Phase 5: Approving Invoice INV/2026/04/16/000451
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/16/000451 approved
+[STEP] Phase 6: Verifying stock for "fifo-master" via API
+[VERIFY] Item: fifo-master | Initial: 50 | Sold: 1 | Final: 48 | Expected: 49
