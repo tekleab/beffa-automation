@@ -47,8 +47,8 @@ Consistent test patterns across all major ERP modules, guarded by strict TypeScr
 
 ### Installation
 ```bash
-git clone https://github.com/tekleab/befffa-automation.git
-cd befffa-automation
+git clone https://github.com/tekleab/beffa-automation.git
+cd beffa-automation
 npm install
 npx playwright install
 ```
