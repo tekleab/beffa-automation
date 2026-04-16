@@ -71,8 +71,8 @@ jobs:
     - name: Run Playwright tests
       run: |
         if [ "${{ github.event.inputs.test_type }}" == "smoke" ] || [ "${{ github.event_name }}" == "push" ] || [ "${{ github.event_name }}" == "pull_request" ]; then
-          echo "Executing Targeted Customer Test (Fast-Track V10.2 Verification)..."
-          npx playwright test tests/sales/customer.spec.ts --project=Sales
+          echo "Executing Smoke Suite (@smoke)..."
+          npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @smoke
         elif [ "${{ github.event.inputs.test_type }}" == "regression" ]; then
           echo "Executing Regression Suite (@regression)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @regression
