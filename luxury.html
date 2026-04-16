@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEFFA Luxury 3D Dashboard</title>
+    <title>BEFFA Luxury 3D Analytics Suite</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --emerald: #10b981;
             --coral: #f43f5e;
-            --glass: rgba(15, 23, 42, 0.8);
-            --neon-green: 0 0 15px rgba(16, 185, 129, 0.4);
-            --neon-red: 0 0 15px rgba(244, 63, 94, 0.4);
+            --glass: rgba(15, 23, 42, 0.9);
+            --neon-green: 0 0 15px rgba(16, 185, 129, 0.6);
+            --neon-red: 0 0 15px rgba(244, 63, 94, 0.6);
         }
 
         body {
@@ -20,223 +20,253 @@
             color: #f8fafc;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             margin: 0;
-            overflow-x: hidden;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 80px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding-top: 30px;
+            gap: 25px;
+            z-index: 100;
         }
 
-        .scene {
-            perspective: 1500px;
-            width: 100%;
-            padding: 50px 0;
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #64748b;
+            font-size: 1.2rem;
         }
 
-        .isometric-board {
-            width: 90%;
-            max-width: 1200px;
-            transform: rotateX(15deg) rotateY(-10deg);
+        .nav-item:hover, .nav-item.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--emerald);
+            box-shadow: var(--neon-green);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            perspective: 2000px;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.5s forwards; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 3D Visuals --- */
+        .isometric-view {
+            transform: rotateX(15deg) rotateY(-5deg);
             transform-style: preserve-3d;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
         }
 
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-            position: relative;
+            padding: 30px;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6);
+            margin-bottom: 30px;
         }
 
-        .glass-card:hover {
-            transform: translateZ(20px);
-            border-color: var(--emerald);
-        }
-
-        .success-gauge {
-            grid-column: span 2;
+        .hologram-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 15px solid rgba(16, 185, 129, 0.05);
+            border-top: 15px solid var(--emerald);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 300px;
-            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
-        }
-
-        .rate-circle {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: 10px solid #1e293b;
-            border-top: 10px solid var(--emerald);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: 800;
+            margin: 0 auto;
             text-shadow: var(--neon-green);
-            animation: glow 2s infinite alternate;
+            animation: pulse-glow 3s infinite alternate;
         }
 
-        @keyframes glow {
-            from { box-shadow: 0 0 5px var(--emerald); }
-            to { box-shadow: 0 0 20px var(--emerald); }
-        }
+        @keyframes pulse-glow { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-        .stats-grid {
+        /* --- Suite View --- */
+        .suite-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 15px;
+        .suite-card {
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+            transform-style: preserve-3d;
         }
 
-        .stat-value { font-size: 1.5rem; font-weight: bold; }
-        .stat-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
-
-        .test-list-3d {
-            grid-column: span 2;
-            margin-top: 20px;
+        .suite-card:hover {
+            transform: translateZ(30px);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--emerald);
         }
 
-        .test-row {
+        .progress-bar-3d {
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+            transform: translateZ(5px);
+        }
+
+        .progress-fill { height: 100%; background: var(--emerald); box-shadow: var(--neon-green); }
+
+        /* --- Category (Error Wall) --- */
+        .error-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .error-tag { color: var(--coral); font-weight: bold; font-family: monospace; }
+
+        /* --- Timeline --- */
+        .timeline-container {
+            position: relative;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+
+        .timeline-bar {
+            height: 30px;
+            background: var(--emerald);
+            border-radius: 5px;
             margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            border-left: 4px solid #334155;
-            transition: transform 0.2s;
+            min-width: 50px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            cursor: pointer;
         }
+        .timeline-bar:hover { opacity: 1; box-shadow: var(--neon-green); }
 
-        .test-row:hover {
-            transform: translateX(10px);
-            background: rgba(255, 255, 255, 0.05);
-        }
+        .timeline-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 2px; }
 
-        .status-pill {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .status-passed { background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid var(--emerald); }
-        .status-failed { background: rgba(244, 63, 94, 0.2); color: var(--coral); border: 1px solid var(--coral); }
-
-        h1 { margin: 20px 0; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 4px; }
-        .env-badge { font-family: monospace; color: var(--emerald); background: rgba(16, 185, 129, 0.1); padding: 5px 15px; border-radius: 5px; margin-bottom: 40px; }
+        h2 { text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 25px; color: var(--emerald); }
     </style>
 </head>
 <body>
-    <h1>BEFFA QA DASHBOARD</h1>
-    <div class="env-badge">OS: LINUX | NODE: v20.20.2 | BROWSER: CHROMIUM</div>
+    <div class="sidebar">
+        <div class="nav-item active" onclick="showTab('dashboard')">🏠</div>
+        <div class="nav-item" onclick="showTab('suites')">📂</div>
+        <div class="nav-item" onclick="showTab('categories')">⚠️</div>
+        <div class="nav-item" onclick="showTab('timeline')">🕒</div>
+        <div class="nav-item" onclick="showTab('graphs')">📈</div>
+    </div>
 
-    <div class="scene">
-        <div class="isometric-board">
-            <!-- Main Success Gauge -->
-            <div class="glass-card success-gauge">
-                <div class="rate-circle">100.00%</div>
-                <div style="margin-top: 15px; color: #94a3b8;">STABILITY INDEX</div>
-            </div>
-
-            <!-- Summary Stats -->
-            <div class="glass-card">
-                <div class="stat-label">Execution Summary</div>
-                <div class="stats-grid">
-                    <div class="stat-item"><div class="stat-value" style="color: var(--emerald);">4</div><div class="stat-label">Passed</div></div>
-                    <div class="stat-item"><div class="stat-value" style="color: var(--coral);">0</div><div class="stat-label">Failed</div></div>
-                    <div class="stat-item"><div class="stat-value">4</div><div class="stat-label">Total</div></div>
-                    <div class="stat-item"><div class="stat-value">150.84s</div><div class="stat-label">Avg Speed</div></div>
+    <div class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2>Astonishing Overview</h2>
+            <div class="isometric-view">
+                <div class="glass-card" style="text-align: center;">
+                    <div class="hologram-circle">
+                        <div style="font-size: 3.5rem; font-weight: 900;">0%</div>
+                        <div style="font-size: 0.8rem; letter-spacing: 2px;">SUCCESS INDEX</div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div class="glass-card">
+                        <div style="color: #64748b; font-size: 0.75rem;">TOTAL CASES</div>
+                        <div style="font-size: 2rem; font-weight: bold;">0</div>
+                    </div>
+                    <div class="glass-card">
+                        <div style="color: #64748b; font-size: 0.75rem;">PASSED</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--emerald);">0</div>
+                    </div>
+                    <div class="glass-card">
+                        <div style="color: #64748b; font-size: 0.75rem;">FAILED</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--coral);">0</div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Performance Trend Chart -->
-            <div class="glass-card">
-                <div class="stat-label">Performance Trend</div>
-                <canvas id="trendChart" style="height: 150px; margin-top: 15px;"></canvas>
+        <!-- Suites Tab -->
+        <div id="suites" class="tab-content">
+            <h2>Luxury Suites Architecture</h2>
+            <div class="suite-grid">
+                
             </div>
+        </div>
 
-            <!-- Test List -->
-            <div class="glass-card test-list-3d">
-                <div class="stat-label" style="margin-bottom: 15px;">Live Test Feed</div>
-                <div id="testFeed">
-                    
-                        <div class="test-row" style="border-left-color: var(--emerald)">
-                            <div>
-                                <div style="font-weight: bold;">Validate TIN, create customer, edit, remove</div>
-                                <div style="font-size: 0.7rem; color: #64748b;">Customer Lifecycle — Validation & CRUD @smoke • 28.02s</div>
-                            </div>
-                            <div class="status-pill status-passed">passed</div>
-                        </div>
-                    
-                        <div class="test-row" style="border-left-color: var(--emerald)">
-                            <div>
-                                <div style="font-weight: bold;">Stage 1: Setup via API (SO & Invoice), verify stock deduction @smoke</div>
-                                <div style="font-size: 0.7rem; color: #64748b;">Invoice Reversal Flow @regression • 118.86s</div>
-                            </div>
-                            <div class="status-pill status-passed">passed</div>
-                        </div>
-                    
-                        <div class="test-row" style="border-left-color: var(--emerald)">
-                            <div>
-                                <div style="font-weight: bold;">Inventory Impact Verify @smoke</div>
-                                <div style="font-size: 0.7rem; color: #64748b;">Sales Impact Flow @regression • 123.26s</div>
-                            </div>
-                            <div class="status-pill status-passed">passed</div>
-                        </div>
-                    
-                        <div class="test-row" style="border-left-color: var(--emerald)">
-                            <div>
-                                <div style="font-weight: bold;">Create PO via UI, approve, create linked bill, verify in vendor profile</div>
-                                <div style="font-size: 0.7rem; color: #64748b;">Purchase to Bill Flow @smoke • 333.21s</div>
-                            </div>
-                            <div class="status-pill status-passed">passed</div>
-                        </div>
-                    
-                </div>
+        <!-- Categories Tab -->
+        <div id="categories" class="tab-content">
+            <h2>Defect Wall Analytics</h2>
+            <div class="glass-card">
+                <div style="text-align: center; color: var(--emerald);">0 DEFECTS DETECTED</div>
+            </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <h2>Isometric Execution Timeline</h2>
+            <div class="glass-card timeline-container">
+                
+            </div>
+        </div>
+
+        <!-- Graphs Tab -->
+        <div id="graphs" class="tab-content">
+            <h2>Premium Data Visualization</h2>
+            <div class="glass-card">
+                <canvas id="mainChart" style="height: 300px;"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        const ctx = document.getElementById('trendChart').getContext('2d');
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        const ctx = document.getElementById('mainChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: ['Run 1', 'Run 2', 'Run 3', 'Run 4', 'Run 5'],
+                labels: [],
                 datasets: [{
-                    label: 'Stability',
-                    data: [85, 90, 88, 92, 100.00],
+                    label: 'Success Rate (%)',
+                    data: [],
+                    backgroundColor: 'rgba(16, 185, 129, 0.4)',
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    fill: true,
-                    tension: 0.4
+                    borderWidth: 1
                 }]
             },
             options: {
-                plugins: { legend: { display: false } },
-                scales: { 
-                    y: { display: false }, 
-                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
-                }
+                scales: { y: { beginAtZero: true, max: 100 } }
             }
         });
     </script>
