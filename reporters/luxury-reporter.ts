@@ -132,9 +132,24 @@ class LuxuryReporter implements Reporter {
                 // 1. Fetch Summary
                 const summaryResp = await fetch('./allure/widgets/summary.json');
                 const summary = await summaryResp.json();
-                const rate = ((summary.statistic.passed / summary.statistic.total) * 100).toFixed(2);
+                const total = summary.statistic.total;
+                const passed = summary.statistic.passed;
+                const failed = summary.statistic.failed + summary.statistic.broken;
+                const rate = ((passed / total) * 100).toFixed(2);
+                
+                const status = failed === 0 ? 'INTEGRITY: STABLE' : (parseFloat(rate) > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
+                const statusColor = failed === 0 ? 'var(--emerald)' : (parseFloat(rate) > 90 ? '#fbbf24' : 'var(--coral)');
+                
                 document.getElementById('rateValue').innerText = rate + '%';
-                document.getElementById('rateLabel').innerText = summary.statistic.total + ' TEST CASES INTEGRITY';
+                document.getElementById('rateLabel').innerHTML = \`
+                    <div style="font-size: 1.2rem; color: #fff; margin-bottom: 4px;">INTEGRITY SCORE: \${rate}%</div>
+                    <div style="color: \${failed > 0 ? 'var(--coral)' : 'var(--emerald)'};">CRITICAL VIOLATIONS: \${failed} \${failed > 0 ? '❌' : '✅'}</div>
+                    <div style="font-size: 1.45rem; font-weight: 800; color: \${statusColor}; margin-top: 8px; letter-spacing: 2px;">\${status}</div>
+                \`;
+                
+                // Sync ERP Metrics
+                document.getElementById('calcAccuracy').innerText = rate + '%';
+                document.getElementById('uuidCompliance').innerText = rate + '%';
 
                 // 2. Fetch Environment
                 const envResp = await fetch('./allure/widgets/environment.json');
@@ -146,20 +161,24 @@ class LuxuryReporter implements Reporter {
                 const catResp = await fetch('./allure/widgets/categories.json');
                 const cats = await catResp.json();
                 const wall = document.getElementById('errorWall');
-                cats.items.slice(0, 3).forEach(c => {
-                    const div = document.createElement('div');
-                    div.style = "background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 3px solid var(--coral);";
-                    div.innerHTML = \`<div style="font-size: 0.6rem; color: #64748b;">\${c.name.toUpperCase()}</div><div style="font-weight: bold; color: var(--coral);">\${c.statistic.count} ISSUES</div>\`;
-                    wall.appendChild(div);
-                });
-                if (cats.items.length === 0) {
-                    wall.innerHTML = '<div style="color: var(--emerald); font-size: 0.8rem; text-align: center;">VULNERABILITY SCAN: 0 DEFECTS</div>';
+                wall.innerHTML = '';
+                
+                if (cats.items && cats.items.length > 0) {
+                    cats.items.slice(0, 3).forEach(c => {
+                        const count = c.statistic.failed + c.statistic.broken || c.statistic.total || 0;
+                        const div = document.createElement('div');
+                        div.style = "background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 3px solid var(--coral); margin-bottom: 8px;";
+                        div.innerHTML = \`<div style="font-size: 0.6rem; color: #64748b;">\${c.name.toUpperCase()}</div><div style="font-weight: bold; color: var(--coral);">\${count} ISSUES DETECTED</div>\`;
+                        wall.appendChild(div);
+                    });
+                } else {
+                    wall.innerHTML = '<div style="color: var(--emerald); font-size: 0.8rem; text-align: center; padding: 20px;">SYSTEM GUARD: 0 VULNERABILITIES</div>';
                 }
 
                 // 4. Fetch Suites
-                const suitesResp = await fetch('./allure/data/suites.json');
+                const suitesResp = await fetch('./allure/widgets/suites.json');
                 const suites = await suitesResp.json();
-                document.getElementById('suiteCount').innerText = suites.children.length;
+                document.getElementById('suiteCount').innerText = suites.items.length;
 
                 document.getElementById('loader').style.display = 'none';
             } catch (e) {
