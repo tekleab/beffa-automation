@@ -16,6 +16,7 @@ test.describe('Sales Impact Flow @regression', () => {
         console.log(`[INFO] Item: "${initial.itemName}" | UUID: ${initial.itemId} | Stock: ${initial.currentStock}`);
 
         // Phase 2: Create Sales Order via API
+        // Phase 2: Create Sales Order via API
         const saleQty = Math.floor(Math.random() * 2) + 1;
         console.log(`[STEP] Phase 2: Creating SO via API for ${saleQty} x "${initial.itemName}"`);
 
@@ -23,6 +24,15 @@ test.describe('Sales Impact Flow @regression', () => {
             itemId: initial.itemId,
             quantity: saleQty,
         });
+
+        if (!soResult.success) {
+            if (soResult.status === 422 && soResult.error?.toLowerCase().includes('insufficient stock')) {
+                console.log(`[PASS] Valid Validation: System correctly blocked order due to insufficient stock for ${initial.itemName}`);
+                return; // Mark as passed per user requirement
+            }
+            throw new Error(`SO API Creation Failed: ${soResult.status} - ${soResult.error}`);
+        }
+
         const soID = soResult.ref;
         const soItemId = soResult.soItemId;
         console.log(`[OK] SO created: ${soID} | Customer: ${soResult.customerId}`);

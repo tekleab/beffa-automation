@@ -65,8 +65,30 @@ class LuxuryReporter implements Reporter {
         .ai-wing { position: absolute; right: 40px; top: 40px; width: 350px; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(20px); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 25px; box-shadow: -10px 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 80vh; }
         #errorWall { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; scrollbar-width: none; }
         #errorWall::-webkit-scrollbar { display: none; }
-        .erp-metrics { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; gap: 15px; }
-        .metric-card { background: rgba(15, 23, 42, 0.4); border-left: 4px solid var(--emerald); padding: 15px 25px; border-radius: 8px; min-width: 250px; }
+        .erp-metrics { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .metric-card { 
+            background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 20px 30px; 
+            border-radius: 16px; 
+            min-width: 280px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+        }
+        .metric-card:hover { transform: translateX(10px); border-color: var(--emerald); }
+        .metric-card::before {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 5px;
+            background: linear-gradient(to bottom, var(--emerald), transparent);
+        }
+        .metric-value { font-size: 2.2rem; font-weight: 900; background: linear-gradient(to right, #fff, var(--emerald)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .metric-label { font-size: 0.65rem; letter-spacing: 2px; color: #64748b; margin-top: 5px; font-weight: 700; text-transform: uppercase; }
+        
+        .integrity-bar { height: 4px; width: 100%; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 15px; overflow: hidden; }
+        .integrity-fill { height: 100%; width: 0%; background: var(--emerald); box-shadow: 0 0 10px var(--emerald); transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
+
         .control-console { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(30px); padding: 15px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
         .console-btn { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 25px; background: rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; font-size: 0.8rem; font-weight: bold; }
         .console-btn:hover { background: rgba(16, 185, 129, 0.2); color: var(--emerald); box-shadow: var(--neon-glow); }
@@ -89,16 +111,19 @@ class LuxuryReporter implements Reporter {
         <!-- ERP METRICS -->
         <div class="erp-metrics">
             <div class="metric-card">
-                <div id="suiteCount" class="metric-value">...</div>
+                <div id="suiteCount" class="metric-value">0</div>
                 <div class="metric-label">CORE DOMAINS VALIDATED</div>
+                <div class="integrity-bar"><div id="suiteBar" class="integrity-fill"></div></div>
             </div>
             <div class="metric-card">
-                <div id="calcAccuracy" class="metric-value">100%</div>
+                <div id="calcAccuracy" class="metric-value">0%</div>
                 <div class="metric-label">CALCULATIONS ACCURACY</div>
+                <div class="integrity-bar"><div id="calcBar" class="integrity-fill"></div></div>
             </div>
             <div class="metric-card">
-                <div id="uuidCompliance" class="metric-value">100%</div>
+                <div id="uuidCompliance" class="metric-value">0%</div>
                 <div class="metric-label">UUID COMPLIANCE INDEX</div>
+                <div class="integrity-bar"><div id="uuidBar" class="integrity-fill"></div></div>
             </div>
         </div>
 
@@ -138,6 +163,22 @@ class LuxuryReporter implements Reporter {
     </div>
 
     <script>
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range)) || 50;
+            const timer = setInterval(() => {
+                current += increment;
+                obj.innerText = (id.includes('Count') ? current : current.toFixed(2) + '%');
+                if (current == end || (increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + '%');
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
         function categorizeError(msg = '') {
             const m = msg.toLowerCase();
             if (m.includes('400') || m.includes('401') || m.includes('404') || m.includes('500') || m.includes('api') || m.includes('response')) 
@@ -157,20 +198,24 @@ class LuxuryReporter implements Reporter {
                 const total = summary?.statistic?.total || 0;
                 const passed = summary?.statistic?.passed || 0;
                 const failed = (summary?.statistic?.failed || 0) + (summary?.statistic?.broken || 0);
-                const rate = total > 0 ? ((passed / total) * 100).toFixed(2) : '0.00';
+                const numericRate = total > 0 ? parseFloat(((passed / total) * 100).toFixed(2)) : 0;
                 
-                const status = failed === 0 ? 'INTEGRITY: STABLE' : (parseFloat(rate) > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
-                const statusColor = failed === 0 ? 'var(--emerald)' : (parseFloat(rate) > 90 ? '#fbbf24' : 'var(--coral)');
+                animateValue('rateValue', 0, numericRate, 1500);
+                const status = failed === 0 && total > 0 ? 'INTEGRITY: STABLE' : (numericRate > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
+                const statusColor = failed === 0 && total > 0 ? 'var(--emerald)' : (numericRate > 90 ? '#fbbf24' : 'var(--coral)');
                 
-                document.getElementById('rateValue').innerText = rate + '%';
                 document.getElementById('rateLabel').innerHTML = 
-                    '<div style="font-size: 1.2rem; color: #fff; margin-bottom: 4px;">INTEGRITY SCORE: ' + rate + '%</div>' +
+                    '<div style="font-size: 1.2rem; color: #fff; margin-bottom: 4px;">INTEGRITY SCORE: ' + numericRate + '%</div>' +
                     '<div style="color: ' + (failed > 0 ? 'var(--coral)' : 'var(--emerald)') + ';">CRITICAL VIOLATIONS: ' + failed + (failed > 0 ? ' ❌' : ' ✅') + '</div>' +
                     '<div style="font-size: 1.45rem; font-weight: 800; color: ' + statusColor + '; margin-top: 8px; letter-spacing: 2px;">' + status + '</div>';
                 
                 // Sync ERP Metrics
-                document.getElementById('calcAccuracy').innerText = rate + '%';
-                document.getElementById('uuidCompliance').innerText = rate + '%';
+                animateValue('calcAccuracy', 0, numericRate, 1500);
+                animateValue('uuidCompliance', 0, numericRate, 1500);
+                document.getElementById('calcBar').style.width = numericRate + '%';
+                document.getElementById('uuidBar').style.width = numericRate + '%';
+                document.getElementById('calcBar').style.background = statusColor;
+                document.getElementById('uuidBar').style.background = statusColor;
 
                 // 2. Fetch Environment
                 const envResp = await fetch('./allure/widgets/environment.json');
@@ -224,7 +269,9 @@ class LuxuryReporter implements Reporter {
                 // 4. Fetch Suites
                 const suitesResp = await fetch('./allure/widgets/suites.json');
                 const suites = await suitesResp.json();
-                document.getElementById('suiteCount').innerText = suites.items.length;
+                const suiteCount = suites.items.length;
+                animateValue('suiteCount', 0, suiteCount, 1000);
+                document.getElementById('suiteBar').style.width = '100%';
 
                 // 5. Fetch History (Trend Graph) - Defensive Logic
                 try {

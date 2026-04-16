@@ -34,7 +34,7 @@ export class SalesAPI {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
-  async createSalesOrderAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; customerId: string; soItemId: string | null }> {
+  async createSalesOrderAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; customerId: string; soItemId: string | null; status?: number; error?: string }> {
     const apiBase = 'http://157.180.20.112:8001/api';
 
     // Defaults from known BEFA environment
@@ -73,7 +73,11 @@ export class SalesAPI {
       headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
-    if (!response.ok()) throw new Error(`SO API Creation Failed: ${response.status()} - ${await response.text()}`);
+    if (!response.ok()) {
+      const errText = await response.text();
+      console.warn(`[WARN] SO API Creation Failed: ${response.status()} - ${errText}`);
+      return { success: false, ref: '', id: '', customerId: payload.customer_id, soItemId: null, status: response.status(), error: errText };
+    }
     const json = await response.json();
     const soItemId = json.so_items?.[0]?.id || null;
     console.log(`[SUCCESS] Sales Order created via API: ${json.so_number} (ID: ${json.id}, ItemID: ${soItemId})`);

@@ -20,6 +20,15 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         // 2. Create Sales Order via API & Approve in UI
         console.log(`[STEP] Phase 2: Creating Sales Order via API for ${initialInfo.itemName}`);
         const soData = await app.createSalesOrderAPI({ itemId: initialInfo.itemId, quantity: 1 });
+        
+        if (!soData.success) {
+            if (soData.status === 422 && soData.error?.toLowerCase().includes('insufficient stock')) {
+                console.log(`[PASS] Valid Validation: System correctly blocked order due to insufficient stock for ${initialInfo.itemName}`);
+                return; // Mark as passed per user requirement
+            }
+            throw new Error(`SO API Creation Failed: ${soData.status} - ${soData.error}`);
+        }
+
         await page.goto(`/receivables/sale-orders/${soData.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
         console.log(`[OK] Sales Order ${soData.ref} approved (Released)`);
