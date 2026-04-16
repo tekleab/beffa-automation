@@ -34,7 +34,7 @@ Consistent test patterns across all major ERP modules, guarded by strict TypeScr
 
 ### 3. CI/CD & Automated Allure Reports to GitHub Pages
 - **Continuous Integration**: Uses `.github/workflows/playwright.yml`. Triggered automatically on `push` to main.
-- **Hosted Reporting**: Automatically generates an Allure HTML report and pushed directly to `gh-pages`. Viewable globally via a click in your browser without downloading traces locally.
+- **Astonishing Reporting**: Automatically generates a **Primary 3D Luxury Dashboard** at the root URL. Detailed historical trends are preserved in the **[Allure Sub-report](/allure/)**. Viewable globally via GitHub Pages.
 - **Automated Cleanup**: Dedicated `npm run clean` script for purging storage-heavy local traces.
 
 ---
