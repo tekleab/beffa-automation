@@ -113,7 +113,12 @@ class LuxuryReporter implements Reporter {
     </style>
 </head>
 <body>
-    <div id="loader" class="loading">SYNCING DATA...</div>
+    <div id="loader" class="loading">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+            <div>SYNCING DATA...</div>
+            <div onclick="document.getElementById('loader').style.display='none'" style="font-size:0.6rem; color:#64748b; cursor:pointer; letter-spacing:2px; border:1px solid rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px;">[ FORCE SKIP ]</div>
+        </div>
+    </div>
 
     <div class="observation-deck">
         <!-- HEADER / ENV -->
@@ -268,6 +273,9 @@ class LuxuryReporter implements Reporter {
                 return { label: 'DATA INTEGRITY', hint: 'Business rule/calculation violation' };
             return { label: 'LOGIC VARIATION', hint: 'Unexpected application state' };
         }
+
+        // V9.2 Ultimate Resilience: Hide loader after 10s NO MATTER WHAT
+        setTimeout(() => { if (document.getElementById('loader')) document.getElementById('loader').style.display = 'none'; }, 10000);
 
         async function syncCommandCenter() {
             try {
