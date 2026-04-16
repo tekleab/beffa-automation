@@ -57,21 +57,11 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         
-        .ai-wing { 
-            position: absolute; right: 40px; top: 40px; width: 380px; 
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(35px); 
-            border: 1px solid rgba(16, 185, 129, 0.2); 
-            border-radius: 16px; 
-            padding: 25px; 
-            box-shadow: -20px 20px 60px rgba(0,0,0,0.6); 
-            display: flex; flex-direction: column; 
-            max-height: 80vh; 
-            z-index: 100;
-            transition: 0.5s;
-        }
-        #errorWall { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; scrollbar-width: none; }
-        #errorWall::-webkit-scrollbar { display: none; }
+        .ai-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border-left: 3px solid var(--coral); margin-bottom: 12px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: 0.3s; position: relative; }
+        .ai-item:hover { background: rgba(255,255,255,0.05); transform: scale(1.02); }
+        .ai-item.known-issue { opacity: 0.4; border-left-color: #64748b; filter: grayscale(1); }
+        .mute-btn { position: absolute; right: 10px; top: 10px; font-size: 0.6rem; color: #64748b; border: 1px solid rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,0.2); }
+        .mute-btn:hover { color: #fff; border-color: #fff; }
         .erp-metrics { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
         .metric-card { 
             background: rgba(15, 23, 42, 0.4); 
@@ -171,12 +161,74 @@
         <!-- CONSOLE -->
         <div class="control-console">
             <div class="console-btn" onclick="window.open('./allure/', '_blank')"><span>📊</span> <span>OPEN DETAILED ALLURE</span></div>
-            <div class="console-btn" onclick="alert('Slack Alert Dispatched!')"><span>🟢</span> <span>SLACK: BROADCAST</span></div>
-            <div class="console-btn" onclick="alert('Drafting Jira Ticket...')"><span>🔵</span> <span>JIRA: ESCALATE</span></div>
+            <div class="console-btn" onclick="broadcastToSlack()"><span>🟢</span> <span>SLACK: BROADCAST</span></div>
+            <div class="console-btn" onclick="escalateToJira()"><span>🔵</span> <span>JIRA: ESCALATE</span></div>
         </div>
     </div>
 
     <script>
+        let currentFailures = [];
+        const KNOWN_ISSUES_KEY = 'beffa_known_issues';
+
+        function toggleKnownIssue(id, event) {
+            event.stopPropagation();
+            let known = JSON.parse(localStorage.getItem(KNOWN_ISSUES_KEY) || '[]');
+            if (known.includes(id)) {
+                known = known.filter(i => i !== id);
+            } else {
+                known.push(id);
+            }
+            localStorage.setItem(KNOWN_ISSUES_KEY, JSON.stringify(known));
+            syncCommandCenter(); // Re-render
+        }
+
+        async function broadcastToSlack() {
+            const known = JSON.parse(localStorage.getItem(KNOWN_ISSUES_KEY) || '[]');
+            const activeFailures = currentFailures.filter(f => !known.includes(f.uid));
+            
+            if (activeFailures.length === 0) {
+                alert('No new failures to broadcast. All issues are muted or resolved.');
+                return;
+            }
+
+            const webhook = localStorage.getItem('beffa_slack_webhook');
+            if (!webhook) {
+                const input = prompt('Enter Slack Webhook URL:');
+                if (input) {
+                    localStorage.setItem('beffa_slack_webhook', input);
+                    alert('Webhook saved. Try broadcasting again!');
+                }
+                return;
+            }
+
+            const attachment = activeFailures.map(f => ({
+                color: '#f43f5e',
+                title: '❌ ' + f.name,
+                text: 'Root Cause: ' + (f.hint || 'Investigating...') + '
+Trace: ' + window.location.origin + window.location.pathname + 'allure/#behaviors/' + f.uid
+            }));
+
+            const payload = {
+                text: '🚨 *TACTICAL ALERT: BEFFA ERP V9.0* 🚨
+Stability dropped to ' + document.getElementById('rateValue').innerText,
+                attachments: attachment
+            };
+
+            try {
+                await fetch(webhook, { method: 'POST', body: JSON.stringify(payload) });
+                alert('Broadcast Success! Check Slack.');
+            } catch (e) {
+                alert('Slack Sync Failed. Check Webhook URL.');
+            }
+        }
+
+        async function escalateToJira() {
+            const first = currentFailures[0];
+            if (!first) return alert('No failures to escalate.');
+            const jiraUrl = 'https://tekleab.atlassian.net/secure/CreateIssueDetails!default.jspa?pid=10000&issuetype=10004&summary=[BUG]%20Test%20Failure:%20' + encodeURIComponent(first.name);
+            window.open(jiraUrl, '_blank');
+        }
+
         function animateValue(id, start, end, duration) {
             const obj = document.getElementById(id);
             const range = end - start;
@@ -278,18 +330,25 @@
                             hintData = { label: 'LOGIC VARIATION', hint: 'Heuristics unavailable' };
                         }
 
+                        const isKnown = JSON.parse(localStorage.getItem(KNOWN_ISSUES_KEY) || '[]').includes(f.uid);
                         const icon = severityIcons[f.severity] || '🟠';
                         const div = document.createElement('div');
-                        div.style = "background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 3px solid var(--coral); margin-bottom: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-transform: none;";
+                        div.className = 'ai-item' + (isKnown ? ' known-issue' : '');
                         div.onclick = () => window.open('./allure/#behaviors/' + f.uid, '_blank');
                         
                         div.innerHTML = 
+                            '<div class="mute-btn" onclick="toggleKnownIssue('' + f.uid + '', event)">' + (isKnown ? 'UNMUTE' : 'MUTE') + '</div>' +
                             '<div style="font-size: 0.6rem; color: #64748b; font-weight: bold;">' + icon + ' [' + hintData.label + ']</div>' +
                             '<div style="font-size: 0.8rem; color: #fff;">' + f.name + '</div>' +
                             '<div style="font-size: 0.5rem; color: var(--coral);">HINT: ' + hintData.hint + '</div>';
                         wall.appendChild(div);
+                        
+                        // Track for broadcast
+                        f.hint = hintData.hint;
+                        currentFailures.push(f);
                     }
                 } else {
+                    currentFailures = [];
                     wall.innerHTML = '<div style="color: var(--emerald); font-size: 0.8rem; text-align: center; padding: 20px;">SYSTEM GUARD: 0 VULNERABILITIES</div>';
                 }
 
