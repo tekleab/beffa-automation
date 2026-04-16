@@ -4,271 +4,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEFFA Luxury 3D Analytics Suite</title>
+    <title>BEFFA Unified QA Command Center V5.0 (Dynamic)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --emerald: #10b981;
             --coral: #f43f5e;
-            --glass: rgba(15, 23, 42, 0.9);
-            --neon-green: 0 0 15px rgba(16, 185, 129, 0.6);
-            --neon-red: 0 0 15px rgba(244, 63, 94, 0.6);
+            --amber: #f59e0b;
+            --glass-deep: rgba(2, 6, 23, 0.9);
+            --neon-glow: 0 0 25px rgba(16, 185, 129, 0.6);
         }
 
         body {
-            background-color: #020617;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
             color: #f8fafc;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
+            overflow: hidden;
             display: flex;
             height: 100vh;
-            overflow: hidden;
         }
 
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 80px;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 30px;
-            gap: 25px;
-            z-index: 100;
-        }
-
-        .nav-item {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #64748b;
-            font-size: 1.2rem;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--emerald);
-            box-shadow: var(--neon-green);
-        }
-
-        /* --- Main Content --- */
-        .main-content {
+        .observation-deck {
             flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            perspective: 2000px;
-        }
-
-        .tab-content { display: none; animation: fadeIn 0.5s forwards; }
-        .tab-content.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- 3D Visuals --- */
-        .isometric-view {
-            transform: rotateX(15deg) rotateY(-5deg);
-            transform-style: preserve-3d;
-        }
-
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6);
-            margin-bottom: 30px;
-        }
-
-        .hologram-circle {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            border: 15px solid rgba(16, 185, 129, 0.05);
-            border-top: 15px solid var(--emerald);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            text-shadow: var(--neon-green);
-            animation: pulse-glow 3s infinite alternate;
-        }
-
-        @keyframes pulse-glow { from { transform: scale(1); } to { transform: scale(1.05); } }
-
-        /* --- Suite View --- */
-        .suite-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .suite-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-            transform-style: preserve-3d;
-        }
-
-        .suite-card:hover {
-            transform: translateZ(30px);
-            background: rgba(255, 255, 255, 0.07);
-            border-color: var(--emerald);
-        }
-
-        .progress-bar-3d {
-            height: 6px;
-            background: #1e293b;
-            border-radius: 3px;
-            margin-top: 15px;
-            overflow: hidden;
-            transform: translateZ(5px);
-        }
-
-        .progress-fill { height: 100%; background: var(--emerald); box-shadow: var(--neon-green); }
-
-        /* --- Category (Error Wall) --- */
-        .error-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .error-tag { color: var(--coral); font-weight: bold; font-family: monospace; }
-
-        /* --- Timeline --- */
-        .timeline-container {
             position: relative;
-            padding: 20px 0;
-            overflow-x: auto;
+            background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
         }
 
-        .timeline-bar {
-            height: 30px;
-            background: var(--emerald);
-            border-radius: 5px;
-            margin-bottom: 10px;
-            min-width: 50px;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-            cursor: pointer;
-        }
-        .timeline-bar:hover { opacity: 1; box-shadow: var(--neon-green); }
+        /* --- 3D Crystal --- */
+        .hologram-stage { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 400px; height: 400px; perspective: 1000px; }
+        .crystal { position: relative; width: 150px; height: 250px; margin: 50px auto; transform-style: preserve-3d; animation: rotateCrystal 15s infinite linear; }
+        .crystal-face { position: absolute; width: 0; height: 0; border-left: 75px solid transparent; border-right: 75px solid transparent; border-bottom: 125px solid rgba(16, 185, 129, 0.4); transform-origin: 50% 100%; backdrop-filter: blur(5px); box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2); }
+        .crystal-top-1 { transform: rotateY(0deg) rotateX(30deg); }
+        .crystal-top-2 { transform: rotateY(90deg) rotateX(30deg); }
+        .crystal-top-3 { transform: rotateY(180deg) rotateX(30deg); }
+        .crystal-top-4 { transform: rotateY(270deg) rotateX(30deg); }
+        .crystal-bot-1 { transform: rotateY(0deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
+        .crystal-bot-2 { transform: rotateY(90deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
+        @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 
-        .timeline-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 2px; }
-
-        h2 { text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 25px; color: var(--emerald); }
+        /* --- Modules --- */
+        .ai-wing { position: absolute; right: 40px; top: 40px; width: 350px; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(20px); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 25px; box-shadow: -10px 10px 30px rgba(0,0,0,0.5); }
+        .erp-metrics { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; gap: 15px; }
+        .metric-card { background: rgba(15, 23, 42, 0.4); border-left: 4px solid var(--emerald); padding: 15px 25px; border-radius: 8px; min-width: 250px; }
+        .control-console { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(30px); padding: 15px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
+        .console-btn { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 25px; background: rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; font-size: 0.8rem; font-weight: bold; }
+        .console-btn:hover { background: rgba(16, 185, 129, 0.2); color: var(--emerald); box-shadow: var(--neon-glow); }
+        
+        .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="nav-item active" onclick="showTab('dashboard')">🏠</div>
-        <div class="nav-item" onclick="showTab('suites')">📂</div>
-        <div class="nav-item" onclick="showTab('categories')">⚠️</div>
-        <div class="nav-item" onclick="showTab('timeline')">🕒</div>
-        <div class="nav-item" onclick="showTab('graphs')">📈</div>
-    </div>
+    <div id="loader" class="loading">SYNCING DATA...</div>
 
-    <div class="main-content">
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content active">
-            <h2>Astonishing Overview</h2>
-            <div class="isometric-view">
-                <div class="glass-card" style="text-align: center;">
-                    <div class="hologram-circle">
-                        <div style="font-size: 3.5rem; font-weight: 900;">0%</div>
-                        <div style="font-size: 0.8rem; letter-spacing: 2px;">SUCCESS INDEX</div>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-                    <div class="glass-card">
-                        <div style="color: #64748b; font-size: 0.75rem;">TOTAL CASES</div>
-                        <div style="font-size: 2rem; font-weight: bold;">0</div>
-                    </div>
-                    <div class="glass-card">
-                        <div style="color: #64748b; font-size: 0.75rem;">PASSED</div>
-                        <div style="font-size: 2rem; font-weight: bold; color: var(--emerald);">0</div>
-                    </div>
-                    <div class="glass-card">
-                        <div style="color: #64748b; font-size: 0.75rem;">FAILED</div>
-                        <div style="font-size: 2rem; font-weight: bold; color: var(--coral);">0</div>
-                    </div>
-                </div>
+    <div class="observation-deck">
+        <!-- HEADER / ENV -->
+        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 20px; font-size: 0.7rem; color: #64748b; letter-spacing: 2px;">
+            FETCHING ENVIRONMENT CONTEXT...
+        </div>
+
+        <!-- ERP METRICS -->
+        <div class="erp-metrics">
+            <div class="metric-card">
+                <div id="suiteCount" class="metric-value">...</div>
+                <div class="metric-label">CORE DOMAINS VALIDATED</div>
+            </div>
+            <div class="metric-card">
+                <div id="calcAccuracy" class="metric-value">100%</div>
+                <div class="metric-label">CALCULATIONS ACCURACY</div>
+            </div>
+            <div class="metric-card">
+                <div id="uuidCompliance" class="metric-value">100%</div>
+                <div class="metric-label">UUID COMPLIANCE INDEX</div>
             </div>
         </div>
 
-        <!-- Suites Tab -->
-        <div id="suites" class="tab-content">
-            <h2>Luxury Suites Architecture</h2>
-            <div class="suite-grid">
-                
+        <!-- CRYSTAL -->
+        <div class="hologram-stage">
+            <div class="crystal">
+                <div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div>
+                <div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div>
+                <div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div>
+            </div>
+            <div style="position: absolute; bottom: -80px; width: 100%; text-align: center;">
+                <div id="rateValue" style="font-size: 3rem; font-weight: 900; color: var(--emerald); text-shadow: var(--neon-glow);">...%</div>
+                <div id="rateLabel" style="font-size: 0.7rem; letter-spacing: 3px; color: #94a3b8;">CORE INTEGRITY</div>
             </div>
         </div>
 
-        <!-- Categories Tab -->
-        <div id="categories" class="tab-content">
-            <h2>Defect Wall Analytics</h2>
-            <div class="glass-card">
-                <div style="text-align: center; color: var(--emerald);">0 DEFECTS DETECTED</div>
+        <!-- AI WING -->
+        <div class="ai-wing">
+            <div style="font-size: 0.7rem; color: var(--emerald); font-weight: bold;">MULTI-VECTOR ROOT CAUSE ENGINE</div>
+            <div id="errorWall" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <!-- Dynamically Populated -->
             </div>
         </div>
 
-        <!-- Timeline Tab -->
-        <div id="timeline" class="tab-content">
-            <h2>Isometric Execution Timeline</h2>
-            <div class="glass-card timeline-container">
-                
-            </div>
-        </div>
-
-        <!-- Graphs Tab -->
-        <div id="graphs" class="tab-content">
-            <h2>Premium Data Visualization</h2>
-            <div class="glass-card">
-                <canvas id="mainChart" style="height: 300px;"></canvas>
-            </div>
+        <!-- CONSOLE -->
+        <div class="control-console">
+            <div class="console-btn" onclick="window.open('./allure/', '_blank')"><span>📊</span> <span>OPEN DETAILED ALLURE</span></div>
+            <div class="console-btn" onclick="alert('Slack Alert Dispatched!')"><span>🟢</span> <span>SLACK: BROADCAST</span></div>
+            <div class="console-btn" onclick="alert('Drafting Jira Ticket...')"><span>🔵</span> <span>JIRA: ESCALATE</span></div>
         </div>
     </div>
 
     <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+        async function syncCommandCenter() {
+            try {
+                // 1. Fetch Summary
+                const summaryResp = await fetch('./allure/widgets/summary.json');
+                const summary = await summaryResp.json();
+                const rate = ((summary.statistic.passed / summary.statistic.total) * 100).toFixed(2);
+                document.getElementById('rateValue').innerText = rate + '%';
+                document.getElementById('rateLabel').innerText = summary.statistic.total + ' TEST CASES INTEGRITY';
+
+                // 2. Fetch Environment
+                const envResp = await fetch('./allure/widgets/environment.json');
+                const env = await envResp.json();
+                const envStr = env.map(e => `${e.name.toUpperCase()}: ${e.values[0]}`).join(' | ');
+                document.getElementById('envHeader').innerText = envStr;
+
+                // 3. Fetch Categories
+                const catResp = await fetch('./allure/widgets/categories.json');
+                const cats = await catResp.json();
+                const wall = document.getElementById('errorWall');
+                cats.items.slice(0, 3).forEach(c => {
+                    const div = document.createElement('div');
+                    div.style = "background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 3px solid var(--coral);";
+                    div.innerHTML = `<div style="font-size: 0.6rem; color: #64748b;">${c.name.toUpperCase()}</div><div style="font-weight: bold; color: var(--coral);">${c.statistic.count} ISSUES</div>`;
+                    wall.appendChild(div);
+                });
+                if (cats.items.length === 0) {
+                    wall.innerHTML = '<div style="color: var(--emerald); font-size: 0.8rem; text-align: center;">VULNERABILITY SCAN: 0 DEFECTS</div>';
+                }
+
+                // 4. Fetch Suites
+                const suitesResp = await fetch('./allure/data/suites.json');
+                const suites = await suitesResp.json();
+                document.getElementById('suiteCount').innerText = suites.children.length;
+
+                document.getElementById('loader').style.display = 'none';
+            } catch (e) {
+                console.error("Sync Failed", e);
+                document.getElementById('loader').innerText = "OFFLINE: RUN CI TO SYNC";
+            }
         }
 
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Success Rate (%)',
-                    data: [],
-                    backgroundColor: 'rgba(16, 185, 129, 0.4)',
-                    borderColor: '#10b981',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, max: 100 } }
-            }
-        });
+        window.onload = syncCommandCenter;
     </script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "steam door 78x2.02" via API | Initial Stock: 63
+[STEP] Phase 2: Creating Sales Order via API for steam door 78x2.02
+[SUCCESS] Sales Order created via API: SO/2026/04/16/000262 (ID: e396ad1c-88ba-4c35-b386-5c69c503ff4f, ItemID: 39803e23-4374-4033-8ab7-7d59544da06b)
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/16/000262 approved (Released)
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/16/000262
+[SUCCESS] Invoice created via API: INV/2026/04/16/000423 (ID: 4416e08a-2c83-4e6b-8b7c-17fc61fe882f)
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice INV/2026/04/16/000423 created and approved via API+UI flow
+[STEP] Verifying stock deduction via API
+[VERIFY] Expected: 62 | Found: 63
