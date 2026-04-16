@@ -131,10 +131,19 @@ class LuxuryReporter implements Reporter {
     </style>
 </head>
 <body>
+    <script>
+        // V10.2 ULTRA RESONANCE: Immediate Resilience Script (Zero Dependency)
+        function forceKillLoader() {
+            var l = document.getElementById('loader');
+            if (l) l.style.display = 'none';
+        }
+        window.earlyTimer = setTimeout(forceKillLoader, 6000); 
+    </script>
+
     <div id="loader" class="loading">
         <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
-            <div>SYNCING DATA...</div>
-            <div onclick="dismissLoader()" style="font-size:0.6rem; color:#64748b; cursor:pointer; letter-spacing:2px; border:1px solid rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px;">[ FORCE SKIP ]</div>
+            <div id="loaderText">SYNCING TACTICAL DATA...</div>
+            <div onclick="forceKillLoader()" style="font-size:0.6rem; color:#64748b; cursor:pointer; letter-spacing:2px; border:1px solid rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px;">[ FORCE SKIP ]</div>
         </div>
     </div>
 
@@ -246,7 +255,7 @@ class LuxuryReporter implements Reporter {
             }));
 
             const payload = {
-                text: '🚨 *TACTICAL ALERT: BEFFA ERP V9.0* 🚨\nStability dropped to ' + document.getElementById('rateValue').innerText,
+                text: '🚨 *TACTICAL ALERT: BEFFA ERP V9.0* 🚨\nStability dropped to ' + document.getElementById('hudRateValue').innerText,
                 attachments: attachment
             };
 
@@ -297,16 +306,6 @@ class LuxuryReporter implements Reporter {
             return { label: 'LOGIC VARIATION', hint: 'Unexpected application state' };
         }
 
-        
-
-        
-        function dismissLoader() {
-            const loader = document.getElementById('loader');
-            if (loader) loader.style.display = 'none';
-        }
-
-        const safetyTimer = setTimeout(dismissLoader, 5000);
-
         async function fetchWithTimeout(resource, options = {}) {
             const { timeout = 8000 } = options;
             const controller = new AbortController();
@@ -326,17 +325,23 @@ class LuxuryReporter implements Reporter {
                     if (resp.ok) return await resp.json();
                 } catch (e) {}
             }
-            throw new Error("Resource not found in search paths: " + paths.join(', '));
+            // Absolute path fallback
+            for (const path of paths) {
+                try {
+                    const resp = await fetchWithTimeout('/' + path.replace('./', ''));
+                    if (resp.ok) return await resp.json();
+                } catch (e) {}
+            }
+            throw new Error("Target resource unavailable");
         }
-
 
         async function syncCommandCenter() {
             try {
                 // 1. Fetch Summary (Probing widgets and data)
                 const summary = await smartFetch([
+                    'allure/widgets/summary.json',
                     './allure/widgets/summary.json',
-                    './allure/data/summary.json',
-                    'allure/widgets/summary.json'
+                    './allure/data/summary.json'
                 ]);
                 
                 const total = summary?.statistic?.total || 0;
@@ -369,7 +374,7 @@ class LuxuryReporter implements Reporter {
                     env = await smartFetch(['./allure/widgets/environment.json', './allure/data/environment.json']);
                 } catch(e) { console.warn("Environment context unavailable"); }
                 
-                const envStr = env.length > 0 ? env.map(e => \`\${e.name.toUpperCase()}: \${e.values[0]}\`).join(' | ') : 'SYSTEM SYNCED | BM TECHNOLOGY HUD';
+                const envStr = env.length > 0 ? env.map(e => `${e.name.toUpperCase()}: ${e.values[0]}`).join(' | ') : 'SYSTEM SYNCED | BM TECHNOLOGY HUD';
                 document.getElementById('envHeader').innerText = envStr;
 
                 // 3. Fetch Behaviors (Deep Data)
@@ -479,15 +484,17 @@ class LuxuryReporter implements Reporter {
                     console.warn("Trend Engine Offline: Missing or malformed history", e);
                 }
 
-                document.getElementById('loader').style.display = 'none';
             } catch (e) {
                 console.error("Dashboard Sync Failed", e);
                 const loader = document.getElementById('loader');
                 if (loader) {
                     loader.innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
-                    setTimeout(() => { loader.style.display = 'none'; }, 3000);
+                    setTimeout(forceKillLoader, 3000);
                 }
-            } finally { clearTimeout(safetyTimer); dismissLoader(); }
+            } finally { 
+                if (window.earlyTimer) clearTimeout(window.earlyTimer);
+                forceKillLoader(); 
+            }
         }
 
         window.onload = syncCommandCenter;
