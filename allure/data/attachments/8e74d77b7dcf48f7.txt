@@ -1,0 +1,36 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[INFO] Item: "fifoitem4" | UUID: 181eb226-d85f-4579-af0c-58dff9cab861 | Stock: 49
+[STEP] Phase 2: Creating SO via API for 2 x "fifoitem4"
+[SUCCESS] Sales Order created via API: SO/2026/04/16/000278 (ID: 84afb140-cd34-4266-abc3-a242abeb38a5, ItemID: b293e21b-0f42-4d68-bf0c-ef1d148555c3)
+[OK] SO created: SO/2026/04/16/000278 | Customer: 256ce173-d504-4345-a6b7-70cead86f135
+[STEP] Phase 3: Approving SO SO/2026/04/16/000278
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/16/000278 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/16/000278
+[SUCCESS] Invoice created via API: INV/2026/04/16/000439 (ID: 34e8f03e-fbc4-42ed-bc61-057cb5192f6a)
+[OK] Invoice created: INV/2026/04/16/000439 (UUID: 34e8f03e-fbc4-42ed-bc61-057cb5192f6a)
+[STEP] Phase 5: Approving Invoice INV/2026/04/16/000439
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/16/000439 approved
+[STEP] Phase 6: Verifying stock for "fifoitem4" via API
+[VERIFY] Item: fifoitem4 | Initial: 49 | Sold: 2 | Final: 47 | Expected: 47
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 49 to 47
