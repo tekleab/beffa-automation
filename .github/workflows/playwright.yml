@@ -121,15 +121,12 @@ jobs:
     - name: Finalize Astonishing Reporting Suite
       if: always()
       run: |
-        # Create a clean deployment directory
+        # Create a clean deployment directory if not there
         mkdir -p deploy
-        # Move Luxury Dashboard as the primary index
-        cp luxury-report.html deploy/index.html
-        # Move standard Allure report to a sub-folder
-        mv allure-report deploy/allure
-        # Copy the 3D mockup image for the dashboard (if needed internally)
-        cp /home/teklish/.gemini/antigravity/brain/6727dce7-aff6-42f3-ada6-5e126a83eb40/astonishing_3d_dashboard_1776321254606.png deploy/luxury_dashboard.png || true
-        # Update summary
+        # Move standard Allure report to a sub-folder inside deploy
+        # The reporter already generated the Dynamic index.html in deploy/
+        mv allure-report deploy/allure || true
+        # Update summary for CI logs
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY
 
