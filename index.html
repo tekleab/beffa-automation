@@ -139,10 +139,10 @@
                 // 1. Fetch Summary
                 const summaryResp = await fetch('./allure/widgets/summary.json');
                 const summary = await summaryResp.json();
-                const total = summary.statistic.total;
-                const passed = summary.statistic.passed;
-                const failed = summary.statistic.failed + summary.statistic.broken;
-                const rate = ((passed / total) * 100).toFixed(2);
+                const total = summary?.statistic?.total || 0;
+                const passed = summary?.statistic?.passed || 0;
+                const failed = (summary?.statistic?.failed || 0) + (summary?.statistic?.broken || 0);
+                const rate = total > 0 ? ((passed / total) * 100).toFixed(2) : '0.00';
                 
                 const status = failed === 0 ? 'INTEGRITY: STABLE' : (parseFloat(rate) > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
                 const statusColor = failed === 0 ? 'var(--emerald)' : (parseFloat(rate) > 90 ? '#fbbf24' : 'var(--coral)');
@@ -211,38 +211,49 @@
                 const suites = await suitesResp.json();
                 document.getElementById('suiteCount').innerText = suites.items.length;
 
-                // 5. Fetch History (Trend Graph)
-                const histResp = await fetch('./allure/widgets/history-trend.json');
-                const history = await histResp.json();
-                
-                const ctx = document.getElementById('trendChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: history.map((_, i) => '#' + (history.length - i)).reverse(),
-                        datasets: [{
-                            label: 'Pass %',
-                            data: history.map(h => ((h.statistic.passed / h.statistic.total) * 100)).reverse(),
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 2
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { display: false, min: 0, max: 100 },
-                            x: { display: false }
-                        }
+                // 5. Fetch History (Trend Graph) - Defensive Logic
+                try {
+                    const histResp = await fetch('./allure/widgets/history-trend.json');
+                    const history = await histResp.json();
+                    
+                    if (history && history.length > 0) {
+                        const ctx = document.getElementById('trendChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: history.map((_, i) => '#' + (history.length - i)).reverse(),
+                                datasets: [{
+                                    label: 'Pass %',
+                                    data: history.map(h => {
+                                        const stats = h.statistic || h.data || {};
+                                        const p = stats.passed || 0;
+                                        const t = stats.total || 0;
+                                        return t > 0 ? ((p / t) * 100) : 0;
+                                    }).reverse(),
+                                    borderColor: '#10b981',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 2
+                                }]
+                            },
+                            options: {
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { display: false, min: 0, max: 100 },
+                                    x: { display: false }
+                                }
+                            }
+                        });
                     }
-                });
+                } catch (e) {
+                    console.warn("Trend Engine Offline: Missing or malformed history", e);
+                }
 
                 document.getElementById('loader').style.display = 'none';
             } catch (e) {
-                console.error("Sync Failed", e);
-                document.getElementById('loader').innerText = "OFFLINE: RUN CI TO SYNC";
+                console.error("Dashboard Sync Failed", e);
+                document.getElementById('loader').innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
             }
         }
 
