@@ -71,6 +71,24 @@ class LuxuryReporter implements Reporter {
             display: inline-block;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
+
+        /* --- AI Wing Panel --- */
+        .ai-wing {
+            position: absolute;
+            right: 40px;
+            top: 40px;
+            width: 320px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-right: 4px solid var(--emerald);
+            border-radius: 16px;
+            padding: 20px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            z-index: 100;
+        }
+
         
         .ai-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border-left: 3px solid var(--coral); margin-bottom: 12px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: 0.3s; position: relative; }
         .ai-item:hover { background: rgba(255,255,255,0.05); transform: scale(1.02); }
@@ -116,7 +134,7 @@ class LuxuryReporter implements Reporter {
     <div id="loader" class="loading">
         <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
             <div>SYNCING DATA...</div>
-            <div onclick="document.getElementById('loader').style.display='none'" style="font-size:0.6rem; color:#64748b; cursor:pointer; letter-spacing:2px; border:1px solid rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px;">[ FORCE SKIP ]</div>
+            <div onclick="dismissLoader()" style="font-size:0.6rem; color:#64748b; cursor:pointer; letter-spacing:2px; border:1px solid rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px;">[ FORCE SKIP ]</div>
         </div>
     </div>
 
@@ -128,8 +146,8 @@ class LuxuryReporter implements Reporter {
 
         <!-- HUD OVERLAY -->
         <div class="hud-overlay">
-            <div id="rateValue" class="rate-value">0%</div>
-            <div id="rateLabel" class="status-container"></div>
+            <div id="hudRateValue" class="rate-value">0%</div>
+            <div id="hudRateLabel" class="status-container"></div>
         </div>
 
         <!-- ERP METRICS -->
@@ -159,8 +177,8 @@ class LuxuryReporter implements Reporter {
                 <div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div>
             </div>
             <div style="position: absolute; bottom: -80px; width: 100%; text-align: center;">
-                <div id="rateValue" style="font-size: 3rem; font-weight: 900; color: var(--emerald); text-shadow: var(--neon-glow);">...%</div>
-                <div id="rateLabel" style="font-size: 0.7rem; letter-spacing: 3px; color: #94a3b8;">CORE INTEGRITY</div>
+                <div id="crystalRateValue" style="font-size: 3rem; font-weight: 900; color: var(--emerald); text-shadow: var(--neon-glow);">...%</div>
+                <div id="crystalRateLabel" style="font-size: 0.7rem; letter-spacing: 3px; color: #94a3b8;">CORE INTEGRITY</div>
             </div>
         </div>
 
@@ -249,10 +267,15 @@ class LuxuryReporter implements Reporter {
 
         function animateValue(id, start, end, duration) {
             const obj = document.getElementById(id);
+            if (!obj) return;
             const range = end - start;
+            if (range === 0) {
+               obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + '%');
+               return;
+            }
             let current = start;
             const increment = end > start ? 1 : -1;
-            const stepTime = Math.abs(Math.floor(duration / range)) || 50;
+            const stepTime = Math.max(Math.abs(Math.floor(duration / range)) || 50, 10);
             const timer = setInterval(() => {
                 current += increment;
                 obj.innerText = (id.includes('Count') ? current : current.toFixed(2) + '%');
@@ -274,18 +297,38 @@ class LuxuryReporter implements Reporter {
             return { label: 'LOGIC VARIATION', hint: 'Unexpected application state' };
         }
 
-        // V9.2 Ultimate Resilience: Hide loader after 10s NO MATTER WHAT
-        setTimeout(() => { if (document.getElementById('loader')) document.getElementById('loader').style.display = 'none'; }, 10000);
+        
+
+        
+        function dismissLoader() {
+            const loader = document.getElementById('loader');
+            if (loader) loader.style.display = 'none';
+        }
+
+        const safetyTimer = setTimeout(dismissLoader, 5000);
+
+        async function fetchWithTimeout(resource, options = {}) {
+            const { timeout = 8000 } = options;
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(resource, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(id);
+            return response;
+        }
 
         async function smartFetch(paths) {
             for (const path of paths) {
                 try {
-                    const resp = await fetch(path);
+                    const resp = await fetchWithTimeout(path);
                     if (resp.ok) return await resp.json();
                 } catch (e) {}
             }
             throw new Error("Resource not found in search paths: " + paths.join(', '));
         }
+
 
         async function syncCommandCenter() {
             try {
@@ -301,11 +344,11 @@ class LuxuryReporter implements Reporter {
                 const failed = (summary?.statistic?.failed || 0) + (summary?.statistic?.broken || 0);
                 const numericRate = total > 0 ? parseFloat(((passed / total) * 100).toFixed(2)) : 0;
                 
-                animateValue('rateValue', 0, numericRate, 1500);
+                animateValue('hudRateValue', 0, numericRate, 1500); animateValue('crystalRateValue', 0, numericRate, 1500);
                 const status = failed === 0 && total > 0 ? 'INTEGRITY: STABLE' : (numericRate > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
                 const statusColor = failed === 0 && total > 0 ? 'var(--emerald)' : (numericRate > 90 ? '#fbbf24' : 'var(--coral)');
                 
-                document.getElementById('rateLabel').innerHTML = 
+                document.getElementById('hudRateLabel').innerHTML = 
                     '<div style="font-size: 0.65rem; color: #64748b; font-weight: bold; letter-spacing: 3px; margin-bottom: 8px;">INTEGRITY ENGINE</div>' +
                     '<div style="font-size: 2.5rem; font-weight: 900; color: #fff; line-height: 1;">' + numericRate + '%</div>' +
                     '<div style="height: 1px; width: 60%; background: rgba(255,255,255,0.1); margin: 15px auto;"></div>' +
@@ -330,8 +373,7 @@ class LuxuryReporter implements Reporter {
                 document.getElementById('envHeader').innerText = envStr;
 
                 // 3. Fetch Behaviors (Deep Data)
-                const behavResp = await fetch('./allure/data/behaviors.json');
-                const behaviors = await behavResp.json();
+                const behaviors = await smartFetch(['./allure/data/behaviors.json', './allure/widgets/behaviors.json']).catch(() => ({}));
                 const wall = document.getElementById('errorWall');
                 wall.innerHTML = '';
                 
@@ -445,10 +487,7 @@ class LuxuryReporter implements Reporter {
                     loader.innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
                     setTimeout(() => { loader.style.display = 'none'; }, 3000);
                 }
-            } finally {
-                const loader = document.getElementById('loader');
-                if (loader) loader.style.display = 'none';
-            }
+            } finally { clearTimeout(safetyTimer); dismissLoader(); }
         }
 
         window.onload = syncCommandCenter;
