@@ -1,34 +1,343 @@
+
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Allure Report</title>
-    <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <link rel="stylesheet" type="text/css" href="plugin/screen-diff/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEFFA Luxury 3D Analytics Suite</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --emerald: #10b981;
+            --coral: #f43f5e;
+            --glass: rgba(15, 23, 42, 0.9);
+            --neon-green: 0 0 15px rgba(16, 185, 129, 0.6);
+            --neon-red: 0 0 15px rgba(244, 63, 94, 0.6);
+        }
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 80px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            gap: 25px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--emerald);
+            box-shadow: var(--neon-green);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            perspective: 2000px;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.5s forwards; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 3D Visuals --- */
+        .isometric-view {
+            transform: rotateX(15deg) rotateY(-5deg);
+            transform-style: preserve-3d;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6);
+            margin-bottom: 30px;
+        }
+
+        .hologram-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 15px solid rgba(16, 185, 129, 0.05);
+            border-top: 15px solid var(--emerald);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            text-shadow: var(--neon-green);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+        /* --- Suite View --- */
+        .suite-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .suite-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+
+        .suite-card:hover {
+            transform: translateZ(30px);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--emerald);
+        }
+
+        .progress-bar-3d {
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+            transform: translateZ(5px);
+        }
+
+        .progress-fill { height: 100%; background: var(--emerald); box-shadow: var(--neon-green); }
+
+        /* --- Category (Error Wall) --- */
+        .error-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .error-tag { color: var(--coral); font-weight: bold; font-family: monospace; }
+
+        /* --- Timeline --- */
+        .timeline-container {
+            position: relative;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+
+        .timeline-bar {
+            height: 30px;
+            background: var(--emerald);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            min-width: 50px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        .timeline-bar:hover { opacity: 1; box-shadow: var(--neon-green); }
+
+        .timeline-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 2px; }
+
+        h2 { text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 25px; color: var(--emerald); }
+    </style>
 </head>
 <body>
-    <div id="alert"></div>
-    <div id="content">
-        <span class="spinner">
-            <span class="spinner__circle"></span>
-        </span>
+    <div class="sidebar">
+        <div class="nav-item active" onclick="showTab('dashboard')">🏠</div>
+        <div class="nav-item" onclick="showTab('suites')">📂</div>
+        <div class="nav-item" onclick="showTab('categories')">⚠️</div>
+        <div class="nav-item" onclick="showTab('timeline')">🕒</div>
+        <div class="nav-item" onclick="showTab('graphs')">📈</div>
     </div>
-    <div id="popup"></div>
-    <script src="app.js"></script>
-    <script src="plugin/behaviors/index.js"></script>
-    <script src="plugin/packages/index.js"></script>
-    <script src="plugin/screen-diff/index.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FVWC4GKEYS"></script>
+
+    <div class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2>Astonishing Overview</h2>
+            <div class="isometric-view">
+                <div class="glass-card" style="text-align: center;">
+                    <div class="hologram-circle">
+                        <div style="font-size: 3.5rem; font-weight: 900;">80.00%</div>
+                        <div style="font-size: 0.8rem; letter-spacing: 2px;">SUCCESS INDEX</div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div class="glass-card">
+                        <div style="color: #64748b; font-size: 0.75rem;">TOTAL CASES</div>
+                        <div style="font-size: 2rem; font-weight: bold;">5</div>
+                    </div>
+                    <div class="glass-card">
+                        <div style="color: #64748b; font-size: 0.75rem;">PASSED</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--emerald);">4</div>
+                    </div>
+                    <div class="glass-card">
+                        <div style="color: #64748b; font-size: 0.75rem;">FAILED</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--coral);">1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suites Tab -->
+        <div id="suites" class="tab-content">
+            <h2>Luxury Suites Architecture</h2>
+            <div class="suite-grid">
+                
+                    <div class="suite-card">
+                        <div style="font-weight: bold;">Customer Lifecycle — Validation & CRUD @smoke</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">1 Total Tests</div>
+                        <div class="progress-bar-3d">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem;">
+                            <span style="color: var(--emerald);">1 Passed</span>
+                            <span style="color: var(--coral);">0 Failed</span>
+                        </div>
+                    </div>
+                
+                    <div class="suite-card">
+                        <div style="font-weight: bold;">Invoice Reversal Flow @regression</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">2 Total Tests</div>
+                        <div class="progress-bar-3d">
+                            <div class="progress-fill" style="width: 50%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem;">
+                            <span style="color: var(--emerald);">1 Passed</span>
+                            <span style="color: var(--coral);">1 Failed</span>
+                        </div>
+                    </div>
+                
+                    <div class="suite-card">
+                        <div style="font-weight: bold;">Sales Impact Flow @regression</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">1 Total Tests</div>
+                        <div class="progress-bar-3d">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem;">
+                            <span style="color: var(--emerald);">1 Passed</span>
+                            <span style="color: var(--coral);">0 Failed</span>
+                        </div>
+                    </div>
+                
+                    <div class="suite-card">
+                        <div style="font-weight: bold;">Purchase to Bill Flow @smoke</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">1 Total Tests</div>
+                        <div class="progress-bar-3d">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem;">
+                            <span style="color: var(--emerald);">1 Passed</span>
+                            <span style="color: var(--coral);">0 Failed</span>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+
+        <!-- Categories Tab -->
+        <div id="categories" class="tab-content">
+            <h2>Defect Wall Analytics</h2>
+            <div class="glass-card">
+                
+                    <div class="error-item">
+                        <span>Product Defect</span>
+                        <span class="error-tag">1 Case(s)</span>
+                    </div>
+                
+            </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <h2>Isometric Execution Timeline</h2>
+            <div class="glass-card timeline-container">
+                
+                    <div class="timeline-label">Validate TIN, create customer, edit, remove</div>
+                    <div class="timeline-bar" style="width: 100%; background: var(--emerald)"></div>
+                
+                    <div class="timeline-label">Stage 1: Setup via API (SO & Invoice), verify stock deduction @smoke</div>
+                    <div class="timeline-bar" style="width: 100%; background: var(--coral)"></div>
+                
+                    <div class="timeline-label">Inventory Impact Verify @smoke</div>
+                    <div class="timeline-bar" style="width: 100%; background: var(--emerald)"></div>
+                
+                    <div class="timeline-label">Stage 1: Setup via API (SO & Invoice), verify stock deduction @smoke</div>
+                    <div class="timeline-bar" style="width: 100%; background: var(--emerald)"></div>
+                
+                    <div class="timeline-label">Create PO via UI, approve, create linked bill, verify in vendor profile</div>
+                    <div class="timeline-bar" style="width: 100%; background: var(--emerald)"></div>
+                
+            </div>
+        </div>
+
+        <!-- Graphs Tab -->
+        <div id="graphs" class="tab-content">
+            <h2>Premium Data Visualization</h2>
+            <div class="glass-card">
+                <canvas id="mainChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-FVWC4GKEYS', {
-          'allureVersion': '2.38.1',
-          'reportUuid': '6fbae023-932d-4d0d-ad7e-4b9b7c39028d',
-          'single_file': false
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Customer Lifecycle — Validation & CRUD @smoke","Invoice Reversal Flow @regression","Sales Impact Flow @regression","Purchase to Bill Flow @smoke"],
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: ["100","50","100","100"],
+                    backgroundColor: 'rgba(16, 185, 129, 0.4)',
+                    borderColor: '#10b981',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true, max: 100 } }
+            }
         });
     </script>
 </body>
 </html>
+    
