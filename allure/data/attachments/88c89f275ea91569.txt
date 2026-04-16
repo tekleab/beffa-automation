@@ -1,0 +1,37 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "fifothird" via API | Stock: 32
+[INFO] Item: "fifothird" | Stock: 32
+[STEP] Fetching random customer via API
+[INFO] Customer: Gelila Zelalem (UUID: f3744151-7152-4680-863a-fc946314dc9b)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[SUCCESS] Sales Order created via API: SO/2026/04/16/000267 (ID: a2994451-7e9f-4521-96b7-79fab83c1aaa, ItemID: b0346e27-e882-47de-8ca2-fe2871e6cfc0)
+[OK] Sales Order created: SO/2026/04/16/000267
+[STEP] Approving Sales Order: SO/2026/04/16/000267
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/16/000267 approved
+[SUCCESS] Invoice created via API: INV/2026/04/16/000430 (ID: 5fc1d63b-5022-4069-88f3-dee73820bacb)
+[SUCCESS] Invoice created via API: INV/2026/04/16/000431 (ID: 4cc272cc-1d6c-4dd6-9b2a-76f10aa390d4)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/16/000430 & INV/2026/04/16/000431
+[STEP] Approving Invoice 1: INV/2026/04/16/000430
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice INV/2026/04/16/000430 approved
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/16/000431
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice 2 did not reach approved state. Status: ""
+[STEP] Phase 3: Testing duplicate receipt blocking
