@@ -37,6 +37,10 @@ export class AuthManager {
     const cleanEmail = (email || '').replace(/['"]+/g, '').trim();
     const cleanPass = (pass || '').replace(/['"]+/g, '').trim();
 
+    if (!cleanEmail || !cleanPass) {
+      throw new Error('CRITICAL: Automation credentials (BEFFA_USER or BEFFA_PASS) are missing or empty. If running in CI, ensure GitHub Secrets are configured for this repository.');
+    }
+
     console.log(`[ACTION] Performing High-Speed API Login for: ${cleanEmail}...`);
 
     try {
