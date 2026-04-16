@@ -374,7 +374,7 @@ class LuxuryReporter implements Reporter {
                     env = await smartFetch(['./allure/widgets/environment.json', './allure/data/environment.json']);
                 } catch(e) { console.warn("Environment context unavailable"); }
                 
-                const envStr = env.length > 0 ? env.map(e => `${e.name.toUpperCase()}: ${e.values[0]}`).join(' | ') : 'SYSTEM SYNCED | BM TECHNOLOGY HUD';
+                const envStr = env.length > 0 ? env.map(function(e) { return e.name.toUpperCase() + ': ' + e.values[0]; }).join(' | ') : 'SYSTEM SYNCED | BM TECHNOLOGY HUD';
                 document.getElementById('envHeader').innerText = envStr;
 
                 // 3. Fetch Behaviors (Deep Data)
