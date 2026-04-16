@@ -57,7 +57,19 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         
-        .ai-wing { position: absolute; right: 40px; top: 40px; width: 380px; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(30px); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 25px; box-shadow: -10px 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 80vh; z-index: 100; }
+        .ai-wing { 
+            position: absolute; right: 40px; top: 40px; width: 380px; 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(35px); 
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+            border-radius: 16px; 
+            padding: 25px; 
+            box-shadow: -20px 20px 60px rgba(0,0,0,0.6); 
+            display: flex; flex-direction: column; 
+            max-height: 80vh; 
+            z-index: 100;
+            transition: 0.5s;
+        }
         #errorWall { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; scrollbar-width: none; }
         #errorWall::-webkit-scrollbar { display: none; }
         .erp-metrics { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
@@ -143,7 +155,7 @@
         </div>
 
         <!-- AI WING -->
-        <div class="ai-wing">
+        <div id="aiWing" class="ai-wing">
             <div style="font-size: 0.7rem; color: var(--emerald); font-weight: bold;">MULTI-VECTOR ROOT CAUSE ENGINE</div>
             <div id="errorWall" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                 <!-- Dynamically Populated -->
@@ -239,7 +251,18 @@
                     return list;
                 }
                 
-                const failures = findFailures(behaviors);
+                let failures = findFailures(behaviors);
+                
+                // V8.4 Fallback: If Behaviors is empty but Summary has failures, deep-scan Suites
+                if (failures.length === 0 && failed > 0) {
+                    try {
+                        const suitesResp = await fetch('./allure/data/suites.json');
+                        const suites = await suitesResp.json();
+                        failures = findFailures(suites);
+                    } catch(e) { console.warn("Fallback deep-scan failed", e); }
+                }
+
+                document.getElementById('aiWing').style.borderRight = failed > 0 ? '4px solid var(--coral)' : '4px solid var(--emerald)';
                 const severityIcons = { critical: '🔴', high: '🟠', normal: '🟠', minor: '🟡', trivial: '🟡' };
 
                 if (failures.length > 0) {
