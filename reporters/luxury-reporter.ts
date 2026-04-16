@@ -273,7 +273,9 @@ class LuxuryReporter implements Reporter {
             try {
                 // 1. Fetch Summary
                 const summaryResp = await fetch('./allure/widgets/summary.json');
+                if (!summaryResp.ok) throw new Error("Summary not found");
                 const summary = await summaryResp.json();
+                
                 const total = summary?.statistic?.total || 0;
                 const passed = summary?.statistic?.passed || 0;
                 const failed = (summary?.statistic?.failed || 0) + (summary?.statistic?.broken || 0);
@@ -414,7 +416,14 @@ class LuxuryReporter implements Reporter {
                 document.getElementById('loader').style.display = 'none';
             } catch (e) {
                 console.error("Dashboard Sync Failed", e);
-                document.getElementById('loader').innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
+                    setTimeout(() => { loader.style.display = 'none'; }, 3000);
+                }
+            } finally {
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.display = 'none';
             }
         }
 
