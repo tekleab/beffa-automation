@@ -4,6 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Inventory Adjustment Flow @regression', () => {
 
     test('Create Inventory Adjustment (Write-down), approve, verify stock deduction', async ({ page }) => {
+        test.info().annotations.push({ type: 'allure.severity', description: 'critical' });
         test.setTimeout(400000);
         const app = new AppManager(page);
 

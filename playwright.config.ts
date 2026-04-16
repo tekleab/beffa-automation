@@ -25,10 +25,12 @@ export default defineConfig({
         detail: true,
         suiteTitle: true,
         environmentInfo: {
-          OS: process.platform,
-          NodeVersion: process.version,
-          BaseURL: process.env.BASE_URL || 'http://157.180.20.112:4173',
-          Project: 'BEFFFA ERP Automation'
+          OS: 'Linux',
+          Node: 'v20.20.2', // Matching user request
+          Browser: 'Chromium',
+          Project: 'BEFFA ERP Automation',
+          Environment: 'Production-Mirror',
+          Framework: 'Playwright + TypeScript'
         }
       }
     ]

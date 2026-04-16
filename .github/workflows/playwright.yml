@@ -88,6 +88,19 @@ jobs:
         ref: gh-pages
         path: gh-pages
 
+    - name: Generate Allure Executor Info
+      if: always()
+      run: |
+        mkdir -p allure-results
+        echo '{
+          "name": "GitHub Actions",
+          "type": "github",
+          "url": "https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}",
+          "buildOrder": "${{ github.run_id }}",
+          "buildName": "Playwright Tests #${{ github.run_id }}",
+          "buildUrl": "https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}"
+        }' > allure-results/executor.json
+
     - name: Setup Java for Allure
       uses: actions/setup-java@v3
       if: always()

@@ -3,7 +3,8 @@ import { AppManager } from '../../pages/AppManager';
 
 test.describe('Sales Impact Flow @regression', () => {
 
-    test('Create SO + Invoice via API, approve both, verify stock decrease', async ({ page }) => {
+    test('Inventory Impact Verify @smoke', async ({ page }) => {
+        test.info().annotations.push({ type: 'allure.severity', description: 'critical' });
         test.setTimeout(600000);
         const app = new AppManager(page);
 
