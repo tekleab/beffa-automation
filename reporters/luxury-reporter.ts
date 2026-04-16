@@ -59,10 +59,20 @@ class LuxuryReporter implements Reporter {
         .crystal-top-4 { transform: rotateY(270deg) rotateX(30deg); }
         .crystal-bot-1 { transform: rotateY(0deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
         .crystal-bot-2 { transform: rotateY(90deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
-        @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
-
-        /* --- Modules --- */
-        .ai-wing { position: absolute; right: 40px; top: 40px; width: 350px; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(20px); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 25px; box-shadow: -10px 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 80vh; }
+        .hud-overlay { position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); text-align: center; width: 500px; z-index: 10; pointer-events: none; }
+        .rate-value { font-size: 8rem; font-weight: 900; color: #fff; line-height: 1; letter-spacing: -5px; opacity: 0.15; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1; }
+        
+        .status-container {
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: inline-block;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        
+        .ai-wing { position: absolute; right: 40px; top: 40px; width: 380px; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(30px); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 25px; box-shadow: -10px 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 80vh; z-index: 100; }
         #errorWall { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; scrollbar-width: none; }
         #errorWall::-webkit-scrollbar { display: none; }
         .erp-metrics { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
@@ -97,6 +107,7 @@ class LuxuryReporter implements Reporter {
         .trend-panel { position: absolute; bottom: 120px; width: 400px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; }
         
         .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
+        @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
     </style>
 </head>
 <body>
@@ -106,6 +117,12 @@ class LuxuryReporter implements Reporter {
         <!-- HEADER / ENV -->
         <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 20px; font-size: 0.7rem; color: #64748b; letter-spacing: 2px;">
             FETCHING ENVIRONMENT CONTEXT...
+        </div>
+
+        <!-- HUD OVERLAY -->
+        <div class="hud-overlay">
+            <div id="rateValue" class="rate-value">0%</div>
+            <div id="rateLabel" class="status-container"></div>
         </div>
 
         <!-- ERP METRICS -->
@@ -205,9 +222,11 @@ class LuxuryReporter implements Reporter {
                 const statusColor = failed === 0 && total > 0 ? 'var(--emerald)' : (numericRate > 90 ? '#fbbf24' : 'var(--coral)');
                 
                 document.getElementById('rateLabel').innerHTML = 
-                    '<div style="font-size: 1.2rem; color: #fff; margin-bottom: 4px;">INTEGRITY SCORE: ' + numericRate + '%</div>' +
-                    '<div style="color: ' + (failed > 0 ? 'var(--coral)' : 'var(--emerald)') + ';">CRITICAL VIOLATIONS: ' + failed + (failed > 0 ? ' ❌' : ' ✅') + '</div>' +
-                    '<div style="font-size: 1.45rem; font-weight: 800; color: ' + statusColor + '; margin-top: 8px; letter-spacing: 2px;">' + status + '</div>';
+                    '<div style="font-size: 0.65rem; color: #64748b; font-weight: bold; letter-spacing: 3px; margin-bottom: 8px;">INTEGRITY ENGINE</div>' +
+                    '<div style="font-size: 2.5rem; font-weight: 900; color: #fff; line-height: 1;">' + numericRate + '%</div>' +
+                    '<div style="height: 1px; width: 60%; background: rgba(255,255,255,0.1); margin: 15px auto;"></div>' +
+                    '<div style="font-size: 0.8rem; font-weight: 700; color: ' + (failed > 0 ? 'var(--coral)' : 'var(--emerald)') + '; margin-bottom: 4px;">CRITICAL VIOLATIONS: ' + failed + '</div>' +
+                    '<div style="font-size: 1.2rem; font-weight: 800; color: ' + statusColor + '; letter-spacing: 2px;">' + status + '</div>';
                 
                 // Sync ERP Metrics
                 animateValue('calcAccuracy', 0, numericRate, 1500);
