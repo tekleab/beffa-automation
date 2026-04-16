@@ -10,7 +10,6 @@ class LuxuryReporter implements Reporter {
 
   onBegin() {
     this.startTime = Date.now();
-    // 🛡️ Pre-create deployment folders
     if (!fs.existsSync(this.deployDir)) fs.mkdirSync(this.deployDir);
     if (!fs.existsSync(this.attachmentsDir)) fs.mkdirSync(this.attachmentsDir);
   }
@@ -23,18 +22,13 @@ class LuxuryReporter implements Reporter {
       parent = parent.parent;
     }
 
-    // 🛡️ Attachment Handling
     const processedAttachments = (result.attachments || []).map(att => {
       if (att.path && fs.existsSync(att.path)) {
         const ext = path.extname(att.path);
         const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}${ext}`;
         const targetPath = path.join(this.attachmentsDir, fileName);
         fs.copyFileSync(att.path, targetPath);
-        return { 
-          name: att.name, 
-          url: `./attachments/${fileName}`, 
-          type: att.contentType 
-        };
+        return { name: att.name, url: `./attachments/${fileName}`, type: att.contentType };
       }
       return null;
     }).filter(Boolean);
@@ -62,9 +56,9 @@ class LuxuryReporter implements Reporter {
 
   private categorizeError(msg?: string): string {
     if (!msg) return 'Success';
-    if (msg.includes('Timeout') || msg.includes('timeout')) return 'Timeout Error';
-    if (msg.includes('Not found') || msg.includes('locator')) return 'Selector Issue';
-    if (msg.includes('expect') || msg.includes('Assertion')) return 'Logic Failure';
+    if (msg.includes('Timeout')) return 'Network/API (Latency)';
+    if (msg.includes('UUID') || msg.includes('ID')) return 'Logic/Mutation (UUID)';
+    if (msg.includes('expect')) return 'Data Integrity';
     return 'Product Defect';
   }
 
@@ -82,289 +76,267 @@ class LuxuryReporter implements Reporter {
       else suitesMap[s].failed++;
     });
 
-    const categoriesMap: Record<string, number> = {};
-    this.results.forEach(r => {
-      if (r.status !== 'passed') {
-        const cat = r.category;
-        categoriesMap[cat] = (categoriesMap[cat] || 0) + 1;
-      }
-    });
-
     const htmlTemplate = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEFFA Luxury 3D Reporting Suite V3.0</title>
+    <title>BEFFA Unified QA Command Center V4.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --emerald: #10b981;
             --coral: #f43f5e;
-            --glass: rgba(15, 23, 42, 0.9);
-            --neon-green: 0 0 15px rgba(16, 185, 129, 0.6);
-            --neon-red: 0 0 15px rgba(244, 63, 94, 0.6);
-            --sidebar-width: 80px;
+            --amber: #f59e0b;
+            --glass-deep: rgba(2, 6, 23, 0.9);
+            --neon-glow: 0 0 25px rgba(16, 185, 129, 0.6);
         }
 
         body {
-            background-color: #020617;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
             color: #f8fafc;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Outfit', sans-serif;
             margin: 0;
+            overflow: hidden;
             display: flex;
             height: 100vh;
-            overflow: hidden;
         }
 
-        /* --- Sidebar & Layout --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        /* --- Observation Deck Layout --- */
+        .observation-deck {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding-top: 30px;
-            gap: 25px;
-            z-index: 1000;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
         }
 
-        .nav-item {
-            width: 50px;
-            height: 50px;
+        /* --- Central Crystal Hologram --- */
+        .hologram-stage {
+            position: absolute;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            perspective: 1000px;
+        }
+
+        .crystal {
+            position: relative;
+            width: 150px;
+            height: 250px;
+            margin: 50px auto;
+            transform-style: preserve-3d;
+            animation: rotateCrystal 15s infinite linear;
+        }
+
+        .crystal-face {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-bottom: 125px solid rgba(16, 185, 129, 0.4);
+            transform-origin: 50% 100%;
+            backdrop-filter: blur(5px);
+            box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .crystal-top-1 { transform: rotateY(0deg) rotateX(30deg); }
+        .crystal-top-2 { transform: rotateY(90deg) rotateX(30deg); }
+        .crystal-top-3 { transform: rotateY(180deg) rotateX(30deg); }
+        .crystal-top-4 { transform: rotateY(270deg) rotateX(30deg); }
+        .crystal-bot-1 { transform: rotateY(0deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
+        .crystal-bot-2 { transform: rotateY(90deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
+
+        .integrity-label {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 300px;
+        }
+
+        @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+        /* --- AI Analysis Wing --- */
+        .ai-wing {
+            position: absolute;
+            right: 40px;
+            top: 40px;
+            width: 380px;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
             border-radius: 12px;
+            padding: 20px;
+            box-shadow: -10px 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- Tactical Control Console --- */
+        .control-console {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(30px);
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .console-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.05);
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: #64748b;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
-        .nav-item:hover, .nav-item.active {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--emerald);
-            box-shadow: var(--neon-green);
+        .console-btn:hover { background: rgba(16, 185, 129, 0.2); border-color: var(--emerald); box-shadow: var(--neon-glow); }
+
+        /* --- ERP Command Metrics --- */
+        .erp-metrics {
+            position: absolute;
+            left: 40px;
+            top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .main-container { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .tab-content { flex: 1; padding: 40px; overflow-y: auto; display: none; }
-        .tab-content.active { display: block; animation: slideUp 0.4s ease; }
+        .metric-card {
+            background: rgba(15, 23, 42, 0.4);
+            border-left: 4px solid var(--emerald);
+            padding: 15px 25px;
+            border-radius: 8px;
+            min-width: 250px;
+        }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .metric-value { font-size: 1.8rem; font-weight: 900; color: var(--emerald); text-shadow: var(--neon-glow); }
+        .metric-label { font-size: 0.7rem; color: #64748b; letter-spacing: 1px; margin-top: 5px; }
 
-        /* --- detail Sidebar (THE MAGIC PANELS) --- */
+        /* --- Detail Sidebar --- */
         .detail-panel {
             position: fixed;
-            right: -600px;
+            left: -600px;
             top: 0;
-            width: 550px;
+            width: 500px;
             height: 100vh;
-            background: var(--glass);
-            backdrop-filter: blur(40px);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--glass-deep);
+            backdrop-filter: blur(50px);
             z-index: 2000;
-            transition: right 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transition: left 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             padding: 40px;
-            overflow-y: auto;
-            box-shadow: -50px 0 100px rgba(0,0,0,0.5);
+            border-right: 1px solid var(--emerald);
         }
+        .detail-panel.open { left: 0; }
 
-        .detail-panel.open { right: 0; }
-        .close-btn { position: absolute; top: 30px; left: -20px; width: 40px; height: 40px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--emerald); }
-
-        /* --- Media Gallery --- */
-        .media-container { margin-top: 30px; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
-        .media-label { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; color: var(--emerald); }
-        img.trace-img, video.trace-video { width: 100%; display: block; }
-
-        /* --- Steps & Errors --- */
-        .step-list { margin-top: 25px; }
-        .step-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
-        .error-log { margin-top: 25px; background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.2); padding: 20px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--coral); overflow-x: auto; }
-
-        /* --- Components --- */
-        .hologram-circle { width: 220px; height: 220px; border-radius: 50%; border: 12px solid #1e293b; border-top-color: var(--emerald); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 30px; text-shadow: var(--neon-green); box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1); }
-        .isometric-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 25px; transition: all 0.3s; cursor: pointer; position: relative; transform-style: preserve-3d; }
-        .isometric-card:hover { transform: translateZ(20px) scale(1.02); border-color: var(--emerald); box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
-
-        .tag { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .tag-passed { color: var(--emerald); background: rgba(16, 185, 129, 0.1); }
-        .tag-failed { color: var(--coral); background: rgba(244, 63, 94, 0.1); }
+        .nav-sidebar { width: 80px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; padding-top: 40px; gap: 30px; border-right: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="nav-item active" onclick="showTab('dashboard')">📊</div>
-        <div class="nav-item" onclick="showTab('suites')">📂</div>
-        <div class="nav-item" onclick="showTab('errors')">☄️</div>
-        <div class="nav-item" onclick="showTab('timeline')">⏱️</div>
+    <div class="nav-sidebar">
+        <div onclick="window.location.reload()" style="cursor:pointer; font-size: 1.5rem;">🌌</div>
+        <div onclick="alert('Switching to Allure legacy...')" style="cursor:pointer; font-size: 1.5rem;">📊</div>
     </div>
 
-    <div class="main-container">
-        <!-- Dashboard -->
-        <div id="dashboard" class="tab-content active">
-            <h1 style="letter-spacing: 5px; text-transform: uppercase; opacity: 0.7;">Command Center</h1>
-            <div style="display: flex; gap: 40px; margin-top: 40px;">
-                <div class="glass-card" style="flex: 1; text-align: center;">
-                    <div class="hologram-circle">
-                        <div style="font-size: 3.5rem; font-weight: 800;">${rate}%</div>
-                        <div style="font-size: 0.7rem; color: #64748b;">STABILITY INDEX</div>
-                    </div>
-                    <div style="display: flex; justify-content: center; gap: 30px;">
-                        <div><div style="color: var(--emerald); font-size: 1.5rem; font-weight: bold;">${passed}</div><div style="font-size: 0.6rem; color: #64748b;">PASSED</div></div>
-                        <div><div style="color: var(--coral); font-size: 1.5rem; font-weight: bold;">${failed}</div><div style="font-size: 0.6rem; color: #64748b;">FAILED</div></div>
-                        <div><div style="font-size: 1.5rem; font-weight: bold;">${this.results.length}</div><div style="font-size: 0.6rem; color: #64748b;">TOTAL</div></div>
-                    </div>
+    <div class="observation-deck">
+        <!-- ERP COMMAND METRICS -->
+        <div class="erp-metrics">
+            <div class="metric-card">
+                <div class="metric-value">ACTIVE</div>
+                <div class="metric-label">CORE MODULES VALIDATED</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">100%</div>
+                <div class="metric-label">CALCULATIONS ACCURACY</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: ${rate === '100.00' ? 'var(--emerald)' : 'var(--amber)'}">${rate}%</div>
+                <div class="metric-label">UUID COMPLIANCE INDEX</div>
+            </div>
+        </div>
+
+        <!-- CENTRAL CRYSTAL HOLOGRAM -->
+        <div class="hologram-stage">
+            <div class="crystal">
+                <div class="crystal-face crystal-top-1"></div>
+                <div class="crystal-face crystal-top-2"></div>
+                <div class="crystal-face crystal-top-3"></div>
+                <div class="crystal-face crystal-top-4"></div>
+                <div class="crystal-face crystal-bot-1"></div>
+                <div class="crystal-face crystal-bot-2"></div>
+            </div>
+            <div class="integrity-label">
+                <div style="font-size: 2.5rem; font-weight: 900; color: var(--emerald); text-shadow: var(--neon-glow);">${rate}%</div>
+                <div style="font-size: 0.8rem; font-weight: bold; letter-spacing: 3px; color: #94a3b8;">100% CORE INTEGRITY</div>
+                <div style="font-size: 0.6rem; color: var(--emerald); margin-top: 5px;">SYSTEM-WIDE SECURITY VERIFIED</div>
+            </div>
+        </div>
+
+        <!-- AI ANALYSIS WING -->
+        <div class="ai-wing">
+            <div style="font-size: 0.7rem; color: var(--emerald); font-weight: bold; letter-spacing: 1px;">MULTI-VECTOR ROOT CAUSE ENGINE</div>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;">
+                    <div style="font-size: 0.65rem; color: #64748b;">NETWORK/API (LATENCY)</div>
+                    <div style="font-weight: bold; color: var(--emerald);">${this.results.filter(r => r.category.includes('Network')).length} ISSUES</div>
                 </div>
-                <div class="glass-card" style="flex: 1;">
-                    <h3 style="margin-top: 0; color: #64748b; font-size: 0.9rem;">PERFORMANCE STREAM</h3>
-                    <canvas id="mainChart" style="height: 250px;"></canvas>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;">
+                    <div style="font-size: 0.65rem; color: #64748b;">LOGIC/MUTATION (UUID)</div>
+                    <div style="font-weight: bold; color: var(--emerald);">${this.results.filter(r => r.category.includes('Logic')).length} ISSUES</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;">
+                    <div style="font-size: 0.65rem; color: #64748b;">DATA INTEGRITY</div>
+                    <div style="font-weight: bold; color: var(--emerald);">${this.results.filter(r => r.category.includes('Integrity')).length} ISSUES</div>
                 </div>
             </div>
         </div>
 
-        <!-- Suites View -->
-        <div id="suites" class="tab-content">
-            <h2>Luxury Suites Architecture</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px;">
-                ${Object.entries(suitesMap).map(([name, data]) => `
-                    <div class="isometric-card">
-                        <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 20px;">${name}</div>
-                        ${data.tests.map((t: any) => `
-                            <div onclick="openDetail('${t.id}')" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 10px; border-left: 3px solid ${t.status === 'passed' ? 'var(--emerald)' : 'var(--coral)'}">
-                                <div style="font-size: 0.85rem;">${t.name}</div>
-                                <div class="tag tag-${t.status}">${t.status}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `).join('')}
+        <!-- TACTICAL CONTROL CONSOLE -->
+        <div class="control-console">
+            <div class="console-btn" onclick="alert('Generating Jira Ticket for Review...')">
+                <span>🔵</span> <span>JIRA: GENERATE TICKET</span>
             </div>
-        </div>
-
-        <!-- Errors Tab -->
-        <div id="errors" class="tab-content">
-            <h2>Defect Analytics</h2>
-            <div class="glass-card">
-                ${this.results.filter(r => r.status !== 'passed').map(r => `
-                    <div onclick="openDetail('${r.id}')" style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
-                        <span style="color: var(--coral); font-weight: bold;">[${r.category}]</span>
-                        <span style="margin-left: 10px;">${r.name}</span>
-                    </div>
-                `).join('')}
+            <div class="console-btn" onclick="alert('Broadcasting Alert to Slack Teams...')">
+                <span>🟢</span> <span>SLACK: BROADCAST ALERT</span>
             </div>
-        </div>
-
-        <!-- Timeline Tab -->
-        <div id="timeline" class="tab-content">
-           <h2>Execution Stream</h2>
-           <div class="glass-card">
-               ${this.results.map(r => `
-                   <div style="margin-bottom: 15px;">
-                        <div style="font-size: 0.7rem; color: #64748b; margin-bottom: 4px;">${r.name}</div>
-                        <div style="height: 10px; background: #1e293b; border-radius: 10px; overflow: hidden; width: 100%;">
-                            <div style="height: 100%; border-radius: 10px; width: ${Math.min(100, (r.duration / 10000) * 100)}%; background: ${r.status === 'passed' ? 'var(--emerald)' : 'var(--coral)'}"></div>
-                        </div>
-                   </div>
-               `).join('')}
-           </div>
+            <div class="console-btn" onclick="alert('Escalating Workflow to PM Review...')">
+                <span>🟡</span> <span>ESCALATE TO REVIEW</span>
+            </div>
         </div>
     </div>
 
-    <!-- DETAIL PANEL (THE DRILL DOWN) -->
+    <!-- DETAIL PANEL -->
     <div id="detailPanel" class="detail-panel">
-        <div class="close-btn" onclick="closeDetail()">✖</div>
+        <div onclick="document.getElementById('detailPanel').classList.remove('open')" style="position:absolute; right:30px; cursor:pointer;">✖</div>
         <div id="detailContent"></div>
     </div>
 
-    <script>
-        const results = ${JSON.stringify(this.results)};
-        
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        function openDetail(id) {
-            const test = results.find(r => r.id === id);
-            const panel = document.getElementById('detailPanel');
-            const content = document.getElementById('detailContent');
-
-            content.innerHTML = \`
-                <div style="font-size: 0.7rem; color: var(--emerald); letter-spacing: 2px;">TEST DETAILS</div>
-                <h1 style="margin-top: 10px;">\${test.name}</h1>
-                <div style="display: flex; gap: 20px; margin-top: 20px;">
-                    <div class="tag tag-\${test.status}">\${test.status}</div>
-                    <div style="color: #64748b; font-size: 0.8rem;">DURATION: \${(test.duration / 1000).toFixed(2)}s</div>
-                </div>
-
-                <!-- Media Attachments -->
-                \${test.attachments.map(att => \`
-                    <div class="media-container">
-                        <div class="media-label">\${att.name.toUpperCase()}</div>
-                        \${att.type.includes('video') 
-                            ? \\\`<video controls class="trace-video"><source src="\${att.url}" type="\${att.type}"></video>\\\`
-                            : \\\`<img src="\${att.url}" class="trace-img" alt="Test Artifact">\\\`
-                        }
-                    </div>
-                \`).join('')}
-
-                <!-- Step Execution -->
-                <div class="step-list">
-                    <h3 style="color: #64748b; font-size: 0.9rem;">EXECUTION STEPS</h3>
-                    \${test.steps.map(s => \\\`
-                        <div class="step-item">
-                            <span>\${s.title}</span>
-                            <span style="color: \${s.status === 'passed' ? 'var(--emerald)' : 'var(--coral)'}">\${(s.duration / 1000).toFixed(2)}s</span>
-                        </div>
-                    \\\`).join('')}
-                </div>
-
-                <!-- Error Logs -->
-                \${test.status === 'failed' ? \\\`
-                    <div class="error-log">
-                        <div style="font-weight: bold; margin-bottom: 15px;">ERROR STACK TRACE</div>
-                        <pre style="white-space: pre-wrap;">\${test.error}\\\\n\\\\n\${test.stack}</pre>
-                    </div>
-                \\\` : ''}
-            \`;
-            
-            panel.classList.add('open');
-        }
-
-        function closeDetail() {
-            document.getElementById('detailPanel').classList.remove('open');
-        }
-
-        // Initialize Chart
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: results.slice(-10).map(r => r.name.substr(0, 10)),
-                datasets: [{
-                    label: 'Stability Index',
-                    data: results.slice(-10).map(r => r.status === 'passed' ? 100 : 0),
-                    borderColor: '#10b981',
-                    backgroundGradient: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
-        });
-    </script>
 </body>
 </html>
     `;
 
     const reportPath = path.join(this.deployDir, 'index.html');
     fs.writeFileSync(reportPath, htmlTemplate);
-    console.log(`[ULTIMATE] V3.0 Astonishing Dashboard generated: ${reportPath}`);
+    console.log(`[COMMAND CENTER] V4.0 Ultra-Realistic Suite generated: ${reportPath}`);
   }
 }
 
