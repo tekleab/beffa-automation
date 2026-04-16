@@ -264,12 +264,24 @@ Stability dropped to ' + document.getElementById('rateValue').innerText,
         // V9.2 Ultimate Resilience: Hide loader after 10s NO MATTER WHAT
         setTimeout(() => { if (document.getElementById('loader')) document.getElementById('loader').style.display = 'none'; }, 10000);
 
+        async function smartFetch(paths) {
+            for (const path of paths) {
+                try {
+                    const resp = await fetch(path);
+                    if (resp.ok) return await resp.json();
+                } catch (e) {}
+            }
+            throw new Error("Resource not found in search paths: " + paths.join(', '));
+        }
+
         async function syncCommandCenter() {
             try {
-                // 1. Fetch Summary
-                const summaryResp = await fetch('./allure/widgets/summary.json');
-                if (!summaryResp.ok) throw new Error("Summary not found");
-                const summary = await summaryResp.json();
+                // 1. Fetch Summary (Probing widgets and data)
+                const summary = await smartFetch([
+                    './allure/widgets/summary.json',
+                    './allure/data/summary.json',
+                    'allure/widgets/summary.json'
+                ]);
                 
                 const total = summary?.statistic?.total || 0;
                 const passed = summary?.statistic?.passed || 0;
@@ -296,9 +308,12 @@ Stability dropped to ' + document.getElementById('rateValue').innerText,
                 document.getElementById('uuidBar').style.background = statusColor;
 
                 // 2. Fetch Environment
-                const envResp = await fetch('./allure/widgets/environment.json');
-                const env = await envResp.json();
-                const envStr = env.map(e => `${e.name.toUpperCase()}: ${e.values[0]}`).join(' | ');
+                let env = [];
+                try {
+                    env = await smartFetch(['./allure/widgets/environment.json', './allure/data/environment.json']);
+                } catch(e) { console.warn("Environment context unavailable"); }
+                
+                const envStr = env.length > 0 ? env.map(e => `${e.name.toUpperCase()}: ${e.values[0]}`).join(' | ') : 'SYSTEM SYNCED | BM TECHNOLOGY HUD';
                 document.getElementById('envHeader').innerText = envStr;
 
                 // 3. Fetch Behaviors (Deep Data)
@@ -363,11 +378,12 @@ Stability dropped to ' + document.getElementById('rateValue').innerText,
                 }
 
                 // 4. Fetch Suites
-                const suitesResp = await fetch('./allure/widgets/suites.json');
-                const suites = await suitesResp.json();
-                const suiteCount = suites.items.length;
-                animateValue('suiteCount', 0, suiteCount, 1000);
-                document.getElementById('suiteBar').style.width = '100%';
+                try {
+                    const suites = await smartFetch(['./allure/widgets/suites.json', './allure/data/suites.json']);
+                    const suiteCount = suites?.items?.length || suites?.children?.length || 0;
+                    animateValue('suiteCount', 0, suiteCount, 1000);
+                    document.getElementById('suiteBar').style.width = '100%';
+                } catch(e) {}
 
                 // 5. Fetch History (Trend Graph) - Defensive Logic
                 try {
