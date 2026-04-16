@@ -1,71 +1,4 @@
-import type { Reporter, TestCase, TestResult, FullResult } from '@playwright/test/reporter';
-import fs from 'fs';
-import path from 'path';
 
-class LuxuryReporter implements Reporter {
-  private results: any[] = [];
-  private startTime!: number;
-
-  onBegin() {
-    this.startTime = Date.now();
-  }
-
-  onTestEnd(test: TestCase, result: TestResult) {
-    // 🛡️ Enhanced Data Collection
-    const suitePath = [];
-    let parent = test.parent;
-    while (parent && parent.title) {
-      suitePath.unshift(parent.title);
-      parent = parent.parent;
-    }
-
-    this.results.push({
-      name: test.title,
-      status: result.status,
-      duration: result.duration,
-      startTime: result.startTime.getTime(),
-      endTime: result.startTime.getTime() + result.duration,
-      error: result.error?.message || '',
-      stack: result.error?.stack || '',
-      suite: test.parent.title,
-      suitePath: suitePath,
-      category: this.categorizeError(result.error?.message)
-    });
-  }
-
-  private categorizeError(msg?: string): string {
-    if (!msg) return 'Success';
-    if (msg.includes('Timeout') || msg.includes('timeout')) return 'Timeout Error';
-    if (msg.includes('Not found') || msg.includes('locator')) return 'Selector Issue';
-    if (msg.includes('expect') || msg.includes('Assertion')) return 'Logic Failure';
-    return 'Product Defect';
-  }
-
-  async onEnd(result: FullResult) {
-    const passed = this.results.filter(r => r.status === 'passed').length;
-    const failed = this.results.filter(r => r.status === 'failed').length;
-    const rate = this.results.length > 0 ? ((passed / this.results.length) * 100).toFixed(2) : '0';
-    
-    // Group by Suites
-    const suitesMap: Record<string, any> = {};
-    this.results.forEach(r => {
-      const s = r.suite || 'Default';
-      if (!suitesMap[s]) suitesMap[s] = { passed: 0, failed: 0, tests: [] };
-      suitesMap[s].tests.push(r);
-      if (r.status === 'passed') suitesMap[s].passed++;
-      else suitesMap[s].failed++;
-    });
-
-    // Group by Categories
-    const categoriesMap: Record<string, number> = {};
-    this.results.forEach(r => {
-      if (r.status !== 'passed') {
-        const cat = r.category;
-        categoriesMap[cat] = (categoriesMap[cat] || 0) + 1;
-      }
-    });
-
-    const htmlTemplate = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -256,7 +189,7 @@ class LuxuryReporter implements Reporter {
             <div class="isometric-view">
                 <div class="glass-card" style="text-align: center;">
                     <div class="hologram-circle">
-                        <div style="font-size: 3.5rem; font-weight: 900;">${rate}%</div>
+                        <div style="font-size: 3.5rem; font-weight: 900;">0%</div>
                         <div style="font-size: 0.8rem; letter-spacing: 2px;">SUCCESS INDEX</div>
                     </div>
                 </div>
@@ -264,15 +197,15 @@ class LuxuryReporter implements Reporter {
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
                     <div class="glass-card">
                         <div style="color: #64748b; font-size: 0.75rem;">TOTAL CASES</div>
-                        <div style="font-size: 2rem; font-weight: bold;">${this.results.length}</div>
+                        <div style="font-size: 2rem; font-weight: bold;">0</div>
                     </div>
                     <div class="glass-card">
                         <div style="color: #64748b; font-size: 0.75rem;">PASSED</div>
-                        <div style="font-size: 2rem; font-weight: bold; color: var(--emerald);">${passed}</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--emerald);">0</div>
                     </div>
                     <div class="glass-card">
                         <div style="color: #64748b; font-size: 0.75rem;">FAILED</div>
-                        <div style="font-size: 2rem; font-weight: bold; color: var(--coral);">${failed}</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--coral);">0</div>
                     </div>
                 </div>
             </div>
@@ -282,19 +215,7 @@ class LuxuryReporter implements Reporter {
         <div id="suites" class="tab-content">
             <h2>Luxury Suites Architecture</h2>
             <div class="suite-grid">
-                ${Object.entries(suitesMap).map(([name, data]) => `
-                    <div class="suite-card">
-                        <div style="font-weight: bold;">${name}</div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">${data.tests.length} Total Tests</div>
-                        <div class="progress-bar-3d">
-                            <div class="progress-fill" style="width: ${(data.passed / data.tests.length * 100)}%"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem;">
-                            <span style="color: var(--emerald);">${data.passed} Passed</span>
-                            <span style="color: var(--coral);">${data.failed} Failed</span>
-                        </div>
-                    </div>
-                `).join('')}
+                
             </div>
         </div>
 
@@ -302,12 +223,7 @@ class LuxuryReporter implements Reporter {
         <div id="categories" class="tab-content">
             <h2>Defect Wall Analytics</h2>
             <div class="glass-card">
-                ${Object.entries(categoriesMap).length > 0 ? Object.entries(categoriesMap).map(([name, count]) => `
-                    <div class="error-item">
-                        <span>${name}</span>
-                        <span class="error-tag">${count} Case(s)</span>
-                    </div>
-                `).join('') : '<div style="text-align: center; color: var(--emerald);">0 DEFECTS DETECTED</div>'}
+                <div style="text-align: center; color: var(--emerald);">0 DEFECTS DETECTED</div>
             </div>
         </div>
 
@@ -315,10 +231,7 @@ class LuxuryReporter implements Reporter {
         <div id="timeline" class="tab-content">
             <h2>Isometric Execution Timeline</h2>
             <div class="glass-card timeline-container">
-                ${this.results.map(r => `
-                    <div class="timeline-label">${r.name}</div>
-                    <div class="timeline-bar" style="width: ${Math.min(100, (r.duration / 5000) * 100)}%; background: ${r.status === 'passed' ? 'var(--emerald)' : 'var(--coral)'}"></div>
-                `).join('')}
+                
             </div>
         </div>
 
@@ -343,10 +256,10 @@ class LuxuryReporter implements Reporter {
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ${JSON.stringify(Object.keys(suitesMap))},
+                labels: [],
                 datasets: [{
                     label: 'Success Rate (%)',
-                    data: ${JSON.stringify(Object.values(suitesMap).map(s => (s.passed / s.tests.length * 100).toFixed(0)))},
+                    data: [],
                     backgroundColor: 'rgba(16, 185, 129, 0.4)',
                     borderColor: '#10b981',
                     borderWidth: 1
@@ -359,12 +272,4 @@ class LuxuryReporter implements Reporter {
     </script>
 </body>
 </html>
-    `;
-
-    const reportPath = path.join(process.cwd(), 'luxury-report.html');
-    fs.writeFileSync(reportPath, htmlTemplate);
-    console.log(`[LUXURY] Full-Featured Suite generated: ${reportPath}`);
-  }
-}
-
-export default LuxuryReporter;
+    
