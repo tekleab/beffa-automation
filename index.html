@@ -236,13 +236,11 @@
             const attachment = activeFailures.map(f => ({
                 color: '#f43f5e',
                 title: '❌ ' + f.name,
-                text: 'Root Cause: ' + (f.hint || 'Investigating...') + '
-Trace: ' + window.location.origin + window.location.pathname + 'allure/#behaviors/' + f.uid
+                text: 'Root Cause: ' + (f.hint || 'Investigating...') + '\nTrace: ' + window.location.origin + window.location.pathname + 'allure/#behaviors/' + f.uid
             }));
 
             const payload = {
-                text: '🚨 *TACTICAL ALERT: BEFFA ERP V9.0* 🚨
-Stability dropped to ' + document.getElementById('hudRateValue').innerText,
+                text: '🚨 *TACTICAL ALERT: BEFFA ERP V9.0* 🚨\nStability dropped to ' + document.getElementById('hudRateValue').innerText,
                 attachments: attachment
             };
 
