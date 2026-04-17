@@ -322,22 +322,25 @@ class LuxuryReporter implements Reporter {
         }
 
         async function smartFetch(paths) {
-            for (const path of paths) {
-                try {
-                    const resp = await fetchWithTimeout(path);
-                    if (resp.ok) return await resp.json();
-                } catch (e) {}
-            }
-            // Absolute path fallback using explicit repo name for GitHub Pages resilience
-            const repoBase = '/beffa-automation/';
+            let lastError = "Target resource unavailable";
+            const pathname = window.location.pathname;
+            const repoBase = pathname.includes('beffa-automation') ? '/beffa-automation/' : '/';
+            
             for (const path of paths) {
                 try {
                     const cleanPath = path.replace('./', '');
-                    const resp = await fetchWithTimeout(repoBase + cleanPath);
-                    if (resp.ok) return await resp.json();
-                } catch (e) {}
+                    const url = repoBase + cleanPath;
+                    const resp = await fetchWithTimeout(url);
+                    if (resp.ok) {
+                        return await resp.json();
+                    } else {
+                        lastError = `HTTP ${resp.status} on ${url}`;
+                    }
+                } catch (e) {
+                    lastError = e.message;
+                }
             }
-            throw new Error("Target resource unavailable");
+            throw new Error(lastError);
         }
 
         async function syncCommandCenter() {
@@ -494,8 +497,8 @@ class LuxuryReporter implements Reporter {
                 console.error("Dashboard Sync Failed", e);
                 const loader = document.getElementById('loader');
                 if (loader) {
-                    loader.innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
-                    setTimeout(forceKillLoader, 4000);
+                    loader.style.display = 'flex'; // Re-expose loader if it timed out and hid
+                    loader.innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">' + e.message + '</span></div>';
                 }
             }
         }
