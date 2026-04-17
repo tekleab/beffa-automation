@@ -430,7 +430,7 @@ class LuxuryReporter implements Reporter {
                         div.onclick = () => window.open('./allure/#behaviors/' + f.uid, '_blank');
                         
                         div.innerHTML = 
-                            '<div class="mute-btn" onclick="toggleKnownIssue(\'' + f.uid + '\', event)">' + (isKnown ? 'UNMUTE' : 'MUTE') + '</div>' +
+                            '<div class="mute-btn" onclick="toggleKnownIssue(\\\'' + f.uid + '\\\', event)">' + (isKnown ? 'UNMUTE' : 'MUTE') + '</div>' +
                             '<div style="font-size: 0.6rem; color: #64748b; font-weight: bold;">' + icon + ' [' + hintData.label + ']</div>' +
                             '<div style="font-size: 0.8rem; color: #fff;">' + f.name + '</div>' +
                             '<div style="font-size: 0.5rem; color: var(--coral);">HINT: ' + hintData.hint + '</div>';
