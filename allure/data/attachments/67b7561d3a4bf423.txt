@@ -1,0 +1,32 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "april15" via API | Initial Stock: 21
+[STEP] Phase 2: Creating Sales Order via API for april15
+[SUCCESS] Sales Order created via API: SO/2026/04/17/000348 (ID: 279bb792-6a20-4c74-ac0d-fa1a202e7331, ItemID: ecc3c35c-3304-421a-a0c7-eddf9644520f)
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/17/000348 approved (Released)
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/17/000348
+[SUCCESS] Invoice created via API: INV/2026/04/17/000513 (ID: caf234d6-f640-4944-9c53-cd58d5624e84)
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/17/000513 created and approved via API+UI flow
+[STEP] Verifying stock deduction via API
+[VERIFY] Expected: 20 | Found: 20
+[OK] Stock decreased correctly after pure setup flow

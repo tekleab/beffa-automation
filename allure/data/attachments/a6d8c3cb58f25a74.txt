@@ -1,0 +1,45 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "Pipe" via API | Stock: 58
+[INFO] Item: "Pipe" | Stock: 58
+[STEP] Fetching random customer via API
+[INFO] Customer: Tamirat Bekele (UUID: a6ca4212-968e-4da2-b7b9-ee12ebce63ad)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[SUCCESS] Sales Order created via API: SO/2026/04/17/000349 (ID: 4dbb1d7e-c3e6-416c-b450-5b7c6367276a, ItemID: 0c44bd23-0960-4312-ba57-df356edb2a04)
+[OK] Sales Order created: SO/2026/04/17/000349
+[STEP] Approving Sales Order: SO/2026/04/17/000349
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/17/000349 approved
+[SUCCESS] Invoice created via API: INV/2026/04/17/000514 (ID: f22bac97-67d7-4889-a8a5-8e5f3cdcf2a4)
+[SUCCESS] Invoice created via API: INV/2026/04/17/000515 (ID: 691a860d-1394-4f7e-b47f-4631c6adad7a)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/17/000514 & INV/2026/04/17/000515
+[STEP] Approving Invoice 1: INV/2026/04/17/000514
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Invoice INV/2026/04/17/000514 approved
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/17/000515
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.

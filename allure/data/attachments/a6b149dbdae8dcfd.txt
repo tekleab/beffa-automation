@@ -1,0 +1,36 @@
+[STEP] Phase 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[STEP] Phase 1: High-Speed Discovery (API)
+[ACTION] Discovering random item via API (Year 2018)...
+[INFO] Item: "fifo item" | VendorID: b83a4bcd-0334-42fd-932c-b9bc5cc22208
+[STEP] Phase 2: Creating Bill via API
+[SUCCESS] Bill created via API: BILL/2026/04/17/000306 (ID: 232a582a-775a-4e76-926d-09f89116c78f)
+[OK] Bill Created: BILL/2026/04/17/000306 (UUID: 232a582a-775a-4e76-926d-09f89116c78f)
+[STEP] Phase 3: Approving Bill via UI
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/17/000306 Approved
+[INFO] Exact total amount to pay: 14374.999999999998
+[STEP] Phase 4: Creating Full Payment via API
+[ACTION] Creating Bill Payment for 232a582a-775a-4e76-926d-09f89116c78f via API...
+[SUCCESS] Payment created: PAY/2026/04/17/000121 (ID: 7d7b29da-6a79-43a0-90be-ba67d239147d)
+[OK] Payment Created: PAY/2026/04/17/000121. Approving via UI...
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Payment 1 Approved via UI.
+[STEP] Phase 5: Testing Duplicate Payment & UI Approval Blocking
+[ACTION] Creating Bill Payment for 232a582a-775a-4e76-926d-09f89116c78f via API...
+[SUCCESS] Payment created: PAY/2026/04/17/000122 (ID: 0b981001-13cb-4be1-9343-8dde164fd967)
+[INFO] Payment 2 created in Draft: PAY/2026/04/17/000122. Attempting illegal UI Approval...
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[SUCCESS] UI correctly blocked or prevented approval of duplicate payment.
+[STEP] Phase 6: Final Verification in UI
+[RESULT] Bill-to-Payment Logic: PASSED (Fully Settled & Protected)

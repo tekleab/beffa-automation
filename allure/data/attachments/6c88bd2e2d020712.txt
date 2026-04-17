@@ -1,0 +1,40 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[OK] Discovered: "Pipe" via API | Stock: 59
+[INFO] Item: "Pipe" | Stock: 59
+[STEP] Fetching random customer via API
+[INFO] Customer: Kebede Bekele (UUID: 8d2f1e49-c01c-43ac-a5e4-5b7adbc3f1b5)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[SUCCESS] Sales Order created via API: SO/2026/04/17/000345 (ID: 7d27a1c9-c664-4b2c-b1fb-15ff8ea93aaf, ItemID: fb42b901-945c-4bce-bc6f-988d1c0cc914)
+[OK] Sales Order created: SO/2026/04/17/000345
+[STEP] Approving Sales Order: SO/2026/04/17/000345
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/17/000345 approved
+[SUCCESS] Invoice created via API: INV/2026/04/17/000507 (ID: cabd9cee-67db-4376-8017-38f6ee0f8aa5)
+[SUCCESS] Invoice created via API: INV/2026/04/17/000508 (ID: 4204e21b-154a-45c4-bb59-03e07e11573b)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/17/000507 & INV/2026/04/17/000508
+[STEP] Approving Invoice 1: INV/2026/04/17/000507
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice INV/2026/04/17/000507 approved
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/17/000508
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
