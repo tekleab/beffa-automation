@@ -328,9 +328,8 @@ class LuxuryReporter implements Reporter {
                     if (resp.ok) return await resp.json();
                 } catch (e) {}
             }
-            // Absolute path fallback using dynamic repo name
-            const pathname = window.location.pathname;
-            const repoBase = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+            // Absolute path fallback using explicit repo name for GitHub Pages resilience
+            const repoBase = '/beffa-automation/';
             for (const path of paths) {
                 try {
                     const cleanPath = path.replace('./', '');
@@ -489,17 +488,15 @@ class LuxuryReporter implements Reporter {
                 } catch (e) {
                     console.warn("Trend Engine Offline: Missing or malformed history", e);
                 }
-
+                document.getElementById('loader').style.display = 'none';
+                if (window.earlyTimer) clearTimeout(window.earlyTimer);
             } catch (e) {
                 console.error("Dashboard Sync Failed", e);
                 const loader = document.getElementById('loader');
                 if (loader) {
                     loader.innerHTML = '<div style="text-align:center">INTEGRITY ENGINE OFFLINE<br><span style="font-size:0.8rem; color:var(--coral)">UNABLE TO SYNC WITH CI PIPELINE</span></div>';
-                    setTimeout(forceKillLoader, 3000);
+                    setTimeout(forceKillLoader, 4000);
                 }
-            } finally { 
-                if (window.earlyTimer) clearTimeout(window.earlyTimer);
-                forceKillLoader(); 
             }
         }
 
