@@ -25,13 +25,15 @@ export default defineConfig({
         outputFolder: 'allure-results',
         detail: true,
         suiteTitle: true,
+        categories: [
+          { name: 'Business Logic Errors', messageRegex: '.*uuid.*|.*expect.*', statusDetailsRegex: '.*' },
+          { name: 'UI / Selector Flakiness', messageRegex: '.*timeout.*|.*waiting for.*', statusDetailsRegex: '.*' }
+        ],
         environmentInfo: {
           OS: 'Linux',
-          Node: 'v20.20.2', // Matching user request
-          Browser: 'Chromium',
-          Project: 'BEFFA ERP Automation',
-          Environment: 'Production-Mirror',
-          Framework: 'Playwright + TypeScript'
+          Node: 'v20.20.2',
+          Project: 'BEFFA ERP V10.2',
+          Engine: 'Tactical-Allure-Core'
         }
       }
     ]

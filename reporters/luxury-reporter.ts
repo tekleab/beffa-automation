@@ -216,6 +216,7 @@ class LuxuryReporter implements Reporter {
     <script>
         let currentFailures = [];
         const KNOWN_ISSUES_KEY = 'beffa_known_issues';
+        const SENT_ISSUES_KEY = 'beffa_sent_broadcasts';
 
         function toggleKnownIssue(id, event) {
             event.stopPropagation();
@@ -231,12 +232,25 @@ class LuxuryReporter implements Reporter {
 
         async function broadcastToSlack() {
             const known = JSON.parse(localStorage.getItem(KNOWN_ISSUES_KEY) || '[]');
-            const activeFailures = currentFailures.filter(f => !known.includes(f.uid));
+            const sent = JSON.parse(localStorage.getItem(SENT_ISSUES_KEY) || '[]');
             
-            if (activeFailures.length === 0) {
-                alert('No new failures to broadcast. All issues are muted or resolved.');
+            // 1. Filter out muted issues
+            let eligibleFailures = currentFailures.filter(f => !known.includes(f.uid));
+            
+            // 2. Filter out already sent issues
+            const unsentFailures = eligibleFailures.filter(f => !sent.includes(f.uid));
+            
+            if (eligibleFailures.length === 0) {
+                alert('No active vulnerabilities to broadcast. (Check muted issues)');
                 return;
             }
+
+            if (unsentFailures.length === 0) {
+                alert('INTEGRITY SYNC: All ' + eligibleFailures.length + ' active vulnerabilities have already been broadcast to the QA channel today.');
+                return;
+            }
+
+            const activeFailures = unsentFailures; // Proceed with new issues only
 
             const webhook = localStorage.getItem('beffa_slack_webhook');
             if (!webhook) {
@@ -261,7 +275,12 @@ class LuxuryReporter implements Reporter {
 
             try {
                 await fetch(webhook, { method: 'POST', body: JSON.stringify(payload) });
-                alert('Broadcast Success! Check Slack.');
+                
+                // Track as sent
+                const updatedSent = [...sent, ...activeFailures.map(f => f.uid)];
+                localStorage.setItem(SENT_ISSUES_KEY, JSON.stringify(updatedSent));
+                
+                alert('Broadcast Success! ' + activeFailures.length + ' new vulnerabilities shared with #quality-assurance.');
             } catch (e) {
                 alert('Slack Sync Failed. Check Webhook URL.');
             }
