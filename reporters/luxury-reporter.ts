@@ -334,7 +334,7 @@ class LuxuryReporter implements Reporter {
                     if (resp.ok) {
                         return await resp.json();
                     } else {
-                        lastError = `HTTP ${resp.status} on ${url}`;
+                        lastError = 'HTTP ' + resp.status + ' on ' + url;
                     }
                 } catch (e) {
                     lastError = e.message;
