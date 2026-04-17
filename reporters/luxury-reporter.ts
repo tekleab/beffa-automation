@@ -310,8 +310,11 @@ class LuxuryReporter implements Reporter {
             const { timeout = 8000 } = options;
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
-            const response = await fetch(resource, {
+            // Append cache-buster to prevent browser from showing old 0% data
+            const cleanUrl = resource.includes('?') ? resource : resource + '?cb=' + new Date().getTime();
+            const response = await fetch(cleanUrl, {
                 ...options,
+                cache: 'no-store', // Force network fetch
                 signal: controller.signal
             });
             clearTimeout(id);
@@ -325,10 +328,13 @@ class LuxuryReporter implements Reporter {
                     if (resp.ok) return await resp.json();
                 } catch (e) {}
             }
-            // Absolute path fallback
+            // Absolute path fallback using dynamic repo name
+            const pathname = window.location.pathname;
+            const repoBase = pathname.substring(0, pathname.lastIndexOf('/') + 1);
             for (const path of paths) {
                 try {
-                    const resp = await fetchWithTimeout('/' + path.replace('./', ''));
+                    const cleanPath = path.replace('./', '');
+                    const resp = await fetchWithTimeout(repoBase + cleanPath);
                     if (resp.ok) return await resp.json();
                 } catch (e) {}
             }

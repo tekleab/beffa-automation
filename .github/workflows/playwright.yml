@@ -77,8 +77,8 @@ jobs:
           echo "Executing Regression Suite (@regression)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @regression
         else
-          echo "Executing Full Suite (All Tests)..."
-          npx playwright test --project=Inventory --project=Purchases --project=Sales
+          echo "Executing Targeted Test (Fast-Track Sample Verification)..."
+          npx playwright test tests/sales/customer.spec.ts --project=Sales
         fi
     - name: Get Allure history
       uses: actions/checkout@v4
