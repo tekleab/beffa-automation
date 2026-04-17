@@ -70,7 +70,7 @@ jobs:
       run: npx playwright install-deps chromium
     - name: Run Playwright tests
       run: |
-        if [ "${{ github.event.inputs.test_type }}" == "smoke" ] || [ "${{ github.event_name }}" == "push" ] || [ "${{ github.event_name }}" == "pull_request" ]; then
+        if [ "${{ github.event.inputs.test_type }}" == "smoke" ]; then
           echo "Executing Smoke Suite (@smoke)..."
           npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @smoke
         elif [ "${{ github.event.inputs.test_type }}" == "regression" ]; then
