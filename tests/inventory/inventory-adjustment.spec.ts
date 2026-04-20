@@ -42,23 +42,27 @@ test.describe('Inventory Adjustment Flow @regression', () => {
         await app.handleApprovalFlow();
         console.log(`[OK] Adjustment ${adjID} approved`);
 
-        // 5. Verify Stock Impact (High-Speed API Method)
-        console.log(`[STEP] Phase 4: Verifying stock impact for "${initial.itemName}" (via API)`);
-        let postAdj = await app.getItemDetailsAPI(initial.itemId);
+        // 5. Verify Stock Impact (High-Speed API Method with Tactical Polling)
+        console.log(`[STEP] Phase 4: Verifying stock impact for "${initial.itemName}" (Polling for sync)`);
+        const expectedStock = initial.currentStock + adjQty;
+        let postAdj: any = null;
+        let success = false;
 
-        // 🛡️ Fallback: If API fails, try UI capture once more
-        if (!postAdj) {
-            console.log("[INFO] API verification returned null. Falling back to UI capture.");
-            postAdj = await app.captureItemDetails(initial.itemName);
+        for (let attempt = 0; attempt < 3; attempt++) {
+            postAdj = await app.getItemDetailsAPI(initial.itemId);
+            if (!postAdj) postAdj = await app.captureItemDetails(initial.itemName); // UI Fallback
+            
+            console.log(`[POLL] Attempt ${attempt + 1}: Found ${postAdj?.currentStock ?? 'NULL'} | Expected ${expectedStock}`);
+            
+            if (postAdj && postAdj.currentStock === expectedStock) {
+                success = true;
+                break;
+            }
+            await page.waitForTimeout(5000); // 5s tactical wait for ERP backend sync
         }
 
-        const expectedStock = initial.currentStock + adjQty;
-
-        console.log(`[VERIFY] Item: ${initial.itemName}`);
-        console.log(`[VERIFY] Initial: ${initial.currentStock} | Adjusted: +${adjQty} | Final: ${postAdj?.currentStock ?? 'ERROR'} | Expected: ${expectedStock}`);
-
-        if (!postAdj || postAdj.currentStock !== expectedStock) {
-            throw new Error(`Stock mismatch! Expected ${expectedStock}, found ${postAdj?.currentStock ?? 'NULL'}`);
+        if (!success) {
+            throw new Error(`Stock mismatch after polling! Expected ${expectedStock}, found ${postAdj?.currentStock ?? 'NULL'}`);
         }
 
         console.log(`[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by ${adjQty} units`);

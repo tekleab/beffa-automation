@@ -65,18 +65,27 @@ test.describe('Sales Impact Flow @regression', () => {
         await app.handleApprovalFlow();
         console.log(`[OK] Invoice ${invID} approved`);
 
-        // Phase 6: Verify stock decrease via API (fast, no UI navigation needed)
-        console.log(`[STEP] Phase 6: Verifying stock for "${initial.itemName}" via API`);
-        await page.waitForTimeout(3000); // Allow backend to settle post-approval
-        const final = await app.getItemDetailsAPI(initial.itemId);
+        // Phase 6: Verify stock decrease via API (with Tactical Polling)
+        console.log(`[STEP] Phase 6: Verifying stock for "${initial.itemName}" (Polling for backend sync)`);
         const expectedStock = initial.currentStock - saleQty;
+        let final: any = null;
+        let success = false;
 
-        console.log(`[VERIFY] Item: ${initial.itemName} | Initial: ${initial.currentStock} | Sold: ${saleQty} | Final: ${final!.currentStock} | Expected: ${expectedStock}`);
-
-        if (final!.currentStock !== expectedStock) {
-            throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${final!.currentStock}`);
+        for (let attempt = 0; attempt < 3; attempt++) {
+            final = await app.getItemDetailsAPI(initial.itemId);
+            console.log(`[POLL] Attempt ${attempt + 1}: Found ${final?.currentStock ?? 'NULL'} | Expected ${expectedStock}`);
+            
+            if (final && final.currentStock === expectedStock) {
+                success = true;
+                break;
+            }
+            await page.waitForTimeout(5000); // 5s tactical wait for ERP invoice processing
         }
-        console.log(`[RESULT] Sales Impact: PASSED - Stock correctly decreased from ${initial.currentStock} to ${final!.currentStock}`);
+
+        if (!success) {
+            throw new Error(`Stock deduction failed after polling! Expected ${expectedStock}, found ${final?.currentStock ?? 'NULL'}`);
+        }
+        console.log(`[RESULT] Sales Impact: PASSED - Stock correctly decreased from ${initial.currentStock} to ${final?.currentStock}`);
 
         await page.close();
     });
