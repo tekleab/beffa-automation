@@ -1,0 +1,39 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 472.95ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1054.43ms
+[INFO] Item: "fifothird" | UUID: c0f26859-c340-47cd-9128-6c0cc9f28530 | Stock: 28
+[STEP] Phase 2: Creating SO via API for 2 x "fifothird"
+[PERFORMANCE] API - Create Sales Order: 262.84ms
+[SUCCESS] Sales Order created via API: SO/2026/04/20/000358 (ID: 95d530ba-2fde-4402-bb0c-70834470da50, ItemID: 2a0450f6-541f-4864-92a1-74db07c3e54e)
+[OK] SO created: SO/2026/04/20/000358 | Customer: 32f1aeb4-531f-4104-ad07-f3761a97dd06
+[STEP] Phase 3: Approving SO SO/2026/04/20/000358
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/20/000358 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/20/000358
+[PERFORMANCE] API - Create Invoice: 259.73ms
+[SUCCESS] Invoice created via API: INV/2026/04/20/000522 (ID: 82fa08b8-fcec-471b-af38-444b56fd8d1e)
+[OK] Invoice created: INV/2026/04/20/000522 (UUID: 82fa08b8-fcec-471b-af38-444b56fd8d1e)
+[STEP] Phase 5: Approving Invoice INV/2026/04/20/000522
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reveiwer"
+[ACTION] Status changed to "reveiwer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[WARN] Approval flow timed out before reaching final status.
+[OK] Invoice INV/2026/04/20/000522 approved
+[STEP] Phase 6: Verifying stock for "fifothird" via API
+[VERIFY] Item: fifothird | Initial: 28 | Sold: 2 | Final: 26 | Expected: 26
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 28 to 26
