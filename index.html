@@ -415,14 +415,18 @@
                 document.getElementById('uuidBar').style.background = statusColor;
 
                 // 3. Performance / Latency Processing (Phase 2: Tactical Deep Scan)
-                const latHistory = await smartFetch(['./allure/widgets/latency-trend.json']).catch(() => []);
+                const latHistory = await smartFetch([
+                    './widgets/latency-trend.json', 
+                    './allure/widgets/latency-trend.json',
+                    './data/latency-trend.json'
+                ]).catch(() => []);
                 const latestLat = (latHistory && latHistory.length > 0) ? latHistory[0] : null;
                 
-                const avgDuration = total > 0 ? (summary?.time?.duration / total) : 0;
+                const suiteAvg = total > 0 ? (summary?.time?.duration / total) : 0;
                 
-                // Use REAL tactical metrics if available, fallback to weighted baseline
-                const apiLatency = latestLat ? latestLat.apiLatency : avgDuration * 0.4;
-                const uiLatency = latestLat ? latestLat.uiLatency : avgDuration * 0.6; 
+                // Use REAL tactical metrics (ms), fallback to a normalized weighted baseline (clipped to 10s max for safety)
+                const apiLatency = latestLat ? latestLat.apiLatency : Math.min(suiteAvg * 0.4, 10000);
+                const uiLatency = latestLat ? latestLat.uiLatency : Math.min(suiteAvg * 0.6, 10000); 
                 
                 const updatePerfCard = (idPrefix, val) => {
                     const card = document.getElementById(idPrefix + 'Card');
