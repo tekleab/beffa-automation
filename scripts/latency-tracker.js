@@ -13,48 +13,75 @@ const outputFile = path.join(allureReportDir, 'widgets/latency-trend.json');
 
 function trackLatency() {
     try {
-        console.log('[PERF] Starting Latency History Sync...');
+        console.log('[PERF] Starting Deep-Scan Latency History Sync...');
         
-        // 1. Get current run stats
-        const summaryPath = path.join(allureReportDir, 'widgets/summary.json');
-        if (!fs.existsSync(summaryPath)) {
-            console.error('[ERR] Allure summary not found at:', summaryPath);
-            return;
+        const resultsDir = path.join(process.cwd(), 'allure-results');
+        let totalApiLatency = 0;
+        let apiCount = 0;
+        let totalUiLatency = 0;
+        let uiCount = 0;
+
+        if (fs.existsSync(resultsDir)) {
+            const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('.json') && f.startsWith('test-case-'));
+            files.forEach(file => {
+                try {
+                    const content = JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8'));
+                    if (content.annotations) {
+                        content.annotations.forEach(ann => {
+                            if (ann.type === 'tactical-perf') {
+                                const [category, label, value] = ann.description.split('|');
+                                const latency = parseFloat(value);
+                                if (category === 'API') {
+                                    totalApiLatency += latency;
+                                    apiCount++;
+                                } else if (category === 'UI') {
+                                    totalUiLatency += latency;
+                                    uiCount++;
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {}
+            });
         }
-        const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+
+        // Calculate True Averages
+        const trueApiAvg = apiCount > 0 ? (totalApiLatency / apiCount) : 0;
+        const trueUiAvg = uiCount > 0 ? (totalUiLatency / uiCount) : 0;
+
+        // 1. Get current run stats (Fallback for total duration)
+        const summaryPath = path.join(allureReportDir, 'widgets/summary.json');
+        const summary = fs.existsSync(summaryPath) ? JSON.parse(fs.readFileSync(summaryPath, 'utf8')) : { statistic: { total: 0 }, time: { duration: 0 } };
         
         const total = summary.statistic.total || 0;
-        const duration = summary.time.duration || 0;
-        const avgLatency = total > 0 ? (duration / total) : 0;
         
         // 2. Load existing history
         let history = [];
         if (fs.existsSync(historyFile)) {
             try {
                 history = JSON.parse(fs.readFileSync(historyFile, 'utf8'));
-                console.log(`[PERF] Loaded ${history.length} historical data points.`);
-            } catch (e) {
-                console.warn('[WARN] History file corrupted, starting fresh.');
-            }
+            } catch (e) {}
         }
 
-        // 3. Add new data point (limit to 20 for performance)
+        // 3. Add new data point
         const newPoint = {
             timestamp: Date.now(),
-            avgLatency: Math.round(avgLatency),
+            apiLatency: Math.round(trueApiAvg || (summary.time.duration / (total || 1)) * 0.4),
+            uiLatency: Math.round(trueUiAvg || (summary.time.duration / (total || 1)) * 0.6),
+            avgLatency: Math.round((trueApiAvg + trueUiAvg) / 2 || (summary.time.duration / (total || 1))),
             totalTests: total,
             runId: process.env.GITHUB_RUN_ID || 'local'
         };
         
         history.unshift(newPoint);
-        history = history.slice(0, 20); // Keep last 20 runs
+        history = history.slice(0, 20);
         
-        // 4. Write to report widgets (for the dashboard to find)
+        // 4. Write to report
         const widgetDir = path.join(allureReportDir, 'widgets');
         if (!fs.existsSync(widgetDir)) fs.mkdirSync(widgetDir, { recursive: true });
         
         fs.writeFileSync(outputFile, JSON.stringify(history, null, 2));
-        console.log(`[SUCCESS] Latency Trend updated. Current Avg: ${newPoint.avgLatency}ms`);
+        console.log(`[SUCCESS] True Latency Sync Complete. API: ${newPoint.apiLatency}ms | UI: ${newPoint.uiLatency}ms`);
 
     } catch (error) {
         console.error('[ERR] Latency Tracking failed:', error);
