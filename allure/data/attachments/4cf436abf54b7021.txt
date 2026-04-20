@@ -1,0 +1,32 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 411.33ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 914.17ms
+[INFO] Item: "april14" | UUID: 69ee4087-7924-4e4c-bfeb-31b91c2a0794 | Stock: 41
+[STEP] Phase 2: Creating SO via API for 2 x "april14"
+[PERFORMANCE] API - Create Sales Order: 235.10ms
+[SUCCESS] Sales Order created via API: SO/2026/04/20/000366 (ID: fc0eaaba-df76-40fe-a03f-36dcf38ac27e, ItemID: 07a1b9e3-181b-4cff-a895-6f4f3eea10fc)
+[OK] SO created: SO/2026/04/20/000366 | Customer: 256ce173-d504-4345-a6b7-70cead86f135
+[STEP] Phase 3: Approving SO SO/2026/04/20/000366
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submkt For Review"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] SO SO/2026/04/20/000366 approved
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/20/000366
+[PERFORMANCE] API - Create Invoice: 243.10ms
+[SUCCESS] Invoice created via API: INV/2026/04/20/000530 (ID: b3928225-1b40-4dca-8ddc-53304e2c7a6b)
+[OK] Invoice created: INV/2026/04/20/000530 (UUID: b3928225-1b40-4dca-8ddc-53304e2c7a6b)
+[STEP] Phase 5: Approving Invoice INV/2026/04/20/000530
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice INV/2026/04/20/000530 approved
+[STEP] Phase 6: Verifying stock for "april14" via API
+[VERIFY] Item: april14 | Initial: 41 | Sold: 2 | Final: 41 | Expected: 39

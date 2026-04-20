@@ -114,7 +114,7 @@
         .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
         @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 
-        .latency-engine { position: absolute; left: 30px; top: 380px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .latency-engine { position: absolute; right: 40px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
         .latency-card { 
             background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); 
             padding: 15px; border-radius: 12px; width: 180px; backdrop-filter: blur(10px);
@@ -309,22 +309,28 @@
         function animateValue(id, start, end, duration, suffix = '%') {
             const obj = document.getElementById(id);
             if (!obj) return;
+            
             const range = end - start;
-            if (range === 0) {
+            if (range === 0 || duration === 0) {
                obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + suffix);
                return;
             }
-            let current = start;
-            const increment = end > start ? 1 : -1;
-            const stepTime = Math.max(Math.abs(Math.floor(duration / range)) || 50, 10);
-            const timer = setInterval(() => {
-                current += increment;
-                obj.innerText = (id.includes('Count') ? current : current.toFixed(2) + suffix);
-                if (current == end || (increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+
+            const startTime = performance.now();
+            const step = () => {
+                const timeElapsed = performance.now() - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                const current = start + (range * progress);
+                
+                obj.innerText = (id.includes('Count') ? Math.floor(current) : current.toFixed(2) + suffix);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
                     obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + suffix);
-                    clearInterval(timer);
                 }
-            }, stepTime);
+            };
+            requestAnimationFrame(step);
         }
 
         function categorizeError(msg = '') {
