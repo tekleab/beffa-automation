@@ -15,7 +15,23 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-    // ... rest of constructor ...
+
+    // Login selectors
+    this.emailInput = page.getByRole('textbox', { name: 'Email *' });
+    this.passwordInput = page.getByRole('textbox', { name: 'Password *' });
+    this.loginBtn = page.getByRole('button', { name: 'Login' });
+
+    // --- Customer Module Selectors ---
+    this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
+    this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
+    this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
+
+    // Status and Button Selectors
+    this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
+    this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
+
+    // Company Switcher Selectors (Top-left)
+    this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
   /**
@@ -49,24 +65,6 @@ export class BasePage {
       // Context unavailable (e.g. initialization or utility run)
     }
     return duration;
-  }
-
-    // Login selectors
-    this.emailInput = page.getByRole('textbox', { name: 'Email *' });
-    this.passwordInput = page.getByRole('textbox', { name: 'Password *' });
-    this.loginBtn = page.getByRole('button', { name: 'Login' });
-
-    // --- Customer Module Selectors ---
-    this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
-    this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
-    this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
-
-    // Status and Button Selectors
-    this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
-    this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
-
-    // Company Switcher Selectors (Top-left)
-    this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
   async smartSearch(container: Locator | null, text: string): Promise<void> {
