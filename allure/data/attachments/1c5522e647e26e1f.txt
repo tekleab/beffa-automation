@@ -1,0 +1,73 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 374.79ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 12.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 12
+[SUCCESS] "Purchase Order Date" set to Day 12 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2815.87ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2165.84ms
+[INFO] Vendor: Ethio Supplies-6356
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2174.97ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2205.21ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1981.66ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2121.22ms
+[PERFORMANCE] UI - Random Selection: Location: 2019.21ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2259.86ms
+[PERFORMANCE] UI - Random Selection: Tax: 2066.21ms
+[OK] Line item added (Price: 2909)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/20/000279 | Vendor: Ethio Supplies-6356
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewr"
+[ACTION] Status changed to "reviewr" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approver"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] PO PO/2026/04/20/000279 approved
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/20/000279
+[INFO] Matching vendor: Ethio Supplies-6356
+[ACTION] Searching for: "Ethio Supplies-6356"
+[INFO] Tier 2 - exact in overlay: "Ethio Supplies-6356"
+[SUCCESS] Selected: "Ethio Supplies-6356"
+[PERFORMANCE] UI - Smart Search: Ethio Supplies-6356: 4128.50ms
+[INFO] Linking PO: PO/2026/04/20/000279
+[ACTION] Searching for: "PO/2026/04/20/000279"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/20/000279"
+[SUCCESS] Selected: "PO/2026/04/20/000279"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/20/000279: 3810.44ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 12.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 12
+[SUCCESS] "Invoice Date" set to Day 12 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2358.25ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 17
+[SUCCESS] "Due Date" set to Day 17 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2393.00ms
+[INFO] Dates: Invoice Day 12, Due Day 17
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1852.17ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 9 | Receiving: 7
+[SUCCESS] PO Line Item received (7) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/20/000325 | Vendor: Ethio Supplies-6356
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/20/000325 approved
+[STEP] Phase 3: Verifying BILL/2026/04/20/000325 in vendor profile
+[VERIFY] Entity: Ethio Supplies-6356 | Doc: BILL/2026/04/20/000325 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/36faa334-642e-4c7b-9861-d1036861fdfb/detail
+[SUCCESS] BILL/2026/04/20/000325 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/20/000279 -> Bill BILL/2026/04/20/000325
