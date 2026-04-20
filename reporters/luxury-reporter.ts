@@ -545,17 +545,20 @@ class LuxuryReporter implements Reporter {
 
                 // 5. Fetch History (Dual-Axis Trend Graph)
                 try {
-                    const histResp = await fetch('./allure/widgets/history-trend.json');
-                    const history = await histResp.json();
+                    const history = await smartFetch([
+                        './widgets/history-trend.json',
+                        './allure/widgets/history-trend.json',
+                        './data/history-trend.json'
+                    ]).catch(() => null);
                     
                     // Attempt to fetch custom latency history if exists
-                    let latencyHistory = [];
-                    try {
-                        const latResp = await fetch('./allure/widgets/latency-trend.json');
-                        latencyHistory = await latResp.json();
-                    } catch(e) {}
+                    const latencyHistory = await smartFetch([
+                        './widgets/latency-trend.json', 
+                        './allure/widgets/latency-trend.json',
+                        './data/latency-trend.json'
+                    ]).catch(() => []);
 
-                    if (history && history.length > 0) {
+                    if (history && history.length > 0 && typeof Chart !== 'undefined') {
                         const ctx = document.getElementById('trendChart').getContext('2d');
                         new Chart(ctx, {
                             type: 'line',
