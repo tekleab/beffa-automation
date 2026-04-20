@@ -1,0 +1,73 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 387.65ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "befa tutorial"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 12.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 12
+[SUCCESS] "Purchase Order Date" set to Day 12 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2660.00ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2095.44ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2269.61ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2123.43ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2125.43ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2100.97ms
+[PERFORMANCE] UI - Random Selection: Location: 2085.89ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2315.63ms
+[PERFORMANCE] UI - Random Selection: Tax: 2103.22ms
+[OK] Line item added (Price: 5977)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/20/000280 | Vendor: MOENCO S.C
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "reviewr"
+[ACTION] Status changed to "reviewr" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approver"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] PO PO/2026/04/20/000280 approved
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/20/000280
+[INFO] Matching vendor: MOENCO S.C
+[ACTION] Searching for: "MOENCO S.C"
+[INFO] Tier 2 - exact in overlay: "MOENCO S.C"
+[SUCCESS] Selected: "MOENCO S.C"
+[PERFORMANCE] UI - Smart Search: MOENCO S.C: 4094.51ms
+[INFO] Linking PO: PO/2026/04/20/000280
+[ACTION] Searching for: "PO/2026/04/20/000280"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/20/000280"
+[SUCCESS] Selected: "PO/2026/04/20/000280"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/20/000280: 3759.42ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 12.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 12
+[SUCCESS] "Invoice Date" set to Day 12 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2364.73ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 17
+[SUCCESS] "Due Date" set to Day 17 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2335.55ms
+[INFO] Dates: Invoice Day 12, Due Day 17
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1834.75ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 7 | Receiving: 2
+[SUCCESS] PO Line Item received (2) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/20/000326 | Vendor: MOENCO S.C
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/20/000326 approved
+[STEP] Phase 3: Verifying BILL/2026/04/20/000326 in vendor profile
+[VERIFY] Entity: MOENCO S.C | Doc: BILL/2026/04/20/000326 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/fba1e227-6c30-4101-970a-19acfad3d57f/detail
+[SUCCESS] BILL/2026/04/20/000326 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/20/000280 -> Bill BILL/2026/04/20/000326
