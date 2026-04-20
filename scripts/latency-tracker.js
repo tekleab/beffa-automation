@@ -8,8 +8,24 @@ const path = require('path');
  */
 
 const allureReportDir = path.join(process.cwd(), 'allure-report');
-const historyFile = path.join(process.cwd(), 'gh-pages/allure/widgets/latency-trend.json');
+// Probe multiple history locations
+const historyPaths = [
+    path.join(allureReportDir, 'widgets/latency-trend.json'),
+    path.join(process.cwd(), 'gh-pages/allure/widgets/latency-trend.json'),
+    path.join(process.cwd(), 'allure-report/widgets/latency-trend.json')
+];
 const outputFile = path.join(allureReportDir, 'widgets/latency-trend.json');
+
+function getExistingHistory() {
+    for (const hPath of historyPaths) {
+        if (fs.existsSync(hPath)) {
+            try {
+                return JSON.parse(fs.readFileSync(hPath, 'utf8'));
+            } catch (e) {}
+        }
+    }
+    return [];
+}
 
 function trackLatency() {
     try {
@@ -56,14 +72,9 @@ function trackLatency() {
         
         const total = summary.statistic.total || 0;
         
-        // 2. Load existing history
-        let history = [];
-        if (fs.existsSync(historyFile)) {
-            try {
-                history = JSON.parse(fs.readFileSync(historyFile, 'utf8'));
-            } catch (e) {}
-        }
-
+        // 2. Load existing history via the multi-path probe
+        let history = getExistingHistory();
+...
         // 3. Add new data point
         const newPoint = {
             timestamp: Date.now(),
