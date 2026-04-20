@@ -306,12 +306,12 @@
             window.open(jiraUrl, '_blank');
         }
 
-        function animateValue(id, start, end, duration) {
+        function animateValue(id, start, end, duration, suffix = '%') {
             const obj = document.getElementById(id);
             if (!obj) return;
             const range = end - start;
             if (range === 0) {
-               obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + '%');
+               obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + suffix);
                return;
             }
             let current = start;
@@ -319,9 +319,9 @@
             const stepTime = Math.max(Math.abs(Math.floor(duration / range)) || 50, 10);
             const timer = setInterval(() => {
                 current += increment;
-                obj.innerText = (id.includes('Count') ? current : current.toFixed(2) + '%');
+                obj.innerText = (id.includes('Count') ? current : current.toFixed(2) + suffix);
                 if (current == end || (increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-                    obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + '%');
+                    obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + suffix);
                     clearInterval(timer);
                 }
             }, stepTime);
@@ -418,7 +418,8 @@
                     const valEl = document.getElementById(idPrefix + 'Value');
                     const statusEl = document.getElementById(idPrefix + 'Status');
                     
-                    animateValue(idPrefix + 'Value', 0, Math.round(val), 1000, 'ms');
+                    // FIXED: Pass 'ms' as the suffix
+                    animateValue(idPrefix + 'Value', 0, val, 1000, 'ms');
                     
                     if (val < 1500) {
                         card.className = 'latency-card emerald-state';
