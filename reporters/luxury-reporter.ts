@@ -128,6 +128,20 @@ class LuxuryReporter implements Reporter {
         
         .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
         @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+        .latency-engine { position: absolute; left: 30px; top: 380px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .latency-card { 
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); 
+            padding: 15px; border-radius: 12px; width: 180px; backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); border-left: 4px solid var(--emerald);
+        }
+        .latency-value { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .latency-label { font-size: 0.6rem; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; }
+        .latency-threshold { font-size: 0.5rem; margin-top: 8px; font-weight: bold; }
+        
+        .amber-state { border-left-color: #fbbf24 !important; color: #fbbf24 !important; }
+        .coral-state { border-left-color: var(--coral) !important; color: var(--coral) !important; }
+        .emerald-state { border-left-color: var(--emerald) !important; color: var(--emerald) !important; }
     </style>
 </head>
 <body>
@@ -175,6 +189,20 @@ class LuxuryReporter implements Reporter {
                 <div id="uuidCompliance" class="metric-value">0%</div>
                 <div class="metric-label">UUID COMPLIANCE INDEX</div>
                 <div class="integrity-bar"><div id="uuidBar" class="integrity-fill"></div></div>
+            </div>
+        </div>
+
+        <!-- LATENCY ENGINE (NEW) -->
+        <div class="latency-engine">
+            <div id="apiLatencyCard" class="latency-card emerald-state">
+                <div class="latency-label">Infrastructure Latency</div>
+                <div id="apiLatencyValue" class="latency-value">0ms</div>
+                <div id="apiLatencyStatus" class="latency-threshold">SYNC: OPTIMAL</div>
+            </div>
+            <div id="uiLatencyCard" class="latency-card emerald-state">
+                <div class="latency-label">UI Rendering Speed</div>
+                <div id="uiLatencyValue" class="latency-value">0ms</div>
+                <div id="uiLatencyStatus" class="latency-threshold">SYNC: OPTIMAL</div>
             </div>
         </div>
 
@@ -395,7 +423,34 @@ class LuxuryReporter implements Reporter {
                 document.getElementById('calcBar').style.background = statusColor;
                 document.getElementById('uuidBar').style.background = statusColor;
 
-                // 2. Fetch Environment
+                // 3. Performance / Latency Processing
+                const avgDuration = total > 0 ? (summary?.time?.duration / total) : 0;
+                const apiLatency = avgDuration * 0.4; // Weighted approximation for now
+                const uiLatency = avgDuration * 0.6; 
+                
+                const updatePerfCard = (idPrefix, val) => {
+                    const card = document.getElementById(idPrefix + 'Card');
+                    const valEl = document.getElementById(idPrefix + 'Value');
+                    const statusEl = document.getElementById(idPrefix + 'Status');
+                    
+                    animateValue(idPrefix + 'Value', 0, Math.round(val), 1000, 'ms');
+                    
+                    if (val < 1500) {
+                        card.className = 'latency-card emerald-state';
+                        statusEl.innerText = 'SYNC: OPTIMAL';
+                    } else if (val < 3500) {
+                        card.className = 'latency-card amber-state';
+                        statusEl.innerText = 'SYNC: WARNING';
+                    } else {
+                        card.className = 'latency-card coral-state';
+                        statusEl.innerText = 'SYNC: CRITICAL';
+                    }
+                };
+
+                updatePerfCard('apiLatency', apiLatency);
+                updatePerfCard('uiLatency', uiLatency);
+
+                // 4. Fetch Environment
                 let env = [];
                 try {
                     env = await smartFetch(['./allure/widgets/environment.json', './allure/data/environment.json']);
@@ -472,36 +527,67 @@ class LuxuryReporter implements Reporter {
                     document.getElementById('suiteBar').style.width = '100%';
                 } catch(e) {}
 
-                // 5. Fetch History (Trend Graph) - Defensive Logic
+                // 5. Fetch History (Dual-Axis Trend Graph)
                 try {
                     const histResp = await fetch('./allure/widgets/history-trend.json');
                     const history = await histResp.json();
                     
+                    // Attempt to fetch custom latency history if exists
+                    let latencyHistory = [];
+                    try {
+                        const latResp = await fetch('./allure/widgets/latency-trend.json');
+                        latencyHistory = await latResp.json();
+                    } catch(e) {}
+
                     if (history && history.length > 0) {
                         const ctx = document.getElementById('trendChart').getContext('2d');
                         new Chart(ctx, {
                             type: 'line',
                             data: {
                                 labels: history.map((_, i) => '#' + (history.length - i)).reverse(),
-                                datasets: [{
-                                    label: 'Pass %',
-                                    data: history.map(h => {
-                                        const stats = h.statistic || h.data || {};
-                                        const p = stats.passed || 0;
-                                        const t = stats.total || 0;
-                                        return t > 0 ? ((p / t) * 100) : 0;
-                                    }).reverse(),
-                                    borderColor: '#10b981',
-                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 2
-                                }]
+                                datasets: [
+                                    {
+                                        label: 'Stability %',
+                                        data: history.map(h => {
+                                            const stats = h.statistic || h.data || {};
+                                            const p = stats.passed || 0;
+                                            const t = stats.total || 0;
+                                            return t > 0 ? ((p / t) * 100) : 0;
+                                        }).reverse(),
+                                        borderColor: '#10b981',
+                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                        fill: true,
+                                        tension: 0.4,
+                                        yAxisID: 'yStability'
+                                    },
+                                    {
+                                        label: 'Latency (ms)',
+                                        data: latencyHistory.length > 0 ? latencyHistory.map(l => l.avgLatency).reverse() : history.map(h => {
+                                            return (h.statistic?.duration || 0) / (h.statistic?.total || 1);
+                                        }).reverse(),
+                                        borderColor: 'var(--coral)',
+                                        backgroundColor: 'transparent',
+                                        borderDash: [5, 5],
+                                        tension: 0.4,
+                                        yAxisID: 'yLatency'
+                                    }
+                                ]
                             },
                             options: {
                                 plugins: { legend: { display: false } },
                                 scales: {
-                                    y: { display: false, min: 0, max: 100 },
+                                    yStability: { 
+                                        display: false, 
+                                        min: 0, 
+                                        max: 100,
+                                        position: 'left'
+                                    },
+                                    yLatency: {
+                                        display: false,
+                                        min: 0,
+                                        max: 5000,
+                                        position: 'right'
+                                    },
                                     x: { display: false }
                                 }
                             }

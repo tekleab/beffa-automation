@@ -128,7 +128,10 @@ jobs:
         # 3. Generate the report with absolute clean
         npx allure generate allure-results --clean -o allure-report
         
-        # 4. Ensure report is fully static
+        # 4. Update Latency History Trend
+        node scripts/latency-tracker.js
+
+        # 5. Ensure report is fully static
         mkdir -p allure-report/history
     - name: Finalize Astonishing Reporting Suite
       if: always()

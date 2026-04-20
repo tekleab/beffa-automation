@@ -1,18 +1,9 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class AuthManager {
-  page: Page;
-  emailInput: Locator;
-  passwordInput: Locator;
-  loginBtn: Locator;
-  mainPhoneInput: Locator;
-  customerNameInput: Locator;
-  customerTinInput: Locator;
-  approvedStatus: string;
-  actionButtons: string;
-  companyBtn: Locator;
-
+export class AuthManager extends BasePage {
   constructor(page: Page) {
+    super(page);
     this.page = page;
 
     // Login selectors
@@ -46,10 +37,12 @@ export class AuthManager {
     try {
       // 1. Attempt API Login
       const loginUrl = `http://157.180.20.112:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+      await this.startTacticalTimer();
       const response = await this.page.request.post(loginUrl, {
         data: { email: cleanEmail, password: cleanPass },
         headers: { 'Content-Type': 'application/json' }
       });
+      await this.stopTacticalTimer('Auth API Verification', 'API');
 
       if (!response.ok()) throw new Error(`API Login Failed: ${response.status()}`);
 
@@ -149,9 +142,11 @@ export class AuthManager {
       .first();
 
     if (await option.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await this.startTacticalTimer();
       await option.click();
       // Reload is usually automatic on company change in this ERP
       await this.page.waitForURL('**/', { waitUntil: 'load', timeout: 60000 });
+      await this.stopTacticalTimer(`${cleanTarget} Context Mount`, 'UI');
       console.log(`[SUCCESS] Company switched to "${cleanTarget}"`);
       await this.page.waitForTimeout(2000);
     } else {

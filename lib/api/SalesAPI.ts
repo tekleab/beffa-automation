@@ -1,6 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from '../BasePage';
 
-export class SalesAPI {
+export class SalesAPI extends BasePage {
   page: Page;
   emailInput: Locator;
   passwordInput: Locator;
@@ -14,6 +15,7 @@ export class SalesAPI {
   _getAuthToken!: () => Promise<string | null>;
 
   constructor(page: Page) {
+    super(page);
     this.page = page;
 
     // Login selectors
@@ -68,10 +70,12 @@ export class SalesAPI {
     };
 
     const token = await this._getAuthToken();
+    await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
     });
+    await this.stopTacticalTimer('Create Sales Order', 'API');
 
     if (!response.ok()) {
       const errText = await response.text();
@@ -107,10 +111,12 @@ export class SalesAPI {
     };
 
     const token = await this._getAuthToken();
+    await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
     });
+    await this.stopTacticalTimer('Create Invoice', 'API');
 
     if (!response.ok()) {
       const err = await response.text();

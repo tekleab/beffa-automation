@@ -1,6 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from '../BasePage';
 
-export class PurchaseAPI {
+export class PurchaseAPI extends BasePage {
   page: Page;
   emailInput: Locator;
   passwordInput: Locator;
@@ -14,6 +15,7 @@ export class PurchaseAPI {
   _getAuthToken!: () => Promise<string | null>;
 
   constructor(page: Page) {
+    super(page);
     this.page = page;
 
     // Login selectors
@@ -56,6 +58,7 @@ export class PurchaseAPI {
     };
 
     const token = await this._getAuthToken();
+    await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: {
@@ -64,6 +67,7 @@ export class PurchaseAPI {
         'Content-Type': 'application/json'
       }
     });
+    await this.stopTacticalTimer('Create Purchase Order', 'API');
 
     if (!response.ok()) throw new Error(`PO API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
@@ -94,6 +98,7 @@ export class PurchaseAPI {
     };
 
     const token = await this._getAuthToken();
+    await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/bills?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: {
@@ -102,6 +107,7 @@ export class PurchaseAPI {
         'Content-Type': 'application/json'
       }
     });
+    await this.stopTacticalTimer('Create Bill', 'API');
 
     if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();

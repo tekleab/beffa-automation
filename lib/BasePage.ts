@@ -11,9 +11,45 @@ export class BasePage {
   approvedStatus: string;
   actionButtons: string;
   companyBtn: Locator;
+  private startTime: number = 0;
 
   constructor(page: Page) {
     this.page = page;
+    // ... rest of constructor ...
+  }
+
+  /**
+   * Starts a high-resolution timer for tactical performance sync.
+   */
+  async startTacticalTimer() {
+    this.startTime = performance.now();
+  }
+
+  /**
+   * Stops the timer and records the latency metric.
+   * Automatically attaches metadata for the Dashboard's Latency Engine.
+   */
+  async stopTacticalTimer(label: string, category: 'API' | 'UI' = 'API') {
+    const duration = performance.now() - this.startTime;
+    console.log(`[PERFORMANCE] ${category} - ${label}: ${duration.toFixed(2)}ms`);
+    
+    // Attach to Playwright annotations for Allure consumption
+    try {
+      const { test } = require('@playwright/test');
+      if (test && typeof test.info === 'function') {
+        const info = test.info();
+        if (info) {
+          info.annotations.push({
+            type: 'tactical-perf',
+            description: `${category}|${label}|${duration.toFixed(2)}`
+          });
+        }
+      }
+    } catch (e) {
+      // Context unavailable (e.g. initialization or utility run)
+    }
+    return duration;
+  }
 
     // Login selectors
     this.emailInput = page.getByRole('textbox', { name: 'Email *' });

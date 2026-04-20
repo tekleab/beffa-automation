@@ -1,6 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from '../BasePage';
 
-export class InventoryAPI {
+export class InventoryAPI extends BasePage {
   page: Page;
   emailInput: Locator;
   passwordInput: Locator;
@@ -14,6 +15,7 @@ export class InventoryAPI {
   _getAuthToken!: () => Promise<string | null>;
 
   constructor(page: Page) {
+    super(page);
     this.page = page;
 
     // Login selectors
@@ -59,6 +61,7 @@ export class InventoryAPI {
     };
 
     const token = await this._getAuthToken();
+    await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/inventory-adjustments?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: {
@@ -67,6 +70,7 @@ export class InventoryAPI {
         'Content-Type': 'application/json'
       }
     });
+    await this.stopTacticalTimer('Inventory Adjustment', 'API');
 
     if (!response.ok()) {
       const err = await response.text();
@@ -86,9 +90,11 @@ export class InventoryAPI {
     const params = 'page=1&pageSize=50&year=2018&period=yearly&calendar=ec';
 
     console.log('[ACTION] Discovering random item via API (Year 2018)...');
+    await this.startTacticalTimer();
     const response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
       headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
     });
+    await this.stopTacticalTimer('Item Discovery (50 Records)', 'API');
 
     if (!response.ok()) throw new Error(`Item API discovery failed: ${response.status()}`);
 
