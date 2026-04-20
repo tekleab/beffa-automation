@@ -129,7 +129,7 @@ class LuxuryReporter implements Reporter {
         .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
         @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 
-        .latency-engine { position: absolute; right: 40px; top: 250px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .latency-engine { position: absolute; right: 40px; top: 280px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
         .latency-card { 
             background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); 
             padding: 15px; border-radius: 12px; width: 180px; backdrop-filter: blur(10px);
