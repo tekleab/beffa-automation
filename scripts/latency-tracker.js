@@ -22,7 +22,8 @@ function trackLatency() {
         let uiCount = 0;
 
         if (fs.existsSync(resultsDir)) {
-            const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('.json') && f.startsWith('test-case-'));
+            const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('-result.json'));
+            console.log(`[PERF] Deep-scanning ${files.length} test result files...`);
             files.forEach(file => {
                 try {
                     const content = JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8'));
