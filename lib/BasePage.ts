@@ -71,6 +71,8 @@ export class BasePage {
     if (!text) return;
     const cleanText = text.trim();
     console.log(`[ACTION] Searching for: "${cleanText}"`);
+    
+    await this.startTacticalTimer(); // Start Tactical UI Timer
 
     for (let s = 0; s < 3; s++) {
       try {
@@ -172,6 +174,7 @@ export class BasePage {
         await this.page.keyboard.press('Escape');
 
         console.log(`[SUCCESS] Selected: "${cleanText}"`);
+        await this.stopTacticalTimer(`Smart Search: ${cleanText}`, 'UI');
         return;
       } catch (e: any) {
         console.log(`[WARNING] Search attempt ${s + 1} failed: ${e.message}`);
@@ -220,6 +223,8 @@ export class BasePage {
     const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
     console.log(`[ACTION] Filling date ${dateValue} -> Targeting UI day: ${dayToSelect}`);
 
+    await this.startTacticalTimer(); // Start Tactical UI Timer
+
     let btn: Locator;
     if (typeof labelOrIndex === 'string') {
       const container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
@@ -247,11 +252,14 @@ export class BasePage {
       await this.page.keyboard.press('Enter');
     }
     await this.page.waitForTimeout(1000);
+    await this.stopTacticalTimer(`Fill Date: ${labelOrIndex}`, 'UI');
   }
 
   async pickDate(label: string, dayNum?: number): Promise<void> {
     const targetDay = dayNum || await this.getActiveCalendarDay();
     console.log(`[ACTION] Picking date: "${label}" -> Targeting Day ${targetDay}`);
+    
+    await this.startTacticalTimer(); // Start Tactical UI Timer
 
     let container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
       .filter({ has: this.page.getByText(new RegExp(`^${label}\\s*\\*?$`, 'i')) })
@@ -282,10 +290,14 @@ export class BasePage {
       await this.page.keyboard.press('Tab');
     }
     await this.page.waitForTimeout(1000);
+    await this.stopTacticalTimer(`Pick Date: ${label}`, 'UI');
   }
 
   async selectRandomOption(selector: Locator, labelName: string, isOptional: boolean = false): Promise<number> {
     const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
+    
+    await this.startTacticalTimer(); // Start Tactical UI Timer
+
     for (let i = 0; i < 3; i++) {
       try {
         await selector.scrollIntoViewIfNeeded();
@@ -298,6 +310,7 @@ export class BasePage {
           const target = options.nth(randomIndex);
           await target.evaluate((node: HTMLElement) => node.click());
           await this.page.keyboard.press('Escape');
+          await this.stopTacticalTimer(`Random Selection: ${labelName}`, 'UI');
           return count;
         } else {
           await this.page.keyboard.press('Escape');
