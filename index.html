@@ -114,19 +114,20 @@
         .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
         @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 
-        .latency-engine { position: absolute; right: 40px; top: 280px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
-        .latency-card { 
-            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); 
-            padding: 15px; border-radius: 12px; width: 180px; backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4); border-left: 4px solid var(--emerald);
+        .latency-engine { position: absolute; right: 40px; top: 280px; z-index: 100; }
+        .latency-plate { 
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.1); 
+            padding: 15px 25px; border-radius: 16px; width: 220px; backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); border-right: 4px solid var(--emerald);
         }
-        .latency-value { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
-        .latency-label { font-size: 0.6rem; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; }
-        .latency-threshold { font-size: 0.5rem; margin-top: 8px; font-weight: bold; }
+        .latency-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .latency-value { font-size: 1.1rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .latency-label { font-size: 0.65rem; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+        .latency-status { font-size: 0.55rem; margin-top: 10px; font-weight: bold; padding: 4px 10px; border-radius: 4px; background: rgba(0,0,0,0.3); text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         
-        .amber-state { border-left-color: #fbbf24 !important; color: #fbbf24 !important; }
-        .coral-state { border-left-color: var(--coral) !important; color: var(--coral) !important; }
-        .emerald-state { border-left-color: var(--emerald) !important; color: var(--emerald) !important; }
+        .amber-state { border-right-color: #fbbf24 !important; }
+        .coral-state { border-right-color: var(--coral) !important; }
+        .emerald-state { border-right-color: var(--emerald) !important; }
     </style>
 </head>
 <body>
@@ -177,17 +178,18 @@
             </div>
         </div>
 
-        <!-- LATENCY ENGINE (NEW) -->
-        <div class="latency-engine">
-            <div id="apiLatencyCard" class="latency-card emerald-state">
-                <div class="latency-label">Infrastructure Latency</div>
-                <div id="apiLatencyValue" class="latency-value">0ms</div>
-                <div id="apiLatencyStatus" class="latency-threshold">SYNC: OPTIMAL</div>
-            </div>
-            <div id="uiLatencyCard" class="latency-card emerald-state">
-                <div class="latency-label">UI Rendering Speed</div>
-                <div id="uiLatencyValue" class="latency-value">0ms</div>
-                <div id="uiLatencyStatus" class="latency-threshold">SYNC: OPTIMAL</div>
+        <!-- ENTERPRISE LATENCY ENGINE -->
+        <div id="latencyHub" class="latency-engine">
+            <div class="latency-plate">
+                <div class="latency-row">
+                    <div class="latency-label">Infrastructure</div>
+                    <div id="apiLatencyValue" class="latency-value">0ms</div>
+                </div>
+                <div class="latency-row">
+                    <div class="latency-label">UI Rendering</div>
+                    <div id="uiLatencyValue" class="latency-value">0ms</div>
+                </div>
+                <div id="latencyStatus" class="latency-status">SYNC: INITIALIZING</div>
             </div>
         </div>
 
@@ -415,39 +417,39 @@
                 document.getElementById('uuidBar').style.background = statusColor;
 
                 // 3. Performance / Latency Processing (Phase 2: Tactical Deep Scan)
-                const latHistory = await smartFetch([
-                    './widgets/latency-trend.json', 
-                    './allure/widgets/latency-trend.json',
-                    './data/latency-trend.json'
-                ]).catch(() => []);
+                const latHistory = await smartFetch(['./widgets/latency-trend.json', './data/latency-trend.json']).catch(() => []);
                 const latestLat = (latHistory && latHistory.length > 0) ? latHistory[0] : null;
                 
-                const suiteAvg = total > 0 ? (summary?.time?.duration / total) : 0;
+                // Use REAL tactical metrics (ms), or 'Pending' sync
+                const apiLatency = latestLat ? latestLat.apiLatency : 0;
+                const uiLatency = latestLat ? latestLat.uiLatency : 0;
                 
-                // Use REAL tactical metrics (ms), fallback to a normalized weighted baseline (clipped to 10s max for safety)
-                const apiLatency = latestLat ? latestLat.apiLatency : Math.min(suiteAvg * 0.4, 10000);
-                const uiLatency = latestLat ? latestLat.uiLatency : Math.min(suiteAvg * 0.6, 10000); 
-                
-                const updatePerfCard = (idPrefix, val) => {
-                    const card = document.getElementById(idPrefix + 'Card');
-                    const statusEl = document.getElementById(idPrefix + 'Status');
-                    
-                    animateValue(idPrefix + 'Value', 0, val, 1000, 'ms');
-                    
-                    if (val < 1500) {
-                        card.className = 'latency-card emerald-state';
-                        statusEl.innerText = 'SYNC: OPTIMAL';
-                    } else if (val < 3500) {
-                        card.className = 'latency-card amber-state';
-                        statusEl.innerText = 'SYNC: WARNING';
-                    } else {
-                        card.className = 'latency-card coral-state';
-                        statusEl.innerText = 'SYNC: CRITICAL';
-                    }
-                };
+                const statusEl = document.getElementById('latencyStatus');
+                const plate = document.querySelector('.latency-plate');
 
-                updatePerfCard('apiLatency', apiLatency);
-                updatePerfCard('uiLatency', uiLatency);
+                animateValue('apiLatencyValue', 0, apiLatency, 1000, 'ms');
+                animateValue('uiLatencyValue', 0, uiLatency, 1000, 'ms');
+
+                if (!latestLat) {
+                    statusEl.innerText = 'SYNC: PENDING DATA';
+                    statusEl.style.color = '#64748b';
+                    plate.className = 'latency-plate';
+                } else {
+                    const maxLat = Math.max(apiLatency, uiLatency);
+                    if (maxLat < 1500) {
+                        plate.className = 'latency-plate emerald-state';
+                        statusEl.innerText = 'SYNC: OPTIMAL';
+                        statusEl.style.color = 'var(--emerald)';
+                    } else if (maxLat < 3500) {
+                        plate.className = 'latency-plate amber-state';
+                        statusEl.innerText = 'SYNC: WARNING';
+                        statusEl.style.color = '#fbbf24';
+                    } else {
+                        plate.className = 'latency-plate coral-state';
+                        statusEl.innerText = 'SYNC: CRITICAL';
+                        statusEl.style.color = 'var(--coral)';
+                    }
+                }
 
                 // 4. Fetch Environment
                 let env = [];
