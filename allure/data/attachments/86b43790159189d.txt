@@ -1,0 +1,73 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 447.67ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 14.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 14
+[SUCCESS] "Purchase Order Date" set to Day 14 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2570.63ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1933.61ms
+[INFO] Vendor: Manenderas
+[OK] Quote selected (1 available)
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2063.74ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2056.10ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1860.99ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1921.45ms
+[PERFORMANCE] UI - Random Selection: Location: 1925.85ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1971.20ms
+[PERFORMANCE] UI - Random Selection: Tax: 1947.28ms
+[OK] Line item added (Price: 7252)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/22/000003 | Vendor: Manenderas
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] PO PO/2026/04/22/000003 approved
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/22/000003
+[INFO] Matching vendor: Manenderas
+[ACTION] Searching for: "Manenderas"
+[INFO] Tier 2 - exact in overlay: "Manenderas"
+[SUCCESS] Selected: "Manenderas"
+[PERFORMANCE] UI - Smart Search: Manenderas: 3924.75ms
+[INFO] Linking PO: PO/2026/04/22/000003
+[ACTION] Searching for: "PO/2026/04/22/000003"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/22/000003"
+[SUCCESS] Selected: "PO/2026/04/22/000003"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/22/000003: 3796.73ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 14.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 14
+[SUCCESS] "Invoice Date" set to Day 14 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2348.32ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 19
+[SUCCESS] "Due Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2395.12ms
+[INFO] Dates: Invoice Day 14, Due Day 19
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1852.22ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 9 | Receiving: 6
+[SUCCESS] PO Line Item received (6) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/22/000006 | Vendor: Manenderas
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approve"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/22/000006 approved
+[STEP] Phase 3: Verifying BILL/2026/04/22/000006 in vendor profile
+[VERIFY] Entity: Manenderas | Doc: BILL/2026/04/22/000006 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/d2de2fca-320a-4144-bc3d-59021ffd4edb/detail
+[SUCCESS] BILL/2026/04/22/000006 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/22/000003 -> Bill BILL/2026/04/22/000006
