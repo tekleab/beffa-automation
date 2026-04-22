@@ -73,7 +73,7 @@ export class SalesAPI extends BasePage {
     await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
       data: payload,
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
     await this.stopTacticalTimer('Create Sales Order', 'API');
 
@@ -114,7 +114,7 @@ export class SalesAPI extends BasePage {
     await this.startTacticalTimer();
     const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
       data: payload,
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
     await this.stopTacticalTimer('Create Invoice', 'API');
 
@@ -160,7 +160,7 @@ export class SalesAPI extends BasePage {
     const token = await this._getAuthToken();
     const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
       data: payload,
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
@@ -196,7 +196,7 @@ export class SalesAPI extends BasePage {
     const token = await this._getAuthToken();
     const response = await this.page.request.post(`${apiBase}/receipts`, {
       data: payload,
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
     if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
@@ -213,7 +213,7 @@ export class SalesAPI extends BasePage {
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'reversed' },
       headers: {
-        'x-company': 'befa tutorial',
+        'x-company': 'smoke test',
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       }
@@ -235,7 +235,7 @@ export class SalesAPI extends BasePage {
     console.log(`[ACTION] Approving Invoice ${invoiceId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
     return response.ok();
   }
@@ -260,7 +260,7 @@ export class SalesAPI extends BasePage {
     const token = await this._getAuthToken();
     const response = await this.page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
       data: payload,
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
     if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
@@ -273,7 +273,7 @@ export class SalesAPI extends BasePage {
     const apiBase = 'http://157.180.20.112:8001/api';
     const token = await this._getAuthToken();
     const response = await this.page.request.get(`${apiBase}/invoice/${invoiceId}?year=2018&period=yearly&calendar=ec`, {
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
     if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(() => 'No Response')}`);
     return await response.json();
@@ -283,7 +283,7 @@ export class SalesAPI extends BasePage {
     const apiBase = 'http://157.180.20.112:8001/api';
     const token = await this._getAuthToken();
     const response = await this.page.request.get(`${apiBase}/contacts/customers?search=${customerId}`, {
-      headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok()) return 'System Customer';
     const json = await response.json();

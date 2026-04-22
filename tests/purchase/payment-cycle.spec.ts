@@ -5,7 +5,7 @@ test.describe('Payment Cycle Flow @regression', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS, "befa tutorial");
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS, "smoke test");
         await page.waitForTimeout(5000);
     });
 

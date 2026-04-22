@@ -62,7 +62,7 @@ export class PurchaseAPI extends BasePage {
     const response = await this.page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: {
-        'x-company': 'befa tutorial',
+        'x-company': 'smoke test',
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       }
@@ -102,7 +102,7 @@ export class PurchaseAPI extends BasePage {
     const response = await this.page.request.post(`${apiBase}/bills?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: {
-        'x-company': 'befa tutorial',
+        'x-company': 'smoke test',
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       }
@@ -136,7 +136,7 @@ export class PurchaseAPI extends BasePage {
     console.log(`[ACTION] Creating Bill Payment for ${data.billId} via API...`);
     const response = await this.page.request.post(`${apiBase}/payments?year=2018&period=yearly&calendar=ec`, {
       data: payload,
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
     if (!response.ok()) throw new Error(`Bill-Payment API Failed: ${response.status()} - ${await response.text()}`);
@@ -151,7 +151,7 @@ export class PurchaseAPI extends BasePage {
     const params = 'year=2018&period=yearly&calendar=ec';
 
     const response = await this.page.request.get(`${apiBase}/bill/${billId}?${params}`, {
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
     if (!response.ok()) throw new Error(`Failed to fetch Bill ${billId}: ${response.status()}`);
     return await response.json();
@@ -165,7 +165,7 @@ export class PurchaseAPI extends BasePage {
     console.log(`[ACTION] Approving Payment ${paymentId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/payments/${paymentId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
     return response.ok();
   }

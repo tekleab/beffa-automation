@@ -65,7 +65,7 @@ export class InventoryAPI extends BasePage {
     const response = await this.page.request.post(`${apiBase}/inventory-adjustments?year=2018&period=yearly&calendar=ec`, {
       data: payload,
       headers: {
-        'x-company': 'befa tutorial',
+        'x-company': 'smoke test',
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       }
@@ -92,7 +92,7 @@ export class InventoryAPI extends BasePage {
     console.log('[ACTION] Discovering random item via API (Year 2018)...');
     await this.startTacticalTimer();
     const response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
-      headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
     });
     await this.stopTacticalTimer('Item Discovery (50 Records)', 'API');
 
@@ -129,14 +129,14 @@ export class InventoryAPI extends BasePage {
     const params = 'year=2018&period=yearly&calendar=ec';
 
     let response = await this.page.request.get(`${apiBase}/inventory-item/${itemId}?${params}`, {
-      headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
     });
 
     if (!response.ok()) {
       console.log(`[INFO] Direct Item API for ${itemId} failed (${response.status()}). Trying search...`);
       // 🛡️ Try search with the plural endpoint (guessed based on singular)
       const searchResp = await this.page.request.get(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
-        headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+        headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
       });
       if (!searchResp.ok()) {
         console.log(`[INFO] Search Item API failed: ${searchResp.status()}`);
@@ -166,7 +166,7 @@ export class InventoryAPI extends BasePage {
 
     console.log(`[ACTION] Fetching Journal via API for UUID: ${receiptId}`);
     const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}`, {
-      headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
     if (!response.ok()) throw new Error(`API Fetch Failed: ${response.status()}`);

@@ -21,7 +21,7 @@ test.describe('Accounting Logic Flow @regression', () => {
         console.log('[STEP] Fetching random customer via API');
         const token = await app._getAuthToken();
         const custRes = await page.request.get(`http://157.180.20.112:8001/api/customers?year=2018&period=yearly&calendar=ec&page=1&pageSize=30`, {
-            headers: { 'x-company': 'befa tutorial', 'Authorization': token ? `Bearer ${token}` : '' }
+            headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
         });
         const custJson = await custRes.json();
         const randomCustomer = custJson.data[Math.floor(Math.random() * custJson.data.length)];

@@ -24,7 +24,7 @@ export class AuthManager extends BasePage {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
-  async login(email: string | undefined, pass: string | undefined, companyName: string = 'befa tutorial'): Promise<void> {
+  async login(email: string | undefined, pass: string | undefined, companyName: string = 'smoke test'): Promise<void> {
     const cleanEmail = (email || '').replace(/['"]+/g, '').trim();
     const cleanPass = (pass || '').replace(/['"]+/g, '').trim();
 
@@ -69,7 +69,7 @@ export class AuthManager extends BasePage {
         localStorage.setItem('calendar', 'EC');
         localStorage.setItem('period', 'yearly');
         localStorage.setItem('selected-role', 'IT Administrator / User Manager');
-        localStorage.setItem('currentCompany', company || 'befa tutorial');
+        localStorage.setItem('currentCompany', company || 'smoke test');
 
         localStorage.setItem('lastUserActivity', new Date().toISOString());
       }, { jwt: token, exp: expiry, company: companyName });

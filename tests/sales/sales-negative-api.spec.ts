@@ -29,7 +29,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with null customer_id...');
         const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -54,7 +54,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with empty items list...');
         const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -79,7 +79,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with missing item_id in lines...');
         const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -101,7 +101,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending Invoice with no line items...');
         const response = await page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -128,7 +128,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending Receipt with null cash_account...');
         const response = await page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -143,7 +143,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with INVALID token...');
         const response = await page.request.post(`${apiBase}/sales-orders`, {
             data: { customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06" },
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer INVALID_TOKEN_123` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer INVALID_TOKEN_123` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -167,7 +167,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with negative quantity...');
         const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -190,7 +190,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with non-existent customer_id...');
         const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -219,7 +219,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
                 invoice_date: new Date().toISOString(),
                 released_sales_order_items: [{ so_item_id: so.soItemId, released_quantity: 1 }]
             },
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -243,7 +243,7 @@ test.describe('Sales Order Negative API Tests @negative', () => {
         console.log('[ACTION] Sending SO with extreme numeric values...');
         const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'befa tutorial', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
