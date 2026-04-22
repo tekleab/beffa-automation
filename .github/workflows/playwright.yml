@@ -68,6 +68,9 @@ jobs:
     - name: Install Playwright OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps chromium
+    - name: Run Unit Tests (Vitest)
+      run: npm run test:unit
+
     - name: Run Playwright tests
       run: |
         if [ "${{ github.event_name }}" == "push" ] || [ "${{ github.event_name }}" == "pull_request" ]; then
@@ -129,7 +132,7 @@ jobs:
         npx allure generate allure-results --clean -o allure-report
         
         # 4. Update Latency History Trend
-        node scripts/latency-tracker.js
+        npx ts-node scripts/latency-tracker.ts
 
         # 5. Ensure report is fully static
         mkdir -p allure-report/history
@@ -138,9 +141,16 @@ jobs:
       run: |
         # Create a clean deployment directory if not there
         mkdir -p deploy
+        
+        # 🛡️ Dashboard Integrity Check (Fixes 404 Issue)
+        if [ ! -f "deploy/index.html" ]; then
+          echo "[WARN] Dynamic Dashboard missing. Generating fallback redirector..."
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=allure/"></head><body>Redirecting to Allure Report...</body></html>' > deploy/index.html
+        fi
+
         # Move standard Allure report to a sub-folder inside deploy
-        # The reporter already generated the Dynamic index.html in deploy/
         mv allure-report deploy/allure || true
+        
         # Update summary for CI logs
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY

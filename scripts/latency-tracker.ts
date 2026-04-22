@@ -1,14 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
+import { calculateAverages, syncHistory, LatencyPoint } from '../lib/utils/performance';
 
 /**
- * Tactical Latency Tracker V1.0
+ * Tactical Latency Tracker V2.0 (TS Refactor)
  * This script runs after allure generate, extracts latency metrics,
  * and maintains a historical trend file for the dashboard.
  */
 
 const allureReportDir = path.join(process.cwd(), 'allure-report');
-// Probe multiple history locations
 const historyPaths = [
     path.join(allureReportDir, 'widgets/latency-trend.json'),
     path.join(process.cwd(), 'gh-pages/allure/widgets/latency-trend.json'),
@@ -16,7 +16,7 @@ const historyPaths = [
 ];
 const outputFile = path.join(allureReportDir, 'widgets/latency-trend.json');
 
-function getExistingHistory() {
+function getExistingHistory(): LatencyPoint[] {
     for (const hPath of historyPaths) {
         if (fs.existsSync(hPath)) {
             try {
@@ -32,29 +32,18 @@ function trackLatency() {
         console.log('[PERF] Starting Deep-Scan Latency History Sync...');
         
         const resultsDir = path.join(process.cwd(), 'allure-results');
-        let totalApiLatency = 0;
-        let apiCount = 0;
-        let totalUiLatency = 0;
-        let uiCount = 0;
+        const rawPoints: Array<{ category: string, value: number }> = [];
 
         if (fs.existsSync(resultsDir)) {
             const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('-result.json'));
-            console.log(`[PERF] Deep-scanning ${files.length} test result files...`);
             files.forEach(file => {
                 try {
                     const content = JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8'));
                     if (content.annotations) {
-                        content.annotations.forEach(ann => {
+                        content.annotations.forEach((ann: any) => {
                             if (ann.type === 'tactical-perf') {
                                 const [category, label, value] = ann.description.split('|');
-                                const latency = parseFloat(value);
-                                if (category === 'API') {
-                                    totalApiLatency += latency;
-                                    apiCount++;
-                                } else if (category === 'UI') {
-                                    totalUiLatency += latency;
-                                    uiCount++;
-                                }
+                                rawPoints.push({ category, value: parseFloat(value) });
                             }
                         });
                     }
@@ -62,33 +51,26 @@ function trackLatency() {
             });
         }
 
-        // Calculate True Averages
-        const trueApiAvg = apiCount > 0 ? (totalApiLatency / apiCount) : 0;
-        const trueUiAvg = uiCount > 0 ? (totalUiLatency / uiCount) : 0;
+        // Use the tested Utility logic
+        const { apiAvg, uiAvg } = calculateAverages(rawPoints);
 
-        // 1. Get current run stats (Fallback for total duration)
         const summaryPath = path.join(allureReportDir, 'widgets/summary.json');
         const summary = fs.existsSync(summaryPath) ? JSON.parse(fs.readFileSync(summaryPath, 'utf8')) : { statistic: { total: 0 }, time: { duration: 0 } };
         
         const total = summary.statistic.total || 0;
-        
-        // 2. Load existing history via the multi-path probe
         let history = getExistingHistory();
-...
-        // 3. Add new data point
-        const newPoint = {
+        
+        const newPoint: LatencyPoint = {
             timestamp: Date.now(),
-            apiLatency: Math.round(trueApiAvg || (summary.time.duration / (total || 1)) * 0.4),
-            uiLatency: Math.round(trueUiAvg || (summary.time.duration / (total || 1)) * 0.6),
-            avgLatency: Math.round((trueApiAvg + trueUiAvg) / 2 || (summary.time.duration / (total || 1))),
+            apiLatency: Math.round(apiAvg || (summary.time.duration / (total || 1)) * 0.4),
+            uiLatency: Math.round(uiAvg || (summary.time.duration / (total || 1)) * 0.6),
+            avgLatency: Math.round((apiAvg + uiAvg) / 2 || (summary.time.duration / (total || 1))),
             totalTests: total,
             runId: process.env.GITHUB_RUN_ID || 'local'
         };
         
-        history.unshift(newPoint);
-        history = history.slice(0, 20);
+        history = syncHistory(history, newPoint);
         
-        // 4. Write to report
         const widgetDir = path.join(allureReportDir, 'widgets');
         if (!fs.existsSync(widgetDir)) fs.mkdirSync(widgetDir, { recursive: true });
         
