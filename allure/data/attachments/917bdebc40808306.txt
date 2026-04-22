@@ -1,0 +1,29 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 484.34ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Phase 1: Scanning for unpaid approved bill
+[ACTION] Scanning for an approved, unpaid bill (Net Due > 0)...
+[CHECK] Row 1 (BILL/2026/04/20/000005): Paid? "no", Net Due: 4500, Status: "approved"
+[SUCCESS] Found unpaid vendor match: "VEND/2026/04/01/000004" (Bill: BILL/2026/04/20/000005)
+[STEP] Phase 2: Creating payment
+[INFO] Selecting vendor: "VEND/2026/04/01/000004"
+[ACTION] Searching for: "VEND/2026/04/01/000004"
+[SUCCESS] Selected: "VEND/2026/04/01/000004"
+[PERFORMANCE] UI - Smart Search: VEND/2026/04/01/000004: 5772.35ms
+[STEP] Selecting bank account
+[ACTION] Searching for: "CBE"
+[INFO] Tier 2 - contains in overlay: "CBE"
+[SUCCESS] Selected: "CBE"
+[PERFORMANCE] UI - Smart Search: CBE: 4133.42ms
+[OK] Account: "Cash at Bank - CBE"
+[STEP] Selecting bill
+[INFO] Locating bill: BILL/2026/04/20/000005
+[INFO] Found BILL/2026/04/20/000005. Locating row checkbox...
+[OK] Bill BILL/2026/04/20/000005 selected
+[STEP] Finalizing payment
+[INFO] Retrying submit
+[INFO] Navigation to detail timed out
+[STEP] Phase 3: Approval flow
+[WARN] No status badge found for 30 seconds. Exiting approval loop.

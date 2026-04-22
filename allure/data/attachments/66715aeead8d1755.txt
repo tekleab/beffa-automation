@@ -1,0 +1,21 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 382.12ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 970.16ms
+[OK] Discovered: "steam door 78x2.02" via API | Stock: 3
+[INFO] Item: "steam door 78x2.02" | Stock: 3
+[STEP] Fetching random customer via API
+[INFO] Customer: Elias Temesgen (UUID: ac862b23-5437-491d-a000-5a15d1844a8c)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[PERFORMANCE] API - Create Sales Order: 203.55ms
+[OK] Sales Order created: 
+[STEP] Approving Sales Order: 
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Sales Order  approved
+[PERFORMANCE] API - Create Invoice: 172.45ms
+[PERFORMANCE] API - Create Invoice: 185.75ms
+[OK] Two identical draft invoices created for the same SO: undefined & undefined
