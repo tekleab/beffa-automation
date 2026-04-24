@@ -107,12 +107,11 @@ export class PurchaseAPI extends BasePage {
       vendor_id: resolvedVendorId
     };
 
-    await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
+    const response = await this.safePost(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
       data: payload,
-      headers
+      headers,
+      label: 'Create Purchase Order'
     });
-    await this.stopTacticalTimer('Create Purchase Order', 'API');
 
     if (!response.ok()) throw new Error(`PO API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
@@ -195,12 +194,11 @@ export class PurchaseAPI extends BasePage {
       status: 'draft'
     };
 
-    await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/bills?${params}`, {
+    const response = await this.safePost(`${apiBase}/bills?${params}`, {
       data: payload,
-      headers
+      headers,
+      label: 'Create Bill'
     });
-    await this.stopTacticalTimer('Create Bill', 'API');
 
     if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();

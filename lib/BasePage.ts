@@ -140,6 +140,46 @@ export class BasePage {
   }
 
   /**
+   * Resilient POST helper that handles transient 500 errors with automatic retries.
+   */
+  async safePost(url: string, options: { data: any, headers: any, label: string }): Promise<any> {
+    let lastError: any = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      await this.startTacticalTimer();
+      const response = await this.page.request.post(url, {
+        data: options.data,
+        headers: options.headers
+      });
+      await this.stopTacticalTimer(options.label, 'API');
+
+      if (response.ok()) return response;
+      
+      const status = response.status();
+      const text = await response.text();
+      lastError = { status, text };
+
+      if (status >= 500) {
+        console.warn(`[RETRY ${attempt}/3] ${options.label} hit a 500. Backend might be busy. Waiting...`);
+        await this.page.waitForTimeout(attempt * 1500); // Backoff wait
+        continue;
+      }
+      
+      // If it's a 4xx error, don't retry (it's a real validation error)
+      return response;
+    }
+    
+    // If all retries fail, return the last failure for the caller to handle
+    const mockResponse = {
+        ok: () => false,
+        status: () => lastError.status,
+        text: async () => lastError.text,
+        json: async () => { try { return JSON.parse(lastError.text); } catch(e) { return {}; } }
+    };
+    return mockResponse;
+  }
+
+
+  /**
    * Extracts a UUID from the current page URL.
    */
   async extractIdFromUrl(): Promise<string> {

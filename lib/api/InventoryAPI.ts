@@ -104,12 +104,11 @@ export class InventoryAPI extends BasePage {
       status: 'draft'
     };
 
-    await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/inventory-adjustments?${params}`, {
+    const response = await this.safePost(`${apiBase}/inventory-adjustments?${params}`, {
       data: payload,
-      headers
+      headers,
+      label: 'Inventory Adjustment'
     });
-    await this.stopTacticalTimer('Inventory Adjustment', 'API');
 
     if (!response.ok()) {
       const err = await response.text();

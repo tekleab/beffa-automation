@@ -172,12 +172,11 @@ export class SalesAPI extends BasePage {
       status: 'draft'
     };
 
-    await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/sales-orders?${params}`, {
+    const response = await this.safePost(`${apiBase}/sales-orders?${params}`, {
       data: payload,
-      headers
+      headers,
+      label: 'Create Sales Order'
     });
-    await this.stopTacticalTimer('Create Sales Order', 'API');
 
     if (!response.ok()) {
       const errText = await response.text();
@@ -220,12 +219,11 @@ export class SalesAPI extends BasePage {
     };
 
     const token = await this._getAuthToken();
-    await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/invoices?${params}`, {
+    const response = await this.safePost(`${apiBase}/invoices?${params}`, {
       data: payload,
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      label: 'Create Invoice'
     });
-    await this.stopTacticalTimer('Create Invoice', 'API');
 
     if (!response.ok()) {
       const err = await response.text();
@@ -275,9 +273,10 @@ export class SalesAPI extends BasePage {
     console.log('[META] Standalone Invoice Payload:', JSON.stringify(payload, null, 2));
 
     const token = await this._getAuthToken();
-    const response = await this.page.request.post(`${apiBase}/invoices?${params}`, {
+    const response = await this.safePost(`${apiBase}/invoices?${params}`, {
       data: payload,
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      label: 'Standalone Invoice'
     });
 
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
