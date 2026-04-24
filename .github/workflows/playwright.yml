@@ -43,6 +43,9 @@ jobs:
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       # Priority: manual input > repo secret > hardcoded default
       BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'smoke test' }}
+      BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
+      BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
+      BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
 
     steps:
     - uses: actions/checkout@v4
