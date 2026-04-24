@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 341.26ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 16
+[SUCCESS] "Purchase Order Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2618.41ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1934.39ms
+[INFO] Vendor: MIDROC S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2016.58ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2017.03ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1840.92ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2004.28ms
+[PERFORMANCE] UI - Random Selection: Location: 1930.43ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1972.39ms
+[PERFORMANCE] UI - Random Selection: Tax: 1950.87ms
+[OK] Line item added (Price: 9593)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/24/000038 | Vendor: MIDROC S.C
+[API] Advancing purchase-orders "056f8737-d016-4108-9749-9fd8ebcb4b17" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 3993.65ms
+[OK] PO PO/2026/04/24/000038 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/24/000038
+[INFO] Matching vendor: MIDROC S.C
+[ACTION] Searching for: "MIDROC S.C"
+[INFO] Tier 2 - exact in overlay: "MIDROC S.C"
+[SUCCESS] Selected: "MIDROC S.C"
+[PERFORMANCE] UI - Smart Search: MIDROC S.C: 3962.38ms
+[INFO] Linking PO: PO/2026/04/24/000038
+[ACTION] Searching for: "PO/2026/04/24/000038"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/24/000038"
+[SUCCESS] Selected: "PO/2026/04/24/000038"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/24/000038: 3821.11ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 16
+[SUCCESS] "Invoice Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2368.24ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 21
+[SUCCESS] "Due Date" set to Day 21 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2355.21ms
+[INFO] Dates: Invoice Day 16, Due Day 21
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1843.95ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/24 | Vendor: MIDROC S.C
+[API] Advancing bills "9e7d598c-977a-4ae4-b1ad-b803fd2bd100" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4754.43ms
+[OK] Bill BILL/2026/04/24 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/24 in vendor profile
+[VERIFY] Entity: MIDROC S.C | Doc: BILL/2026/04/24 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/77a04ea4-ac5a-4f32-9a1e-cf5f1dae9190/detail
+[SUCCESS] BILL/2026/04/24 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/24/000038 -> Bill BILL/2026/04/24
