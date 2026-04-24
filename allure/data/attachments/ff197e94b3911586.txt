@@ -1,0 +1,33 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 382.29ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 852.35ms
+[OK] Discovered: "fifo-aprl20" via API | Stock: 60
+[STEP] Phase 2: Creating standalone invoice for "fifo-aprl20"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "2b98142d-8f11-43fd-8910-08f681cb174b",
+  "customer_id": "a32030e5-c83a-4b06-8cb7-18cf9dab5bac",
+  "invoice_date": "2026-04-24T00:00:00Z",
+  "due_date": "2026-04-26T00:00:00Z",
+  "currency_id": "a1fc7edf-5921-48a5-af27-1cb17ae04ef9",
+  "items": [
+    {
+      "amount": 10993.05,
+      "general_ledger_account_id": "f1da4f1b-87b0-43c5-bca6-23c359735f53",
+      "item_id": "84f92055-ba76-4728-8566-a6f8102ccfdf",
+      "location_id": "ee1cd563-a9b8-4151-bf88-5c85959fab21",
+      "quantity": 1,
+      "unit_price": 10993.05,
+      "warehouse_id": "7ed091ba-10b7-428e-bb35-35cf14686a8b"
+    }
+  ],
+  "released_sales_order_items": []
+}
