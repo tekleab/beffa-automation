@@ -52,8 +52,8 @@ export class AppManager {
     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
     this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
 
-    // Company Switcher Selectors (Top-left)
-    this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
+    // Company Switcher Selectors (Top-left Header)
+    this.companyBtn = page.locator('header button.chakra-menu__menu-button, .chakra-stack button.chakra-menu__menu-button').first();
 
     // Module Mappings
     this.auth = new AuthManager(page);
@@ -140,4 +140,6 @@ export class AppManager {
   async approvePaymentAPI(...args: Parameters<PurchaseAPI['approvePaymentAPI']>) { return await this.api.purchase.approvePaymentAPI(...args); }
   async approveInvoiceAPI(...args: Parameters<SalesAPI['approveInvoiceAPI']>) { return await this.api.sales.approveInvoiceAPI(...args); }
   async createBillPaymentAPI(...args: Parameters<PurchaseAPI['createBillPaymentAPI']>) { return await this.api.purchase.createBillPaymentAPI(...args); }
+  async extractIdFromUrl(...args: Parameters<BasePage['extractIdFromUrl']>) { return await this.base.extractIdFromUrl(...args); }
+  async advanceDocumentAPI(...args: Parameters<BasePage['advanceDocumentAPI']>) { return await this.base.advanceDocumentAPI(...args); }
 }

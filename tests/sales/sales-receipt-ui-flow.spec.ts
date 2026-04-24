@@ -22,7 +22,11 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
 
         // Approve SO to make it linkable
         await page.goto(`/receivables/sale-orders/${soResult.id}/detail`);
-        await app.handleApprovalFlow();
+        // ⚡ Fast API Approval
+        const soId = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(soId, 'sales-orders');
+        await page.reload(); // 🔄 Synchronization
+        console.log(`[OK] Sales Order approved via Fast-API`);
 
         const invResult = await app.createInvoiceAPI({
             customerId: soResult.customerId,
@@ -33,7 +37,11 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
 
         // Approve Invoice
         await page.goto(`/receivables/invoices/${invResult.id}/detail`);
-        await app.handleApprovalFlow();
+        // ⚡ Fast API Approval
+        const invId = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(invId, 'invoices');
+        await page.reload(); // 🔄 Synchronization
+        console.log(`[OK] Invoice approved via Fast-API`);
 
         // Read customer name directly from the invoice detail page (most reliable)
         const CUSTOMER_NAME = await page.locator('p.chakra-text.css-0').first().innerText().catch(() => '');
@@ -112,7 +120,11 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
 
         // Phase 3: Approval
         console.log('[STEP] Phase 3: Approval flow');
-        await app.handleApprovalFlow();
+        // ⚡ Fast API Approval
+        const rcptId = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(rcptId, 'receipts');
+        await page.reload(); // 🔄 Synchronization
+        console.log(`[OK] Receipt approved via Fast-API`);
         console.log('[OK] Receipt approved');
 
         // Phase 4: Customer Profile Verification

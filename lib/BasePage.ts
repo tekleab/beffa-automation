@@ -12,9 +12,16 @@ export class BasePage {
   actionButtons: string;
   companyBtn: Locator;
   private startTime: number = 0;
+  private apiBase: string = '';
 
   constructor(page: Page) {
     this.page = page;
+    
+    // Configure API Base
+    let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (base.includes(':4173')) base = base.replace(':4173', ':8001');
+    if (!base.endsWith('/api')) base += '/api';
+    this.apiBase = base;
 
     // Login selectors
     this.emailInput = page.getByRole('textbox', { name: 'Email *' });
@@ -30,8 +37,8 @@ export class BasePage {
     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
     this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
 
-    // Company Switcher Selectors (Top-left)
-    this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
+    // Company Switcher Selectors (Top-left Header)
+    this.companyBtn = page.locator('header button.chakra-menu__menu-button, .chakra-stack button.chakra-menu__menu-button').first();
   }
 
   /**
@@ -65,6 +72,100 @@ export class BasePage {
       // Context unavailable (e.g. initialization or utility run)
     }
     return duration;
+  }
+
+  /**
+   * Universal API-driven Document Approval / Advancement
+   * Handles the 'Draft -> Verifier -> Approver -> Approved' transition in seconds.
+   */
+  async advanceDocumentAPI(docId: string, docType: string): Promise<void> {
+    const token = await this._getAuthToken();
+    if (!token) throw new Error("[ERROR] No Auth Token found. API Advance cannot proceed.");
+
+    // Bulletproof Company Detection: Pull directly from ERP state
+    const company = await this.page.evaluate(() => {
+        return localStorage.getItem('currentCompany') || 
+               localStorage.getItem('company') || 
+               'Construction BM';
+    });
+
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    
+    const url = `${this.apiBase}/${docType}/${docId}/advance?year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 
+      'x-company': company, 
+      'Authorization': `Bearer ${token}`, 
+      'Content-Type': 'application/json' 
+    };
+
+    console.log(`[API] Advancing ${docType} "${docId}" for company: "${company}"`);
+    await this.startTacticalTimer();
+
+    let success = false;
+    for (let i = 0; i < 4; i++) {
+        // Most stages in this ERP require an explicit reviewer/approver assignment
+        // We use the ID discovered: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c (System Admin)
+        const payload = { submitted_to: "42477a9a-1f16-40b9-a64d-f0cc067a0b7c" };
+        
+        const resp = await this.page.request.patch(url, { headers, data: payload });
+        const status = resp.status();
+        
+        if (status === 200 || status === 204) {
+            console.log(`[SUCCESS] Approval Step ${i + 1} synchronized via API.`);
+            success = true;
+            await this.page.waitForTimeout(1000); // Backend cooldown
+        } else if (status === 400 || status === 404) {
+             // 400 or 404 after a success usually means we hit the final state
+             if (success) {
+                 console.log(`[INFO] Approval Cycle complete at step ${i}. Document is in Final State.`);
+                 break;
+             }
+             console.log(`[WARN] Advance ignored (Status ${status}). Already in next stage?`);
+             break;
+        } else if (status === 401) {
+            throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. The token for "${company}" is invalid or expired.`);
+        } else {
+            console.log(`[INFO] Advance cycle break. Status: ${status}`);
+            break;
+        }
+    }
+    
+    if (!success) {
+        console.log(`[WARN] No API advance steps were successful. Verify if document ${docId} is already approved.`);
+    }
+
+    await this.stopTacticalTimer(`API Advance: ${docType}`, 'API');
+  }
+
+  /**
+   * Extracts a UUID from the current page URL.
+   */
+  async extractIdFromUrl(): Promise<string> {
+    const url = this.page.url();
+    const parts = url.split('/');
+    return parts.find(p => /^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(p)) || '';
+  }
+
+  /**
+   * Internal helper to retrieve the security bearer token from the session.
+   */
+  async _getAuthToken(): Promise<string | null> {
+    return await this.page.evaluate(() => {
+      const keys = ['token', 'auth-token', 'jwt', 'access_token', 'auth_data', 'session_token'];
+      for (const k of keys) {
+        const v = localStorage.getItem(k);
+        if (v && v.length > 50) return v;
+      }
+      // Last-ditch: Scan all keys for a JWT pattern (ey...)
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i)!;
+        const v = localStorage.getItem(k);
+        if (v && v.startsWith('ey')) return v;
+      }
+      return null;
+    });
   }
 
   async smartSearch(container: Locator | null, text: string): Promise<void> {

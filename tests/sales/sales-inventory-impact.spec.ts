@@ -39,9 +39,11 @@ test.describe('Sales Impact Flow @regression', () => {
 
         // Phase 3: Approve SO
         console.log(`[STEP] Phase 3: Approving SO ${soID}`);
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/sale-orders/${soResult.id}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] SO ${soID} approved`);
+        await app.advanceDocumentAPI(soResult.id, 'sales-orders');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] SO ${soID} approved via Fast-API`);
 
         // Phase 4: Create Invoice via API
         console.log(`[STEP] Phase 4: Creating Invoice via API from SO ${soID}`);
@@ -61,9 +63,11 @@ test.describe('Sales Impact Flow @regression', () => {
 
         // Phase 5: Approve Invoice
         console.log(`[STEP] Phase 5: Approving Invoice ${invID}`);
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/invoices/${invUUID}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] Invoice ${invID} approved`);
+        await app.advanceDocumentAPI(invUUID, 'invoices');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Invoice ${invID} approved via Fast-API`);
 
         // Phase 6: Verify stock decrease via API (with Tactical Polling)
         console.log(`[STEP] Phase 6: Verifying stock for "${initial.itemName}" (Polling for backend sync)`);

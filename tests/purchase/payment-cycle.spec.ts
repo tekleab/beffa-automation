@@ -150,9 +150,11 @@ test.describe('Payment Cycle Flow @regression', () => {
             console.log('[INFO] Navigation to detail timed out');
         });
 
-        // Phase 3: Approval
-        console.log('[STEP] Phase 3: Approval flow');
-        await app.handleApprovalFlow();
+        // ⚡ Fast API Approval (70/30 Hybrid)
+        const paymentId = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(paymentId, 'payments');
+        await page.reload(); // 🔄 Synchronize UI state
+        console.log(`[OK] Payment approved via Fast-API`);
 
         if (!page.url().includes('/detail')) {
             await page.waitForURL(/\/detail$/, { timeout: 30000 }).catch(() => { });

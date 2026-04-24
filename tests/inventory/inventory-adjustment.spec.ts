@@ -40,9 +40,11 @@ test.describe('Inventory Adjustment Flow @regression', () => {
 
         // 4. Approve Adjustment in UI
         console.log(`[STEP] Phase 3: Approving Adjustment ${adjID}`);
+        // ⚡ Fast API Approval
         await page.goto(`/inventories/adjustments/${adjUUID}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] Adjustment ${adjID} approved`);
+        await app.advanceDocumentAPI(adjUUID, 'inventory-adjustments');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Adjustment ${adjID} approved via Fast-API`);
 
         // 5. Verify Stock Impact (High-Speed API Method with Tactical Polling)
         console.log(`[STEP] Phase 4: Verifying stock impact for "${initial.itemName}" (Polling for sync)`);

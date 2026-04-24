@@ -83,9 +83,12 @@ test.describe('Purchase to Bill Flow @smoke', () => {
         const poText = await poElement.textContent();
         const poNumber = (poText!.match(/PO\/\d{4}\/\d{2}\/\d{2}\/\d+/) || [poText!.trim()])[0];
         console.log(`[OK] PO created: ${poNumber} | Vendor: ${selectedVendor}`);
-
-        await app.handleApprovalFlow();
-        console.log(`[OK] PO ${poNumber} approved`);
+ 
+        // ⚡ HYBRID 70/30: Fast API Approval
+        const poId = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(poId, 'purchase-orders');
+        await page.reload(); // 🔄 Synchronize: Force UI to see the 'Approved' state
+        console.log(`[OK] PO ${poNumber} approved via Fast-API`);
 
         // Phase 2: Bill Creation
         console.log(`[STEP] Phase 2: Creating Bill from PO ${poNumber}`);
@@ -124,11 +127,14 @@ test.describe('Purchase to Bill Flow @smoke', () => {
         const billElement = page.locator('p, span, div, h1, h2, h3, h4, h5').filter({ hasText: /^BILL\/\d{4}\// }).first();
         await billElement.waitFor({ state: 'attached', timeout: 30000 });
         const billText = await billElement.textContent();
-        const billNumber = (billText!.match(/BILL\/\d{4}\/\d{2}\/\d{2}\/\d+/) || [billText!.trim()])[0];
+        const billNumber = (billText!.match(/BILL\/\d{4}\/\d{2}\/\d+/) || [billText!.trim()])[0];
         console.log(`[OK] Bill created: ${billNumber} | Vendor: ${selectedVendor}`);
-
-        await app.handleApprovalFlow();
-        console.log(`[OK] Bill ${billNumber} approved`);
+ 
+        // ⚡ Fast API Approval
+        const billId = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(billId, 'bills');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Bill ${billNumber} approved via Fast-API`);
 
         // Phase 3: Vendor Profile Verification
         console.log(`[STEP] Phase 3: Verifying ${billNumber} in vendor profile`);

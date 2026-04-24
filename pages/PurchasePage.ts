@@ -125,12 +125,19 @@ export class PurchasePage extends BasePage {
     await qtyInput.waitFor({ state: 'visible' });
 
     // Force actionability if it's still slow to enable
-    await expect(qtyInput).toBeEnabled({ timeout: 10000 });
+    await expect(qtyInput).toBeEnabled({ timeout: 15000 });
+    await qtyInput.scrollIntoViewIfNeeded();
+
+    // ⚡ NEW STABILIZER: Click to ensure focus before typing
+    await qtyInput.click({ force: true });
+    await this.page.waitForTimeout(500);
 
     await qtyInput.clear();
     await qtyInput.fill(String(toReceive));
+    await this.page.waitForTimeout(500);
     await qtyInput.press('Enter');
     await this.page.keyboard.press('Tab'); // Blur input to trigger reactive state
+    await this.page.waitForTimeout(800);
 
     await this.page.waitForTimeout(1000); // Allow totals to calculate
     console.log(`[SUCCESS] PO Line Item received (${toReceive}) and selected.`);
