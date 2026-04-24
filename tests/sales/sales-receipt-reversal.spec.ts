@@ -19,12 +19,11 @@ test.describe.serial('Receipt Reversal — GL Ledger Impact @regression', () => 
         rctUUID = id;
         console.log(`[OK] Receipt created: ${rctID} (UUID: ${rctUUID})`);
 
-        console.log('[STEP] Approving receipt via UI');
-        await app.page.goto(`/receivables/receipts`);
-        await app.page.waitForSelector(`text=${rctID}`, { timeout: 30000 });
-        await app.page.getByRole('link', { name: rctID }).first().click();
-        await app.handleApprovalFlow();
-        console.log(`[OK] ${rctID} approved`);
+        console.log('[STEP] Approving receipt via Fast-API');
+        await app.page.goto(`/receivables/receipts/${rctUUID}/detail`);
+        await app.advanceDocumentAPI(rctUUID!, 'receipts');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] ${rctID} approved via Fast-API`);
 
         console.log('[STEP] Capturing initial GL entries');
         initialEntries = await app.captureJournalEntries(/CRJ/i);

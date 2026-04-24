@@ -29,12 +29,11 @@ test.describe('Invoice-Receipt Balance Flow @regression', () => {
         const invID = invResult.ref;
         const invUUID = invResult.id;
 
-        // Phase 3: Approve Invoice
-        console.log(`[STEP] Phase 3: Approving Invoice ${invID}`);
-        await page.goto('/receivables/invoices');
-        await page.getByRole('link', { name: invID }).first().click();
-        await app.handleApprovalFlow();
-        console.log(`[OK] Invoice ${invID} approved | Total Due: ${originalAmount}`);
+        // ⚡ Fast API Approval
+        await page.goto(`/receivables/invoices/${invUUID}/detail`, { waitUntil: 'load' });
+        await app.advanceDocumentAPI(invUUID, 'invoices');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Invoice ${invID} approved via Fast-API | Total Due: ${originalAmount}`);
 
         // Phase 4: Partial Receipt
         const partialAmount = Math.floor(originalAmount / 2);
@@ -59,12 +58,11 @@ test.describe('Invoice-Receipt Balance Flow @regression', () => {
         });
         console.log(`[OK] Final receipt created: ${finalReceiptResult.ref}`);
 
-        // Phase 6: Approve Final Receipt
-        console.log(`[STEP] Phase 6: Approving final receipt ${finalReceiptResult.ref}`);
-        await page.goto('/receivables/receipts');
-        await page.getByRole('link', { name: finalReceiptResult.ref }).first().click();
-        await app.handleApprovalFlow();
-        console.log(`[OK] Final receipt ${finalReceiptResult.ref} approved`);
+        // ⚡ Fast API Approval
+        await page.goto(`/receivables/receipts/${finalReceiptResult.id}/detail`, { waitUntil: 'load' });
+        await app.advanceDocumentAPI(finalReceiptResult.id, 'receipts');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Final receipt ${finalReceiptResult.ref} approved via Fast-API`);
 
         console.log(`[RESULT] Invoice-Receipt Balance: PASSED`);
         await page.close();

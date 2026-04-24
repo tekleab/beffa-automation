@@ -47,11 +47,11 @@ test.describe('Accounting Logic Flow @regression', () => {
         const so = await app.createSalesOrderAPI(soPayload);
         console.log(`[OK] Sales Order created: ${so.ref}`);
 
-        // Approve the SO
-        console.log(`[STEP] Approving Sales Order: ${so.ref}`);
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/sale-orders/${so.id}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] Sales Order ${so.ref} approved`);
+        await app.advanceDocumentAPI(so.id, 'sales-orders');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Sales Order ${so.ref} approved via Fast-API`);
 
         // Create two invoices linking to the exact same SO items
         const duplicateInvoice1 = await app.createInvoiceAPI({
@@ -68,11 +68,11 @@ test.describe('Accounting Logic Flow @regression', () => {
         console.log(`[OK] Two identical draft invoices created for the same SO: ${duplicateInvoice1.ref} & ${duplicateInvoice2.ref}`);
         expect(duplicateInvoice1.id).not.toEqual(duplicateInvoice2.id);
 
-        // Approve Invoice 1
-        console.log(`[STEP] Approving Invoice 1: ${duplicateInvoice1.ref}`);
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/invoices/${duplicateInvoice1.id}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] Invoice ${duplicateInvoice1.ref} approved`);
+        await app.advanceDocumentAPI(duplicateInvoice1.id, 'invoices');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Invoice ${duplicateInvoice1.ref} approved via Fast-API`);
 
         // Attempt to approve Invoice 2 (Should Fail - ERP must block duplicate invoicing of same SO)
         console.log(`[STEP] Negative test: Attempting to approve duplicate Invoice 2: ${duplicateInvoice2.ref}`);
@@ -104,10 +104,11 @@ test.describe('Accounting Logic Flow @regression', () => {
         });
         console.log(`[OK] Initial receipt accepted: ${rct1.ref}. Approving via UI...`);
 
-        // Approve Receipt 1 (UI)
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/receipts/${rct1.id}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] Receipt 1 Approved.`);
+        await app.advanceDocumentAPI(rct1.id, 'receipts');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Receipt 1 approved via Fast-API.`);
 
         console.log('[STEP] Negative test: Attempting duplicate receipt on fully-paid invoice');
         let rct2: Awaited<ReturnType<typeof app.createInvoiceReceiptAPI>> | null = null;

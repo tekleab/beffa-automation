@@ -29,9 +29,11 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
             throw new Error(`SO API Creation Failed: ${soData.status} - ${soData.error}`);
         }
 
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/sale-orders/${soData.id}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
-        console.log(`[OK] Sales Order ${soData.ref} approved (Released)`);
+        await app.advanceDocumentAPI(soData.id, 'sales-orders');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Sales Order ${soData.ref} approved (Released) via Fast-API`);
 
         // 3. Create Invoice via API (linked to SO) & Approve in UI
         console.log(`[STEP] Phase 3: Creating Invoice via API from SO ${soData.ref}`);
@@ -41,11 +43,13 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
             releasedQuantity: 1
         });
 
+        // ⚡ Fast API Approval
         await page.goto(`/receivables/invoices/${invData.id}/detail`, { waitUntil: 'load' });
-        await app.handleApprovalFlow();
+        await app.advanceDocumentAPI(invData.id, 'invoices');
+        await page.reload(); // 🔄 Synchronize
         invID = invData.ref!;
         invUUID = invData.id!;
-        console.log(`[OK] Invoice ${invID} created and approved via API+UI flow`);
+        console.log(`[OK] Invoice ${invID} approved via Fast-API`);
 
         console.log('[STEP] Verifying stock deduction via API');
         const postInv = await app.getItemDetailsAPI(initialInfo.itemId);

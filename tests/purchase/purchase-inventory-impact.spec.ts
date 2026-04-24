@@ -21,13 +21,12 @@ test.describe('Purchase Impact Flow @regression', () => {
         const poUUID = poData.poId;
         console.log(`[OK] PO created: ${poID}`);
 
-        console.log(`[STEP] Approving PO ${poID}`);
+        // ⚡ Fast API Approval
         await page.goto(`/payables/purchase-orders/${poUUID}/detail`, { waitUntil: 'load' });
-        selectedVendor = await app.extractDetailValue('Vendor');
-        console.log(`[INFO] Vendor: "${selectedVendor}"`);
-
-        await app.handleApprovalFlow();
-        console.log(`[OK] PO ${poID} approved`);
+        selectedVendor = await app.extractDetailValue('Vendor'); // Extract first, it's quick
+        await app.advanceDocumentAPI(poUUID, 'purchase-orders');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] PO ${poID} approved via Fast-API`);
 
         // Phase 3: Create Bill from PO
         console.log(`[STEP] Phase 3: Converting PO ${poID} to Bill`);
@@ -59,8 +58,11 @@ test.describe('Purchase Impact Flow @regression', () => {
         const billID = (await page.locator('p, span').filter({ hasText: /^BILL\// }).first().innerText()).trim();
         console.log(`[OK] Bill created: ${billID}`);
 
-        await app.handleApprovalFlow();
-        console.log(`[OK] Bill ${billID} approved`);
+        // ⚡ Fast API Approval
+        const billUUID = await app.extractIdFromUrl();
+        await app.advanceDocumentAPI(billUUID, 'bills');
+        await page.reload(); // 🔄 Synchronize
+        console.log(`[OK] Bill ${billID} approved via Fast-API`);
 
         // Phase 4: Ledger Verification
         console.log('[STEP] Phase 4: Ledger verification');
