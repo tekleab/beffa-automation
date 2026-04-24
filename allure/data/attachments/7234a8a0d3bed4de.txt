@@ -1,0 +1,34 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 376.09ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 847.90ms
+[INFO] Item: "steam door 78x2.02" | UUID: 931edf48-f18f-45cf-93aa-c2af3d47258d | Stock: 26
+[STEP] Phase 2: Creating SO via API for 1 x "steam door 78x2.02"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 195.31ms
+[PERFORMANCE] API - Create Sales Order: 253.03ms
+[SUCCESS] Sales Order created via API: SO/2026/04/24/000034 (ID: a808f61f-4dbd-46fe-aced-b81421aa20ab, ItemID: 8bf734d7-05b8-4c01-9eee-0fdd697391da)
+[OK] SO created: SO/2026/04/24/000034 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/24/000034
+[API] Advancing sales-orders "a808f61f-4dbd-46fe-aced-b81421aa20ab" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: sales-orders: 4227.00ms
+[OK] SO SO/2026/04/24/000034 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/24/000034
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 208.96ms
+[PERFORMANCE] API - Create Invoice: 208.53ms
+[PERFORMANCE] API - Create Invoice: 226.05ms

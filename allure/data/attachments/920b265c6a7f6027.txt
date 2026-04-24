@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 403.64ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 833.10ms
+[OK] Discovered via API: "Timer 6 pol 12 H" | Stock: 27
+[INFO] Item Unit Cost: 4117.7396 | Chosen Adjustment Qty: 5 (Total: 20588.698)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 320.58ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/24/000012 (ID: 09078ff3-8189-40ad-aa3f-6651b7825b80)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/24/000012
+[API] Advancing inventory-adjustments "09078ff3-8189-40ad-aa3f-6651b7825b80" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1727.91ms
+[OK] Adjustment ADJ/2026/04/24/000012 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "Timer 6 pol 12 H" (Polling for sync)
+[POLL] Attempt 1: Found 32 | Expected 32
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units
