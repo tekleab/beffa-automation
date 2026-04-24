@@ -449,4 +449,15 @@ export class BasePage {
     };
     return { invoiceDate: fmt(today), dueDate: fmt(due) };
   }
+
+  async getTableColumnMap(selector: string = 'table thead th'): Promise<Record<string, number>> {
+    const headers = this.page.locator(selector);
+    const count = await headers.count();
+    const map: Record<string, number> = {};
+    for (let h = 0; h < count; h++) {
+      const text = (await headers.nth(h).innerText().catch(() => '')).trim().toLowerCase();
+      if (text) map[text] = h;
+    }
+    return map;
+  }
 }

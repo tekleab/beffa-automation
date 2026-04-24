@@ -42,7 +42,7 @@ jobs:
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       # Priority: manual input > repo secret > hardcoded default
-      BEFFA_COMPANY: ${{ inputs.company || secrets.BEFFA_COMPANY || 'smoke test' }}
+      BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'smoke test' }}
 
     steps:
     - uses: actions/checkout@v4

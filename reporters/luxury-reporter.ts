@@ -670,7 +670,6 @@ class LuxuryReporter implements Reporter {
             wall.innerHTML = '<div style="color: var(--emerald); font-size: 0.8rem; text-align: center; padding: 20px;">SIMULATION: ALL DOMAINS SECURE</div>';
             return { isSimulated: true };
         }
-        }
 
         window.onload = syncCommandCenter;
     </script>

@@ -12,18 +12,7 @@ export class PurchasePage extends BasePage {
     await this.page.waitForSelector('table tbody tr', { timeout: 30000 });
     await this.page.waitForTimeout(3000); // Stabilization
 
-    // 🗺️ Build column map by reading the actual <th> headers from the table
-    const buildColMap = async (): Promise<Record<string, number>> => {
-      const headers = this.page.locator('table thead th');
-      const count = await headers.count();
-      const map: Record<string, number> = {};
-      for (let h = 0; h < count; h++) {
-        const text = (await headers.nth(h).innerText().catch(() => '')).trim().toLowerCase();
-        if (text) map[text] = h;
-      }
-      return map;
-    };
-    const colMap = await buildColMap();
+    const colMap = await this.getTableColumnMap();
     // Fallback to known column positions from the bills table screenshot
     const idxBill   = colMap['invoice no'] ?? colMap['bill number'] ?? colMap['reference'] ?? 1;
     const idxVendor = colMap['vendor'] ?? 2;
@@ -83,13 +72,7 @@ export class PurchasePage extends BasePage {
     }
 
     // Discover column for "Remaining" by reading the receipt tab table headers
-    const receiptHeaders = this.page.locator('table thead th');
-    const hCount = await receiptHeaders.count();
-    const receiptColMap: Record<string, number> = {};
-    for (let h = 0; h < hCount; h++) {
-      const text = (await receiptHeaders.nth(h).innerText().catch(() => '')).trim().toLowerCase();
-      if (text) receiptColMap[text] = h;
-    }
+    const receiptColMap = await this.getTableColumnMap();
     const idxRemaining = receiptColMap['remaining'] ?? receiptColMap['unreceived'] ?? receiptColMap['qty remaining'] ?? 6;
 
     // Process first row for standard testing
