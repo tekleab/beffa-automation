@@ -1,0 +1,28 @@
+[STEP] Stage 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 439.50ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 951.78ms
+[OK] Discovered: "item-cost-test" via API | Stock: 22
+[INFO] Item: "item-cost-test" | Stock: 22
+[STEP] Creating bill via API for "item-cost-test"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 40e8a9cd-68bb-46ea-9770-3405945a3277)
+[PERFORMANCE] API - Create Bill: 312.91ms
+[SUCCESS] Bill created via API: BILL/2026/04/24/000041 (ID: 1b7526b0-4b20-4809-ae1b-95bd75d7c2de)
+[OK] Bill created: BILL/2026/04/24/000041
+[STEP] Approving bill BILL/2026/04/24/000041
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approve"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/24/000041 approved
+[STEP] Verifying stock increase
+[VERIFY] Item: item-cost-test | Initial: 22 | Billed: 12 | Final: 34 | Expected: 34
+[OK] Stock increased correctly

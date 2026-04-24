@@ -1,0 +1,67 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 232.37ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 981.51ms
+[OK] Discovered: "Timer 6 pol 12 H" via API | Stock: 26
+[INFO] Item: "Timer 6 pol 12 H" | Stock: 26
+[STEP] Phase 2: Creating PO via API for "Timer 6 pol 12 H"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 297.70ms
+[SUCCESS] PO created via API: PO/2026/04/24/000040 (ID: acdbeab4-0736-49ca-8fa5-fa332c35055c)
+[OK] PO created: PO/2026/04/24/000040
+[STEP] Approving PO PO/2026/04/24/000040
+[INFO] Vendor: "Gentium Concrite Industry"
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] PO PO/2026/04/24/000040 approved
+[STEP] Phase 3: Converting PO PO/2026/04/24/000040 to Bill
+[INFO] Matching vendor: "Gentium Concrite Industry"
+[ACTION] Searching for: "Gentium Concrite Industry"
+[INFO] Tier 2 - exact in overlay: "Gentium Concrite Industry"
+[SUCCESS] Selected: "Gentium Concrite Industry"
+[PERFORMANCE] UI - Smart Search: Gentium Concrite Industry: 4021.89ms
+[ACTION] Searching for: "PO/2026/04/24/000040"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/24/000040"
+[SUCCESS] Selected: "PO/2026/04/24/000040"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/24/000040: 4725.61ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 16
+[SUCCESS] "Invoice Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 3087.33ms
+[PERFORMANCE] UI - Random Selection: Account: 2172.91ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[INFO] Received 1 items
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/24/000044
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approve"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/24/000044 approved
+[STEP] Phase 4: Ledger verification
+[INFO] Captured 5 ledger entries
+[INFO] Sample: Cash - Branch Office (1002)
+[INFO] Verifying debit of 50000 for BILL/2026/04/24/000044 in 1002
+[INFO] Ledger scan attempt 1: 29 rows visible.
+[✓] Found debit entry: 50000.00 (row 10)
+[SUCCESS] Ledger impact verified: debit of 50000 in 1002.
+[STEP] Phase 5: Verifying stock for "Timer 6 pol 12 H"
+[INFO] Attempt 1: Stock 27 (expected: 27)
+[VERIFY] Item: Timer 6 pol 12 H | Initial: 26 | Received: 1 | Final: 27 | Expected: 27
+[RESULT] Purchase Impact: PASSED

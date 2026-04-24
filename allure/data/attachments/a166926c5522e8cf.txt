@@ -1,0 +1,35 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 246.33ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 904.44ms
+[OK] Discovered: "steam door 78x2.02" via API | Initial Stock: 21
+[STEP] Phase 2: Creating Sales Order via API for steam door 78x2.02
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 271.45ms
+[SUCCESS] Sales Order created via API: SO/2026/04/24/000016 (ID: 4ea816ff-5c25-4113-a6cb-c77b14b3b86b, ItemID: 172ef4cb-fc16-4e6f-993f-015d2475b6d7)
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "review"
+[ACTION] Status changed to "review" → Clicking: "Submit For Approval"
+[INFO] Approval status: "approve"
+[ACTION] Status changed to "approve" → Clicking: "Advance"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Sales Order SO/2026/04/24/000016 approved (Released)
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/24/000016
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 248.45ms
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[OK] Invoice undefined created and approved via API+UI flow
+[STEP] Verifying stock deduction via API
+[VERIFY] Expected: 20 | Found: 21

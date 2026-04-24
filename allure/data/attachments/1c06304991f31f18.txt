@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 458.91ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1022.39ms
+[OK] Discovered via API: "Jacuzzi Lanzarote" | Stock: 7
+[INFO] Item Unit Cost: 76459.27 | Chosen Adjustment Qty: 1 (Total: 76459.27)
+[STEP] Phase 2: Creating Adjustment API (Increase by 1 units)
+[PERFORMANCE] API - Inventory Adjustment: 288.42ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/24/000010 (ID: ff79e0af-6482-4971-bf70-311fafc45156)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/24/000010
+[API] Advancing inventory-adjustments "ff79e0af-6482-4971-bf70-311fafc45156" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1652.09ms
+[OK] Adjustment ADJ/2026/04/24/000010 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "Jacuzzi Lanzarote" (Polling for sync)
+[POLL] Attempt 1: Found 8 | Expected 8
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 1 units
