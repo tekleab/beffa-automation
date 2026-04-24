@@ -12,13 +12,14 @@ on:
           - regression
           - full
       company:
-        description: |
-          Company name to test against.
-          Leave blank to use the default (smoke test).
-          Examples: "smoke test", "production", "staging"
+        description: 'Company name to test against (from dropdown list)'
         required: false
         default: 'smoke test'
-        type: string
+        type: choice
+        options:
+          - 'smoke test'
+          - 'staging'
+          - 'production'
   push:
     branches:
       - main
