@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 496.03ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 16
+[SUCCESS] "Purchase Order Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2610.58ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1982.81ms
+[INFO] Vendor: KAMARIYA PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1990.43ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2128.20ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1880.00ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1949.43ms
+[PERFORMANCE] UI - Random Selection: Location: 1953.30ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2012.73ms
+[PERFORMANCE] UI - Random Selection: Tax: 2010.61ms
+[OK] Line item added (Price: 8575)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/24/000037 | Vendor: KAMARIYA PLC
+[API] Advancing purchase-orders "e1af572a-21e4-4c2c-8955-9e41b6e8386f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 4216.31ms
+[OK] PO PO/2026/04/24/000037 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/24/000037
+[INFO] Matching vendor: KAMARIYA PLC
+[ACTION] Searching for: "KAMARIYA PLC"
+[INFO] Tier 2 - exact in overlay: "KAMARIYA PLC"
+[SUCCESS] Selected: "KAMARIYA PLC"
+[PERFORMANCE] UI - Smart Search: KAMARIYA PLC: 4068.39ms
+[INFO] Linking PO: PO/2026/04/24/000037
+[ACTION] Searching for: "PO/2026/04/24/000037"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/24/000037"
+[SUCCESS] Selected: "PO/2026/04/24/000037"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/24/000037: 3787.24ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 16
+[SUCCESS] "Invoice Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2405.39ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 20
+[SUCCESS] "Due Date" set to Day 20 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2378.32ms
+[INFO] Dates: Invoice Day 16, Due Day 20
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1850.97ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/24 | Vendor: KAMARIYA PLC
+[API] Advancing bills "9b7d40ae-7dac-44d1-8875-197dfd93d06e" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4781.54ms
+[OK] Bill BILL/2026/04/24 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/24 in vendor profile
+[VERIFY] Entity: KAMARIYA PLC | Doc: BILL/2026/04/24 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/5968f0d9-62dc-4639-8af5-00b1c0cc60e4/detail
+[SUCCESS] BILL/2026/04/24 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/24/000037 -> Bill BILL/2026/04/24
