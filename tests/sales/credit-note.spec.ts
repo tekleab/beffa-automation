@@ -10,7 +10,11 @@ test.describe('Sales — Credit Note (Return Flow) @regression', () => {
         // Stage 1: Setup Invoice via API (High Speed)
         console.log('[STEP] Stage 1: Creating fresh Invoice via API');
         const itemResult = await app.captureRandomItemDataAPI();
-        const so = await app.createSalesOrderAPI({ itemId: itemResult.itemId });
+        const so = await app.createSalesOrderAPI({ 
+            itemId: itemResult.itemId,
+            locationId: itemResult.locationId,
+            warehouseId: itemResult.warehouseId
+        });
         await page.goto(`/receivables/sale-orders/${so.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
 

@@ -36,44 +36,146 @@ export class SalesAPI extends BasePage {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
-  async createSalesOrderAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; customerId: string; soItemId: string | null; status?: number; error?: string }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+  async discoverMetadataAPI(): Promise<{ arAccountId: string; salesAccountId: string; customerId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string }> {
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}` };
 
-    // Defaults from known BEFA environment
-    const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
-    const warehouses = ['cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4'];
-    const locations = ['2595ebb0-4e78-4bc5-9321-140d3fd316c7'];
-    const arAccounts = ['20c381e1-4d14-4ab1-8e7e-dee2937b4a64'];
-    const taxes = ['b017352f-f454-45e2-85ef-e327f90d8f9c', '8da036a5-9185-4043-bfb5-b146aac78412'];
+    const safeJson = async (resp: any, label: string) => {
+      const text = await resp.text();
+      if (!resp.ok()) throw new Error(`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`);
+      try { return JSON.parse(text); } catch (e) {
+        throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`);
+      }
+    };
+
+    console.log('[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...');
+
+    // 1. Fetch Accounts — API returns type as nested object: {id, name, type}
+    const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });
+    const accData = await safeJson(accResp, 'Accounts Discovery');
+    const allAccounts = accData.items || accData.data || [];
+
+    // Precise AR account: name='Accounts Receivable', type.name='Trade & Other Receivables'
+    const arAccount =
+      allAccounts.find((a: any) => a.name?.toLowerCase() === 'accounts receivable') ||
+      allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('trade') && a.name?.toLowerCase().includes('receivable')) ||
+      allAccounts.find((a: any) => a.type?.type?.toLowerCase() === 'accounts receivable') ||
+      allAccounts[0];
+
+    // Sales/Revenue account for line item GL mapping
+    const salesAccount =
+      allAccounts.find((a: any) => a.name?.toLowerCase() === 'sales') ||
+      allAccounts.find((a: any) => a.type?.type?.toLowerCase().includes('revenue')) ||
+      arAccount;
+
+    console.log(`[META] AR Account: "${arAccount?.name}" (${arAccount?.id})`);
+    console.log(`[META] Sales Account: "${salesAccount?.name}" (${salesAccount?.id})`);
+
+    // 2. Fetch Customer
+    const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
+    const custData = await safeJson(custResp, 'Customer Discovery');
+    const customer = custData.items?.[0] || custData.data?.[0];
+
+    // 3. Fetch Currency
+    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currData = await safeJson(currResp, 'Currency Discovery');
+    const currency = currData.items?.[0] || currData.data?.[0];
+
+    // 4. Fetch Tax
+    const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+    const taxData = await safeJson(taxResp, 'Tax Discovery');
+    const tax = taxData.items?.[0] || taxData.data?.[0];
+
+    // 5. Fetch Location/Warehouse
+    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+    let locationId = '', warehouseId = '';
+    if (locResp.ok()) {
+      const locData = await locResp.json();
+      const firstLoc = (locData.items || locData.data || [])[0];
+      if (firstLoc) {
+        locationId = firstLoc.id;
+        warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id || '';
+        console.log(`[META] Location: "${firstLoc.name}" (${locationId}) | Warehouse: ${warehouseId}`);
+      }
+    }
+
+    if (!arAccount || !customer) throw new Error('Metadata Discovery Failed: Missing Account or Customer records.');
+
+    return {
+      arAccountId: arAccount.id,
+      salesAccountId: salesAccount?.id || arAccount.id,
+      customerId: customer.id,
+      currencyId: currency?.id || '',
+      taxId: tax?.id || '',
+      locationId,
+      warehouseId
+    };
+  }
+
+  async createSalesOrderAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; customerId: string; soItemId: string | null; status?: number; error?: string }> {
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+
+    // Discover live company environment
+    const meta = await this.discoverMetadataAPI();
+
+    // Dynamically fallback locations if not provided
+    let locationId = data.locationId;
+    let warehouseId = data.warehouseId;
+    if (!locationId || !warehouseId) {
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+      if (locResp.ok()) {
+        const locData = await locResp.json();
+        const firstLoc = (locData.items || locData.data || [])[0];
+        if (firstLoc) {
+          locationId = locationId || firstLoc.id;
+          warehouseId = warehouseId || firstLoc.warehouse_id || firstLoc.warehouse?.id;
+        }
+      }
+    }
 
     const quantity = data.quantity || 1;
     const unitPrice = data.unitPrice || 10993.05;
     const amount = quantity * unitPrice;
 
     const payload = {
-      accounts_receivable_id: data.arAccountId || arAccounts[0],
-      currency_id: data.currencyId || '50567982-ee2f-4391-9400-3149067443a5',
-      customer_id: data.customerId || customers[Math.floor(Math.random() * customers.length)],
+      accounts_receivable_id: data.arAccountId || meta.arAccountId,
+      currency_id: data.currencyId || meta.currencyId,
+      customer_id: data.customerId || meta.customerId,
       so_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z', // 📅 FIXED FIELD
       so_items: [{
         amount,
         item_id: data.itemId, // REQUIRED: must pass the item UUID
         quantity,
         unit_price: unitPrice,
-        general_ledger_account_id: data.glAccountId || arAccounts[0],
-        warehouse_id: data.warehouseId || warehouses[0],
-        location_id: data.locationId || locations[0],
-        tax_id: data.taxId || taxes[Math.floor(Math.random() * taxes.length)],
+        general_ledger_account_id: data.glAccountId || meta.arAccountId,
+        warehouse_id: warehouseId,
+        location_id: locationId,
+        tax_id: data.taxId || meta.taxId,
         description: data.description || 'E2E Speed Track'
       }],
       status: 'draft'
     };
 
-    const token = await this._getAuthToken();
     await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
+    const response = await this.page.request.post(`${apiBase}/sales-orders?${params}`, {
       data: payload,
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers
     });
     await this.stopTacticalTimer('Create Sales Order', 'API');
 
@@ -89,17 +191,24 @@ export class SalesAPI extends BasePage {
   }
 
   async createInvoiceAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; status?: number; error?: string }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    const arAccounts = ['20c381e1-4d14-4ab1-8e7e-dee2937b4a64', '8479ad17-541c-4b85-a371-59f0536ba6e9'];
+    // Discover live company environment
+    const meta = await this.discoverMetadataAPI();
 
     const now = new Date();
     const dueDate = new Date();
     dueDate.setDate(now.getDate() + 30);
 
     const payload = {
-      accounts_receivable_id: data.arAccountId || arAccounts[0],
-      currency_id: data.currencyId || '50567982-ee2f-4391-9400-3149067443a5',
+      accounts_receivable_id: data.arAccountId || meta.arAccountId,
+      currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId, // REQUIRED: must match the SO customer
       invoice_date: now.toISOString().split('T')[0] + 'T00:00:00Z',
       due_date: dueDate.toISOString().split('T')[0] + 'T00:00:00Z',
@@ -112,9 +221,9 @@ export class SalesAPI extends BasePage {
 
     const token = await this._getAuthToken();
     await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+    const response = await this.page.request.post(`${apiBase}/invoices?${params}`, {
       data: payload,
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     await this.stopTacticalTimer('Create Invoice', 'API');
 
@@ -129,38 +238,46 @@ export class SalesAPI extends BasePage {
   }
 
   async createStandaloneInvoiceAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; amountDue: number; customerId: string }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
-    const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
-    const custId = data.customerId || customers[1];
-
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    
+    // Discover live company environment
+    const meta = await this.discoverMetadataAPI();
+    
+    const custId = data.customerId || meta.customerId;
     const unitPrice = data.unitPrice || 10993.05;
     const q = data.quantity || 1;
     const amount = q * unitPrice;
 
-    const payload = {
-      accounts_receivable_id: '998df511-68ea-48b9-b405-9419eb78145b',
+    const payload: Record<string, any> = {
+      accounts_receivable_id: meta.arAccountId,
       customer_id: custId,
-      invoice_date: new Date().toISOString(),
-      due_date: new Date(Date.now() + 86400000 * 2).toISOString(),
-      currency_id: '50567982-ee2f-4391-9400-3149067443a5',
+      invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] + 'T00:00:00Z',
+      currency_id: meta.currencyId,
       items: [{
         amount: amount,
-        general_ledger_account_id: '998df511-68ea-48b9-b405-9419eb78145b',
+        general_ledger_account_id: meta.salesAccountId,
         item_id: data.itemId,
-        location_id: '2595ebb0-4e78-4bc5-9321-140d3fd316c7',
+        location_id: data.locationId || meta.locationId,
         quantity: q,
-        tax_id: 'b017352f-f454-45e2-85ef-e327f90d8f9c',
         unit_price: unitPrice,
-        warehouse_id: 'cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4',
+        warehouse_id: data.warehouseId || meta.warehouseId,
       }],
-      released_sales_order_items: [],
-      sales_order_id: '00000000-0000-0000-0000-000000000000'
+      released_sales_order_items: []
+      // NOTE: sales_order_id intentionally omitted (null crashes backend)
     };
+    console.log('[META] Standalone Invoice Payload:', JSON.stringify(payload, null, 2));
 
     const token = await this._getAuthToken();
-    const response = await this.page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+    const response = await this.page.request.post(`${apiBase}/invoices?${params}`, {
       data: payload,
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
 
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
@@ -170,34 +287,81 @@ export class SalesAPI extends BasePage {
   }
 
   async createReceiptAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
-    const amount = data.amount || Math.floor(Math.random() * 1500000) + 500000;
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-    const customers = ['32f1aeb4-531f-4104-ad07-f3761a97dd06', '256ce173-d504-4345-a6b7-70cead86f135'];
-    const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
-    const glAccounts = ['8b313729-d6cb-4a33-af8b-7f5c880d86c0', '998df511-68ea-48b9-b405-9419eb78145b'];
-    const taxes = ['8da036a5-9185-4043-bfb5-b146aac78412', 'b017352f-f454-45e2-85ef-e327f90d8f9c'];
+    const safeJson = async (resp: any, label: string) => {
+      const text = await resp.text();
+      if (!resp.ok()) {
+        console.error(`[ERROR] ${label} failed (${resp.status()}): ${text.substring(0, 300)}`);
+        throw new Error(`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`);
+      }
+      try { return JSON.parse(text); } catch (e) {
+        console.error(`[ERROR] ${label} returned non-JSON (status ${resp.status()}): ${text.substring(0, 300)}`);
+        throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`);
+      }
+    };
+
+    console.log(`[ACTION] Discovering receipt metadata for company: "${company}"...`);
+
+    // 1. Discover Customer
+    const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
+    const custData = await safeJson(custResp, 'Customer Discovery');
+    const customer = custData.items?.[0] || custData.data?.[0];
+    if (!customer) throw new Error('Receipt Discovery Failed: No customers found in this company.');
+
+    // 2. Discover Business Accounts (Cash + GL)
+    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctData = await safeJson(acctResp, 'Business Accounts Discovery');
+    const allAccounts = acctData.items || acctData.data || [];
+    const cashAccount = allAccounts.find((a: any) =>
+      a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+    ) || allAccounts[0];
+    const glAccount = allAccounts.find((a: any) =>
+      a.account_type?.toLowerCase().includes('receivable')
+    ) || allAccounts[1] || allAccounts[0];
+    if (!cashAccount) throw new Error('Receipt Discovery Failed: No cash/bank accounts found.');
+
+    // 3. Discover Currency
+    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currData = await safeJson(currResp, 'Currency Discovery');
+    const currency = currData.items?.[0] || currData.data?.[0];
+    if (!currency) throw new Error('Receipt Discovery Failed: No currencies found.');
+
+    // 4. Discover Tax
+    const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+    const taxData = await safeJson(taxResp, 'Tax Discovery');
+    const tax = taxData.items?.[0] || taxData.data?.[0];
+
+    const amount = data.amount || Math.floor(Math.random() * 1500000) + 500000;
 
     const payload = {
       amount,
-      cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
-      customer_id: customers[Math.floor(Math.random() * customers.length)],
+      cash_account_id: cashAccount.id,
+      customer_id: customer.id,
       date: new Date().toISOString(),
       payment_method: 'cash',
-      currency_id: '50567982-ee2f-4391-9400-3149067443a5',
+      currency_id: currency.id,
       receipt_items: [{
         amount,
-        general_ledger_account_id: glAccounts[Math.floor(Math.random() * glAccounts.length)],
-        tax_id: taxes[Math.floor(Math.random() * taxes.length)],
-        unit_price: amount, quantity: 1, description: 'E2E Speed Track'
+        general_ledger_account_id: glAccount.id,
+        tax_id: tax?.id || null,
+        unit_price: amount,
+        quantity: 1,
+        description: 'E2E Dynamic Discovery - Speed Track'
       }]
     };
 
-    const token = await this._getAuthToken();
-    const response = await this.page.request.post(`${apiBase}/receipts`, {
-      data: payload,
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
-    });
+    console.log(`[ACTION] Creating receipt: Customer="${customer.name}" | CashAcct="${cashAccount.name}" | Currency="${currency.name}"`);
+    const response = await this.page.request.post(`${apiBase}/receipts?${params}`, { data: payload, headers });
 
     if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
@@ -206,14 +370,19 @@ export class SalesAPI extends BasePage {
   }
 
   async reverseInvoiceAPI(invoiceId: string): Promise<boolean> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = 'year=2018&period=yearly&calendar=ec';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'reversed' },
       headers: {
-        'x-company': 'smoke test',
+        'x-company': process.env.BEFFA_COMPANY as string,
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       }
@@ -228,41 +397,70 @@ export class SalesAPI extends BasePage {
   }
 
   async approveInvoiceAPI(invoiceId: string): Promise<boolean> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = 'year=2018&period=yearly&calendar=ec';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
     console.log(`[ACTION] Approving Invoice ${invoiceId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     return response.ok();
   }
 
   async createInvoiceReceiptAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
-    const cashAccounts = ['9375b986-2772-434e-ada2-b1843e465604', 'f17570eb-6533-4249-8eba-e77a4ea92d43'];
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' };
+
+    // Discover Cash Account dynamically
+    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    let cashAccountId;
+    if (acctResp.ok()) {
+      const acctData = await acctResp.json();
+      const allAccounts = acctData.items || acctData.data || [];
+      const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
+      if (cashAcct) cashAccountId = cashAcct.id;
+    }
+
+    // Discover Currency dynamically
+    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    let currencyId;
+    if (currResp.ok()) {
+      const currData = await currResp.json();
+      const currency = currData.items?.[0] || currData.data?.[0];
+      if (currency) currencyId = currency.id;
+    }
 
     const payload = {
       amount: data.amount,
-      cash_account_id: cashAccounts[Math.floor(Math.random() * cashAccounts.length)],
+      cash_account_id: cashAccountId,
       customer_id: data.customerId, // MUST match the invoice customer
       date: new Date().toISOString(),
       payment_method: 'cash',
-      currency_id: '50567982-ee2f-4391-9400-3149067443a5',
+      currency_id: currencyId,
       invoice_receipts: [{
         amount: data.amount,
         invoice_id: data.invoiceId // The target invoice UUID
       }]
     };
 
-    const token = await this._getAuthToken();
-    const response = await this.page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
+    const response = await this.page.request.post(`${apiBase}/receipts?${params}`, {
       data: payload,
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+      headers
     });
-
     if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
     console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id}) for Invoice ${data.invoiceId}`);
@@ -270,20 +468,29 @@ export class SalesAPI extends BasePage {
   }
 
   async getInvoiceAPI(invoiceId: string): Promise<any> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const response = await this.page.request.get(`${apiBase}/invoice/${invoiceId}?year=2018&period=yearly&calendar=ec`, {
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+
+    const response = await this.page.request.get(`${apiBase}/invoice/${invoiceId}?${params}`, {
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(() => 'No Response')}`);
     return await response.json();
   }
 
   async getCustomerNameAPI(customerId: string): Promise<string> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const response = await this.page.request.get(`${apiBase}/contacts/customers?search=${customerId}`, {
-      headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+    const response = await this.page.request.get(`${apiBase}/customers?search=${customerId}`, {
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok()) return 'System Customer';
     const json = await response.json();

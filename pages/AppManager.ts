@@ -77,6 +77,7 @@ export class AppManager {
     this.api.inventory._getAuthToken = this.auth._getAuthToken.bind(this.auth);
 
     this.ui.shared.smartSearch = this.base.smartSearch.bind(this.base);
+    // this.ui.shared.smartApprove = this.base.smartApprove.bind(this.base);
     this.ui.purchase.smartSearch = this.base.smartSearch.bind(this.base);
     this.ui.sales.smartSearch = this.base.smartSearch.bind(this.base);
     this.ui.inventory.smartSearch = this.base.smartSearch.bind(this.base);
@@ -91,6 +92,7 @@ export class AppManager {
   async switchCompany(...args: Parameters<AuthManager['switchCompany']>) { return await this.auth.switchCompany(...args); }
   async smartSearch(...args: Parameters<BasePage['smartSearch']>) { return await this.base.smartSearch(...args); }
   async handleApprovalFlow(...args: Parameters<SharedUI['handleApprovalFlow']>) { return await this.ui.shared.handleApprovalFlow(...args); }
+  // smartApprove removed — approval is handled entirely by SharedUI.handleApprovalFlow
   async _handleReviewerSelection(...args: Parameters<SharedUI['_handleReviewerSelection']>) { return await this.ui.shared._handleReviewerSelection(...args); }
   getTransactionDates(...args: Parameters<BasePage['getTransactionDates']>) { return this.base.getTransactionDates(...args); }
   async getActiveCalendarDay(...args: Parameters<BasePage['getActiveCalendarDay']>) { return await this.base.getActiveCalendarDay(...args); }

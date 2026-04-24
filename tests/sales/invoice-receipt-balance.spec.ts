@@ -20,9 +20,10 @@ test.describe('Invoice-Receipt Balance Flow @regression', () => {
         console.log(`[STEP] Phase 2: Creating standalone invoice for "${initialInfo.itemName}"`);
         const invResult = await app.createStandaloneInvoiceAPI({
             itemId: initialInfo.itemId,
+            locationId: initialInfo.locationId,
+            warehouseId: initialInfo.warehouseId,
             quantity: 1,
-            unitPrice: 10993.05,
-            customerId: '256ce173-d504-4345-a6b7-70cead86f135'
+            unitPrice: 10993.05
         });
         const originalAmount = invResult.amountDue;
         const invID = invResult.ref;

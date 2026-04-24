@@ -1,38 +1,9 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { BasePage } from '../lib/BasePage';
 
-export class PurchasePage {
-  page: Page;
-  emailInput: Locator;
-  passwordInput: Locator;
-  loginBtn: Locator;
-  mainPhoneInput: Locator;
-  customerNameInput: Locator;
-  customerTinInput: Locator;
-  approvedStatus: string;
-  actionButtons: string;
-  companyBtn: Locator;
-  smartSearch!: (...args: any[]) => Promise<void>;
-  fillDate!: (...args: any[]) => Promise<void>;
-
+export class PurchasePage extends BasePage {
   constructor(page: Page) {
-    this.page = page;
-
-    // Login selectors
-    this.emailInput = page.getByRole('textbox', { name: 'Email *' });
-    this.passwordInput = page.getByRole('textbox', { name: 'Password *' });
-    this.loginBtn = page.getByRole('button', { name: 'Login' });
-
-    // --- Customer Module Selectors ---
-    this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
-    this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
-    this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
-
-    // Status and Button Selectors
-    this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
-    this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
-
-    // Company Switcher Selectors (Top-left)
-    this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
+    super(page);
   }
 
   async findApprovedUnpaidBill(): Promise<{ vendorName: string; billNumber: string } | null> {
@@ -41,6 +12,24 @@ export class PurchasePage {
     await this.page.waitForSelector('table tbody tr', { timeout: 30000 });
     await this.page.waitForTimeout(3000); // Stabilization
 
+    // 🗺️ Build column map by reading the actual <th> headers from the table
+    const buildColMap = async (): Promise<Record<string, number>> => {
+      const headers = this.page.locator('table thead th');
+      const count = await headers.count();
+      const map: Record<string, number> = {};
+      for (let h = 0; h < count; h++) {
+        const text = (await headers.nth(h).innerText().catch(() => '')).trim().toLowerCase();
+        if (text) map[text] = h;
+      }
+      return map;
+    };
+    const colMap = await buildColMap();
+    // Fallback to known column positions from the bills table screenshot
+    const idxBill   = colMap['invoice no'] ?? colMap['bill number'] ?? colMap['reference'] ?? 1;
+    const idxVendor = colMap['vendor'] ?? 2;
+    const idxPaid   = colMap['paid'] ?? 3;
+    const idxNet    = colMap['net due'] ?? 4;
+
     const rows = this.page.locator('table tbody tr');
     const count = await rows.count();
 
@@ -48,26 +37,27 @@ export class PurchasePage {
       const row = rows.nth(i);
       const cells = row.locator('td');
 
-      const billId = (await cells.nth(1).innerText().catch(() => '')).trim();
-      const vendor = (await cells.nth(2).innerText().catch(() => '')).trim();
-      const paid = (await cells.nth(4).innerText().catch(() => '')).trim().toLowerCase();
-      const netDueRaw = (await cells.nth(5).innerText().catch(() => '')).trim();
+      const billId    = (await cells.nth(idxBill).innerText().catch(() => '')).trim();
+      const vendor    = (await cells.nth(idxVendor).innerText().catch(() => '')).trim();
+      const paid      = (await cells.nth(idxPaid).innerText().catch(() => '')).trim().toLowerCase();
+      const netDueRaw = (await cells.nth(idxNet).innerText().catch(() => '')).trim();
 
-      // EXTREMELY ROBUST STATUS DETECTION: Look for the first badge or non-empty action text
+      // Status: prefer the badge element, fallback to reading the Status column
       let status = '';
       const badge = row.locator('.chakra-badge').first();
       if (await badge.isVisible({ timeout: 500 }).catch(() => false)) {
         status = (await badge.innerText()).trim().toLowerCase();
       } else {
-        // Fallback: look at index 6 or 7
-        status = (await cells.nth(6).innerText().catch(() => '')).trim().toLowerCase();
-        if (!status) status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+        const idxStatus = colMap['status'] ?? 5;
+        status = (await cells.nth(idxStatus).innerText().catch(() => '')).trim().toLowerCase();
       }
 
       const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
       console.log(`[CHECK] Row ${i + 1} (${billId}): Paid? "${paid}", Net Due: ${netDue}, Status: "${status}"`);
 
-      if (paid === 'no' && netDue > 0 && status === 'approved') {
+      const isUnpaid = paid.includes('no') || paid.includes('unpaid') || paid === '';
+
+      if (isUnpaid && netDue > 0 && status === 'approved') {
         console.log(`[SUCCESS] Found unpaid vendor match: "${vendor}" (Bill: ${billId})`);
         return { vendorName: vendor, billNumber: billId };
       }
@@ -92,6 +82,16 @@ export class PurchasePage {
       return 0;
     }
 
+    // Discover column for "Remaining" by reading the receipt tab table headers
+    const receiptHeaders = this.page.locator('table thead th');
+    const hCount = await receiptHeaders.count();
+    const receiptColMap: Record<string, number> = {};
+    for (let h = 0; h < hCount; h++) {
+      const text = (await receiptHeaders.nth(h).innerText().catch(() => '')).trim().toLowerCase();
+      if (text) receiptColMap[text] = h;
+    }
+    const idxRemaining = receiptColMap['remaining'] ?? receiptColMap['unreceived'] ?? receiptColMap['qty remaining'] ?? 6;
+
     // Process first row for standard testing
     const row = rows.first();
 
@@ -111,9 +111,9 @@ export class PurchasePage {
     }
     await this.page.waitForTimeout(1000); // ⚡ Wait for reactive re-render to enable input
 
-    // 2. Read Remaining (7th column / index 6 based on current ERP layout)
+    // 2. Read Remaining
     const tdList = row.locator('td');
-    const remainingText = await tdList.nth(6).innerText().catch(() => "1");
+    const remainingText = await tdList.nth(idxRemaining).innerText().catch(() => "1");
     const remaining = Math.max(1, parseInt(remainingText.replace(/[^0-9]/g, '')) || 1);
 
     // 3. Choose random quantity (1 to remaining)
@@ -134,7 +134,7 @@ export class PurchasePage {
 
     await this.page.waitForTimeout(1000); // Allow totals to calculate
     console.log(`[SUCCESS] PO Line Item received (${toReceive}) and selected.`);
-    return toReceive; // ⚡ Return the quantity for impact verification
+    return toReceive;
   }
 
   async captureRandomVendorDetails(): Promise<{ vendorName: string; vendorId: string | undefined }> {

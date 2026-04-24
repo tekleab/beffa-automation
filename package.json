@@ -6,17 +6,20 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npm run test:unit && npx playwright test --project=Inventory --project=Purchases --project=Sales",
+    "test": "npm run test:unit && node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales",
     "test:unit": "vitest run",
     "test:ui": "vitest --ui",
-    "test:smoke": "npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @smoke",
-    "test:regression": "npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @regression",
-    "test:full": "npx playwright test --project=Inventory --project=Purchases --project=Sales",
-    "test:ordered": "npm run clean && npx playwright test --project=Inventory && npx playwright test --project=Purchases && npx playwright test --project=Sales",
+    "test:smoke": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales --grep @smoke",
+    "test:regression": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales --grep @regression",
+    "test:full": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales",
+    "test:ordered": "npm run clean && node scripts/select-company.mjs --project=Inventory && node scripts/select-company.mjs --project=Purchases && node scripts/select-company.mjs --project=Sales",
     "clean": "rm -rf test-results/ allure-results/ recordings/ artifacts/ coverage/",
     "allure:generate": "npx allure generate allure-results --clean -o allure-report && npx ts-node scripts/latency-tracker.ts",
     "latency:track": "npx ts-node scripts/latency-tracker.ts",
-    "report:allure": "npm run allure:generate && npx allure open allure-report"
+    "report:allure": "npm run allure:generate && npx allure open allure-report",
+    "_comment_company": "--- Direct bypassing of selector: BEFFA_COMPANY='name' npx playwright test ---",
+    "test:smoke:direct": "npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @smoke",
+    "test:regression:direct": "npx playwright test --project=Inventory --project=Purchases --project=Sales --grep @regression"
   },
   "keywords": [],
   "author": "Tekleab",

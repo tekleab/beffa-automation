@@ -29,7 +29,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         console.log('[ACTION] Sending PO with null vendor_id...');
         const response = await page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -53,7 +53,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         console.log('[ACTION] Sending PO with negative quantity...');
         const response = await page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -74,7 +74,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         console.log('[ACTION] Sending Bill with empty items list...');
         const response = await page.request.post(`${apiBase}/bills?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -100,7 +100,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         console.log('[ACTION] Sending Payment with null cash_account...');
         const response = await page.request.post(`${apiBase}/payments?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -114,7 +114,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         console.log('[ACTION] Sending PO with INVALID token...');
         const response = await page.request.post(`${apiBase}/purchase-orders`, {
             data: { vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208" },
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer INVALID_TOKEN` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer INVALID_TOKEN` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -142,7 +142,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
                 vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208",
                 items: [{ po_item_id: "00000000-0000-0000-0000-000000000000", quantity: 1 }]
             },
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);
@@ -169,7 +169,7 @@ test.describe('Purchase Negative API Tests @negative', () => {
         console.log('[ACTION] Sending PO with extreme numeric values...');
         const response = await page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
             data: payload,
-            headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
 
         console.log(`[OK] Received status: ${response.status()}`);

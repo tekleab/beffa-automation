@@ -28,6 +28,8 @@ test.describe('Inventory Adjustment Flow @regression', () => {
         const adjResult = await app.createInventoryAdjustmentAPI({
             itemId: initial.itemId,
             adjustedQuantity: adjQty,
+            locationId: initial.locationId,
+            warehouseId: initial.warehouseId,
             isWriteDown: false, // False = Increase in ERP logic
             reason: "Inventory audit addition"
         });

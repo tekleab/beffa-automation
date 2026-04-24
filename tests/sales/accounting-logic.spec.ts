@@ -20,8 +20,12 @@ test.describe('Accounting Logic Flow @regression', () => {
         // Fetch random customer via API
         console.log('[STEP] Fetching random customer via API');
         const token = await app._getAuthToken();
-        const custRes = await page.request.get(`http://157.180.20.112:8001/api/customers?year=2018&period=yearly&calendar=ec&page=1&pageSize=30`, {
-            headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+        let baseUrl = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+        if (baseUrl.includes(':4173')) baseUrl = baseUrl.replace(':4173', ':8001');
+        const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+        
+        const custRes = await page.request.get(`${baseUrl}/api/customers?${params}&page=1&pageSize=30`, {
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
         });
         const custJson = await custRes.json();
         const randomCustomer = custJson.data[Math.floor(Math.random() * custJson.data.length)];
@@ -36,7 +40,9 @@ test.describe('Accounting Logic Flow @regression', () => {
             itemId: initialInfo.itemId,
             quantity: 1,
             unitPrice: 1545.50,
-            customerId: customerUUID
+            customerId: customerUUID,
+            locationId: initialInfo.locationId,
+            warehouseId: initialInfo.warehouseId
         };
         const so = await app.createSalesOrderAPI(soPayload);
         console.log(`[OK] Sales Order created: ${so.ref}`);

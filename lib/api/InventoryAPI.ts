@@ -37,12 +37,56 @@ export class InventoryAPI extends BasePage {
   }
 
   async createInventoryAdjustmentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; error?: string }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = {
+      'x-company': process.env.BEFFA_COMPANY as string,
+      'Authorization': token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json'
+    };
 
-    // Defaults from user capture
-    const warehouseId = data.warehouseId || 'cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4';
-    const locationId = data.locationId || '2595ebb0-4e78-4bc5-9321-140d3fd316c7';
-    const adjustmentAccountId = data.adjustmentAccountId || 'f17570eb-6533-4249-8eba-e77a4ea92d43';
+    // Safe JSON helper: reads as text first, skips silently if the response is HTML
+    const safeJson = async (resp: any): Promise<any | null> => {
+      const text = await resp.text();
+      if (!text.trim().startsWith('{') && !text.trim().startsWith('[')) {
+        console.log(`[WARN] API response was not JSON (likely HTML). Skipping discovery.`);
+        return null;
+      }
+      try { return JSON.parse(text); } catch { return null; }
+    };
+
+    // 1. Discover Adjustment Account dynamically
+    let adjustmentAccountId = data.adjustmentAccountId;
+    if (!adjustmentAccountId) {
+      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      const acctData = await safeJson(acctResp);
+      if (acctData) {
+        const allAccounts = acctData.items || acctData.data || [];
+        const expAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense') || a.account_type?.toLowerCase().includes('cost')) || allAccounts[0];
+        if (expAcct) adjustmentAccountId = expAcct.id;
+      }
+    }
+
+    // 2. Discover Locations dynamically if not provided
+    let locationId = data.locationId;
+    let warehouseId = data.warehouseId;
+    if (!locationId || !warehouseId) {
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+      const locData = await safeJson(locResp);
+      if (locData) {
+        const firstLoc = (locData.items || locData.data || [])[0];
+        if (firstLoc) {
+          locationId = locationId || firstLoc.id;
+          warehouseId = warehouseId || firstLoc.warehouse_id || firstLoc.warehouse?.id;
+        }
+      }
+    }
 
     const payload = {
       adjusted_by: 'quantity',
@@ -60,15 +104,10 @@ export class InventoryAPI extends BasePage {
       status: 'draft'
     };
 
-    const token = await this._getAuthToken();
     await this.startTacticalTimer();
-    const response = await this.page.request.post(`${apiBase}/inventory-adjustments?year=2018&period=yearly&calendar=ec`, {
+    const response = await this.page.request.post(`${apiBase}/inventory-adjustments?${params}`, {
       data: payload,
-      headers: {
-        'x-company': 'smoke test',
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json'
-      }
+      headers
     });
     await this.stopTacticalTimer('Inventory Adjustment', 'API');
 
@@ -83,72 +122,115 @@ export class InventoryAPI extends BasePage {
     return { success: true, ref: json.ref, id: json.id };
   }
 
-  async captureRandomItemDataAPI(): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number }> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+  async captureRandomItemDataAPI(): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number; locationId?: string; warehouseId?: string }> {
+    // 🛡️ SMART PORT RESOLVER: Backend is usually 8001, Frontend is 4173.
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    
+    // If the URL accidentally points to the frontend port, force it to 8001 for API
+    if (apiBase.includes(':4173')) {
+      apiBase = apiBase.replace(':4173', ':8001');
+    }
+    
+    // Ensure /api suffix exists
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    
     const token = await this._getAuthToken();
-    // 🛡️ ERP system is currently in 2018 Ethiopian Calendar (2026 GC)
-    const params = 'page=1&pageSize=50&year=2018&period=yearly&calendar=ec';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `page=1&pageSize=50&year=${year}&period=${period}&calendar=${calendar}`;
 
-    console.log('[ACTION] Discovering random item via API (Year 2018)...');
+    console.log(`[ACTION] Discovering random item via API (Year ${year})...`);
     await this.startTacticalTimer();
-    const response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
-      headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+    
+    // The previous error was due to hitting the frontend port 4173. 
+    // Now that the port is fixed (8001), the correct list endpoint is indeed the plural /inventory-items.
+    let response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
+
+    if (!response.ok()) {
+       console.log(`[WARN] /inventory-items failed (${response.status()}). Trying fallback: /items`);
+       response = await this.page.request.get(`${apiBase}/items?${params}`, {
+         headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+       });
+    }
     await this.stopTacticalTimer('Item Discovery (50 Records)', 'API');
 
-    if (!response.ok()) throw new Error(`Item API discovery failed: ${response.status()}`);
+    const safeJson = async (resp: any, label: string) => {
+      const text = await resp.text();
+      if (!resp.ok()) throw new Error(`${label} HTTP ${resp.status()}: ${text.substring(0, 150)}`);
+      try { return JSON.parse(text); } catch (e) {
+        throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`);
+      }
+    };
 
-    const json = await response.json();
+    const json = await safeJson(response, 'Item Discovery');
     const list = json.data || json.items || [];
 
-    // 🛡️ Optimized logic: Filter items that have stock in ANY location
     const items = list.filter((i: any) => {
-      const locationStock = (i.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
-      return (i.current_stock > 0) || (i.quantity > 0) || (locationStock > 0);
+      const locations = i.inventory_item_locations || [];
+      const locationStock = locations.reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
+      // STRICT REQUIREMENT: Item must have explicit location data linked to it to avoid 422 mismatch
+      return locations.length > 0 && ((i.current_stock > 0) || (i.quantity > 0) || (locationStock > 0));
     });
 
     if (items.length === 0) throw new Error('No items with stock found via API');
 
     const target = items[Math.floor(Math.random() * Math.min(items.length, 10))];
 
-    // Extract stock from locations for the selected target
     const stock = (target.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
       || target.current_stock || target.quantity || 0;
+
+    const firstLoc = target.inventory_item_locations?.[0];
 
     return {
       itemName: target.name,
       itemId: target.id,
       currentStock: stock,
-      unitCost: target.unit_cost || 0
+      unitCost: target.unit_cost || 0,
+      locationId: firstLoc?.location_id,
+      warehouseId: firstLoc?.location?.warehouse_id
     };
   }
 
   async getItemDetailsAPI(itemId: string): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number } | null> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = 'year=2018&period=yearly&calendar=ec';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+
+    const safeJson = async (resp: any): Promise<any | null> => {
+      const text = await resp.text();
+      if (!text.trim().startsWith('{') && !text.trim().startsWith('[')) return null;
+      try { return JSON.parse(text); } catch { return null; }
+    };
 
     let response = await this.page.request.get(`${apiBase}/inventory-item/${itemId}?${params}`, {
-      headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
 
-    if (!response.ok()) {
-      console.log(`[INFO] Direct Item API for ${itemId} failed (${response.status()}). Trying search...`);
+    const json = await safeJson(response);
+
+    if (!json) {
+      console.log(`[INFO] Direct Item API for ${itemId} failed (un-parseable). Trying search...`);
       // 🛡️ Try search with the plural endpoint (guessed based on singular)
       const searchResp = await this.page.request.get(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
-        headers: { 'x-company': 'smoke test', 'Authorization': `Bearer ${token}` }
+        headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
       });
-      if (!searchResp.ok()) {
-        console.log(`[INFO] Search Item API failed: ${searchResp.status()}`);
-        return null;
+      const searchJson = await safeJson(searchResp);
+      if (!searchJson) {
+         console.log(`[INFO] Search Item API failed: un-parseable JSON response.`);
+         return null;
       }
-      const searchJson = await searchResp.json();
       const item = searchJson.items?.[0] || searchJson.data?.[0]; // Support different response keys
       if (!item) return null;
       return { itemName: item.name, itemId: item.id, currentStock: item.current_stock || 0, unitCost: item.unit_cost || 0 };
     }
-
-    const json = await response.json();
     const stock = (json.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
       || json.current_stock || json.quantity || 0;
 
@@ -161,16 +243,31 @@ export class InventoryAPI extends BasePage {
   }
 
   async getJournalEntriesAPI(receiptId: string): Promise<Array<{ accountCode: string; accountName: string; debit: string; credit: string }>> {
-    const apiBase = 'http://157.180.20.112:8001/api';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    
     console.log(`[ACTION] Fetching Journal via API for UUID: ${receiptId}`);
-    const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}`, {
-      headers: { 'x-company': 'smoke test', 'Authorization': token ? `Bearer ${token}` : '' }
+    const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}?${params}`, {
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
 
-    if (!response.ok()) throw new Error(`API Fetch Failed: ${response.status()}`);
-    const json = await response.json();
+    if (!response.ok()) {
+      console.log(`[WARN] Journals API failed: ${response.status()}`);
+      return [];
+    }
+
+    const text = await response.text();
+    if (!text.trim().startsWith('{') && !text.trim().startsWith('[')) {
+        console.log(`[WARN] Journals API returned non-JSON response.`);
+        return [];
+    }
+
+    const json = JSON.parse(text);
     const journal = json.cash_disbursement_journal;
 
     if (!journal || !journal.journal_entries) {

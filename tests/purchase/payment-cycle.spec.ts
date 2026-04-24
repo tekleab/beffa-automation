@@ -155,7 +155,7 @@ test.describe('Payment Cycle Flow @regression', () => {
         await app.handleApprovalFlow();
 
         if (!page.url().includes('/detail')) {
-            await page.waitForURL(/\/detail$/, { timeout: 30000 }).catch(() => {});
+            await page.waitForURL(/\/detail$/, { timeout: 30000 }).catch(() => { });
         }
         const capturedPaymentNumber = (await page.locator('p.chakra-text').filter({ hasText: /^PAY\// }).first().innerText()).trim();
         console.log(`[OK] Payment finalized: ${capturedPaymentNumber} for ${VENDOR_NAME}`);

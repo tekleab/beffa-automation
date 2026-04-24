@@ -41,6 +41,14 @@ export class SalesPage extends BasePage {
     await this.page.waitForSelector('table tbody tr', { timeout: 30000 });
     await this.page.waitForTimeout(3000);
 
+    // 🗺️ Discover headers dynamically
+    const colMap = await this.getTableColumnMap();
+    const idxInv = colMap['invoice id'] ?? colMap['reference'] ?? 1;
+    const idxCust = colMap['customer'] ?? 2;
+    const idxPaid = colMap['paid'] ?? 5;
+    const idxNet = colMap['net due'] ?? 6;
+    const idxStatus = colMap['status'] ?? 7;
+
     const rows = this.page.locator('table tbody tr');
     const count = await rows.count();
 
@@ -48,14 +56,17 @@ export class SalesPage extends BasePage {
       const row = rows.nth(i);
       const cells = row.locator('td');
 
-      const invId = (await cells.nth(1).innerText().catch(() => '')).trim();
-      const customer = (await cells.nth(2).innerText().catch(() => '')).trim();
-      const paid = (await cells.nth(5).innerText().catch(() => '')).trim().toLowerCase();
-      const netDueRaw = (await cells.nth(6).innerText().catch(() => '')).trim();
-      const status = (await cells.nth(7).innerText().catch(() => '')).trim().toLowerCase();
+      const invId = (await cells.nth(idxInv).innerText().catch(() => '')).trim();
+      const customer = (await cells.nth(idxCust).innerText().catch(() => '')).trim();
+      const paid = (await cells.nth(idxPaid).innerText().catch(() => '')).trim().toLowerCase();
+      const netDueRaw = (await cells.nth(idxNet).innerText().catch(() => '')).trim();
+      const status = (await cells.nth(idxStatus).innerText().catch(() => '')).trim().toLowerCase();
       const netDue = parseFloat(netDueRaw.replace(/[^\d.]/g, '')) || 0;
 
-      if (paid === 'no' && netDue > 0 && status === 'approved') {
+      // 🛡️ Robust paid check: "no" or "unpaid" or checkbox = false
+      const isUnpaid = paid.includes('no') || paid.includes('unpaid') || paid === '';
+
+      if (isUnpaid && netDue > 0 && status === 'approved') {
         console.log(`[SUCCESS] Found unpaid customer match: "${customer}" (Invoice: ${invId})`);
         return { customerName: customer, invoiceId: invId };
       }

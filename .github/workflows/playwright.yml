@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       test_type:
-        description: 'Select Test Suite to Run'
+        description: 'Test Suite to Run'
         required: true
         default: 'smoke'
         type: choice
@@ -11,6 +11,14 @@ on:
           - smoke
           - regression
           - full
+      company:
+        description: |
+          Company name to test against.
+          Leave blank to use the default (smoke test).
+          Examples: "smoke test", "production", "staging"
+        required: false
+        default: 'smoke test'
+        type: string
   push:
     branches:
       - main
@@ -36,6 +44,8 @@ jobs:
       BASE_URL: ${{ secrets.BASE_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
+      # Priority: manual input > repo secret > hardcoded default
+      BEFFA_COMPANY: ${{ inputs.company || secrets.BEFFA_COMPANY || 'smoke test' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -51,7 +61,7 @@ jobs:
 
     - name: Get installed Playwright version
       id: playwright-version
-      run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_ENV
+      run: echo "version=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
 
     - name: Cache playwright binaries
       uses: actions/cache@v4
@@ -59,7 +69,7 @@ jobs:
       with:
         path: |
           ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+        key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
     - name: Install Playwright Browsers & Deps
       if: steps.playwright-cache.outputs.cache-hit != 'true'
