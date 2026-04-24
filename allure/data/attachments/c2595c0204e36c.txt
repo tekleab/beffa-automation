@@ -1,0 +1,61 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 353.03ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 841.97ms
+[OK] Discovered: "steam door 78x2.02" via API | Stock: 25
+[INFO] Item: "steam door 78x2.02" | Stock: 25
+[STEP] Phase 2: Creating PO via API for "steam door 78x2.02"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 264.58ms
+[SUCCESS] PO created via API: PO/2026/04/24/000047 (ID: 9c377670-1af2-4f10-83ad-fcfe33913d30)
+[OK] PO created: PO/2026/04/24/000047
+[API] Advancing purchase-orders "9c377670-1af2-4f10-83ad-fcfe33913d30" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 3918.69ms
+[OK] PO PO/2026/04/24/000047 approved via Fast-API
+[STEP] Phase 3: Converting PO PO/2026/04/24/000047 to Bill
+[INFO] Matching vendor: "Gentium Concrite Industry"
+[ACTION] Searching for: "Gentium Concrite Industry"
+[INFO] Tier 2 - exact in overlay: "Gentium Concrite Industry"
+[SUCCESS] Selected: "Gentium Concrite Industry"
+[PERFORMANCE] UI - Smart Search: Gentium Concrite Industry: 3741.84ms
+[ACTION] Searching for: "PO/2026/04/24/000047"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/24/000047"
+[SUCCESS] Selected: "PO/2026/04/24/000047"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/24/000047: 3749.30ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 16
+[SUCCESS] "Invoice Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2393.06ms
+[PERFORMANCE] UI - Random Selection: Account: 1854.34ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[INFO] Received 1 items
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/24/000051
+[API] Advancing bills "1852d47f-bd9c-401e-90fb-c41e4ab98b8f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4609.03ms
+[OK] Bill BILL/2026/04/24/000051 approved via Fast-API
+[STEP] Phase 4: Ledger verification
+[INFO] Captured 5 ledger entries
+[INFO] Sample: Inventory (1301)
+[INFO] Verifying debit of 50000 for BILL/2026/04/24/000051 in 1301
+[INFO] Ledger scan attempt 1: 58 rows visible.
+[✓] Found debit entry: 50000.00 (row 34)
+[SUCCESS] Ledger impact verified: debit of 50000 in 1301.
+[STEP] Phase 5: Verifying stock for "steam door 78x2.02"
+[INFO] Attempt 1: Stock 26 (expected: 26)
+[VERIFY] Item: steam door 78x2.02 | Initial: 25 | Received: 1 | Final: 26 | Expected: 26
+[RESULT] Purchase Impact: PASSED

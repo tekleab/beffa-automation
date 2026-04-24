@@ -1,0 +1,56 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 345.41ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 16
+[SUCCESS] "Purchase Order Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2922.49ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2601.39ms
+[INFO] Vendor: Derara Guyo
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2838.07ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2869.55ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2024.75ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2026.24ms
+[PERFORMANCE] UI - Random Selection: Location: 2026.44ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2105.11ms
+[PERFORMANCE] UI - Random Selection: Tax: 2112.21ms
+[OK] Line item added (Price: 6749)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/24/000043 | Vendor: Derara Guyo
+[API] Advancing purchase-orders "ff7998ac-c557-4232-b806-f06d24c1f535" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 3944.85ms
+[OK] PO PO/2026/04/24/000043 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/24/000043
+[INFO] Matching vendor: Derara Guyo
+[ACTION] Searching for: "Derara Guyo"
+[INFO] Tier 2 - exact in overlay: "Derara Guyo"
+[SUCCESS] Selected: "Derara Guyo"
+[PERFORMANCE] UI - Smart Search: Derara Guyo: 4132.25ms
+[INFO] Linking PO: PO/2026/04/24/000043
+[ACTION] Searching for: "PO/2026/04/24/000043"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/24/000043"
+[SUCCESS] Selected: "PO/2026/04/24/000043"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/24/000043: 4022.02ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 16.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 16
+[SUCCESS] "Invoice Date" set to Day 16 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2743.64ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 19
+[SUCCESS] "Due Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2580.16ms
+[INFO] Dates: Invoice Day 16, Due Day 19
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1840.62ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
