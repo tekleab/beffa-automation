@@ -12,14 +12,10 @@ on:
           - regression
           - full
       company:
-        description: 'Company name to test against (from dropdown list)'
+        description: 'Company name to test against (e.g., sample, bm technology)'
         required: false
         default: 'smoke test'
-        type: choice
-        options:
-          - 'smoke test'
-          - 'staging'
-          - 'production'
+        type: string
   push:
     branches:
       - main
@@ -164,6 +160,12 @@ jobs:
 
         # Move standard Allure report to a sub-folder inside deploy
         mv allure-report deploy/allure || true
+
+        # 🔐 SECURITY SENTRY: Inject Auth Check into Allure sub-report
+        # This prevents direct link-sharing of the detailed report without going through login first.
+        if [ -f "deploy/allure/index.html" ]; then
+          sed -i 's|<head>|<head><script>if(sessionStorage.getItem("beffa_auth")!=="true"){window.location.href="../";}</script>|' deploy/allure/index.html
+        fi
         
         # Update summary for CI logs
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
