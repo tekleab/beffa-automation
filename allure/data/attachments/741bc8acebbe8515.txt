@@ -1,0 +1,28 @@
+[STEP] Stage 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 391.83ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 940.47ms
+[OK] Discovered: "Jacuzzi Lanzarote" via API | Stock: 9
+[INFO] Item: "Jacuzzi Lanzarote" | Stock: 9
+[STEP] Creating bill via API for "Jacuzzi Lanzarote"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 40e8a9cd-68bb-46ea-9770-3405945a3277)
+[PERFORMANCE] API - Create Bill: 292.07ms
+[SUCCESS] Bill created via API: BILL/2026/04/24/000059 (ID: ef3ae077-65ee-4216-94d7-ec7c68f99a31)
+[OK] Bill created: BILL/2026/04/24/000059
+[STEP] Approving bill BILL/2026/04/24/000059
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approve"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/24/000059 approved
+[STEP] Verifying stock increase
+[VERIFY] Item: Jacuzzi Lanzarote | Initial: 9 | Billed: 12 | Final: 21 | Expected: 21
+[OK] Stock increased correctly
