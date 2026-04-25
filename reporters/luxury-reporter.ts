@@ -733,4 +733,5 @@ class LuxuryReporter implements Reporter {
   }
 }
 
+export { LuxuryReporter };
 export default LuxuryReporter;

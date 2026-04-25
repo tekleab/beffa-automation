@@ -156,9 +156,9 @@ jobs:
         mkdir -p deploy
         
         # 🏙️ FORCED DASHBOARD GENERATION
-        # We run the reporter logic manually to guarantee 100% dashboard uptime.
+        # We run the reporter logic manually using the Named Export to guarantee 100% dashboard uptime.
         echo "[INFO] Force-generating befa Command Center..."
-        npx ts-node -e "import LuxuryReporter from './reporters/luxury-reporter'; new LuxuryReporter().onEnd({ status: 'passed' } as any)" || true
+        npx ts-node -e "import { LuxuryReporter } from './reporters/luxury-reporter'; new LuxuryReporter().onEnd({ status: 'passed' } as any)" || true
         
         # Syncing Allure report to subfolder
         mv allure-report deploy/allure || true
