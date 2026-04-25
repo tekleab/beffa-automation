@@ -144,15 +144,16 @@ class LuxuryReporter implements Reporter {
 
         /* --- Luxury Login Portal --- */
         /* --- Astonishing Login Portal --- */
+        /* --- Astonishing Login Portal --- */
         #loginWall {
             position: fixed;
             inset: 0;
             background: #020617;
             background-image: 
-                linear-gradient(rgba(16, 185, 129, 0.03) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 2px, transparent 2px),
-                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 40%);
-            background-size: 60px 60px, 60px 60px, 100% 100%;
+                linear-gradient(rgba(16, 185, 129, 0.08) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.08) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.12) 0%, transparent 40%);
+            background-size: 80px 80px, 80px 80px, 100% 100%;
             z-index: 10000;
             display: flex;
             align-items: center;
@@ -160,30 +161,33 @@ class LuxuryReporter implements Reporter {
             backdrop-filter: blur(50px);
         }
         #loginWall::before {
-            content: ''; position: absolute; bottom: 0; width: 100%; height: 30vh;
-            background: linear-gradient(to top, rgba(16, 185, 129, 0.05), transparent);
-            clip-path: polygon(0% 100%, 10% 40%, 20% 70%, 30% 20%, 45% 60%, 60% 10%, 75% 80%, 90% 30%, 100% 100%);
-            opacity: 0.5;
+            content: ''; position: absolute; bottom: 0; width: 100%; height: 35vh;
+            background: linear-gradient(to top, rgba(16, 185, 129, 0.1), transparent);
+            clip-path: polygon(0% 100%, 5% 40%, 10% 70%, 15% 20%, 25% 60%, 35% 10%, 45% 80%, 55% 30%, 65% 90%, 100% 100%);
+            opacity: 0.6;
         }
         .login-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.4);
             padding: 70px 60px;
             border-radius: 40px;
-            width: 480px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.9), inset 0 0 30px rgba(16, 185, 129, 0.05);
+            width: 500px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.9), inset 0 0 30px rgba(16, 185, 129, 0.1);
             text-align: center;
             position: relative;
             animation: cardEntrance 1.2s cubic-bezier(0.19, 1, 0.22, 1);
         }
         .login-card::after {
-            content: ''; position: absolute; inset: -2px; border-radius: 42px;
+            content: ''; position: absolute; inset: -3px; border-radius: 43px;
             background: linear-gradient(45deg, var(--emerald), transparent, var(--amber), transparent);
-            z-index: -1; opacity: 0.3;
+            z-index: -1; opacity: 0.4;
         }
         @keyframes cardEntrance { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .login-logo { font-size: 2.8rem; font-weight: 950; letter-spacing: -3px; margin-bottom: 5px; background: linear-gradient(to right, #fff, var(--emerald), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3)); }
-        .login-subtitle { font-size: 0.65rem; color: #94a3b8; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 50px; font-weight: 800; }
+        .logo-container { margin-bottom: 30px; display: flex; justify-content: center; perspective: 1000px; }
+        .befa-official-logo { width: 140px; height: 140px; filter: drop-shadow(0 15px 30px rgba(0, 112, 60, 0.5)); transform: translateZ(50px); transition: 0.5s; }
+        .login-card:hover .befa-official-logo { transform: translateZ(80px) rotateY(10deg); filter: drop-shadow(0 25px 50px rgba(16, 185, 129, 0.7)); }
+        .login-logo { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 8px; color: #fff; text-transform: lowercase; }
+        .login-subtitle { font-size: 0.8rem; color: #94a3b8; letter-spacing: 2px; text-transform: none; margin-bottom: 45px; font-weight: 500; }
         .input-group { position: relative; margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; font-size: 0.6rem; color: #475569; margin-bottom: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .lux-input {
@@ -251,20 +255,36 @@ class LuxuryReporter implements Reporter {
     <!-- LUXURY LOGIN OVERLAY -->
     <div id="loginWall">
         <div class="login-card">
-            <div class="login-logo">BEFFA & SONS</div>
-            <div class="login-subtitle">Executive Control Portal</div>
+            <div class="logo-container">
+                <svg class="befa-official-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" fill="url(#befaGradient)"/>
+                    <defs>
+                        <linearGradient id="befaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#008f4c;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#005c32;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M45 15 L60 5 L85 25 L85 40 Z" fill="white" opacity="0.1"/>
+                    <path d="M50 10 L55 5 L75 25 L70 30 Z" fill="white" opacity="0.9"/>
+                    <path d="M60 15 L65 10 L85 30 L80 35 Z" fill="white" opacity="0.9"/>
+                    <path d="M70 20 L75 15 L95 35 L90 40 Z" fill="white" opacity="0.9"/>
+                    <text x="50" y="72" font-family="'Inter', sans-serif" font-size="28" font-weight="900" fill="white" text-anchor="middle">befa</text>
+                </svg>
+            </div>
+            <div class="login-logo">befa</div>
+            <div class="login-subtitle">Control Center Login</div>
             
             <div class="input-group">
-                <label>Auth Identifier</label>
-                <input type="text" id="username" class="lux-input" placeholder="E-mail address">
+                <label>Email Address</label>
+                <input type="text" id="username" class="lux-input" placeholder="Enter your email">
             </div>
             
             <div class="input-group">
-                <label>Security Protocol</label>
-                <input type="password" id="password" class="lux-input" placeholder="Password">
+                <label>Password</label>
+                <input type="password" id="password" class="lux-input" placeholder="Enter your password">
             </div>
 
-            <button class="login-btn" onclick="attemptTacticalLink()">Establish Link</button>
+            <button class="login-btn" onclick="attemptTacticalLink()">Sign In</button>
         </div>
     </div>
     <script>
@@ -634,10 +654,22 @@ class LuxuryReporter implements Reporter {
                 }
                 const failures = findFailures(behaviors);
                 if (failures.length > 0) {
-                    failures.slice(0, 5).forEach(f => {
+                    failures.slice(0, 10).forEach(f => {
                       const div = document.createElement('div');
                       div.className = 'ai-item';
-                      div.innerHTML = '<div style="font-size:0.6rem; color:#64748b;">🔴 ANALYZING</div><div style="font-size:0.8rem; color:#fff;">' + f.name + '</div>';
+                      div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m8 2 1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"></path>
+                                <path d="M12 20c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9Z"></path>
+                                <path d="M9 11v-1a3 3 0 0 1 6 0v1M9 13v-1a3 3 0 0 1 6 0v1"></path>
+                                <path d="M12 11v9M3 11h18M5 14l-2 1M19 14l2 1M5 8l-2-1M19 8l2-1"></path>
+                            </svg>
+                            <div style="flex:1;">
+                                <div style="font-size:0.6rem; color:#f43f5e; font-weight:bold; letter-spacing:1px;">REPRODUCED BUG</div>
+                                <div style="font-size:0.8rem; color:#fff; font-weight:500;">${f.name}</div>
+                            </div>
+                        </div>`;
                       wall.appendChild(div);
                     });
                 } else {
