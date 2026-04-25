@@ -143,29 +143,47 @@ class LuxuryReporter implements Reporter {
         .emerald-state { border-right-color: var(--emerald) !important; }
 
         /* --- Luxury Login Portal --- */
+        /* --- Astonishing Login Portal --- */
         #loginWall {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at top right, #1e293b 0%, #020617 100%);
+            background: #020617;
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.03) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 40%);
+            background-size: 60px 60px, 60px 60px, 100% 100%;
             z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(50px);
         }
+        #loginWall::before {
+            content: ''; position: absolute; bottom: 0; width: 100%; height: 30vh;
+            background: linear-gradient(to top, rgba(16, 185, 129, 0.05), transparent);
+            clip-path: polygon(0% 100%, 10% 40%, 20% 70%, 30% 20%, 45% 60%, 60% 10%, 75% 80%, 90% 30%, 100% 100%);
+            opacity: 0.5;
+        }
         .login-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 60px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 70px 60px;
             border-radius: 40px;
-            width: 450px;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            width: 480px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.9), inset 0 0 30px rgba(16, 185, 129, 0.05);
             text-align: center;
-            animation: cardEntrance 1s cubic-bezier(0.19, 1, 0.22, 1);
+            position: relative;
+            animation: cardEntrance 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .login-card::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 42px;
+            background: linear-gradient(45deg, var(--emerald), transparent, var(--amber), transparent);
+            z-index: -1; opacity: 0.3;
         }
         @keyframes cardEntrance { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .login-logo { font-size: 2.5rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 10px; background: linear-gradient(to right, #fff, var(--emerald)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .login-subtitle { font-size: 0.7rem; color: #64748b; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 40px; }
+        .login-logo { font-size: 2.8rem; font-weight: 950; letter-spacing: -3px; margin-bottom: 5px; background: linear-gradient(to right, #fff, var(--emerald), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3)); }
+        .login-subtitle { font-size: 0.65rem; color: #94a3b8; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 50px; font-weight: 800; }
         .input-group { position: relative; margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; font-size: 0.6rem; color: #475569; margin-bottom: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .lux-input {
@@ -233,8 +251,8 @@ class LuxuryReporter implements Reporter {
     <!-- LUXURY LOGIN OVERLAY -->
     <div id="loginWall">
         <div class="login-card">
-            <div class="login-logo">BEFFA ARC</div>
-            <div class="login-subtitle">Tactical Oversight Terminal</div>
+            <div class="login-logo">BEFFA & SONS</div>
+            <div class="login-subtitle">Executive Control Portal</div>
             
             <div class="input-group">
                 <label>Auth Identifier</label>
