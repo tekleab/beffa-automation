@@ -45,9 +45,21 @@ class LuxuryReporter implements Reporter {
             display: flex;
             flex-direction: column;
             position: relative;
-            background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
             background-size: 50px 50px;
         }
+
+        /* --- Scanner Beam Animation --- */
+        .observation-deck::after {
+            content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(to right, transparent, var(--emerald), transparent);
+            box-shadow: 0 0 20px var(--emerald);
+            animation: scannerBeam 6s infinite linear;
+            z-index: 10; opacity: 0.3;
+        }
+        @keyframes scannerBeam { 0% { top: -10%; } 100% { top: 110%; } }
 
         /* --- 3D Crystal --- */
         .hologram-stage { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 400px; height: 400px; perspective: 1000px; }
@@ -384,18 +396,19 @@ class LuxuryReporter implements Reporter {
         <!-- ERP METRICS -->
         <div class="erp-metrics">
             <div class="metric-card">
-                <div id="suiteCount" class="metric-value">0</div>
-                <div class="metric-label">CORE DOMAINS VALIDATED</div>
-                <div class="integrity-bar"><div id="suiteBar" class="integrity-fill"></div></div>
+                <div id="domainCount" class="metric-value">0</div>
+                <div class="metric-label">DYNAMIC DOMAINS AUDITED</div>
+                <div style="font-size:0.5rem; color:#64748b; margin-top:5px;">(INVENTORY | SALES | PURCHASE)</div>
+                <div class="integrity-bar"><div id="domainBar" class="integrity-fill"></div></div>
             </div>
             <div class="metric-card">
-                <div id="calcAccuracy" class="metric-value">0%</div>
-                <div class="metric-label">CALCULATIONS ACCURACY</div>
-                <div class="integrity-bar"><div id="calcBar" class="integrity-fill"></div></div>
+                <div id="deploymentReadiness" class="metric-value" style="font-size: 1.5rem; letter-spacing: 2px;">CHECKING...</div>
+                <div class="metric-label">CD PIPELINE STATUS</div>
+                <div class="integrity-bar"><div id="readyBar" class="integrity-fill"></div></div>
             </div>
             <div class="metric-card">
                 <div id="uuidCompliance" class="metric-value">0%</div>
-                <div class="metric-label">UUID COMPLIANCE INDEX</div>
+                <div class="metric-label">SECURITY UUID COMPLIANCE</div>
                 <div class="integrity-bar"><div id="uuidBar" class="integrity-fill"></div></div>
             </div>
         </div>
@@ -622,6 +635,30 @@ class LuxuryReporter implements Reporter {
                 const numericRate = total > 0 ? parseFloat(((passed / total) * 100).toFixed(2)) : 0;
                 
                 animateDashboard(numericRate, failed, total);
+                
+                // DevOps Logic: readiness check
+                const readyEl = document.getElementById('deploymentReadiness');
+                const readyBar = document.getElementById('readyBar');
+                if (numericRate >= 90) {
+                    readyEl.innerText = 'PROD READY';
+                    readyEl.style.color = 'var(--emerald)';
+                    readyBar.style.width = '100%';
+                    readyBar.style.background = 'var(--emerald)';
+                } else if (numericRate >= 70) {
+                    readyEl.innerText = 'UNSTABLE';
+                    readyEl.style.color = 'var(--amber)';
+                    readyBar.style.width = '70%';
+                    readyBar.style.background = 'var(--amber)';
+                } else {
+                    readyEl.innerText = 'BLOCKER';
+                    readyEl.style.color = 'var(--coral)';
+                    readyBar.style.width = '30%';
+                    readyBar.style.background = 'var(--coral)';
+                }
+
+                // Domain Logic: Hardcoded count of our 3 main pillars for now
+                animateValue('domainCount', 0, 3, 1000, '');
+                document.getElementById('domainBar').style.width = '100%';
                 
                 const latHistory = await smartFetch(['./widgets/latency-trend.json', './data/latency-trend.json']).catch(() => []);
                 const latestLat = (latHistory && latHistory.length > 0) ? latHistory[0] : null;
