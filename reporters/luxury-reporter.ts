@@ -658,7 +658,8 @@ class LuxuryReporter implements Reporter {
 
                 // Domain Logic: Hardcoded count of our 3 main pillars for now
                 animateValue('domainCount', 0, 3, 1000, '');
-                document.getElementById('domainBar').style.width = '100%';
+                const domainBar = document.getElementById('domainBar');
+                if (domainBar) domainBar.style.width = '100%';
                 
                 const latHistory = await smartFetch(['./widgets/latency-trend.json', './data/latency-trend.json']).catch(() => []);
                 const latestLat = (latHistory && latHistory.length > 0) ? latHistory[0] : null;
@@ -735,10 +736,9 @@ class LuxuryReporter implements Reporter {
                 '<div style="font-size: 0.8rem; font-weight: 700; color: ' + (failed > 0 ? 'var(--coral)' : 'var(--emerald)') + '; margin-bottom: 4px;">CRITICAL VIOLATIONS: ' + failed + '</div>' +
                 '<div style="font-size: 1.2rem; font-weight: 800; color: ' + statusColor + '; letter-spacing: 2px;">' + status + '</div>';
             
-            animateValue('calcAccuracy', 0, numericRate, 1500);
             animateValue('uuidCompliance', 0, numericRate, 1500);
-            document.getElementById('calcBar').style.width = numericRate + '%';
-            document.getElementById('uuidBar').style.width = numericRate + '%';
+            const uuidBar = document.getElementById('uuidBar');
+            if (uuidBar) uuidBar.style.width = numericRate + '%';
         }
 
         function startSimulationMode() {
