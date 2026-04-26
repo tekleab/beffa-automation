@@ -400,10 +400,10 @@ class LuxuryReporter implements Reporter {
         </div>
     </div>
 
-    <div class="observation-deck">
-        <!-- PREMIUM TOP NAV -->
-        <div style="position: absolute; top: 30px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 1000;">
-            <div style="display: flex; align-items: center; gap: 25px;">
+    <div class="observation-deck" style="overflow: hidden;">
+        <!-- PREMIUM TOP NAV HUB -->
+        <div style="position: absolute; top: 30px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 2000;">
+            <div style="display: flex; align-items: center; gap: 20px;">
                 <div style="font-size: 1.8rem; font-weight: 950; letter-spacing: -1px; color: #fff;">befa<span style="color:var(--emerald);">HUB</span></div>
                 <div class="heartbeat-wave">
                     <div class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
@@ -421,8 +421,23 @@ class LuxuryReporter implements Reporter {
             </div>
         </div>
 
-        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 20px; font-size: 0.7rem; color: #64748b; letter-spacing: 2px;">
+        <!-- NEURAL HUD RELAY (For Animation Engine) -->
+        <div style="display:none;">
+            <div id="hudRateValue">0%</div>
+            <div id="hudRateLabel"></div>
+        </div>
+
+        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 15px; font-size: 0.6rem; color: #64748b; letter-spacing: 2px; z-index: 500;">
             FETCHING ENVIRONMENT CONTEXT...
+        </div>
+
+        <div id="userBadge" style="position: absolute; right: 40px; bottom: 40px; font-size: 0.6rem; color: var(--emerald); letter-spacing: 1px; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); display: none; z-index: 2000;">
+            SESSION: admin@beffa.com
+        </div>
+
+        <!-- HUD OVERLAY (Fixed Center) -->
+        <div class="hud-overlay" style="position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); pointer-events: none; z-index: 100;">
+            <!-- Content will be managed by the crystal labels -->
         </div>
 
         <!-- ERP METRICS -->
