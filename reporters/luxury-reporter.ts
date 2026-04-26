@@ -180,12 +180,11 @@ class LuxuryReporter implements Reporter {
         @keyframes entrance { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
         .hud-overlay {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%);
             text-align: center; z-index: 2000; pointer-events: none;
-            text-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
         }
-        .rate-value { font-size: 5.5rem; font-weight: 1000; letter-spacing: -5px; line-height: 1; color: #fff; position: relative; }
-        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .rate-value { font-size: 3.5rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; text-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
+        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.9); padding: 12px 25px; border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         
         #loginWall {
             position: fixed;
