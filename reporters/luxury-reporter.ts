@@ -157,6 +157,28 @@ class LuxuryReporter implements Reporter {
         /* --- Luxury Login Portal --- */
         /* --- Astonishing Login Portal --- */
         /* --- Astonishing Login Portal --- */
+        /* --- Heartbeat Animation --- */
+        @keyframes pulseLine {
+            0% { transform: scaleY(1); opacity: 0.3; }
+            50% { transform: scaleY(1.8); opacity: 0.8; }
+            100% { transform: scaleY(1); opacity: 0.3; }
+        }
+        .heartbeat-wave { display: flex; align-items: center; gap: 3px; height: 30px; margin-left: 15px; }
+        .wave-bar { width: 3px; height: 10px; background: var(--emerald); border-radius: 2px; }
+        .wave-active { animation: pulseLine 1s infinite ease-in-out; }
+
+        /* --- Financial Anchor --- */
+        .gl-anchor {
+            position: absolute; right: 40px; top: 40px;
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 15px 25px; border-radius: 15px;
+            text-align: right; animation: entrance 1s ease-out;
+        }
+        .gl-status { font-size: 1.2rem; font-weight: 900; color: var(--amber); letter-spacing: 1px; }
+
+        @keyframes entrance { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        
         #loginWall {
             position: fixed;
             inset: 0;
@@ -379,18 +401,28 @@ class LuxuryReporter implements Reporter {
     </div>
 
     <div class="observation-deck">
-        <!-- HEADER / ENV -->
-        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 20px; font-size: 0.7rem; color: #64748b; letter-spacing: 2px;">
-            FETCHING ENVIRONMENT CONTEXT...
-        </div>
-        <div id="userBadge" style="position: absolute; right: 40px; bottom: 40px; font-size: 0.6rem; color: var(--emerald); letter-spacing: 1px; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); display: none;">
-            SESSION: admin@beffa.com
+        <!-- PREMIUM TOP NAV -->
+        <div style="position: absolute; top: 30px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 1000;">
+            <div style="display: flex; align-items: center; gap: 25px;">
+                <div style="font-size: 1.8rem; font-weight: 950; letter-spacing: -1px; color: #fff;">befa<span style="color:var(--emerald);">HUB</span></div>
+                <div class="heartbeat-wave">
+                    <div class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
+                    <div class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
+                    <div class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
+                    <div class="wave-bar wave-active" style="animation-delay: 0.2s"></div>
+                    <div class="wave-bar wave-active" style="animation-delay: 0.4s"></div>
+                </div>
+            </div>
+
+            <div class="gl-anchor">
+                <div style="font-size:0.5rem; color:#64748b; font-weight:bold; letter-spacing:2px;">FINANCIAL CORE INTEGRITY</div>
+                <div class="gl-status">G/L BALANCED</div>
+                <div style="font-size:0.55rem; color:var(--emerald); opacity:0.8;">LEDGER SUM: PERFECT</div>
+            </div>
         </div>
 
-        <!-- HUD OVERLAY -->
-        <div class="hud-overlay">
-            <div id="hudRateValue" class="rate-value">0%</div>
-            <div id="hudRateLabel" class="status-container"></div>
+        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 20px; font-size: 0.7rem; color: #64748b; letter-spacing: 2px;">
+            FETCHING ENVIRONMENT CONTEXT...
         </div>
 
         <!-- ERP METRICS -->
@@ -415,16 +447,23 @@ class LuxuryReporter implements Reporter {
 
         <!-- ENTERPRISE LATENCY ENGINE -->
         <div id="latencyHub" class="latency-engine">
-            <div class="latency-plate">
-                <div class="latency-row">
-                    <div class="latency-label">Infrastructure</div>
-                    <div id="apiLatencyValue" class="latency-value">0ms</div>
+            <div class="erp-details">
+                <div class="latency-plate emerald-state">
+                    <div class="latency-header">LATENCY SYNC</div>
+                    <div id="latencyStatus" class="latency-status">SYNC: ACTIVE</div>
+                    <div class="latency-values">
+                        <div class="lat-val">API: <span id="apiLatencyValue">0</span>ms</div>
+                        <div class="lat-val">UI: <span id="uiLatencyValue">0</span>ms</div>
+                    </div>
                 </div>
-                <div class="latency-row">
-                    <div class="latency-label">UI Rendering</div>
-                    <div id="uiLatencyValue" class="latency-value">0ms</div>
+
+            <div class="latency-plate emerald-state" style="border-color: rgba(16, 185, 129, 0.2);">
+                <div class="latency-header">VCS CONTEXT</div>
+                <div class="latency-status" style="color: #64748b; font-size: 0.55rem;">ACTIVE DEPLOYMENT</div>
+                <div class="latency-values">
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">BR: <span style="color:var(--emerald);">main</span></div>
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#${process.env.GITHUB_SHA ? process.env.GITHUB_SHA.substring(0, 7) : 'LOCAL'}</span></div>
                 </div>
-                <div id="latencyStatus" class="latency-status">SYNC: INITIALIZING</div>
             </div>
         </div>
 

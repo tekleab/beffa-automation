@@ -163,10 +163,9 @@ jobs:
         # Syncing Allure report to subfolder
         mv allure-report deploy/allure || true
 
-        # 🔐 SECURITY SENTRY: Inject Auth Check into Allure sub-report
-        # This prevents direct link-sharing of the detailed report without going through login first.
+        # 🔐 SECURITY & VISIBILITY SENTRY: Inject Auth Check and Auto-Filter into Allure sub-report
         if [ -f "deploy/allure/index.html" ]; then
-          sed -i 's|<head>|<head><script>if(sessionStorage.getItem("beffa_auth")!=="true"){window.location.href="../";}</script>|' deploy/allure/index.html
+          sed -i 's|<head>|<head><script>if(sessionStorage.getItem("beffa_auth")!=="true"){window.location.href="../";} localStorage.setItem("allure-playwright-marks", "{\"failed\":true,\"broken\":true,\"passed\":true,\"skipped\":true,\"unknown\":true}");</script>|' deploy/allure/index.html
         fi
         
         # Update summary for CI logs
