@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 435.04ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 18.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 18
+[SUCCESS] "Purchase Order Date" set to Day 18 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2407.29ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1855.06ms
+[INFO] Vendor: Global Imports-6357
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1864.68ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 1924.06ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1789.04ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1876.73ms
+[PERFORMANCE] UI - Random Selection: Location: 1900.09ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1890.51ms
+[PERFORMANCE] UI - Random Selection: Tax: 1836.96ms
+[OK] Line item added (Price: 3902)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/26/000062 | Vendor: Global Imports-6357
+[API] Advancing purchase-orders "d361f6dc-a105-4cf2-8888-7f0b895e9c66" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 4003.90ms
+[OK] PO PO/2026/04/26/000062 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/26/000062
+[INFO] Matching vendor: Global Imports-6357
+[ACTION] Searching for: "Global Imports-6357"
+[INFO] Tier 2 - exact in overlay: "Global Imports-6357"
+[SUCCESS] Selected: "Global Imports-6357"
+[PERFORMANCE] UI - Smart Search: Global Imports-6357: 3865.62ms
+[INFO] Linking PO: PO/2026/04/26/000062
+[ACTION] Searching for: "PO/2026/04/26/000062"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/26/000062"
+[SUCCESS] Selected: "PO/2026/04/26/000062"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/26/000062: 3679.25ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 18.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 18
+[SUCCESS] "Invoice Date" set to Day 18 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2273.85ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 21
+[SUCCESS] "Due Date" set to Day 21 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2284.65ms
+[INFO] Dates: Invoice Day 18, Due Day 21
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1769.43ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/26 | Vendor: Global Imports-6357
+[API] Advancing bills "524ec293-2c94-4241-95bd-4a30504407a4" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4985.96ms
+[OK] Bill BILL/2026/04/26 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/26 in vendor profile
+[VERIFY] Entity: Global Imports-6357 | Doc: BILL/2026/04/26 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/c8701ae8-234b-4f05-8fd3-8ea11d89451a/detail
+[SUCCESS] BILL/2026/04/26 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/26/000062 -> Bill BILL/2026/04/26

@@ -164,6 +164,14 @@
 
         @keyframes entrance { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
+        .hud-overlay {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            text-align: center; z-index: 2000; pointer-events: none;
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+        }
+        .rate-value { font-size: 5.5rem; font-weight: 1000; letter-spacing: -5px; line-height: 1; color: #fff; position: relative; }
+        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        
         #loginWall {
             position: fixed;
             inset: 0;
@@ -387,42 +395,37 @@
 
     <div class="observation-deck" style="overflow: hidden;">
         <!-- PREMIUM TOP NAV HUB -->
-        <div style="position: absolute; top: 30px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 2000;">
+        <div style="position: absolute; top: 25px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 3000;">
             <div style="display: flex; align-items: center; gap: 20px;">
-                <div style="font-size: 1.8rem; font-weight: 950; letter-spacing: -1px; color: #fff;">befa<span style="color:var(--emerald);">HUB</span></div>
+                <div style="font-size: 1.6rem; font-weight: 950; letter-spacing: -1.5px; color: #fff;">befa<span style="color:var(--emerald);">HUB</span></div>
                 <div class="heartbeat-wave">
-                    <div class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
-                    <div class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
-                    <div class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
-                    <div class="wave-bar wave-active" style="animation-delay: 0.2s"></div>
-                    <div class="wave-bar wave-active" style="animation-delay: 0.4s"></div>
+                    <div id="wave1" class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
+                    <div id="wave2" class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
+                    <div id="wave3" class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
+                    <div id="wave4" class="wave-bar wave-active" style="animation-delay: 0.2s"></div>
+                    <div id="wave5" class="wave-bar wave-active" style="animation-delay: 0.4s"></div>
                 </div>
             </div>
 
-            <div class="gl-anchor">
-                <div style="font-size:0.5rem; color:#64748b; font-weight:bold; letter-spacing:2px;">FINANCIAL CORE INTEGRITY</div>
-                <div class="gl-status">G/L BALANCED</div>
-                <div style="font-size:0.55rem; color:var(--emerald); opacity:0.8;">LEDGER SUM: PERFECT</div>
+            <div class="gl-anchor" style="top:0; right:0; position:relative; padding:10px 20px;">
+                <div style="font-size:0.45rem; color:#64748b; font-weight:bold; letter-spacing:2px;">FINANCIAL CORE INTEGRITY</div>
+                <div class="gl-status" style="font-size:1rem;">G/L BALANCED</div>
+                <div style="font-size:0.5rem; color:var(--emerald); opacity:0.8;">LEDGER SUM: PERFECT</div>
             </div>
         </div>
 
-        <!-- NEURAL HUD RELAY (For Animation Engine) -->
-        <div style="display:none;">
-            <div id="hudRateValue">0%</div>
-            <div id="hudRateLabel"></div>
+        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 12px; font-size: 0.55rem; color: #64748b; letter-spacing: 3px; z-index: 500;">
+            FETCHING ENVIRONMENT CONTEXT...
         </div>
 
-        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 15px; font-size: 0.6rem; color: #64748b; letter-spacing: 2px; z-index: 500;">
-            FETCHING ENVIRONMENT CONTEXT...
+        <!-- PRINCIPAL HUD (Centered Focus) -->
+        <div class="hud-overlay">
+            <div id="hudRateValue" class="rate-value">0%</div>
+            <div id="hudRateLabel" class="status-container"></div>
         </div>
 
         <div id="userBadge" style="position: absolute; right: 40px; bottom: 40px; font-size: 0.6rem; color: var(--emerald); letter-spacing: 1px; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); display: none; z-index: 2000;">
             SESSION: admin@beffa.com
-        </div>
-
-        <!-- HUD OVERLAY (Fixed Center) -->
-        <div class="hud-overlay" style="position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); pointer-events: none; z-index: 100;">
-            <!-- Content will be managed by the crystal labels -->
         </div>
 
         <!-- ERP METRICS -->
@@ -462,7 +465,7 @@
                 <div class="latency-status" style="color: #64748b; font-size: 0.55rem;">ACTIVE DEPLOYMENT</div>
                 <div class="latency-values">
                     <div class="lat-val" style="font-size: 0.6rem; color: #fff;">BR: <span style="color:var(--emerald);">main</span></div>
-                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#e2d00e8</span></div>
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#789c409</span></div>
                 </div>
             </div>
         </div>
