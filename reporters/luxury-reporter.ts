@@ -485,15 +485,11 @@ class LuxuryReporter implements Reporter {
         </div>
 
         <!-- CRYSTAL -->
-        <div class="hologram-stage">
+        <div class="hologram-stage" style="top:50%; pointer-events:none;">
             <div class="crystal">
                 <div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div>
                 <div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div>
                 <div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div>
-            </div>
-            <div style="position: absolute; bottom: -80px; width: 100%; text-align: center;">
-                <div id="crystalRateValue" style="font-size: 3rem; font-weight: 900; color: var(--emerald); text-shadow: var(--neon-glow);">...%</div>
-            <div id="crystalRateLabel" style="font-size: 0.7rem; letter-spacing: 3px; color: #94a3b8;">TACTICAL HUB V10.2</div>
             </div>
         </div>
 
@@ -781,16 +777,15 @@ class LuxuryReporter implements Reporter {
 
         function animateDashboard(numericRate, failed, total) {
             animateValue('hudRateValue', 0, numericRate, 1500); 
-            animateValue('crystalRateValue', 0, numericRate, 1500);
             const status = failed === 0 && total > 0 ? 'INTEGRITY: STABLE' : (numericRate > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
             const statusColor = failed === 0 && total > 0 ? 'var(--emerald)' : (numericRate > 90 ? '#fbbf24' : 'var(--coral)');
             
             document.getElementById('hudRateLabel').innerHTML = 
                 '<div style="font-size: 0.65rem; color: #64748b; font-weight: bold; letter-spacing: 3px; margin-bottom: 8px;">INTEGRITY ENGINE</div>' +
-                '<div style="font-size: 2.5rem; font-weight: 900; color: #fff; line-height: 1;">' + numericRate + '%</div>' +
+                '<div style="font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1;">' + numericRate + '%</div>' +
                 '<div style="height: 1px; width: 60%; background: rgba(255,255,255,0.1); margin: 15px auto;"></div>' +
                 '<div style="font-size: 0.8rem; font-weight: 700; color: ' + (failed > 0 ? 'var(--coral)' : 'var(--emerald)') + '; margin-bottom: 4px;">CRITICAL VIOLATIONS: ' + failed + '</div>' +
-                '<div style="font-size: 1.2rem; font-weight: 800; color: ' + statusColor + '; letter-spacing: 2px;">' + status + '</div>';
+                '<div style="font-size: 1.1rem; font-weight: 800; color: ' + statusColor + '; letter-spacing: 2px;">' + status + '</div>';
             
             animateValue('uuidCompliance', 0, numericRate, 1500);
             const uuidBar = document.getElementById('uuidBar');
