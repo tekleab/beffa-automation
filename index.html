@@ -415,7 +415,7 @@
         </div>
 
         <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 12px; font-size: 0.5rem; color: #64748b; letter-spacing: 2px; z-index: 500;">
-            <span id="syncTimestamp">SYNCING...</span> | <span id="buildId">BUILD: #24986326457</span>
+            <span id="syncTimestamp">SYNCING...</span> | <span id="buildId">BUILD: #24986787362</span>
             <div id="envStr" style="margin-top: 5px; font-size: 0.6rem; color: #94a3b8; letter-spacing: 3px;">FETCHING ENVIRONMENT CONTEXT...</div>
         </div>
 
@@ -459,7 +459,7 @@
                 <div class="latency-status" style="color: #64748b; font-size: 0.55rem;">ACTIVE DEPLOYMENT</div>
                 <div class="latency-values">
                     <div class="lat-val" style="font-size: 0.6rem; color: #fff;">BR: <span style="color:var(--emerald);">main</span></div>
-                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#50dd6d4</span></div>
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#7c642e7</span></div>
                 </div>
             </div>
             <div id="latencyStatus" style="font-size:0.5rem; text-align:right; margin-top:5px; color:var(--emerald);">SYNC: ACTIVE</div>
@@ -671,12 +671,10 @@
 
         async function syncCommandCenter() {
             try {
-                const summary = await smartFetch([
-                    'allure/widgets/summary.json',
                 // Live metadata
                 document.getElementById('syncTimestamp').innerText = 'LAST SYNC: ' + new Date().toLocaleTimeString();
 
-                const summary = await smartFetch(['./allure/widgets/summary.json']).catch(() => ({}));
+                const summary = await smartFetch(['./allure/widgets/summary.json', 'allure/widgets/summary.json']).catch(() => ({}));
                 const stats = summary.statistic || { total: 0, passed: 0, failed: 0, broken: 0, skipped: 0 };
                 
                 const passed = stats.passed || 0;
