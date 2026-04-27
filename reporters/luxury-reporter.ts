@@ -87,21 +87,48 @@ class LuxuryReporter implements Reporter {
             display: none !important; opacity: 0 !important; pointer-events: none !important;
         }
 
-        /* --- AI Wing Panel --- */
+        /* --- AI Wing Panel (Dynamic Dropdown) --- */
         .ai-wing {
             position: absolute;
             right: 40px;
             top: 40px;
             width: 320px;
-            background: rgba(15, 23, 42, 0.5);
+            z-index: 1000;
+        }
+        .ai-wing-header {
+            background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.07);
             border-right: 4px solid var(--emerald);
             border-radius: 16px;
-            padding: 20px;
-            max-height: calc(100vh - 200px);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .ai-wing-header:hover { border-color: var(--emerald); }
+        .ai-wing-header .title { font-size: 0.65rem; color: var(--emerald); font-weight: 800; letter-spacing: 1px; }
+        .ai-wing-header .count { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; font-size: 0.6rem; color: #fff; }
+        
+        .ai-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 0 0 16px 16px;
+            margin-top: 5px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: none;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+        .ai-wing:hover .ai-dropdown, .ai-wing:focus-within .ai-dropdown {
+            max-height: calc(100vh - 150px);
+            transition: max-height 0.8s ease-in-out;
             overflow-y: auto;
-            z-index: 100;
         }
 
         
@@ -489,11 +516,16 @@ class LuxuryReporter implements Reporter {
             </div>
         </div>
 
-        <!-- AI WING -->
-        <div id="aiWing" class="ai-wing" style="top: 120px; right: 40px;">
-            <div style="font-size: 0.7rem; color: var(--emerald); font-weight: bold;">MULTI-VECTOR ROOT CAUSE ENGINE</div>
-            <div id="errorWall" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <!-- Dynamically Populated -->
+        <!-- AI WING (Dynamic Dropdown) -->
+        <div id="aiWing" class="ai-wing">
+            <div class="ai-wing-header">
+                <div class="title">REPRODUCED ISSUES</div>
+                <div id="bugCount" class="count">0 DETECTED</div>
+            </div>
+            <div class="ai-dropdown">
+                <div id="errorWall" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Dynamically Populated -->
+                </div>
             </div>
         </div>
 
@@ -689,7 +721,7 @@ class LuxuryReporter implements Reporter {
                 // Live metadata
                 document.getElementById('syncTimestamp').innerText = 'LAST SYNC: ' + new Date().toLocaleTimeString();
 
-                const summary = await smartFetch(['./allure/widgets/summary.json', 'allure/widgets/summary.json']).catch(() => ({}));
+                const summary = await smartFetch(['./widgets/summary.json', './allure/widgets/summary.json']).catch(() => ({}));
                 const stats = summary.statistic || { total: 0, passed: 0, failed: 0, broken: 0, skipped: 0 };
                 
                 const passed = stats.passed || 0;
@@ -707,7 +739,7 @@ class LuxuryReporter implements Reporter {
                 animateValue('statTotal', 0, total, 1000, '');
 
                 // Trend Engine
-                const trendData = await smartFetch(['./allure/widgets/history-trend.json']).catch(() => []);
+                const trendData = await smartFetch(['./widgets/history-trend.json', './allure/widgets/history-trend.json']).catch(() => []);
                 if (trendData.length > 0) {
                     const ctx = document.getElementById('trendChart').getContext('2d');
                     const history = trendData.slice(0, 10).reverse();
@@ -770,11 +802,11 @@ class LuxuryReporter implements Reporter {
                 animateValue('apiLatencyValue', 0, apiLatency, 1000, 'ms');
                 animateValue('uiLatencyValue', 0, uiLatency, 1000, 'ms');
 
-                let env = await smartFetch(['./allure/widgets/environment.json']).catch(() => []);
+                let env = await smartFetch(['./widgets/environment.json', './allure/widgets/environment.json']).catch(() => []);
                 const envStrText = env.length > 0 ? env.map(e => e.name.toUpperCase() + ': ' + e.values[0]).join(' | ') : 'SYSTEM SYNCED | TACTICAL HUB ACTIVE';
                 document.getElementById('envStr').innerText = envStrText;
 
-                const behaviors = await smartFetch(['./allure/data/behaviors.json']).catch(() => ({}));
+                const behaviors = await smartFetch(['./data/behaviors.json', './allure/data/behaviors.json']).catch(() => ({}));
                 const wall = document.getElementById('errorWall');
                 wall.innerHTML = '';
                 function findFailures(node, list = []) {
@@ -784,6 +816,11 @@ class LuxuryReporter implements Reporter {
                 }
                 const failures = findFailures(behaviors);
                 currentFailures = failures;
+                const failureCount = failures.length;
+                document.getElementById('bugCount').innerText = failureCount + ' DETECTED';
+                document.getElementById('bugCount').style.background = failureCount > 0 ? 'rgba(244, 63, 94, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+                document.getElementById('bugCount').style.color = failureCount > 0 ? 'var(--coral)' : 'var(--emerald)';
+                
                 if (failures.length > 0) {
                     failures.slice(0, 10).forEach(f => {
                       const div = document.createElement('div');
@@ -811,6 +848,7 @@ class LuxuryReporter implements Reporter {
                 if (window.earlyTimer) clearTimeout(window.earlyTimer);
 
             } catch (e) {
+                console.error("[FATAL] syncCommandCenter crashed:", e);
                 console.warn("Switching to Tactical Simulation Mode...");
                 startSimulationMode();
             }
