@@ -129,6 +129,8 @@ export class AppManager {
   async createStandaloneInvoiceAPI(...args: Parameters<SalesAPI['createStandaloneInvoiceAPI']>) { return await this.api.sales.createStandaloneInvoiceAPI(...args); }
   async createPurchaseOrderAPI(...args: Parameters<PurchaseAPI['createPurchaseOrderAPI']>) { return await this.api.purchase.createPurchaseOrderAPI(...args); }
   async createBillAPI(...args: Parameters<PurchaseAPI['createBillAPI']>) { return await this.api.purchase.createBillAPI(...args); }
+  async createBillFromPoAPI(...args: Parameters<PurchaseAPI['createBillFromPoAPI']>) { return await this.api.purchase.createBillFromPoAPI(...args); }
+  async verifyBillInVendorAPI(...args: Parameters<PurchaseAPI['verifyBillInVendorAPI']>) { return await this.api.purchase.verifyBillInVendorAPI(...args); }
   async createInventoryAdjustmentUI(...args: Parameters<InventoryPage['createInventoryAdjustmentUI']>) { return await this.ui.inventory.createInventoryAdjustmentUI(...args); }
   async createInventoryAdjustmentAPI(...args: Parameters<InventoryAPI['createInventoryAdjustmentAPI']>) { return await this.api.inventory.createInventoryAdjustmentAPI(...args); }
   async createInvoiceReceiptAPI(...args: Parameters<SalesAPI['createInvoiceReceiptAPI']>) { return await this.api.sales.createInvoiceReceiptAPI(...args); }
@@ -142,4 +144,8 @@ export class AppManager {
   async createBillPaymentAPI(...args: Parameters<PurchaseAPI['createBillPaymentAPI']>) { return await this.api.purchase.createBillPaymentAPI(...args); }
   async extractIdFromUrl(...args: Parameters<BasePage['extractIdFromUrl']>) { return await this.base.extractIdFromUrl(...args); }
   async advanceDocumentAPI(...args: Parameters<BasePage['advanceDocumentAPI']>) { return await this.base.advanceDocumentAPI(...args); }
+  async captureRandomItemDataAPI() { return await this.api.inventory.captureRandomItemDataAPI(); }
+  async getItemDetailsAPI(...args: Parameters<InventoryAPI['getItemDetailsAPI']>) { return await this.api.inventory.getItemDetailsAPI(...args); }
+  async pollStockAPI(...args: Parameters<InventoryAPI['pollStockAPI']>) { return await this.api.inventory.pollStockAPI(...args); }
+  async getBillJournalEntriesAPI(...args: Parameters<PurchaseAPI['getBillJournalEntriesAPI']>) { return await this.api.purchase.getBillJournalEntriesAPI(...args); }
 }

@@ -241,6 +241,22 @@ export class InventoryAPI extends BasePage {
     };
   }
 
+  async pollStockAPI(itemId: string, expectedStock: number, maxRetries: number = 30): Promise<number> {
+    console.log(`[ACTION] API Polling: Waiting for stock to hit ${expectedStock}...`);
+    for (let i = 0; i < maxRetries; i++) {
+        const details = await this.getItemDetailsAPI(itemId);
+        const current = details?.currentStock || 0;
+        if (current === expectedStock) {
+            console.log(`[SUCCESS] API Confirmed: Stock correctly reached ${expectedStock}.`);
+            return current;
+        }
+        console.log(`[INFO] Attempt ${i+1}: Stock is ${current}. Retrying in 2s...`);
+        await this.page.waitForTimeout(2000);
+    }
+    const finalDetails = await this.getItemDetailsAPI(itemId);
+    return finalDetails?.currentStock || 0;
+  }
+
   async getJournalEntriesAPI(receiptId: string): Promise<Array<{ accountCode: string; accountName: string; debit: string; credit: string }>> {
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
