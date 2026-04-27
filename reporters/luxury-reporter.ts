@@ -184,7 +184,7 @@ class LuxuryReporter implements Reporter {
             text-align: center; z-index: 2000; pointer-events: none;
         }
         .rate-value { font-size: 3.5rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; text-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
-        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.9); padding: 12px 25px; border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.95); padding: 12px 25px; border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         
         #loginWall {
             position: fixed;
@@ -794,15 +794,18 @@ class LuxuryReporter implements Reporter {
 
         function startSimulationMode() {
             console.log("[SIMULATION] Entering Tactical Simulation Mode...");
-            const simulatedRate = (94 + Math.random() * 5).toFixed(2);
+            const simulatedRate = (94 + Math.random() * 5).toFixed(0);
             animateDashboard(parseFloat(simulatedRate), 0, 100);
-            animateValue('suiteCount', 0, 14, 1000, '');
+            animateValue('domainCount', 0, 3, 1000, '');
             animateValue('apiLatencyValue', 0, 480, 1000, 'ms');
             animateValue('uiLatencyValue', 0, 1200, 1000, 'ms');
             document.getElementById('envHeader').innerText = "TACTICAL SIMULATION MODE | LIVE PREVIEW ACTIVE";
             document.getElementById('loader').style.display = 'none';
-            document.getElementById('latencyStatus').innerText = "SIMULATED: STABLE";
-            document.getElementById('latencyStatus').style.color = "var(--emerald)";
+            const statusEl = document.getElementById('latencyStatus');
+            if (statusEl) {
+                statusEl.innerText = "SIMULATED: STABLE";
+                statusEl.style.color = "var(--emerald)";
+            }
             
             const wall = document.getElementById('errorWall');
             wall.innerHTML = '<div style="color: var(--emerald); font-size: 0.8rem; text-align: center; padding: 20px;">SIMULATION: ALL DOMAINS SECURE</div>';
