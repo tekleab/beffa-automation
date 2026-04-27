@@ -686,12 +686,10 @@ class LuxuryReporter implements Reporter {
 
         async function syncCommandCenter() {
             try {
-                const summary = await smartFetch([
-                    'allure/widgets/summary.json',
                 // Live metadata
                 document.getElementById('syncTimestamp').innerText = 'LAST SYNC: ' + new Date().toLocaleTimeString();
 
-                const summary = await smartFetch(['./allure/widgets/summary.json']).catch(() => ({}));
+                const summary = await smartFetch(['./allure/widgets/summary.json', 'allure/widgets/summary.json']).catch(() => ({}));
                 const stats = summary.statistic || { total: 0, passed: 0, failed: 0, broken: 0, skipped: 0 };
                 
                 const passed = stats.passed || 0;
