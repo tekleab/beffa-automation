@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 352.67ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 19
+[SUCCESS] "Purchase Order Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2640.09ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1991.60ms
+[INFO] Vendor: Zelalem H/Giorgis
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2022.12ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2058.06ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1902.68ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1923.03ms
+[PERFORMANCE] UI - Random Selection: Location: 1931.29ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1957.81ms
+[PERFORMANCE] UI - Random Selection: Tax: 1961.20ms
+[OK] Line item added (Price: 5055)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/27/000066 | Vendor: Zelalem H/Giorgis
+[API] Advancing purchase-orders "d57ca299-41a0-4fe1-b15b-2ae63bf9b666" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 3991.49ms
+[OK] PO PO/2026/04/27/000066 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/27/000066
+[INFO] Matching vendor: Zelalem H/Giorgis
+[ACTION] Searching for: "Zelalem H/Giorgis"
+[INFO] Tier 2 - exact in overlay: "Zelalem H/Giorgis"
+[SUCCESS] Selected: "Zelalem H/Giorgis"
+[PERFORMANCE] UI - Smart Search: Zelalem H/Giorgis: 4031.80ms
+[INFO] Linking PO: PO/2026/04/27/000066
+[ACTION] Searching for: "PO/2026/04/27/000066"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/27/000066"
+[SUCCESS] Selected: "PO/2026/04/27/000066"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/27/000066: 3808.36ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 19
+[SUCCESS] "Invoice Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2365.09ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 22
+[SUCCESS] "Due Date" set to Day 22 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2381.90ms
+[INFO] Dates: Invoice Day 19, Due Day 22
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1828.92ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/27 | Vendor: Zelalem H/Giorgis
+[API] Advancing bills "fbfd97cd-23f7-4465-a7aa-8b794b7518a5" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4718.65ms
+[OK] Bill BILL/2026/04/27 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/27 in vendor profile
+[VERIFY] Entity: Zelalem H/Giorgis | Doc: BILL/2026/04/27 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/a90fd006-ddf7-4cce-b9a8-bdd6fc421016/detail
+[SUCCESS] BILL/2026/04/27 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/27/000066 -> Bill BILL/2026/04/27

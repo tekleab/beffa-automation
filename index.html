@@ -169,8 +169,13 @@
             text-align: center; z-index: 2000; pointer-events: none;
         }
         .rate-value { font-size: 3.5rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; text-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
-        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.95); padding: 12px 25px; border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .status-container { margin-top: 10px; background: #0f172a; padding: 12px 25px; border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
+        /* --- Sharp Alignment Lockdown --- */
+        .observation-deck > *:not(.hud-overlay):not(.erp-metrics):not(.latency-engine):not(.hologram-stage):not(.ai-wing):not(.trend-panel):not(.control-console):not(#envHeader):not(.top-nav):not(#userBadge) {
+            display: none !important; opacity: 0 !important; pointer-events: none !important;
+        }
+
         #loginWall {
             position: fixed;
             inset: 0;
@@ -464,7 +469,7 @@
                 <div class="latency-status" style="color: #64748b; font-size: 0.55rem;">ACTIVE DEPLOYMENT</div>
                 <div class="latency-values">
                     <div class="lat-val" style="font-size: 0.6rem; color: #fff;">BR: <span style="color:var(--emerald);">main</span></div>
-                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#ea4e1fd</span></div>
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#4d98059</span></div>
                 </div>
             </div>
         </div>
@@ -586,7 +591,7 @@
             
             const range = end - start;
             if (range === 0 || duration === 0) {
-               obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + suffix);
+               obj.innerText = Math.floor(end) + suffix;
                return;
             }
 
@@ -594,14 +599,14 @@
             const step = () => {
                 const timeElapsed = performance.now() - startTime;
                 const progress = Math.min(timeElapsed / duration, 1);
-                const current = start + (range * progress);
-                
-                obj.innerText = (id.includes('Count') ? Math.floor(current) : current.toFixed(2) + suffix);
+                // SHARP ALIGNMENT: Strictly use floor to prevent ghost decimal data
+                const current = Math.floor(start + (range * progress));
+                obj.innerText = current + suffix;
                 
                 if (progress < 1) {
                     requestAnimationFrame(step);
                 } else {
-                    obj.innerText = (id.includes('Count') ? end : end.toFixed(2) + suffix);
+                    obj.innerText = Math.floor(end) + suffix;
                 }
             };
             requestAnimationFrame(step);
