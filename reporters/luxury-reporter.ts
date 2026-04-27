@@ -808,9 +808,9 @@ class LuxuryReporter implements Reporter {
                             </svg>
                             <div style="flex:1;">
                                 <div style="font-size:0.6rem; color:#f43f5e; font-weight:bold; letter-spacing:1px;">REPRODUCED BUG</div>
-                                <div style="font-size:0.8rem; color:#fff; font-weight:500;">${f.name}</div>
+                                <div style="font-size:0.8rem; color:#fff; font-weight:500;">\${f.name}</div>
                             </div>
-                        </div>`;
+                        </div>\`;
                       wall.appendChild(div);
                     });
                 } else {
