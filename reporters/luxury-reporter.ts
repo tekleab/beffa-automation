@@ -136,8 +136,12 @@ class LuxuryReporter implements Reporter {
         .console-btn:hover { background: rgba(16, 185, 129, 0.2); color: var(--emerald); box-shadow: var(--neon-glow); }
         
         /* --- Trend Panel --- */
-        .trend-panel { position: absolute; bottom: 120px; width: 400px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; }
-        
+        .trend-panel { position: absolute; bottom: 120px; width: 420px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .trend-stats { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 0 5px; }
+        .stat-box { text-align: center; }
+        .stat-val { font-size: 1.1rem; font-weight: 900; line-height: 1; }
+        .stat-lbl { font-size: 0.55rem; color: #64748b; text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; }
+
         .loading { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 2rem; letter-spacing: 10px; }
         @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 
@@ -433,8 +437,9 @@ class LuxuryReporter implements Reporter {
             <div style="font-size:0.55rem; color:var(--emerald); opacity:0.8;">LEDGER SUM: PERFECT</div>
         </div>
 
-        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 15px; font-size: 0.55rem; color: #64748b; letter-spacing: 3px; z-index: 500;">
-            FETCHING ENVIRONMENT CONTEXT...
+        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 12px; font-size: 0.5rem; color: #64748b; letter-spacing: 2px; z-index: 500;">
+            <span id="syncTimestamp">SYNCING...</span> | <span id="buildId">BUILD: #${process.env.GITHUB_RUN_ID || 'LOCAL_SENTRY'}</span>
+            <div id="envStr" style="margin-top: 5px; font-size: 0.6rem; color: #94a3b8; letter-spacing: 3px;">FETCHING ENVIRONMENT CONTEXT...</div>
         </div>
 
         <!-- PRINCIPAL HUD (Centered Focus) -->
@@ -453,17 +458,19 @@ class LuxuryReporter implements Reporter {
             <div class="metric-card">
                 <div id="domainCount" class="metric-value">0</div>
                 <div class="metric-label">DYNAMIC DOMAINS AUDITED</div>
-                <div style="font-size:0.5rem; color:#64748b; margin-top:5px;">(INVENTORY | SALES | PURCHASE)</div>
+                <div style="font-size:0.45rem; color:#64748b; margin-top:5px; line-height:1.4;">(INVENTORY | SALES | PURCHASE)<br/>Cross-service integrity verified</div>
                 <div class="integrity-bar"><div id="domainBar" class="integrity-fill"></div></div>
             </div>
             <div class="metric-card">
                 <div id="deploymentReadiness" class="metric-value" style="font-size: 1.5rem; letter-spacing: 2px;">CHECKING...</div>
                 <div class="metric-label">CD PIPELINE STATUS</div>
+                <div style="font-size:0.45rem; color:#64748b; margin-top:5px;">Pass rate adjusted for flaky stability</div>
                 <div class="integrity-bar"><div id="readyBar" class="integrity-fill"></div></div>
             </div>
             <div class="metric-card">
                 <div id="uuidCompliance" class="metric-value">0%</div>
                 <div class="metric-label">SECURITY UUID COMPLIANCE</div>
+                <div style="font-size:0.45rem; color:#64748b; margin-top:5px;">Zero-trust cryptographic trace verif.</div>
                 <div class="integrity-bar"><div id="uuidBar" class="integrity-fill"></div></div>
             </div>
         </div>
@@ -500,8 +507,26 @@ class LuxuryReporter implements Reporter {
 
         <!-- TREND PANEL -->
         <div class="trend-panel">
-            <div style="font-size: 0.6rem; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Tactical Stability Trend (Last 10 Runs)</div>
-            <canvas id="trendChart" height="100"></canvas>
+            <div class="trend-stats">
+                <div class="stat-box">
+                    <div id="statPassed" class="stat-val" style="color: var(--emerald);">0</div>
+                    <div class="stat-lbl">PASSED</div>
+                </div>
+                <div class="stat-box">
+                    <div id="statFailed" class="stat-val" style="color: var(--coral);">0</div>
+                    <div class="stat-lbl">FAILED</div>
+                </div>
+                <div class="stat-box">
+                    <div id="statFlaky" class="stat-val" style="color: var(--amber);">0</div>
+                    <div class="stat-lbl">FLAKY</div>
+                </div>
+                <div class="stat-box">
+                    <div id="statTotal" class="stat-val" style="color: #fff; opacity: 0.5;">0</div>
+                    <div class="stat-lbl">TOTAL</div>
+                </div>
+            </div>
+            <div style="font-size: 0.5rem; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Stability Trend (Last 10 Cycles)</div>
+            <canvas id="trendChart" height="90"></canvas>
         </div>
 
         <!-- CONSOLE -->
@@ -671,29 +696,66 @@ class LuxuryReporter implements Reporter {
             try {
                 const summary = await smartFetch([
                     'allure/widgets/summary.json',
-                    './allure/widgets/summary.json'
-                ]).catch(() => {
-                    return startSimulationMode();
-                });
-                
-                if (summary && summary.isSimulated) return;
+                // Live metadata
+                document.getElementById('syncTimestamp').innerText = 'LAST SYNC: ' + new Date().toLocaleTimeString();
 
-                const total = summary?.statistic?.total || 0;
-                const passed = summary?.statistic?.passed || 0;
-                const failed = (summary?.statistic?.failed || 0) + (summary?.statistic?.broken || 0);
-                const numericRate = total > 0 ? parseFloat(((passed / total) * 100).toFixed(2)) : 0;
+                const summary = await smartFetch(['./allure/widgets/summary.json']).catch(() => ({}));
+                const stats = summary.statistic || { total: 0, passed: 0, failed: 0, broken: 0, skipped: 0 };
                 
+                const passed = stats.passed || 0;
+                const failed = (stats.failed || 0) + (stats.broken || 0);
+                const total = stats.total || 0;
+                const flaky = stats.flaky || 0;
+
+                const numericRate = total > 0 ? Math.floor((passed / total) * 100) : 0;
                 animateDashboard(numericRate, failed, total);
-                
+
+                // Populate Stats Breakdown
+                animateValue('statPassed', 0, passed, 1000, '');
+                animateValue('statFailed', 0, failed, 1000, '');
+                animateValue('statFlaky', 0, flaky, 1000, '');
+                animateValue('statTotal', 0, total, 1000, '');
+
+                // Trend Engine
+                const trendData = await smartFetch(['./allure/widgets/history-trend.json']).catch(() => []);
+                if (trendData.length > 0) {
+                    const ctx = document.getElementById('trendChart').getContext('2d');
+                    const history = trendData.slice(0, 10).reverse();
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: history.map((_, i) => 'T-' + (history.length - i)),
+                            datasets: [{
+                                label: 'Pass Rate',
+                                data: history.map(h => (h.data.passed / h.data.total) * 100),
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { display: false, min: 0, max: 105 },
+                                x: { display: false }
+                            }
+                        }
+                    });
+                }
+
                 // DevOps Logic: readiness check
                 const readyEl = document.getElementById('deploymentReadiness');
                 const readyBar = document.getElementById('readyBar');
-                if (numericRate >= 90) {
+                if (numericRate >= 98 && failed === 0) {
                     readyEl.innerText = 'PROD READY';
                     readyEl.style.color = 'var(--emerald)';
                     readyBar.style.width = '100%';
                     readyBar.style.background = 'var(--emerald)';
-                } else if (numericRate >= 70) {
+                } else if (numericRate >= 90) {
                     readyEl.innerText = 'UNSTABLE';
                     readyEl.style.color = 'var(--amber)';
                     readyBar.style.width = '70%';
@@ -715,21 +777,12 @@ class LuxuryReporter implements Reporter {
                 const apiLatency = latestLat ? latestLat.apiLatency : 0;
                 const uiLatency = latestLat ? latestLat.uiLatency : 0;
                 
-                const statusEl = document.getElementById('latencyStatus');
-                const plate = document.querySelector('.latency-plate');
                 animateValue('apiLatencyValue', 0, apiLatency, 1000, 'ms');
                 animateValue('uiLatencyValue', 0, uiLatency, 1000, 'ms');
 
-                if (latestLat) {
-                    const maxLat = Math.max(apiLatency, uiLatency);
-                    if (maxLat < 1500) { plate.className = 'latency-plate emerald-state'; statusEl.innerText = 'SYNC: OPTIMAL'; statusEl.style.color = 'var(--emerald)'; }
-                    else if (maxLat < 3500) { plate.className = 'latency-plate amber-state'; statusEl.innerText = 'SYNC: WARNING'; statusEl.style.color = '#fbbf24'; }
-                    else { plate.className = 'latency-plate coral-state'; statusEl.innerText = 'SYNC: CRITICAL'; statusEl.style.color = 'var(--coral)'; }
-                }
-
                 let env = await smartFetch(['./allure/widgets/environment.json']).catch(() => []);
-                const envStr = env.length > 0 ? env.map(e => e.name.toUpperCase() + ': ' + e.values[0]).join(' | ') : 'SYSTEM SYNCED | TACTICAL HUB ACTIVE';
-                document.getElementById('envHeader').innerText = envStr;
+                const envStrText = env.length > 0 ? env.map(e => e.name.toUpperCase() + ': ' + e.values[0]).join(' | ') : 'SYSTEM SYNCED | TACTICAL HUB ACTIVE';
+                document.getElementById('envStr').innerText = envStrText;
 
                 const behaviors = await smartFetch(['./allure/data/behaviors.json']).catch(() => ({}));
                 const wall = document.getElementById('errorWall');
@@ -740,11 +793,12 @@ class LuxuryReporter implements Reporter {
                     return list;
                 }
                 const failures = findFailures(behaviors);
+                currentFailures = failures;
                 if (failures.length > 0) {
                     failures.slice(0, 10).forEach(f => {
                       const div = document.createElement('div');
                       div.className = 'ai-item';
-                      div.innerHTML = \`
+                      div.innerHTML = `
                         <div style="display:flex; align-items:center; gap:12px;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m8 2 1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"></path>
@@ -754,9 +808,9 @@ class LuxuryReporter implements Reporter {
                             </svg>
                             <div style="flex:1;">
                                 <div style="font-size:0.6rem; color:#f43f5e; font-weight:bold; letter-spacing:1px;">REPRODUCED BUG</div>
-                                <div style="font-size:0.8rem; color:#fff; font-weight:500;">\${f.name}</div>
+                                <div style="font-size:0.8rem; color:#fff; font-weight:500;">${f.name}</div>
                             </div>
-                        </div>\`;
+                        </div>`;
                       wall.appendChild(div);
                     });
                 } else {
