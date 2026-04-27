@@ -1,0 +1,77 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 229.29ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 935.37ms
+[ACTION] Discovery Attempt 1: Testing "fifo testitem" (Stock: 244)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 239.87ms
+[WARN] "fifo testitem" has physical stock but 0 available. Retrying discovery...
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 318.97ms
+[ACTION] Discovery Attempt 2: Testing "fifo testitem" (Stock: 244)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 240.98ms
+[WARN] "fifo testitem" has physical stock but 0 available. Retrying discovery...
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 505.77ms
+[ACTION] Discovery Attempt 3: Testing "wac-april27" (Stock: 52)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 220.09ms
+[WARN] "wac-april27" has physical stock but 0 available. Retrying discovery...
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 478.42ms
+[ACTION] Discovery Attempt 4: Testing "wac-april27" (Stock: 52)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 235.69ms
+[WARN] "wac-april27" has physical stock but 0 available. Retrying discovery...
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 517.63ms
+[ACTION] Discovery Attempt 5: Testing "Handle tylette" (Stock: 34)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 222.03ms
+[SUCCESS] Sales Order created via API: SO/2026/04/27/000117 (ID: 69458602-f478-4808-9f06-3325619f7599, ItemID: c2e8049b-6aab-484c-96d5-60a25edbf14d)
+[API] Advancing sales-orders "69458602-f478-4808-9f06-3325619f7599" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: sales-orders: 4059.96ms
+[OK] Sales Order SO/2026/04/27/000117 approved via Fast-API
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/27/000117
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 231.76ms
+[SUCCESS] Invoice created via API: INV/2026/04/27/000039 (ID: ce083840-2662-4f19-82bb-5e9d2a808baf)
+[API] Advancing invoices "ce083840-2662-4f19-82bb-5e9d2a808baf" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: invoices: 4606.31ms
+[OK] Invoice INV/2026/04/27/000039 approved via Fast-API
+[STEP] Verifying stock deduction via API Polling
+[ACTION] API Polling: Waiting for stock to hit 33...
+[SUCCESS] API Confirmed: Stock correctly reached 33.
+[VERIFY] Expected: 33 | Found: 33
+[OK] Stock decreased correctly after setup.

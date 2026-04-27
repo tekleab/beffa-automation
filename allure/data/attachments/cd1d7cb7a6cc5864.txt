@@ -1,0 +1,28 @@
+[STEP] Stage 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 478.58ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1064.28ms
+[OK] Discovered: "fifo-aprl20" via API | Stock: 89
+[INFO] Item: "fifo-aprl20" | Stock: 89
+[STEP] Creating bill via API for "fifo-aprl20"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 40e8a9cd-68bb-46ea-9770-3405945a3277)
+[PERFORMANCE] API - Create Bill: 253.26ms
+[SUCCESS] Bill created via API: BILL/2026/04/27/000117 (ID: 28ffe835-9b37-4488-9ca7-46e306569773)
+[OK] Bill created: BILL/2026/04/27/000117
+[STEP] Approving bill BILL/2026/04/27/000117
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approve"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/27/000117 approved
+[STEP] Verifying stock increase
+[VERIFY] Item: fifo-aprl20 | Initial: 89 | Billed: 12 | Final: 101 | Expected: 101
+[OK] Stock increased correctly
