@@ -798,7 +798,7 @@ class LuxuryReporter implements Reporter {
                     failures.slice(0, 10).forEach(f => {
                       const div = document.createElement('div');
                       div.className = 'ai-item';
-                      div.innerHTML = `
+                      div.innerHTML = \`
                         <div style="display:flex; align-items:center; gap:12px;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m8 2 1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"></path>
