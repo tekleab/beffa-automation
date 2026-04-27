@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 444.19ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 19
+[SUCCESS] "Purchase Order Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2625.27ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1999.17ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2675.18ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2088.90ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1924.32ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1965.92ms
+[PERFORMANCE] UI - Random Selection: Location: 1908.37ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2015.55ms
+[PERFORMANCE] UI - Random Selection: Tax: 2058.25ms
+[OK] Line item added (Price: 4510)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/27/000086 | Vendor: MOENCO S.C
+[API] Advancing purchase-orders "a5841137-4282-47b6-8632-f2386a00b513" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 4194.47ms
+[OK] PO PO/2026/04/27/000086 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/27/000086
+[INFO] Matching vendor: MOENCO S.C
+[ACTION] Searching for: "MOENCO S.C"
+[INFO] Tier 2 - exact in overlay: "MOENCO S.C"
+[SUCCESS] Selected: "MOENCO S.C"
+[PERFORMANCE] UI - Smart Search: MOENCO S.C: 4299.05ms
+[INFO] Linking PO: PO/2026/04/27/000086
+[ACTION] Searching for: "PO/2026/04/27/000086"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/27/000086"
+[SUCCESS] Selected: "PO/2026/04/27/000086"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/27/000086: 3865.60ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 19
+[SUCCESS] "Invoice Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 3057.41ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 23
+[SUCCESS] "Due Date" set to Day 23 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2601.83ms
+[INFO] Dates: Invoice Day 19, Due Day 23
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1973.67ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/27 | Vendor: MOENCO S.C
+[API] Advancing bills "128ebfce-9be3-4852-a5ce-a34d3a182a8b" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4857.56ms
+[OK] Bill BILL/2026/04/27 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/27 in vendor profile
+[VERIFY] Entity: MOENCO S.C | Doc: BILL/2026/04/27 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/38455e56-3a70-4b89-a2ce-df685dc578a6/detail
+[SUCCESS] BILL/2026/04/27 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/27/000086 -> Bill BILL/2026/04/27
