@@ -71,17 +71,20 @@ class LuxuryReporter implements Reporter {
         .crystal-top-4 { transform: rotateY(270deg) rotateX(30deg); }
         .crystal-bot-1 { transform: rotateY(0deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
         .crystal-bot-2 { transform: rotateY(90deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
-        .hud-overlay { position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); text-align: center; width: 500px; z-index: 10; pointer-events: none; }
-        .rate-value { font-size: 8rem; font-weight: 900; color: #fff; line-height: 1; letter-spacing: -5px; opacity: 0.15; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1; }
+        .hud-overlay {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            text-align: center; z-index: 2000; pointer-events: none;
+        }
+        .rate-value { font-size: 3rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; }
+        .status-container { 
+            margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; 
+            border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); 
+            backdrop-filter: blur(10px); display: inline-block; box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+        }
         
-        .status-container {
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(15px);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: inline-block;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        /* --- Sharp Alignment Lockdown --- */
+        .observation-deck > *:not(.hud-overlay):not(.erp-metrics):not(.latency-engine):not(.hologram-stage):not(.ai-wing):not(.trend-panel):not(.control-console):not(#envHeader):not(.top-nav):not(#userBadge):not(.gl-anchor) {
+            display: none !important; opacity: 0 !important; pointer-events: none !important;
         }
 
         /* --- AI Wing Panel --- */
@@ -183,18 +186,7 @@ class LuxuryReporter implements Reporter {
 
         @keyframes entrance { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
-        .hud-overlay {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            text-align: center; z-index: 2000; pointer-events: none;
-        }
-        .rate-value { font-size: 3rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; }
-        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(10px); }
-        
-        .rate-ghost {
-            position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%);
-            font-size: 15rem; font-weight: 1000; color: rgba(255,255,255,0.03);
-            letter-spacing: -10px; z-index: 1; pointer-events: none;
-        }
+        /* Deduplicated layout CSS moved up */
 
         #loginWall {
             position: fixed;
