@@ -378,8 +378,9 @@ export class SalesAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
-      data: { status: 'reversed' },
+    // Based on user feedback, the reversal action is a PATCH to /api/invoices/:id/void
+    const response = await this.page.request.patch(`${apiBase}/invoices/${invoiceId}/void?${params}`, {
+      data: { status: 'reversed' }, // Some backends ignore body for void, but sending status is safe
       headers: {
         'x-company': process.env.BEFFA_COMPANY as string,
         'Authorization': token ? `Bearer ${token}` : '',
@@ -388,10 +389,11 @@ export class SalesAPI extends BasePage {
     });
 
     if (!response.ok()) {
-      console.error(`[ERROR] Reversal API failed: ${response.status()}`);
+      const err = await response.text();
+      console.error(`[ERROR] Reversal API failed (${response.status()}): ${err}`);
       return false;
     }
-    console.log(`[SUCCESS] Invoice ${invoiceId} reversed via API`);
+    console.log(`[SUCCESS] Invoice ${invoiceId} reversed via API /void endpoint`);
     return true;
   }
 

@@ -13,29 +13,29 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         console.log('[STEP] Stage 1: Login & Setup');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        // 1. Pick a random item with stock via API (High Speed)
-        initialInfo = await app.captureRandomItemDataAPI();
-        console.log(`[OK] Discovered: "${initialInfo.itemName}" via API | Initial Stock: ${initialInfo.currentStock}`);
-
-        // 2. Create Sales Order via API & Approve in UI
-        console.log(`[STEP] Phase 2: Creating Sales Order via API for ${initialInfo.itemName}`);
-        const soData = await app.createSalesOrderAPI({ itemId: initialInfo.itemId, quantity: 1 });
-        
-        if (!soData.success) {
+        // 1. Pick a random item with stock via API (with Retry for Availability)
+        let soData;
+        for (let attempt = 0; attempt < 5; attempt++) {
+            initialInfo = await app.captureRandomItemDataAPI();
+            console.log(`[ACTION] Discovery Attempt ${attempt + 1}: Testing "${initialInfo.itemName}" (Stock: ${initialInfo.currentStock})`);
+            
+            soData = await app.createSalesOrderAPI({ itemId: initialInfo.itemId, quantity: 1 });
+            if (soData.success) break;
+            
             if (soData.status === 422 && soData.error?.toLowerCase().includes('insufficient stock')) {
-                console.log(`[PASS] Valid Validation: System correctly blocked order due to insufficient stock for ${initialInfo.itemName}`);
-                return; // Mark as passed per user requirement
+                console.log(`[WARN] "${initialInfo.itemName}" has physical stock but 0 available. Retrying discovery...`);
+                continue;
             }
             throw new Error(`SO API Creation Failed: ${soData.status} - ${soData.error}`);
         }
 
-        // ⚡ Fast API Approval
-        await page.goto(`/receivables/sale-orders/${soData.id}/detail`, { waitUntil: 'load' });
-        await app.advanceDocumentAPI(soData.id, 'sales-orders');
-        await page.reload(); // 🔄 Synchronize
-        console.log(`[OK] Sales Order ${soData.ref} approved (Released) via Fast-API`);
+        if (!soData || !soData.success) throw new Error('Failed to find an available item after 5 attempts.');
 
-        // 3. Create Invoice via API (linked to SO) & Approve in UI
+        // ⚡ Fast API Approval
+        await app.advanceDocumentAPI(soData.id, 'sales-orders');
+        console.log(`[OK] Sales Order ${soData.ref} approved via Fast-API`);
+
+        // 3. Create Invoice via API (linked to SO)
         console.log(`[STEP] Phase 3: Creating Invoice via API from SO ${soData.ref}`);
         const invData = await app.createInvoiceAPI({
             customerId: soData.customerId,
@@ -44,22 +44,18 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         });
 
         // ⚡ Fast API Approval
-        await page.goto(`/receivables/invoices/${invData.id}/detail`, { waitUntil: 'load' });
         await app.advanceDocumentAPI(invData.id, 'invoices');
-        await page.reload(); // 🔄 Synchronize
         invID = invData.ref!;
         invUUID = invData.id!;
         console.log(`[OK] Invoice ${invID} approved via Fast-API`);
 
-        console.log('[STEP] Verifying stock deduction via API');
-        const postInv = await app.getItemDetailsAPI(initialInfo.itemId);
+        console.log('[STEP] Verifying stock deduction via API Polling');
         const expectedStock = initialInfo.currentStock - 1;
+        const currentStock = await app.pollStockAPI(initialInfo.itemId, expectedStock);
 
-        console.log(`[VERIFY] Expected: ${expectedStock} | Found: ${postInv!.currentStock}`);
-        if (postInv!.currentStock !== expectedStock) {
-            throw new Error(`Stock deduction failed. Expected ${expectedStock}, found ${postInv!.currentStock}`);
-        }
-        console.log('[OK] Stock decreased correctly after pure setup flow');
+        console.log(`[VERIFY] Expected: ${expectedStock} | Found: ${currentStock}`);
+        expect(currentStock).toBe(expectedStock);
+        console.log('[OK] Stock decreased correctly after setup.');
     });
 
     test('Stage 2: Reverse invoice, verify stock restoration @regression', async ({ page }) => {
@@ -67,28 +63,21 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        console.log(`[STEP] Navigating directly to Invoice ${invID} (${invUUID})`);
-        await page.goto(`/receivables/invoices/${invUUID}/detail`, { waitUntil: 'load' });
-        await page.waitForTimeout(3000);
+        if (!invUUID) throw new Error('Stage 2 Failed: No invoice was created in Stage 1.');
 
-        console.log(`[STEP] Triggering reversal for ${invID} via UI (API deferred)`);
-        await page.getByRole('button', { name: 'Reverse' }).click();
-        await page.getByRole('dialog').getByRole('button', { name: 'Reverse' }).click();
-        await page.waitForTimeout(6000);
+        console.log(`[STEP] Phase 2: Reversing Invoice ${invID} via API`);
+        const success = await app.reverseInvoiceAPI(invUUID);
+        expect(success).toBe(true);
+        console.log(`[OK] Invoice ${invID} successfully reversed via Backend API`);
 
-        const badge = page.locator('.chakra-badge').filter({ hasText: /Reversed/i }).first();
-        if (await badge.isVisible({ timeout: 5000 }).catch(() => false)) {
-            console.log(`[OK] ${invID} status changed to Reversed`);
-        }
+        console.log('[STEP] Verifying stock restoration via API Polling');
+        const expectedStock = initialInfo!.currentStock;
+        const finalStock = await app.pollStockAPI(initialInfo!.itemId, expectedStock);
 
-        console.log('[STEP] Verifying stock restoration via API');
-        const finalInfo = await app.getItemDetailsAPI(initialInfo!.itemId);
-
-        console.log(`[VERIFY] Expected (restored): ${initialInfo!.currentStock} | Found: ${finalInfo!.currentStock}`);
-        if (finalInfo!.currentStock !== initialInfo!.currentStock) {
-            throw new Error(`Stock restoration failed. Expected ${initialInfo!.currentStock}, found ${finalInfo!.currentStock}`);
-        }
-        console.log(`[RESULT] Invoice Reversal: PASSED — Stock restored to ${finalInfo!.currentStock}`);
+        console.log(`[VERIFY] Expected (restored): ${expectedStock} | Found: ${finalStock}`);
+        expect(finalStock).toBe(expectedStock);
+        console.log(`[RESULT] Invoice Reversal: PASSED — Stock restored to ${finalStock}`);
+        
         await page.close();
     });
 });
