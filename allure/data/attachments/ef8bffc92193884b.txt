@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 240.72ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 938.31ms
+[INFO] Item: "fifo-aprl20" | UUID: 84f92055-ba76-4728-8566-a6f8102ccfdf | Stock: 92
+[STEP] Phase 2: Creating SO via API for 2 x "fifo-aprl20"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 290.32ms
+[SUCCESS] Sales Order created via API: SO/2026/04/27/000104 (ID: 75a544ff-e6ae-40b9-b032-50f1dc55d532, ItemID: 94cf15f7-7b20-4cec-a826-dc0d203ee0c6)
+[OK] SO created: SO/2026/04/27/000104 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/27/000104
+[API] Advancing sales-orders "75a544ff-e6ae-40b9-b032-50f1dc55d532" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: sales-orders: 4054.06ms
+[OK] SO SO/2026/04/27/000104 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/27/000104
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 288.08ms
+[SUCCESS] Invoice created via API: INV/2026/04/27/000022 (ID: 3b0043a7-a5d4-41a7-a5bd-729984150f51)
+[OK] Invoice created: INV/2026/04/27/000022 (UUID: 3b0043a7-a5d4-41a7-a5bd-729984150f51)
+[STEP] Phase 5: Approving Invoice INV/2026/04/27/000022
+[API] Advancing invoices "3b0043a7-a5d4-41a7-a5bd-729984150f51" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: invoices: 4712.39ms
+[OK] Invoice INV/2026/04/27/000022 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "fifo-aprl20" (Polling for backend sync)
+[POLL] Attempt 1: Found 90 | Expected 90
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 92 to 90

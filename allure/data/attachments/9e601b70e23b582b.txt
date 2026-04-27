@@ -1,0 +1,56 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 510.18ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1041.20ms
+[OK] Discovered: "Handle tylette" via API | Stock: 38
+[INFO] Item: "Handle tylette" | Stock: 38
+[STEP] Fetching random customer via API
+[INFO] Customer: Capital Cement (UUID: 9e4f6a5e-3b45-4247-b1ce-3d19a8f3d610)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 248.42ms
+[SUCCESS] Sales Order created via API: SO/2026/04/27/000103 (ID: d46df97d-767a-4180-bc7e-b3cf2cc92439, ItemID: c00a7516-bb5c-4594-a40c-944ce5def2fd)
+[OK] Sales Order created: SO/2026/04/27/000103
+[API] Advancing sales-orders "d46df97d-767a-4180-bc7e-b3cf2cc92439" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: sales-orders: 4063.48ms
+[OK] Sales Order SO/2026/04/27/000103 approved via Fast-API
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 279.11ms
+[SUCCESS] Invoice created via API: INV/2026/04/27/000021 (ID: dd7e32dc-f776-4b5b-8632-1c4a061a59cf)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 285.67ms
+[SUCCESS] Invoice created via API: INV/2026/04/27/000023 (ID: af6b83c7-141d-4ab8-8013-93e499c57188)
+[OK] Two identical draft invoices created for the same SO: INV/2026/04/27/000021 & INV/2026/04/27/000023
+[API] Advancing invoices "dd7e32dc-f776-4b5b-8632-1c4a061a59cf" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: invoices: 4645.82ms
+[OK] Invoice INV/2026/04/27/000021 approved via Fast-API
+[STEP] Negative test: Attempting to approve duplicate Invoice 2: INV/2026/04/27/000023
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "review"
+[ACTION] Status changed to "review" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Advance"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.

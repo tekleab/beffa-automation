@@ -1,0 +1,41 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 228.21ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 986.10ms
+[INFO] Item: "Jacuzzi Lanzarote" | ID: f77efc33-bef6-4dce-ac2a-73ea84d9bf21 | Stock: 12
+[STEP] Phase 2: Creating PO via API for "Jacuzzi Lanzarote"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 266.93ms
+[SUCCESS] PO created via API: PO/2026/04/27/000099 (ID: 82849112-3120-478f-a49f-77f758ee9e55)
+[OK] PO created: PO/2026/04/27/000099
+[API] Advancing purchase-orders "82849112-3120-478f-a49f-77f758ee9e55" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 4165.92ms
+[OK] PO PO/2026/04/27/000099 approved via Fast-API
+[STEP] Phase 3: Converting PO PO/2026/04/27/000099 to Bill via API
+[ACTION] Fetching PO Context for ID: 82849112-3120-478f-a49f-77f758ee9e55...
+[PERFORMANCE] API - Create API Bill from PO: 260.55ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/27/000110
+[OK] Bill created: BILL/2026/04/27/000110
+[API] Advancing bills "349f8b8b-b381-424f-b146-8efcaabed7da" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4716.33ms
+[OK] Bill BILL/2026/04/27/000110 approved via Fast-API
+[STEP] Phase 4: Ledger verification via API
+[INFO] Captured 5 ledger entries via API
+[INFO] Sample: Cash - Branch Office (1002) — DR: 50000 | CR: 0
+[STEP] Phase 5: Verifying stock for "Jacuzzi Lanzarote" via API Polling
+[ACTION] API Polling: Waiting for stock to hit 22...
+[SUCCESS] API Confirmed: Stock correctly reached 22.
+[VERIFY] Item: Jacuzzi Lanzarote | Initial: 12 | Received: 10 | Final: 22 | Expected: 22
+[RESULT] Purchase Impact: PASSED

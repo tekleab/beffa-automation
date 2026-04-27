@@ -1,0 +1,32 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 467.18ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Phase 1: Scanning for unpaid approved bill
+[ACTION] Scanning for an approved, unpaid bill (Net Due > 0)...
+[CHECK] Row 1 (BILL/2026/04/27/000099): Paid? "no", Net Due: 4500, Status: "approved"
+[SUCCESS] Found unpaid vendor match: "VEND/2026/04/01/000003" (Bill: BILL/2026/04/27/000099)
+[STEP] Phase 2: Creating payment
+[INFO] Selecting vendor: "VEND/2026/04/01/000003"
+[ACTION] Searching for: "VEND/2026/04/01/000003"
+[SUCCESS] Selected: "VEND/2026/04/01/000003"
+[PERFORMANCE] UI - Smart Search: VEND/2026/04/01/000003: 4710.22ms
+[STEP] Selecting bank account
+[ACTION] Searching for: "CBE"
+[INFO] Tier 2 - contains in overlay: "CBE"
+[SUCCESS] Selected: "CBE"
+[PERFORMANCE] UI - Smart Search: CBE: 3921.09ms
+[OK] Account: "Cash at Bank - CBE"
+[STEP] Selecting bill
+[INFO] Locating bill: BILL/2026/04/27/000099
+[INFO] Found BILL/2026/04/27/000099. Locating row checkbox...
+[OK] Bill BILL/2026/04/27/000099 selected
+[STEP] Finalizing payment
+[INFO] Retrying submit
+[INFO] Navigation to detail timed out
+[API] Advancing payments "" for company: "smoke test"
+[WARN] Advance ignored (Status 404). Already in next stage?
+[WARN] No API advance steps were successful. Verify if document  is already approved.
+[PERFORMANCE] API - API Advance: payments: 508.01ms
+[OK] Payment approved via Fast-API
