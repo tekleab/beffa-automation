@@ -56,17 +56,20 @@
         .crystal-top-4 { transform: rotateY(270deg) rotateX(30deg); }
         .crystal-bot-1 { transform: rotateY(0deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
         .crystal-bot-2 { transform: rotateY(90deg) rotateX(-30deg) translateY(125px) scaleY(-1); }
-        .hud-overlay { position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); text-align: center; width: 500px; z-index: 10; pointer-events: none; }
-        .rate-value { font-size: 8rem; font-weight: 900; color: #fff; line-height: 1; letter-spacing: -5px; opacity: 0.15; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1; }
+        .hud-overlay {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            text-align: center; z-index: 2000; pointer-events: none;
+        }
+        .rate-value { font-size: 3rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; }
+        .status-container { 
+            margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; 
+            border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); 
+            backdrop-filter: blur(10px); display: inline-block; box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+        }
         
-        .status-container {
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(15px);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: inline-block;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        /* --- Sharp Alignment Lockdown --- */
+        .observation-deck > *:not(.hud-overlay):not(.erp-metrics):not(.latency-engine):not(.hologram-stage):not(.ai-wing):not(.trend-panel):not(.control-console):not(#envHeader):not(.top-nav):not(#userBadge):not(.gl-anchor) {
+            display: none !important; opacity: 0 !important; pointer-events: none !important;
         }
 
         /* --- AI Wing Panel --- */
@@ -168,18 +171,7 @@
 
         @keyframes entrance { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
-        .hud-overlay {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            text-align: center; z-index: 2000; pointer-events: none;
-        }
-        .rate-value { font-size: 3rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; }
-        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(10px); }
-        
-        .rate-ghost {
-            position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%);
-            font-size: 15rem; font-weight: 1000; color: rgba(255,255,255,0.03);
-            letter-spacing: -10px; z-index: 1; pointer-events: none;
-        }
+        /* Deduplicated layout CSS moved up */
 
         #loginWall {
             position: fixed;
@@ -423,7 +415,7 @@
         </div>
 
         <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 12px; font-size: 0.5rem; color: #64748b; letter-spacing: 2px; z-index: 500;">
-            <span id="syncTimestamp">SYNCING...</span> | <span id="buildId">BUILD: #24985253549</span>
+            <span id="syncTimestamp">SYNCING...</span> | <span id="buildId">BUILD: #24986326457</span>
             <div id="envStr" style="margin-top: 5px; font-size: 0.6rem; color: #94a3b8; letter-spacing: 3px;">FETCHING ENVIRONMENT CONTEXT...</div>
         </div>
 
@@ -467,7 +459,7 @@
                 <div class="latency-status" style="color: #64748b; font-size: 0.55rem;">ACTIVE DEPLOYMENT</div>
                 <div class="latency-values">
                     <div class="lat-val" style="font-size: 0.6rem; color: #fff;">BR: <span style="color:var(--emerald);">main</span></div>
-                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#5b4804b</span></div>
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#50dd6d4</span></div>
                 </div>
             </div>
             <div id="latencyStatus" style="font-size:0.5rem; text-align:right; margin-top:5px; color:var(--emerald);">SYNC: ACTIVE</div>

@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 400.10ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 19
+[SUCCESS] "Purchase Order Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2683.16ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2338.16ms
+[INFO] Vendor: Beniam
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2744.31ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2448.45ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1989.56ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1918.93ms
+[PERFORMANCE] UI - Random Selection: Location: 1976.94ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1980.04ms
+[PERFORMANCE] UI - Random Selection: Tax: 1977.58ms
+[OK] Line item added (Price: 3961)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/27/000074 | Vendor: Beniam
+[API] Advancing purchase-orders "342f7013-0c76-444a-8d1b-b40562109412" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 4060.82ms
+[OK] PO PO/2026/04/27/000074 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/27/000074
+[INFO] Matching vendor: Beniam
+[ACTION] Searching for: "Beniam"
+[INFO] Tier 2 - exact in overlay: "Beniam"
+[SUCCESS] Selected: "Beniam"
+[PERFORMANCE] UI - Smart Search: Beniam: 3907.95ms
+[INFO] Linking PO: PO/2026/04/27/000074
+[ACTION] Searching for: "PO/2026/04/27/000074"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/27/000074"
+[SUCCESS] Selected: "PO/2026/04/27/000074"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/27/000074: 3754.06ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 19
+[SUCCESS] "Invoice Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2385.48ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 24
+[SUCCESS] "Due Date" set to Day 24 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2396.52ms
+[INFO] Dates: Invoice Day 19, Due Day 24
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1820.01ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/27 | Vendor: Beniam
+[API] Advancing bills "34f19d8b-40e4-4f38-ac6f-f86efa8912b7" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4752.10ms
+[OK] Bill BILL/2026/04/27 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/27 in vendor profile
+[VERIFY] Entity: Beniam | Doc: BILL/2026/04/27 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/50db93ee-81fd-4a88-b836-a0f40c532c5c/detail
+[SUCCESS] BILL/2026/04/27 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/27/000074 -> Bill BILL/2026/04/27
