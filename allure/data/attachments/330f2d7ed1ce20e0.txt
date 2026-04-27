@@ -1,0 +1,69 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 405.88ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 19
+[SUCCESS] "Purchase Order Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3259.89ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2332.19ms
+[INFO] Vendor: BAMACO PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2361.34ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2441.86ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1927.88ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1992.12ms
+[PERFORMANCE] UI - Random Selection: Location: 1972.79ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2118.26ms
+[PERFORMANCE] UI - Random Selection: Tax: 2123.01ms
+[OK] Line item added (Price: 4944)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/27/000072 | Vendor: BAMACO PLC
+[API] Advancing purchase-orders "a3b2cf7a-53cf-4298-9b1b-b6d8ac961a65" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: purchase-orders: 3891.79ms
+[OK] PO PO/2026/04/27/000072 approved via Fast-API
+[STEP] Phase 2: Creating Bill from PO PO/2026/04/27/000072
+[INFO] Matching vendor: BAMACO PLC
+[ACTION] Searching for: "BAMACO PLC"
+[INFO] Tier 2 - exact in overlay: "BAMACO PLC"
+[SUCCESS] Selected: "BAMACO PLC"
+[PERFORMANCE] UI - Smart Search: BAMACO PLC: 4061.03ms
+[INFO] Linking PO: PO/2026/04/27/000072
+[ACTION] Searching for: "PO/2026/04/27/000072"
+[INFO] Tier 2 - exact in overlay: "PO/2026/04/27/000072"
+[SUCCESS] Selected: "PO/2026/04/27/000072"
+[PERFORMANCE] UI - Smart Search: PO/2026/04/27/000072: 3848.35ms
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 19.
+[ACTION] Picking date: "Invoice Date" -> Targeting Day 19
+[SUCCESS] "Invoice Date" set to Day 19 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Invoice Date: 2424.46ms
+[ACTION] Picking date: "Due Date" -> Targeting Day 24
+[SUCCESS] "Due Date" set to Day 24 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Due Date: 2462.21ms
+[INFO] Dates: Invoice Day 19, Due Day 24
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1867.94ms
+[ACTION] Processing PO Receipt Tab...
+[DATA] Remaining: 1 | Receiving: 1
+[SUCCESS] PO Line Item received (1) and selected.
+[STEP] Submitting bill
+[OK] Bill created: BILL/2026/04/27 | Vendor: BAMACO PLC
+[API] Advancing bills "b5c42b85-02a4-48ca-992e-86e595525cc3" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: bills: 4734.53ms
+[OK] Bill BILL/2026/04/27 approved via Fast-API
+[STEP] Phase 3: Verifying BILL/2026/04/27 in vendor profile
+[VERIFY] Entity: BAMACO PLC | Doc: BILL/2026/04/27 | Tab: Bills
+[ACTION] Navigating to detail: /payables/vendors/af1ae170-ebb8-49ec-9629-ad1bf8080591/detail
+[SUCCESS] BILL/2026/04/27 verified in vendor profile.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/27/000072 -> Bill BILL/2026/04/27
