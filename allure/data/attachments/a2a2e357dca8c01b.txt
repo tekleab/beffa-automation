@@ -1,0 +1,36 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 231.18ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 948.51ms
+[OK] Discovered: "Saw Blade 350" via API | Stock: 106
+[STEP] Phase 2: Creating standalone invoice for "Saw Blade 350"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "2b98142d-8f11-43fd-8910-08f681cb174b",
+  "customer_id": "a32030e5-c83a-4b06-8cb7-18cf9dab5bac",
+  "invoice_date": "2026-04-27T00:00:00Z",
+  "due_date": "2026-04-29T00:00:00Z",
+  "currency_id": "a1fc7edf-5921-48a5-af27-1cb17ae04ef9",
+  "items": [
+    {
+      "amount": 10993.05,
+      "general_ledger_account_id": "f1da4f1b-87b0-43c5-bca6-23c359735f53",
+      "item_id": "23c0b943-3f49-43dc-b442-681f26a7118e",
+      "location_id": "85ef160e-775e-44e2-83ee-c8280de0c1b5",
+      "quantity": 1,
+      "unit_price": 10993.05,
+      "warehouse_id": "f3d0c9cc-045f-46c0-a5a2-d43eddb01be2"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 235.17ms
+[PERFORMANCE] API - Standalone Invoice: 254.35ms
+[PERFORMANCE] API - Standalone Invoice: 269.60ms
