@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 487.75ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1089.14ms
+[OK] Discovered via API: "fifo-aprl20" | Stock: 73
+[INFO] Item Unit Cost: 100 | Chosen Adjustment Qty: 5 (Total: 500)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 348.83ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/27/000014 (ID: 2b510c59-e928-4fe2-bc18-e46f572117cf)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/27/000014
+[API] Advancing inventory-adjustments "2b510c59-e928-4fe2-bc18-e46f572117cf" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1783.27ms
+[OK] Adjustment ADJ/2026/04/27/000014 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "fifo-aprl20" (Polling for sync)
+[POLL] Attempt 1: Found 78 | Expected 78
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units

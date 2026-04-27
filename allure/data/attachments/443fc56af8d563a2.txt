@@ -1,0 +1,42 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 437.83ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1041.68ms
+[OK] Discovered: "fifo-aprl20" via API | Stock: 78
+[INFO] Item: "fifo-aprl20" | Stock: 78
+[STEP] Fetching random customer via API
+[INFO] Customer: Kebede-1776 (UUID: def02d8c-a373-453a-9c35-6151fa36e98e)
+[STEP] Phase 2: Testing duplicate invoice creation against a single SO
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 303.29ms
+[SUCCESS] Sales Order created via API: SO/2026/04/27/000062 (ID: 12f10b3e-90b8-47ba-8421-9172315c8ca4, ItemID: 89822ce3-250c-4d83-bfc0-5a8c00e3cf34)
+[OK] Sales Order created: SO/2026/04/27/000062
+[API] Advancing sales-orders "12f10b3e-90b8-47ba-8421-9172315c8ca4" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: sales-orders: 4195.93ms
+[OK] Sales Order SO/2026/04/27/000062 approved via Fast-API
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 260.45ms
+[PERFORMANCE] API - Create Invoice: 273.85ms
+[PERFORMANCE] API - Create Invoice: 287.33ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 252.04ms
+[PERFORMANCE] API - Create Invoice: 305.65ms
+[PERFORMANCE] API - Create Invoice: 281.86ms
+[OK] Two identical draft invoices created for the same SO: undefined & undefined

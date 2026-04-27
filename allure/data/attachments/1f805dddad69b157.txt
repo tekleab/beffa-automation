@@ -1,0 +1,36 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 466.70ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Phase 1: Scanning for unpaid approved bill
+[ACTION] Scanning for an approved, unpaid bill (Net Due > 0)...
+[CHECK] Row 1 (BILL/2026/04/27/000075): Paid? "no", Net Due: 12500, Status: "draft"
+[CHECK] Row 2 (BILL/2026/04/27/000073): Paid? "no", Net Due: 9396, Status: "approved"
+[SUCCESS] Found unpaid vendor match: "VEND/2026/04/01/000009" (Bill: BILL/2026/04/27/000073)
+[STEP] Phase 2: Creating payment
+[INFO] Selecting vendor: "VEND/2026/04/01/000009"
+[ACTION] Searching for: "VEND/2026/04/01/000009"
+[SUCCESS] Selected: "VEND/2026/04/01/000009"
+[PERFORMANCE] UI - Smart Search: VEND/2026/04/01/000009: 4242.66ms
+[STEP] Selecting bank account
+[ACTION] Searching for: "CBE"
+[INFO] Tier 2 - contains in overlay: "CBE"
+[SUCCESS] Selected: "CBE"
+[PERFORMANCE] UI - Smart Search: CBE: 4047.25ms
+[OK] Account: "Cash at Bank - CBE"
+[STEP] Selecting bill
+[INFO] Locating bill: BILL/2026/04/27/000073
+[INFO] Found BILL/2026/04/27/000073. Locating row checkbox...
+[OK] Bill BILL/2026/04/27/000073 selected
+[STEP] Finalizing payment
+[API] Advancing payments "d874fdf2-92e8-4a02-b1ff-b65ec59b2394" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: payments: 4506.07ms
+[OK] Payment approved via Fast-API
+[OK] Payment finalized: PAY/2026/04/27/000031 for VEND/2026/04/01/000009
+[STEP] Phase 4: Verifying PAY/2026/04/27/000031 in vendor profile
+[RESULT] Payment Cycle: PASSED — PAY/2026/04/27/000031 verified in vendor profile
