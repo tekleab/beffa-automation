@@ -1,0 +1,29 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 353.43ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018)...
+[PERFORMANCE] API - Item Discovery (50 Records): 1010.19ms
+[INFO] Item: "Control panal" | UUID: 62529f09-aae3-4f54-8d1a-3b75981b5fb3 | Stock: 30
+[STEP] Phase 2: Creating SO via API for 2 x "Control panal"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 219.72ms
+[SUCCESS] Sales Order created via API: SO/2026/04/27/000079 (ID: adee7a60-f95c-41f9-9464-2f449b584efd, ItemID: ca04b27b-329a-4235-988a-224800c7f367)
+[OK] SO created: SO/2026/04/27/000079 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/27/000079
+[API] Advancing sales-orders "adee7a60-f95c-41f9-9464-2f449b584efd" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Advance cycle break. Status: 422
+[PERFORMANCE] API - API Advance: sales-orders: 3944.18ms
+[OK] SO SO/2026/04/27/000079 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/27/000079
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
