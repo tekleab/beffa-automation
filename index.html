@@ -165,15 +165,16 @@
         @keyframes entrance { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
         .hud-overlay {
-            position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%);
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             text-align: center; z-index: 2000; pointer-events: none;
         }
-        .rate-value { font-size: 3.5rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; text-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
-        .status-container { margin-top: 10px; background: #0f172a; padding: 12px 25px; border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .rate-value { font-size: 3rem; font-weight: 1000; letter-spacing: -2px; line-height: 1; color: #fff; position: relative; }
+        .status-container { margin-top: 10px; background: rgba(15, 23, 42, 0.85); padding: 15px 30px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(10px); }
         
-        /* --- Sharp Alignment Lockdown --- */
-        .observation-deck > *:not(.hud-overlay):not(.erp-metrics):not(.latency-engine):not(.hologram-stage):not(.ai-wing):not(.trend-panel):not(.control-console):not(#envHeader):not(.top-nav):not(#userBadge) {
-            display: none !important; opacity: 0 !important; pointer-events: none !important;
+        .rate-ghost {
+            position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%);
+            font-size: 15rem; font-weight: 1000; color: rgba(255,255,255,0.03);
+            letter-spacing: -10px; z-index: 1; pointer-events: none;
         }
 
         #loginWall {
@@ -397,32 +398,32 @@
         </div>
     </div>
 
-    <div class="observation-deck" style="overflow: hidden;">
-        <!-- PREMIUM TOP NAV HUB -->
-        <div style="position: absolute; top: 25px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 3000;">
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <div style="font-size: 1.6rem; font-weight: 950; letter-spacing: -1.5px; color: #fff;">befa<span style="color:var(--emerald);">HUB</span></div>
-                <div class="heartbeat-wave">
-                    <div id="wave1" class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
-                    <div id="wave2" class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
-                    <div id="wave3" class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
-                    <div id="wave4" class="wave-bar wave-active" style="animation-delay: 0.2s"></div>
-                    <div id="wave5" class="wave-bar wave-active" style="animation-delay: 0.4s"></div>
-                </div>
-            </div>
-
-            <div class="gl-anchor" style="top:0; right:0; position:relative; padding:10px 20px;">
-                <div style="font-size:0.45rem; color:#64748b; font-weight:bold; letter-spacing:2px;">FINANCIAL CORE INTEGRITY</div>
-                <div class="gl-status" style="font-size:1rem;">G/L BALANCED</div>
-                <div style="font-size:0.5rem; color:var(--emerald); opacity:0.8;">LEDGER SUM: PERFECT</div>
+    <div class="observation-deck">
+        <!-- TOP BRANDING & HEARTBEAT -->
+        <div style="position: absolute; top: 30px; left: 40px; display: flex; align-items: center; gap: 20px; z-index: 3000;">
+            <div style="font-size: 1.6rem; font-weight: 950; letter-spacing: -1.5px; color: #fff;">befa<span style="color:var(--emerald);">HUB</span></div>
+            <div class="heartbeat-wave">
+                <div class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
+                <div class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
+                <div class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
+                <div class="wave-bar wave-active" style="animation-delay: 0.2s"></div>
+                <div class="wave-bar wave-active" style="animation-delay: 0.4s"></div>
             </div>
         </div>
 
-        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 12px; font-size: 0.55rem; color: #64748b; letter-spacing: 3px; z-index: 500;">
+        <!-- ELITE FINANCIAL ANCHOR -->
+        <div class="gl-anchor" style="top: 30px; right: 40px;">
+            <div style="font-size:0.5rem; color:#64748b; font-weight:bold; letter-spacing:2px;">FINANCIAL CORE INTEGRITY</div>
+            <div class="gl-status">G/L BALANCED</div>
+            <div style="font-size:0.55rem; color:var(--emerald); opacity:0.8;">LEDGER SUM: PERFECT</div>
+        </div>
+
+        <div id="envHeader" style="position: absolute; width: 100%; text-align: center; top: 15px; font-size: 0.55rem; color: #64748b; letter-spacing: 3px; z-index: 500;">
             FETCHING ENVIRONMENT CONTEXT...
         </div>
 
         <!-- PRINCIPAL HUD (Centered Focus) -->
+        <div id="ghostRate" class="rate-ghost">0%</div>
         <div class="hud-overlay">
             <div id="hudRateValue" class="rate-value">0%</div>
             <div id="hudRateLabel" class="status-container"></div>
@@ -433,7 +434,7 @@
         </div>
 
         <!-- ERP METRICS -->
-        <div class="erp-metrics">
+        <div class="erp-metrics" style="top: 120px; left: 40px;">
             <div class="metric-card">
                 <div id="domainCount" class="metric-value">0</div>
                 <div class="metric-label">DYNAMIC DOMAINS AUDITED</div>
@@ -452,30 +453,21 @@
             </div>
         </div>
 
-        <!-- ENTERPRISE LATENCY ENGINE -->
-        <div id="latencyHub" class="latency-engine">
-            <div class="erp-details">
-                <div class="latency-plate emerald-state">
-                    <div class="latency-header">LATENCY SYNC</div>
-                    <div id="latencyStatus" class="latency-status">SYNC: ACTIVE</div>
-                    <div class="latency-values">
-                        <div class="lat-val">API: <span id="apiLatencyValue">0</span>ms</div>
-                        <div class="lat-val">UI: <span id="uiLatencyValue">0</span>ms</div>
-                    </div>
-                </div>
-
+        <!-- VSC CONTEXT (Bottom Right Orbital) -->
+        <div class="latency-engine" style="bottom: 120px; right: 40px;">
             <div class="latency-plate emerald-state" style="border-color: rgba(16, 185, 129, 0.2);">
                 <div class="latency-header">VCS CONTEXT</div>
                 <div class="latency-status" style="color: #64748b; font-size: 0.55rem;">ACTIVE DEPLOYMENT</div>
                 <div class="latency-values">
                     <div class="lat-val" style="font-size: 0.6rem; color: #fff;">BR: <span style="color:var(--emerald);">main</span></div>
-                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#4d98059</span></div>
+                    <div class="lat-val" style="font-size: 0.6rem; color: #fff;">SHA: <span id="commitSha" style="color:var(--amber);">#c6b7893</span></div>
                 </div>
             </div>
+            <div id="latencyStatus" style="font-size:0.5rem; text-align:right; margin-top:5px; color:var(--emerald);">SYNC: ACTIVE</div>
         </div>
 
         <!-- CRYSTAL -->
-        <div class="hologram-stage" style="top:50%; pointer-events:none;">
+        <div class="hologram-stage" style="top:45%; pointer-events:none;">
             <div class="crystal">
                 <div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div>
                 <div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div>
@@ -484,7 +476,7 @@
         </div>
 
         <!-- AI WING -->
-        <div id="aiWing" class="ai-wing">
+        <div id="aiWing" class="ai-wing" style="top: 120px; right: 40px;">
             <div style="font-size: 0.7rem; color: var(--emerald); font-weight: bold;">MULTI-VECTOR ROOT CAUSE ENGINE</div>
             <div id="errorWall" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                 <!-- Dynamically Populated -->
@@ -767,6 +759,7 @@
 
         function animateDashboard(numericRate, failed, total) {
             animateValue('hudRateValue', 0, numericRate, 1500); 
+            animateValue('ghostRate', 0, numericRate, 1500);
             const status = failed === 0 && total > 0 ? 'INTEGRITY: STABLE' : (numericRate > 90 ? 'STATUS: UNSTABLE' : 'STATUS: CRITICAL');
             const statusColor = failed === 0 && total > 0 ? 'var(--emerald)' : (numericRate > 90 ? '#fbbf24' : 'var(--coral)');
             
