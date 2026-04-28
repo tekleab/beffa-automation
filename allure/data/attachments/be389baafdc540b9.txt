@@ -1,0 +1,92 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 344.16ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[AUDIT] Stage 0: Capturing Absolute Baseline...
+[SNAPSHOT] Cash - Main Office: -2877150.22
+[SNAPSHOT] Accounts Payable: -103580.00
+[SNAPSHOT] Withholding Tax Payable: 142407.66
+[STEP 1] Creating Approved Bill via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 784.81ms
+[PERFORMANCE] API - Create Bill: 267.87ms
+[SUCCESS] Bill created via API: BILL/2026/04/28/000239 (ID: bc0697ec-5df5-4888-a9e7-2ee02d7a76be)
+[API] Advancing bills "bc0697ec-5df5-4888-a9e7-2ee02d7a76be" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4670.15ms
+[DATA] Item Name   : Saw Blade 350
+[DATA] Item ID     : 23c0b943-3f49-43dc-b442-681f26a7118e
+[DATA] Bill Number : BILL/2026/04/28/000239
+[DATA] Bill UUID   : bc0697ec-5df5-4888-a9e7-2ee02d7a76be
+[AUDIT] Bill Line Items (1):
+  - Saw Blade 350 | Qty: 10 | UnitPrice: 5000 | Subtotal: 50000
+[DATA] Target Amt  : 50000.00
+[INFO] Waiting 5s for Bill Ledger Posting...
+[AUDIT] Stage 0.5: Verifying Bill Posting to AP...
+[DATA] Bill Journals Found: 5 entries
+[JOURNAL] Cash - Branch Office | Code: 1002 | Dr: 50000 | Cr: 0
+[JOURNAL] Withholding Tax Payable | Code: 2104 | Dr: 0 | Cr: 1000
+[JOURNAL] Cost of Others | Code: 5103 | Dr: 0 | Cr: 50000
+[JOURNAL] Inventory | Code: 1301 | Dr: 50000 | Cr: 0
+[JOURNAL] Accounts Payable | Code: 2003 | Dr: 0 | Cr: 49000
+[SNAPSHOT] Cash - Main Office: -2877150.22
+[SNAPSHOT] Accounts Payable: -54580.00
+[SNAPSHOT] Withholding Tax Payable: 143407.66
+[LEDGER_RECONCILIATION] Bill Posting Impact:
+  - AP Shift (Credit): 49000.00 (Should match 50000)
+[SUCCESS] AP Ledger confirmed. Bill amount is now a liability.
+[STEP 2] Settling FULL amount: 50000
+[ACTION] Creating Bill Payment for bc0697ec-5df5-4888-a9e7-2ee02d7a76be via API (CashAcct: ca359c3b-b3c8-4030-8027-7e7e03fc350f)...
+[SUCCESS] Payment created: PAY/2026/04/28/000204 (ID: 672fb33f-4540-417d-9c0e-9ec9dbfd7fac)
+[API] Advancing payments "672fb33f-4540-417d-9c0e-9ec9dbfd7fac" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: payments: 4299.93ms
+[INFO] Waiting 5s for Ledger Posting...
+[AUDIT] Stage 1: Verifying Happy Path Ledger Impact...
+[SNAPSHOT] Cash - Main Office: -2927150.22
+[SNAPSHOT] Accounts Payable: -104580.00
+[SNAPSHOT] Withholding Tax Payable: 143407.66
+[LEDGER_RECONCILIATION] First Payment Impact:
+  - Cash Shift       : 50000.00 (98%)
+  - Withholding Shift: 1000.00 (2%)
+  - Total Reconciled : 51000.00 (Should match 50000)
+[AUDIT] After First Payment - Remaining Balance: -1000
+[DATA] Payment 1 UUID : 672fb33f-4540-417d-9c0e-9ec9dbfd7fac
+[DATA] Payment 1 Ref  : PAY/2026/04/28/000204
+[STEP 3] VIOLATION: Attempting SECOND payment of 50000 for the SAME bill
+[ACTION] Creating Bill Payment for bc0697ec-5df5-4888-a9e7-2ee02d7a76be via API (CashAcct: ca359c3b-b3c8-4030-8027-7e7e03fc350f)...
+[SUCCESS] Payment created: PAY/2026/04/28/000205 (ID: fe71cf93-23cc-45d6-a57a-f0f068352ba4)
+[REGRESSION] System allowed duplicate payment creation!
+[DATA] Payment 2 UUID : fe71cf93-23cc-45d6-a57a-f0f068352ba4
+[DATA] Payment 2 Ref  : PAY/2026/04/28/000205
+[STEP 4] ESCALATION: Checking if duplicate payment can be APPROVED
+[API] Advancing payments "fe71cf93-23cc-45d6-a57a-f0f068352ba4" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: payments: 4246.06ms
+[INFO] Waiting 5s for Ledger Posting...
+[AUDIT] Stage 2: Verifying Duplicate Ledger Impact...
+[SNAPSHOT] Cash - Main Office: -2977150.22
+[SNAPSHOT] Accounts Payable: -105580.00
+[SNAPSHOT] Withholding Tax Payable: 144407.66
+[AUDIT] Duplicate Ledger Violation Summary:
+  - Cash Shift (Duplicate): 50000.00
+  - AP Shift   (Duplicate): 1000.00
+  - WT Shift   (Duplicate): 1000.00
+================================================================================
+[VULNERABILITY DETECTED]: Double-Disbursement Approved for Bill BILL/2026/04/28/000239
+[FINANCIAL IMPACT]: Ledger Compromised - AP Shift: 1000.00 | Cash Shift: 50000.00
+================================================================================

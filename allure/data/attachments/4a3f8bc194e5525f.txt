@@ -1,0 +1,52 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 183.85ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1071.60ms
+[OK] Discovered: "Steam 9VA" via API | Stock: 10
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 243.67ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000152 (ID: f7457f00-c012-4619-b84f-8732d1a6dff0, ItemID: 6bcdb5ac-8b05-425a-954c-b59eb99d4d2e)
+[API] Advancing sales-orders "f7457f00-c012-4619-b84f-8732d1a6dff0" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 3915.33ms
+[OK] Sales Order approved via Fast-API
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 241.77ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000101 (ID: d9e28937-5aad-4ada-b9fc-bc081335e739)
+[API] Advancing invoices "d9e28937-5aad-4ada-b9fc-bc081335e739" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4545.57ms
+[OK] Invoice approved via Fast-API
+[INFO] Document Setup Complete: INV/2026/04/28/000101 for Base Ethiopia
+[STEP] Phase 2: Creating receipt
+[ACTION] Searching for: "Base Ethiopia"
+[INFO] Tier 2 - exact in overlay: "Base Ethiopia"
+[SUCCESS] Selected: "Base Ethiopia"
+[PERFORMANCE] UI - Smart Search: Base Ethiopia: 3954.10ms
+[ACTION] Filling date 28/04/2026 -> Targeting UI day: 28
+[SUCCESS] Day 28 selected in the current active calendar grid.
+[PERFORMANCE] UI - Fill Date: 0: 2278.61ms
+[ACTION] Searching for: "Cash at Bank - CBE"
+[INFO] Tier 2 - exact in overlay: "Cash at Bank - CBE"
+[SUCCESS] Selected: "Cash at Bank - CBE"
+[PERFORMANCE] UI - Smart Search: Cash at Bank - CBE: 3690.75ms
+[STEP] Linking Invoice INV/2026/04/28/000101
+[FAIL] Could not find INV/2026/04/28/000101 in grid. Visible: INV/2026/04/28/000056, INV/2026/04/28/000040, INV/2026/04/28/000053, INV/2026/04/28/000054, INV/2026/04/28/000057, INV/2026/04/28/000059, INV/2026/04/28/000041
+[INFO] Falling back to first available row
+[STEP] Committing receipt

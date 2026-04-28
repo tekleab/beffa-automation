@@ -1,0 +1,26 @@
+[STEP] Phase 1: High-Speed Forensic Login
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 217.95ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[AUDIT] Scenario: Missing Vendor ID
+[RESULT] Status: 422
+[AUDIT] Scenario: Negative Quantity
+[RESULT] Status: 400
+[AUDIT] Scenario: Bill: Empty Items List
+[RESULT] Status: 422
+[AUDIT] Scenario: Payment: Missing Cash Account
+[RESULT] Status: 422
+[AUDIT] Scenario: Security: Invalid Token
+[RESULT] Status: 401
+[AUDIT] Scenario: Billing a DRAFT Purchase Order
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1035.60ms
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 238.73ms
+[SUCCESS] PO created via API: PO/2026/04/28/000133 (ID: 6f0567d5-39c0-4774-9e00-afb298e1dd99)
+[RESULT] Status: 422 (Intercepted)
+[AUDIT] Scenario: Boundary: Financial Overflow
+[RESULT] Status: 422
+[FINISH] Master Purchase Forensic Audit Complete. All guardrails verified.

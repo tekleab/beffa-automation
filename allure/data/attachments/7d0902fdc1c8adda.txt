@@ -1,0 +1,41 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 230.30ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1150.44ms
+[INFO] Item: "Thermo stat" | ID: 4af40458-45ae-4f84-a96f-ee9051e5e539 | Stock: 21
+[STEP] Phase 2: Creating PO via API for "Thermo stat"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 235.67ms
+[SUCCESS] PO created via API: PO/2026/04/28/000132 (ID: 42a8e728-5048-4c29-ac10-293ff8af5046)
+[OK] PO created: PO/2026/04/28/000132
+[API] Advancing purchase-orders "42a8e728-5048-4c29-ac10-293ff8af5046" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 3966.27ms
+[OK] PO PO/2026/04/28/000132 approved via Fast-API
+[STEP] Phase 3: Converting PO PO/2026/04/28/000132 to Bill via API
+[ACTION] Fetching PO Context for ID: 42a8e728-5048-4c29-ac10-293ff8af5046...
+[PERFORMANCE] API - Create API Bill from PO: 272.19ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000242
+[OK] Bill created: BILL/2026/04/28/000242
+[API] Advancing bills "996a40c8-cab0-4a4f-9a83-24d6ee5f6a2a" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4686.25ms
+[OK] Bill BILL/2026/04/28/000242 approved via Fast-API
+[STEP] Phase 4: Ledger verification via API
+[INFO] Captured 5 ledger entries via API
+[INFO] Sample: Cash - Branch Office (1002) — DR: 50000 | CR: 0
+[STEP] Phase 5: Verifying stock for "Thermo stat" via API Polling
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 31...
+[SUCCESS] API Confirmed: Stock correctly reached 31.
+[VERIFY] Item: Thermo stat | Initial: 21 | Received: 10 | Final: 31 | Expected: 31
+[RESULT] Purchase Impact: PASSED

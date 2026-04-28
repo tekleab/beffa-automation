@@ -1,0 +1,23 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 394.99ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1104.29ms
+[OK] Discovered via API: "Handle tylette" | Stock: 43
+[INFO] Item Unit Cost: 20 | Chosen Adjustment Qty: 5 (Total: 100)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 257.57ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/28/000024 (ID: 4aa56bed-ea4e-4e5f-934a-6e4558eb2a9c)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/28/000024
+[API] Advancing inventory-adjustments "4aa56bed-ea4e-4e5f-934a-6e4558eb2a9c" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1703.73ms
+[OK] Adjustment ADJ/2026/04/28/000024 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "Handle tylette" (Polling for sync)
+[POLL] Attempt 1: Found 52 | Expected 48
+[POLL] Attempt 2: Found 52 | Expected 48
+[POLL] Attempt 3: Found 52 | Expected 48

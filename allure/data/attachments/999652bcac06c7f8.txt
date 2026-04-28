@@ -1,0 +1,40 @@
+[STEP] Phase 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 203.02ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Phase 1: High-Speed Discovery (API)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1065.53ms
+[INFO] Item: "Kärcher K5" | Vendor will be auto-discovered via API
+[STEP] Phase 2: Creating Bill via API
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 40e8a9cd-68bb-46ea-9770-3405945a3277)
+[PERFORMANCE] API - Create Bill: 243.35ms
+[SUCCESS] Bill created via API: BILL/2026/04/28/000240 (ID: 71276b13-4b06-448f-a997-5b75be0acf64)
+[OK] Bill Created: BILL/2026/04/28/000240 (UUID: 71276b13-4b06-448f-a997-5b75be0acf64)
+[STEP] Phase 3: Approving Bill via UI
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Review"
+[INFO] Approval status: "reviewer"
+[ACTION] Status changed to "reviewer" → Clicking: "Submit For Approve"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/28/000240 Approved
+[STEP] Phase 4: Creating Full Payment via API
+[INFO] Exact total amount to pay: 14374.999999999998
+[ACTION] Creating Bill Payment for 71276b13-4b06-448f-a997-5b75be0acf64 via API (CashAcct: ca359c3b-b3c8-4030-8027-7e7e03fc350f)...
+[SUCCESS] Payment created: PAY/2026/04/28/000206 (ID: 6f6b5e54-8c0f-4435-a3ac-c9d26f3c31ff)
+[OK] Payment Created: PAY/2026/04/28/000206. Approving via UI...
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[WARN] Payment status unclear after approval attempt.
+[STEP] Phase 5: Testing Duplicate Payment & UI Approval Blocking
+[ACTION] Creating Bill Payment for 71276b13-4b06-448f-a997-5b75be0acf64 via API (CashAcct: ca359c3b-b3c8-4030-8027-7e7e03fc350f)...
+[SUCCESS] Payment created: PAY/2026/04/28/000207 (ID: 64d8cc59-5a96-41db-aa61-405da098e938)
+[INFO] Payment 2 created in Draft: PAY/2026/04/28/000207. Attempting illegal UI Approval...
+[WARN] No status badge found for 30 seconds. Exiting approval loop.
+[SUCCESS] UI correctly blocked or prevented approval of duplicate payment.
+[STEP] Phase 6: Final Verification in UI
+[RESULT] Bill-to-Payment Logic: PASSED (Fully Settled & Protected)
