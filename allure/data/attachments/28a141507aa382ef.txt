@@ -1,0 +1,46 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 517.77ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 20.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 20
+[SUCCESS] "Purchase Order Date" set to Day 20 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2622.91ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2062.19ms
+[INFO] Vendor: BAMACO PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2090.37ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2105.85ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1996.67ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2015.04ms
+[PERFORMANCE] UI - Random Selection: Location: 1941.58ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1847.06ms
+[PERFORMANCE] UI - Random Selection: Tax: 1936.46ms
+[OK] Line item added (Price: 5037)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/28/000119 | Vendor: BAMACO PLC
+[API] Advancing purchase-orders "8f4b75cd-0a87-44e4-b8a7-43ac303a5d9b" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 4209.54ms
+[OK] PO PO/2026/04/28/000119 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/28/000119 via API
+[ACTION] Fetching PO Context for ID: 8f4b75cd-0a87-44e4-b8a7-43ac303a5d9b...
+[PERFORMANCE] API - Create API Bill from PO: 309.32ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000223
+[API] Advancing bills "1fd735cb-9b96-45b4-9c52-4db2290a3866" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Advance cycle break. Status: 500
+[PERFORMANCE] API - API Advance: bills: 1612.18ms
+[OK] Linked Bill BILL/2026/04/28/000223 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/28/000223 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "BAMACO PLC"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/28/000223...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/28/000223 is physically present in BAMACO PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/28/000119 -> Bill BILL/2026/04/28/000223
