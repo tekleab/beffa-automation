@@ -1,40 +1,41 @@
 [STEP] Stage 1: Login & Setup
 [ACTION] Performing High-Speed API Login for: admin@beffa.com...
-[PERFORMANCE] API - Auth API Verification: 437.70ms
+[PERFORMANCE] API - Auth API Verification: 476.74ms
 [SUCCESS] API Login complete. Session & Metadata injected.
 [ACTION] Verifying current company selection...
 [INFO] Already on company: "smoke test"
 [ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
-[PERFORMANCE] API - Item Discovery (50 Records): 1021.27ms
-[ACTION] Discovery Attempt 1: Testing "fifo-apr27" (Stock: 105)
+[PERFORMANCE] API - Item Discovery (50 Records): 1480.29ms
+[ACTION] Discovery Attempt 1: Testing "metal table" (Stock: 30)
 [ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
 [META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
 [META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
 [META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
-[PERFORMANCE] API - Create Sales Order: 249.73ms
-[SUCCESS] Sales Order created via API: SO/2026/04/28/000138 (ID: a50f3428-7d52-4221-94eb-c63968393444, ItemID: a88b3f1f-4111-48a9-af60-ae7a041026cc)
-[API] Advancing sales-orders "a50f3428-7d52-4221-94eb-c63968393444" for company: "smoke test"
-[SUCCESS] Approval Step 1 synchronized via API.
-[SUCCESS] Approval Step 2 synchronized via API.
-[INFO] Advance cycle break. Status: 500
-[PERFORMANCE] API - API Advance: sales-orders: 2777.87ms
-[OK] Sales Order SO/2026/04/28/000138 approved via Fast-API
-[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/28/000138
-[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
-[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
-[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
-[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
-[PERFORMANCE] API - Create Invoice: 330.07ms
-[SUCCESS] Invoice created via API: INV/2026/04/28/000077 (ID: 874bbb23-6f1e-4175-bd86-8a89d881b9cb)
-[API] Advancing invoices "874bbb23-6f1e-4175-bd86-8a89d881b9cb" for company: "smoke test"
+[PERFORMANCE] API - Create Sales Order: 319.49ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000139 (ID: 20ec50ea-0320-4421-b685-56c75c5c51df, ItemID: f014087a-3cf6-45b6-8d34-8ce92c29e47e)
+[API] Advancing sales-orders "20ec50ea-0320-4421-b685-56c75c5c51df" for company: "smoke test"
 [SUCCESS] Approval Step 1 synchronized via API.
 [SUCCESS] Approval Step 2 synchronized via API.
 [SUCCESS] Approval Step 3 synchronized via API.
 [INFO] Approval Cycle complete. Document is now fully Approved.
-[PERFORMANCE] API - API Advance: invoices: 4840.73ms
-[OK] Invoice INV/2026/04/28/000077 approved via Fast-API
+[PERFORMANCE] API - API Advance: sales-orders: 4073.83ms
+[OK] Sales Order SO/2026/04/28/000139 approved via Fast-API
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/28/000139
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 307.62ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000079 (ID: a949f193-2479-43f4-9529-af7c0c60e1f2)
+[API] Advancing invoices "a949f193-2479-43f4-9529-af7c0c60e1f2" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 5229.19ms
+[OK] Invoice INV/2026/04/28/000079 approved via Fast-API
 [STEP] Verifying stock deduction via API Polling
-[ACTION] API Polling: Waiting for stock at location ee1cd563-a9b8-4151-bf88-5c85959fab21 to hit 104...
-[SUCCESS] API Confirmed: Stock correctly reached 104.
-[VERIFY] Expected: 104 | Found: 104
+[ACTION] API Polling: Waiting for stock at location ee1cd563-a9b8-4151-bf88-5c85959fab21 to hit 29...
+[SUCCESS] API Confirmed: Stock correctly reached 29.
+[VERIFY] Expected: 29 | Found: 29
 [OK] Stock decreased correctly after setup.
