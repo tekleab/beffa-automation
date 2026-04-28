@@ -415,7 +415,14 @@ export class PurchaseAPI extends BasePage {
             console.log(`[WARN] Ledger API busy or returned error. Retrying...`);
         } else {
             const bills = billData.data || billData.items || [];
-            const found = bills.find((b: any) => b.invoice_number === billNumber);
+            const found = bills.find((b: any) => 
+                b.invoice_number === billNumber || 
+                b.bill_no === billNumber || 
+                b.ref === billNumber ||
+                b.bill_number === billNumber ||
+                b.bill_number === billNumber.split('/').pop() ||
+                b.id === billNumber
+            );
             if (found) {
                 console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
                 return true;

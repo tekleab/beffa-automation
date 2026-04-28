@@ -128,38 +128,36 @@ jobs:
     - name: Generate Allure Report
       if: always()
       run: |
-        # 1. Deep Clean results (keep only current run + executor)
+        # 1. Prepare history baseline
         mkdir -p allure-results/history
-        
-        # 2. Sync history from gh-pages with defensive check
         if [ -d "gh-pages/allure/history" ]; then
           echo "[INFO] Syncing Allure History..."
           cp -r gh-pages/allure/history/. allure-results/history/ || true
-        else
-          echo "[WARN] No previous history found."
         fi
         
-        # 3. Generate the report with absolute clean
-        npx allure generate allure-results --clean -o allure-report
+        # 2. Generate report to TEMP location
+        npx allure generate allure-results --clean -o temp-report
         
-        # 4. Update Latency History Trend
-        npx ts-node scripts/latency-tracker.ts
+        # 3. Update Latency History Trend
+        npx ts-node scripts/latency-tracker.ts || true
 
-        # 5. Ensure report is fully static
-        mkdir -p allure-report/history
-    - name: Finalize Astonishing Reporting Suite
+    - name: Finalize & Deploy Preparation
       if: always()
       run: |
         # Create a clean deployment directory
         mkdir -p deploy
         
         # 🏙️ FORCED DASHBOARD GENERATION
-        # We run the reporter logic manually using the Named Export to guarantee 100% dashboard uptime.
-        echo "[INFO] Force-generating befa Command Center..."
+        echo "[INFO] Generating BEFFA Command Center..."
         npx ts-node -e "import { LuxuryReporter } from './reporters/luxury-reporter'; new LuxuryReporter().onEnd({ status: 'passed' } as any)" || true
         
-        # Syncing Allure report to subfolder
-        mv allure-report deploy/allure || true
+        # ATOMIC MOVE: Ensure all data folders (test-cases, attachments) are moved
+        if [ -d "temp-report" ]; then
+          mv temp-report deploy/allure
+          echo "[SUCCESS] Allure report finalized in deploy/allure"
+        else
+          echo "[ERROR] temp-report not found. Check generate step."
+        fi
 
         # 🔐 SECURITY & VISIBILITY SENTRY: Inject Auth Check and Auto-Filter into Allure sub-report
         if [ -f "deploy/allure/index.html" ]; then
