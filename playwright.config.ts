@@ -11,7 +11,7 @@ export default defineConfig({
   expect: { timeout: 30000 },
 
   fullyParallel: true,
-  workers: 3,
+  workers: 2,
   retries: 0, // Disable retries for immediate failure feedback
 
   reporter: [
