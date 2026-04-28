@@ -51,10 +51,10 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
             
             // Buy 50 units into the SEED ITEM'S specific location
             const purchase = await app.createBillAPI({
-                ...seedItem,
-                locationId: seedItem.locationId,
-                warehouseId: seedItem.warehouseId
-            }, 50, 1000); 
+                itemData: seedItem,
+                quantity: 50,
+                unitPrice: 1000
+            }); 
             
             // Advance to Approved to increase physical stock
             await app.advanceDocumentAPI(purchase.id, 'bills');
@@ -62,7 +62,7 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
             
             // ⏳ WAIT FOR STOCK ENGINE SYNC
             console.log('[INFO] ⏳ Waiting for Stock engine to process purchase (Max 30s)...');
-            await app.api.inventory.pollStockAPI(seedItem.itemId, 50);
+            await app.api.inventory.pollStockAPI(seedItem.itemId, 50, seedItem.locationId);
             
             // Re-discover the now-stocked item and SELL from THAT EXACT SAME LOCATION
             initialInfo = seedItem;
@@ -85,7 +85,9 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         const invData = await app.createInvoiceAPI({
             customerId: soData.customerId,
             soItemId: soData.soItemId,
-            releasedQuantity: 1
+            releasedQuantity: 1,
+            locationId: initialInfo!.locationId,
+            warehouseId: initialInfo!.warehouseId
         });
 
         // ⚡ Fast API Approval
@@ -95,8 +97,8 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         console.log(`[OK] Invoice ${invID} approved via Fast-API`);
 
         console.log('[STEP] Verifying stock deduction via API Polling');
-        const expectedStock = initialInfo.currentStock - 1;
-        const currentStock = await app.pollStockAPI(initialInfo.itemId, expectedStock);
+        const expectedStock = initialInfo!.currentStock - 1;
+        const currentStock = await app.pollStockAPI(initialInfo!.itemId, expectedStock, initialInfo!.locationId);
 
         console.log(`[VERIFY] Expected: ${expectedStock} | Found: ${currentStock}`);
         expect(currentStock).toBe(expectedStock);
@@ -116,11 +118,11 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         console.log(`[OK] Invoice ${invID} successfully reversed via Backend API`);
 
         console.log('[STEP] Verifying stock restoration via API Polling');
-        const expectedStock = initialInfo!.currentStock;
-        const finalStock = await app.pollStockAPI(initialInfo!.itemId, expectedStock);
+        const expectedStockRestored = initialInfo!.currentStock;
+        const finalStock = await app.pollStockAPI(initialInfo!.itemId, expectedStockRestored, initialInfo!.locationId);
 
-        console.log(`[VERIFY] Expected (restored): ${expectedStock} | Found: ${finalStock}`);
-        expect(finalStock).toBe(expectedStock);
+        console.log(`[VERIFY] Expected (restored): ${expectedStockRestored} | Found: ${finalStock}`);
+        expect(finalStock).toBe(expectedStockRestored);
         console.log(`[RESULT] Invoice Reversal: PASSED — Stock restored to ${finalStock}`);
         
         await page.close();

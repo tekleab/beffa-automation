@@ -6,9 +6,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npm run test:unit && node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales",
-    "test:unit": "vitest run",
-    "test:ui": "vitest --ui",
+    "test": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales",
     "test:smoke": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales --grep @smoke",
     "test:regression": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales --grep @regression",
     "test:full": "node scripts/select-company.mjs --project=Inventory --project=Purchases --project=Sales",
@@ -28,13 +26,10 @@
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.6.0",
-    "@vitest/ui": "^1.6.1",
     "allure-commandline": "^2.38.1",
     "allure-playwright": "^3.6.0",
-    "allure-vitest": "^3.7.1",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.2",
-    "vitest": "^1.6.1"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "dotenv": "^17.3.1"

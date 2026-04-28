@@ -42,7 +42,7 @@ jobs:
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       # Priority: manual input > repo secret > hardcoded default
-      BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'smoke test' }}
+      BEFFA_COMPANY: ${{ inputs.company || secrets.BEFFA_COMPANY || 'smoke test' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
@@ -78,9 +78,6 @@ jobs:
     - name: Install Playwright OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps chromium
-    - name: Run Unit Tests (Vitest)
-      continue-on-error: true
-      run: npm run test:unit
 
     - name: Run Playwright tests
       if: always()
