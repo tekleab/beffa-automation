@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 510.85ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1573.96ms
+[INFO] Item: "Jacuzzi Lanzarote" | UUID: f77efc33-bef6-4dce-ac2a-73ea84d9bf21 | Stock: 93
+[STEP] Phase 2: Creating SO via API for 1 x "Jacuzzi Lanzarote"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 370.35ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000145 (ID: 2ea95956-ef48-43a4-becd-facef1e7d068, ItemID: a7cd82a0-794f-45c3-b98f-3023a29a1c4d)
+[OK] SO created: SO/2026/04/28/000145 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/28/000145
+[API] Advancing sales-orders "2ea95956-ef48-43a4-becd-facef1e7d068" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4105.13ms
+[OK] SO SO/2026/04/28/000145 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/28/000145
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 371.65ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000090 (ID: dcc719dc-e32b-40ab-a9b4-053d222be50f)
+[OK] Invoice created: INV/2026/04/28/000090 (UUID: dcc719dc-e32b-40ab-a9b4-053d222be50f)
+[STEP] Phase 5: Approving Invoice INV/2026/04/28/000090
+[API] Advancing invoices "dcc719dc-e32b-40ab-a9b4-053d222be50f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4913.90ms
+[OK] Invoice INV/2026/04/28/000090 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Jacuzzi Lanzarote" (Polling for backend sync)
+[POLL] Attempt 1: Found 92 at location ee1cd563-a9b8-4151-bf88-5c85959fab21 | Expected 92
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 93 to 92
