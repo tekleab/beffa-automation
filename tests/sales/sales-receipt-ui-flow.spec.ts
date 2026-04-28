@@ -17,7 +17,11 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         // Phase 1: API Setup (Guarantees document for linkage)
         console.log('[STEP] Phase 1: Creating fresh Sales Order & Invoice via API');
         const itemResult = await app.captureRandomItemDetails();
-        const soResult = await app.createSalesOrderAPI({ itemId: itemResult.itemId });
+        const soResult = await app.createSalesOrderAPI({ 
+            itemId: itemResult.itemId,
+            locationId: itemResult.locationId,
+            warehouseId: itemResult.warehouseId
+        });
         if (!soResult.success) throw new Error("SO API Failed");
 
         // Approve SO to make it linkable
@@ -31,7 +35,9 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         const invResult = await app.createInvoiceAPI({
             customerId: soResult.customerId,
             soId: soResult.id,
-            soItemId: soResult.soItemId
+            soItemId: soResult.soItemId,
+            locationId: itemResult.locationId,
+            warehouseId: itemResult.warehouseId
         });
         if (!invResult.success) throw new Error("Invoice API Failed");
 

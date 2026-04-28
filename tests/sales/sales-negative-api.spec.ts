@@ -82,7 +82,11 @@ test.describe('Sales Forensic Gauntlet: Negative API @negative', () => {
         // --- STATE VIOLATION ---
         console.log('[AUDIT] Scenario: Invoicing a DRAFT Sales Order');
         const item = await app.captureRandomItemDataAPI();
-        const so = await app.api.sales.createSalesOrderAPI({ itemId: item.itemId });
+        const so = await app.api.sales.createSalesOrderAPI({ 
+            itemId: item.itemId,
+            locationId: item.locationId,
+            warehouseId: item.warehouseId
+        });
         const invResp = await page.request.post(`${apiBase}/invoices?${meta.yearParams}`, {
             data: {
                 customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
