@@ -1,0 +1,26 @@
+[STEP] Stage 1: Login & Receipt Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 197.03ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Creating receipt via API
+[ACTION] Discovering receipt metadata for company: "smoke test"...
+[ACTION] Creating receipt: Customer="Base Ethiopia" | CashAcct="Cash - Main Office" | Currency="Birr"
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000077 (ID: b6582079-7e50-4e1f-b8c7-5046132b0393)
+[OK] Receipt created: RCPT/2026/04/28/000077 (UUID: b6582079-7e50-4e1f-b8c7-5046132b0393)
+[STEP] Approving receipt via Fast-API
+[API] Advancing receipts "b6582079-7e50-4e1f-b8c7-5046132b0393" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 4090.37ms
+[OK] RCPT/2026/04/28/000077 approved via Fast-API
+[STEP] Capturing initial GL entries via Forensic API
+[ACTION] Fetching Journal via API for UUID: b6582079-7e50-4e1f-b8c7-5046132b0393
+[DATA] Captured 4 journal entries for RCPT/2026/04/28/000077
+[JOURNAL] Cash - Branch Office | Dr: 0 | Cr: 1301304
+[JOURNAL] VAT Payable | Dr: 0 | Cr: 26026.08
+[JOURNAL] Withholding Tax Receivable | Dr: 26026.08 | Cr: 0
+[JOURNAL] Cash - Main Office | Dr: 1301304 | Cr: 0

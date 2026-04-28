@@ -1,0 +1,23 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 381.15ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1076.22ms
+[OK] Discovered via API: "Circuit Card VA/VB/TONIC/HSAJ" | Stock: 5
+[INFO] Item Unit Cost: 106648.53 | Chosen Adjustment Qty: 1 (Total: 106648.53)
+[STEP] Phase 2: Creating Adjustment API (Increase by 1 units)
+[PERFORMANCE] API - Inventory Adjustment: 153.96ms
+[PERFORMANCE] API - Inventory Adjustment: 269.77ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/28/000023 (ID: 92bedd85-76f9-4ad8-87da-6a991ddf13e3)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/28/000023
+[API] Advancing inventory-adjustments "92bedd85-76f9-4ad8-87da-6a991ddf13e3" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1744.25ms
+[OK] Adjustment ADJ/2026/04/28/000023 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "Circuit Card VA/VB/TONIC/HSAJ" (Polling for sync)
+[POLL] Attempt 1: Found 6 | Expected 6
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 1 units

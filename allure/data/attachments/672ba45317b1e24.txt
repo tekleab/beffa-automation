@@ -1,0 +1,91 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 198.75ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering metadata...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[SNAPSHOT] Accounts Receivable: -475739.16
+[SNAPSHOT] Start AR Balance: -475739.16
+[STEP 1] Creating Invoice for 100.00...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 572.06ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "2b98142d-8f11-43fd-8910-08f681cb174b",
+  "customer_id": "a32030e5-c83a-4b06-8cb7-18cf9dab5bac",
+  "invoice_date": "2026-04-28T00:00:00Z",
+  "due_date": "2026-04-30T00:00:00Z",
+  "currency_id": "a1fc7edf-5921-48a5-af27-1cb17ae04ef9",
+  "items": [
+    {
+      "amount": 100,
+      "general_ledger_account_id": "f1da4f1b-87b0-43c5-bca6-23c359735f53",
+      "item_id": "ab702ddc-02ec-4fa0-9a89-1056ac2cbef3",
+      "location_id": "85ef160e-775e-44e2-83ee-c8280de0c1b5",
+      "quantity": 1,
+      "unit_price": 100,
+      "warehouse_id": "f3d0c9cc-045f-46c0-a5a2-d43eddb01be2"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 211.86ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/28/000086 (ID: 2508fb06-2fc1-424a-bbdd-5b3f5dfb29ed)
+[API] Advancing invoices "2508fb06-2fc1-424a-bbdd-5b3f5dfb29ed" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4161.49ms
+[SUCCESS] Invoice INV/2026/04/28/000086 approved. Total Due: 100.00
+[STEP 2] Submitting Partial Payment 1: 40.00
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000072 (ID: 57ecab41-c1a1-41da-9fdd-ed91a3e91ce5) for Invoice 2508fb06-2fc1-424a-bbdd-5b3f5dfb29ed
+[API] Advancing receipts "57ecab41-c1a1-41da-9fdd-ed91a3e91ce5" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 3999.41ms
+[INFO] Waiting for Ledger sync...
+[SNAPSHOT] Accounts Receivable: -426679.16
+[AUDIT 1] AR Balance: -426679.16 (Shift: 49060.00)
+[AUDIT 1] Invoice Unreceived Amount: 60
+[AUDIT 1] Invoice Status: approved
+[STEP 3] Submitting Final Payment: 60.00
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000073 (ID: f1a3b033-cecf-4bba-b1ab-a4660a1aab3c) for Invoice 2508fb06-2fc1-424a-bbdd-5b3f5dfb29ed
+[API] Advancing receipts "f1a3b033-cecf-4bba-b1ab-a4660a1aab3c" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 3989.62ms
+[INFO] Waiting for Final Reconciliation...
+[SNAPSHOT] Accounts Receivable: -476739.16
+[AUDIT 2] Final AR Balance: -476739.16 (Net Shift: -1000.00)
+[AUDIT 2] Final Unreceived Amount: 0
+[AUDIT 2] Final Invoice Status: approved
+[RESULT] Net Ledger Impact for this cycle: -1000.00
+[CHECK] Recognition Logic: Is "approved" a terminal state?
+[STEP 4] VIOLATION ATTACK: Attempting payment on ZERO balance invoice
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000075 (ID: b89eead6-48b7-4956-bf7b-9c3560ed8e2c) for Invoice 2508fb06-2fc1-424a-bbdd-5b3f5dfb29ed
+[REGRESSION] System allowed Draft overpayment: RCPT/2026/04/28/000075
+[ACTION] Escalation: Attempting to APPROVE overpayment...
+[API] Advancing receipts "b89eead6-48b7-4956-bf7b-9c3560ed8e2c" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 3939.91ms
+[INFO] Waiting for Ledger sync...
+[SNAPSHOT] Accounts Receivable: -526759.16
+================================================================================
+[VULNERABILITY]: Overpayment accepted for Invoice INV/2026/04/28/000086
+[ACCOUNTING ERROR]: AR shifted to -51020.00 (Over-credited)
+================================================================================
