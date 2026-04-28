@@ -1,0 +1,48 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 468.78ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 20.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 20
+[SUCCESS] "Purchase Order Date" set to Day 20 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2505.16ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2029.85ms
+[INFO] Vendor: Derara Guyo
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2769.20ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2578.78ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2244.96ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2263.74ms
+[PERFORMANCE] UI - Random Selection: Location: 2235.82ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1996.61ms
+[PERFORMANCE] UI - Random Selection: Tax: 2050.85ms
+[OK] Line item added (Price: 5703)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/28/000135 | Vendor: Derara Guyo
+[API] Advancing purchase-orders "eb2c354b-636e-4b27-b86b-5be658c76e2f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 4167.76ms
+[OK] PO PO/2026/04/28/000135 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/28/000135 via API
+[ACTION] Fetching PO Context for ID: eb2c354b-636e-4b27-b86b-5be658c76e2f...
+[PERFORMANCE] API - Create API Bill from PO: 325.19ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000248
+[API] Advancing bills "a8384dbb-5d0c-4c1a-97c6-6e438ac8e8dd" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 5086.45ms
+[OK] Linked Bill BILL/2026/04/28/000248 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/28/000248 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Derara Guyo"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/28/000248...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/28/000248 is physically present in Derara Guyo's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/28/000135 -> Bill BILL/2026/04/28/000248

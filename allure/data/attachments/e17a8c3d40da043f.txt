@@ -1,0 +1,41 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 464.65ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1366.00ms
+[ACTION] Discovery Attempt 1: Testing "Circuit card RB-5" (Stock: 23)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 279.22ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000156 (ID: cc79176f-429a-4734-9210-38d370451934, ItemID: 08bf2755-e958-4952-8801-71fe0d64da13)
+[API] Advancing sales-orders "cc79176f-429a-4734-9210-38d370451934" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4170.28ms
+[OK] Sales Order SO/2026/04/28/000156 approved via Fast-API
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/28/000156
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 276.93ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000108 (ID: 75aef79f-d539-40a3-9961-8f86eda75d4f)
+[API] Advancing invoices "75aef79f-d539-40a3-9961-8f86eda75d4f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 5021.58ms
+[OK] Invoice INV/2026/04/28/000108 approved via Fast-API
+[STEP] Verifying stock deduction via API Polling
+[ACTION] API Polling: Waiting for stock at location ee1cd563-a9b8-4151-bf88-5c85959fab21 to hit 22...
+[SUCCESS] API Confirmed: Stock correctly reached 22.
+[VERIFY] Expected: 22 | Found: 22
+[OK] Stock decreased correctly after setup.

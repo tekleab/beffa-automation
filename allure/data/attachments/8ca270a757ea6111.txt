@@ -1,0 +1,53 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 473.89ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[STEP 1] Setup: Paid Invoice
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 2]...
+[PERFORMANCE] API - Item Discovery (50 Records): 827.89ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "2b98142d-8f11-43fd-8910-08f681cb174b",
+  "customer_id": "a32030e5-c83a-4b06-8cb7-18cf9dab5bac",
+  "invoice_date": "2026-04-28T00:00:00Z",
+  "due_date": "2026-04-30T00:00:00Z",
+  "currency_id": "a1fc7edf-5921-48a5-af27-1cb17ae04ef9",
+  "items": [
+    {
+      "amount": 3000,
+      "general_ledger_account_id": "f1da4f1b-87b0-43c5-bca6-23c359735f53",
+      "item_id": "0c4aa1fb-4c57-42c4-9de0-3acd8b5b0f5a",
+      "location_id": "ee1cd563-a9b8-4151-bf88-5c85959fab21",
+      "quantity": 1,
+      "unit_price": 3000,
+      "warehouse_id": "7ed091ba-10b7-428e-bb35-35cf14686a8b"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 296.57ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/28/000104 (ID: 3fff5972-4357-421d-a4b1-7fea0ba22f5b)
+[API] Advancing invoices "3fff5972-4357-421d-a4b1-7fea0ba22f5b" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4676.21ms
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000087 (ID: 35a92d68-f90a-4145-8ed2-8d8b5dbc508c) for Invoice 3fff5972-4357-421d-a4b1-7fea0ba22f5b
+[API] Advancing receipts "35a92d68-f90a-4145-8ed2-8d8b5dbc508c" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 4324.03ms
+[SUCCESS] Invoice INV/2026/04/28/000104 is fully PAID.
+[STEP 2] REVERSAL ATTACK: Voiding a Paid Invoice
+[PASSED] Sales Guardrail: System blocked reversal of a paid invoice.

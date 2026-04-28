@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 515.00ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1450.32ms
+[OK] Discovered via API: "wac-april27" | Stock: 105
+[INFO] Item Unit Cost: 3642.1828 | Chosen Adjustment Qty: 5 (Total: 18210.914)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 298.13ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/28/000026 (ID: b2ab55d0-edcf-41f2-8fe4-0f66c5997145)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/28/000026
+[API] Advancing inventory-adjustments "b2ab55d0-edcf-41f2-8fe4-0f66c5997145" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1739.66ms
+[OK] Adjustment ADJ/2026/04/28/000026 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "wac-april27" (Polling for sync)
+[POLL] Attempt 1/15: Found 110 at location ee1cd563-a9b8-4151-bf88-5c85959fab21 | Expected 110
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units

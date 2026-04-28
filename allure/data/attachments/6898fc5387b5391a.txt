@@ -1,0 +1,50 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 261.49ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1354.46ms
+[OK] Discovered: "Sauna light 40/60W" via API | Stock: 20
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 276.66ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000158 (ID: fc88c7a4-f521-4f87-b564-0e403cdf0016, ItemID: cb616e60-2361-4ed4-bf19-6be61dd27461)
+[API] Advancing sales-orders "fc88c7a4-f521-4f87-b564-0e403cdf0016" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4124.17ms
+[OK] Sales Order approved via Fast-API
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 287.30ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000110 (ID: 0b3532a5-5d16-49ce-8c68-ea1e00f9e11f)
+[API] Advancing invoices "0b3532a5-5d16-49ce-8c68-ea1e00f9e11f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4897.11ms
+[OK] Invoice approved via Fast-API
+[INFO] Document Setup Complete: INV/2026/04/28/000110 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000091 (ID: 07c87a23-bf86-431e-a978-24fd0407d7b0) for Invoice 0b3532a5-5d16-49ce-8c68-ea1e00f9e11f
+[OK] Receipt created via API: RCPT/2026/04/28/000091
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "07c87a23-bf86-431e-a978-24fd0407d7b0" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 4300.16ms
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/04/28/000091 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/04/28/000091 verified in profile
