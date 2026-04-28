@@ -400,19 +400,28 @@ export class PurchaseAPI extends BasePage {
     if (!vendor) throw new Error(`API Verification Failed: Could not find Vendor "${vendorName}" in the system.`);
     const vendorId = vendor.id;
 
-    // 2. Poll Vendor Bills Ledger (max 3 tries for indexing)
+    // 2. Poll Vendor Bills Ledger (max 15 tries for indexing = ~30s)
     console.log(`[ACTION] API Verifying: Scanning Ledger for ${billNumber}...`);
-    for (let i = 0; i < 3; i++) {
+    const safeJson = async (resp: any, label: string) => {
+        const text = await resp.text();
+        if (!resp.ok()) return null;
+        try { return JSON.parse(text); } catch (e) { return null; }
+    };
+
+    for (let i = 0; i < 15; i++) {
         const billResp = await this.page.request.get(`${apiBase}/vendor/${vendorId}/bills?${params}`, { headers });
-        const billData = await billResp.json();
-        const bills = billData.data || billData.items || [];
-        
-        const found = bills.find((b: any) => b.invoice_number === billNumber);
-        if (found) {
-            console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
-            return true;
+        const billData = await safeJson(billResp, 'Vendor Ledger');
+        if (!billData) {
+            console.log(`[WARN] Ledger API busy or returned error. Retrying...`);
+        } else {
+            const bills = billData.data || billData.items || [];
+            const found = bills.find((b: any) => b.invoice_number === billNumber);
+            if (found) {
+                console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
+                return true;
+            }
         }
-        console.log(`[INFO] Bill not found in ledger yet (Index pending). Retrying in 2s...`);
+        console.log(`[INFO] Bill not found in ledger yet (Index pending). Attempt ${i+1}/15. Retrying in 2s...`);
         await this.page.waitForTimeout(2000);
     }
 
