@@ -17,7 +17,7 @@ test.describe('Cross-Document Integrity @regression', () => {
         const meta = await app.api.purchase.discoverMetadataAPI();
 
         console.log('[STEP 1] Setup: Paid Bill');
-        const itemInfo = await app.api.inventory.captureRandomItemDataAPI();
+        const itemInfo = await app.api.inventory.captureRandomItemDataAPI({ minStock: 2 });
         const bill = await app.api.purchase.createBillAPI({
             vendorId: meta.vendorId,
             itemId: itemInfo.itemId,
@@ -48,7 +48,7 @@ test.describe('Cross-Document Integrity @regression', () => {
         const meta = await app.api.sales.discoverMetadataAPI();
 
         console.log('[STEP 1] Setup: Paid Invoice');
-        const itemInfo = await app.api.inventory.captureRandomItemDataAPI();
+        const itemInfo = await app.api.inventory.captureRandomItemDataAPI({ minStock: 2 });
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: meta.customerId,
             itemId: itemInfo.itemId,

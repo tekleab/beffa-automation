@@ -25,7 +25,7 @@ test.describe('Sales Return & Stock Recovery @regression @sales', () => {
         const inventoryAccountId = '0e350587-573e-48a0-9c29-ba9792015093'; // Inventory (Code 1301)
 
         // 1. Pick a clean item and get its current stock level
-        const itemInfo = await app.api.inventory.captureRandomItemDataAPI();
+        const itemInfo = await app.api.inventory.captureRandomItemDataAPI({ minStock: 10 });
         const initialStock = itemInfo.currentStock;
         
         console.log(`[SNAPSHOT] Baseline Item: "${itemInfo.itemName}" | Stock: ${initialStock}`);

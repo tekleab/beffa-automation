@@ -46,7 +46,7 @@ test.describe('Revenue Lifecycle & Integrity @regression @sales', () => {
 
         // --- PHASE 1: SALES INVOICE CREATION ---
         console.log('[STEP 1] Creating Standalone Sales Invoice via API');
-        const item = await app.api.inventory.captureRandomItemDataAPI();
+        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 10 });
         const customer = meta.customerId;
 
         const invoice = await app.api.sales.createStandaloneInvoiceAPI({

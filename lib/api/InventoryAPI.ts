@@ -121,7 +121,8 @@ export class InventoryAPI extends BasePage {
     return { success: true, ref: json.ref, id: json.id };
   }
 
-  async captureRandomItemDataAPI(): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number; locationId?: string; warehouseId?: string }> {
+  async captureRandomItemDataAPI(paramsObj: { minStock?: number } = {}): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number; locationId?: string; warehouseId?: string }> {
+    const { minStock = 1 } = paramsObj;
     // 🛡️ SMART PORT RESOLVER: Backend is usually 8001, Frontend is 4173.
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     
@@ -139,7 +140,7 @@ export class InventoryAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `page=1&pageSize=50&year=${year}&period=${period}&calendar=${calendar}`;
 
-    console.log(`[ACTION] Discovering random item via API (Year ${year})...`);
+    console.log(`[ACTION] Discovering random item via API (Year ${year}) [MinStock: ${minStock}]...`);
     await this.startTacticalTimer();
     
     // The previous error was due to hitting the frontend port 4173. 
@@ -171,12 +172,13 @@ export class InventoryAPI extends BasePage {
       const locations = i.inventory_item_locations || [];
       const locationStock = locations.reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
       // STRICT REQUIREMENT: Item must have explicit location data linked to it to avoid 422 mismatch
-      return locations.length > 0 && ((i.current_stock > 0) || (i.quantity > 0) || (locationStock > 0));
+      // AND it must have enough stock to satisfy the test requirement
+      return locations.length > 0 && (locationStock >= minStock);
     });
 
-    if (items.length === 0) throw new Error('No items with stock found via API');
+    if (items.length === 0) throw new Error(`No items with stock >= ${minStock} found via API. Please purchase some items for company "${process.env.BEFFA_COMPANY}" first.`);
 
-    const target = items[Math.floor(Math.random() * Math.min(items.length, 10))];
+    const target = items[Math.floor(Math.random() * Math.min(items.length, items.length < 5 ? items.length : 5))];
 
     const stock = (target.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
       || target.current_stock || target.quantity || 0;
