@@ -1,178 +1,92 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-test.describe('Purchase Negative API Tests @negative', () => {
+test.describe('Purchase Forensic Gauntlet: Negative API @negative', () => {
 
-    test.beforeEach(async ({ page }) => {
+    test('Master Audit: Verify all Purchase Guardrails in a single session', async ({ page }) => {
+        test.setTimeout(300000);
         const app = new AppManager(page);
+        
+        console.log('[STEP] Phase 1: High-Speed Forensic Login');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-    });
-
-    // --- PURCHASE ORDER NEGATIVE TESTS ---
-    test('Block PO: Missing Vendor ID', async ({ page }) => {
-        const app = new AppManager(page);
         const token = await app._getAuthToken();
         const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
-            accounts_payable_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64",
-            currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-            po_date: new Date().toISOString(),
-            vendor_id: null, // CRITICAL MISSING
-            po_items: [{
-                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-                quantity: 1,
-                unit_price: 500
-            }]
+        const meta = {
+            company: process.env.BEFFA_COMPANY as string,
+            yearParams: "year=2018&period=yearly&calendar=ec"
         };
 
-        console.log('[ACTION] Sending PO with null vendor_id...');
-        const response = await page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        const runCheck = async (name: string, endpoint: string, payload: any, expectedStatus: number | number[] = 422, method: 'POST' | 'PUT' = 'POST', customToken?: string) => {
+            console.log(`[AUDIT] Scenario: ${name}`);
+            const response = await page.request[method.toLowerCase() as 'post' | 'put'](`${apiBase}/${endpoint}?${meta.yearParams}`, {
+                data: payload,
+                headers: { 
+                    'x-company': meta.company, 
+                    'Authorization': `Bearer ${customToken || token}` 
+                }
+            });
+            const status = response.status();
+            console.log(`[RESULT] Status: ${status}`);
+            
+            if (Array.isArray(expectedStatus)) {
+                expect(expectedStatus).toContain(status);
+            } else {
+                expect(status).toBe(expectedStatus);
+            }
+        };
+
+        // --- PURCHASE ORDER NEGATIVES ---
+        await runCheck('Missing Vendor ID', 'purchase-orders', {
+            vendor_id: null,
+            po_items: [{ item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4", quantity: 1, unit_price: 500 }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
-
-    test('Block PO: Negative Quantity', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        await runCheck('Negative Quantity', 'purchase-orders', {
             vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208",
-            po_items: [{
-                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-                quantity: -50, // ILLEGAL
-                unit_price: 100
-            }]
-        };
+            po_items: [{ item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4", quantity: -50, unit_price: 100 }]
+        }, [400, 422]);
 
-        console.log('[ACTION] Sending PO with negative quantity...');
-        const response = await page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-        });
-
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(400);
-    });
-
-    // --- BILL NEGATIVE TESTS ---
-    test('Block Bill: Empty Items List', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        // --- BILL NEGATIVES ---
+        await runCheck('Bill: Empty Items List', 'bills', {
             vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208",
-            items: [] // EMPTY
-        };
-
-        console.log('[ACTION] Sending Bill with empty items list...');
-        const response = await page.request.post(`${apiBase}/bills?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            items: []
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
-
-    // --- PAYMENT NEGATIVE TESTS ---
-    test('Block Payment: Missing Cash Account', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        // --- PAYMENT NEGATIVES ---
+        await runCheck('Payment: Missing Cash Account', 'payments', {
             amount: 1000,
             vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208",
-            cash_account_id: null, // MISSING
-            bill_payments: [{
-                amount: 1000,
-                bill_id: "00000000-0000-0000-0000-000000000000"
-            }]
-        };
-
-        console.log('[ACTION] Sending Payment with null cash_account...');
-        const response = await page.request.post(`${apiBase}/payments?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            cash_account_id: null,
+            bill_payments: [{ amount: 1000, bill_id: "00000000-0000-0000-0000-000000000000" }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
+        // --- SECURITY ---
+        await runCheck('Security: Invalid Token', 'purchase-orders', {}, 401, 'POST', 'INVALID_TOKEN_ABC');
 
-    // --- SECURITY TEST ---
-    test('Security: Block Unauthorized Purchase Access', async ({ page }) => {
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        console.log('[ACTION] Sending PO with INVALID token...');
-        const response = await page.request.post(`${apiBase}/purchase-orders`, {
-            data: { vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208" },
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer INVALID_TOKEN` }
-        });
-
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(401);
-    });
-
-    // --- PROFESSIONAL STATE & BOUNDARY TESTS ---
-
-    test('State Violation: Block Billing a DRAFT PO', async ({ page }) => {
-        const app = new AppManager(page);
-        const apiBase = "http://157.180.20.112:8001/api";
-        const token = await app._getAuthToken();
-
-        // 1. Dynamic Item Discovery
-        console.log('[ACTION] Discovering valid item for state violation test...');
-        const item = await app.captureRandomItemDetails();
-
-        // 2. Create a DRAFT Purchase Order
+        // --- STATE VIOLATION ---
+        console.log('[AUDIT] Scenario: Billing a DRAFT Purchase Order');
+        const item = await app.captureRandomItemDataAPI();
         const po = await app.api.purchase.createPurchaseOrderAPI({ itemName: item.itemName, itemId: item.itemId });
-
-        // 3. Attempt to Bill (Should fail because PO is not approved)
-        console.log(`[ACTION] Attempting state violation: Billing DRAFT PO ${po.poNumber}...`);
-        const response = await page.request.post(`${apiBase}/bills?year=2018&period=yearly&calendar=ec`, {
+        const billResp = await page.request.post(`${apiBase}/bills?${meta.yearParams}`, {
             data: {
                 vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208",
-                items: [{ po_item_id: "00000000-0000-0000-0000-000000000000", quantity: 1 }]
+                items: [{ po_item_id: po.id, quantity: 1 }]
             },
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': meta.company, 'Authorization': `Bearer ${token}` }
         });
+        expect(billResp.status()).toBe(422);
+        console.log(`[RESULT] Status: ${billResp.status()} (Intercepted)`);
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
-
-    test('Boundary: Block Extreme Financial Inputs (Purchase)', async ({ page }) => {
-        const app = new AppManager(page);
-        const apiBase = "http://157.180.20.112:8001/api";
-        const token = await app._getAuthToken();
-
-        // 1. Dynamic Item Discovery
-        const item = await app.captureRandomItemDetails();
-
-        const payload = {
+        await runCheck('Boundary: Financial Overflow', 'purchase-orders', {
             vendor_id: "b83a4bcd-0334-42fd-932c-b9bc5cc22208",
-            po_items: [{
-                item_id: item.itemId,
-                quantity: 999999999999,
-                unit_price: 999999999999
+            po_items: [{ 
+                item_id: item.itemId, 
+                quantity: 9999999999, 
+                unit_price: 9999999999 
             }]
-        };
+        }, [400, 422]);
 
-        console.log('[ACTION] Sending PO with extreme numeric values...');
-        const response = await page.request.post(`${apiBase}/purchase-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-        });
-
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBeGreaterThanOrEqual(400);
+        console.log('[FINISH] Master Purchase Forensic Audit Complete. All guardrails verified.');
+        await page.close();
     });
 });

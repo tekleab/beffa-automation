@@ -1,253 +1,108 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-test.describe('Sales Order Negative API Tests @negative', () => {
+test.describe('Sales Forensic Gauntlet: Negative API @negative', () => {
 
-    test.beforeEach(async ({ page }) => {
+    test('Master Audit: Verify all Sales Guardrails in a single session', async ({ page }) => {
+        test.setTimeout(300000);
         const app = new AppManager(page);
+        
+        console.log('[STEP] Phase 1: High-Speed Forensic Login');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-    });
-
-    test('Block Creation: Missing Customer ID', async ({ page }) => {
-        const app = new AppManager(page);
         const token = await app._getAuthToken();
         const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
-            accounts_receivable_id: "20c381e1-4d14-4ab1-8e7e-dee2937b4a64",
-            currency_id: "50567982-ee2f-4391-9400-3149067443a5",
-            customer_id: null, // CRITICAL MISSING FIELD
-            so_date: new Date().toISOString(),
-            so_items: [{
-                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-                quantity: 1,
-                unit_price: 1000,
-                tax_id: "b017352f-f454-45e2-85ef-e327f90d8f9c"
-            }]
+        const meta = {
+            company: process.env.BEFFA_COMPANY as string,
+            yearParams: "year=2018&period=yearly&calendar=ec"
         };
 
-        console.log('[ACTION] Sending SO with null customer_id...');
-        const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        const runCheck = async (name: string, endpoint: string, payload: any, expectedStatus: number | number[] = 422, method: 'POST' | 'PUT' = 'POST', customToken?: string) => {
+            console.log(`[AUDIT] Scenario: ${name}`);
+            const response = await page.request[method.toLowerCase() as 'post' | 'put'](`${apiBase}/${endpoint}?${meta.yearParams}`, {
+                data: payload,
+                headers: { 
+                    'x-company': meta.company, 
+                    'Authorization': `Bearer ${customToken || token}` 
+                }
+            });
+            const status = response.status();
+            console.log(`[RESULT] Status: ${status}`);
+            
+            if (Array.isArray(expectedStatus)) {
+                expect(expectedStatus).toContain(status);
+            } else {
+                expect(status).toBe(expectedStatus);
+            }
+        };
+
+        // --- SALES ORDER NEGATIVES ---
+        await runCheck('Missing Customer ID', 'sales-orders', {
+            customer_id: null,
+            so_items: [{ item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4", quantity: 1, unit_price: 1000 }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.ok()).toBe(false);
-        expect(response.status()).toBeGreaterThanOrEqual(400);
-
-        const errorText = await response.text();
-        console.log(`[INFO] Server Response: ${errorText}`);
-    });
-
-    test('Block Creation: Empty Items List', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        await runCheck('Empty Items List', 'sales-orders', {
             customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-            so_date: new Date().toISOString(),
-            so_items: [] // CRITICAL EMPTY LIST
-        };
-
-        console.log('[ACTION] Sending SO with empty items list...');
-        const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            so_items: []
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.ok()).toBe(false);
-        expect(response.status()).toBeGreaterThanOrEqual(400);
-    });
-
-    test('Block Creation: Missing Item ID in Line Item', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        await runCheck('Missing Item ID', 'sales-orders', {
             customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-            so_items: [{
-                // item_id: MISSING
-                quantity: 10,
-                unit_price: 50
-            }]
-        };
-
-        console.log('[ACTION] Sending SO with missing item_id in lines...');
-        const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            so_items: [{ quantity: 1, unit_price: 100 }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.ok()).toBe(false);
-    });
-
-    // --- INVOICE NEGATIVE TESTS ---
-    test('Block Invoice: Missing Released Items', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        await runCheck('Negative Quantity', 'sales-orders', {
             customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-            invoice_date: new Date().toISOString(),
-            released_sales_order_items: [] // EMPTY
-        };
-
-        console.log('[ACTION] Sending Invoice with no line items...');
-        const response = await page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            so_items: [{ item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4", quantity: -50, unit_price: 100 }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
+        // --- INVOICE NEGATIVES ---
+        await runCheck('Invoice: Empty SO Links', 'invoices', {
+            customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
+            released_sales_order_items: []
+        });
 
-    // --- RECEIPT NEGATIVE TESTS ---
-    test('Block Receipt: Missing Cash Account', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
+        // --- RECEIPT NEGATIVES ---
+        await runCheck('Receipt: Missing Cash Account', 'receipts', {
             amount: 500,
             customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-            cash_account_id: null, // MISSING
+            cash_account_id: null,
             payment_method: "cash",
-            invoice_receipts: [{
-                amount: 500,
-                invoice_id: "00000000-0000-0000-0000-000000000000"
-            }]
-        };
-
-        console.log('[ACTION] Sending Receipt with null cash_account...');
-        const response = await page.request.post(`${apiBase}/receipts?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            invoice_receipts: [{ amount: 500, invoice_id: "00000000-0000-0000-0000-000000000000" }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
+        // --- SECURITY & INTEGRITY ---
+        await runCheck('Security: Invalid Token', 'sales-orders', {}, 401, 'POST', 'INVALID_TOKEN_999');
 
-    // --- ADVANCED EDGE CASES ---
-
-    test('Security: Block Unauthorized Access', async ({ page }) => {
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        console.log('[ACTION] Sending SO with INVALID token...');
-        const response = await page.request.post(`${apiBase}/sales-orders`, {
-            data: { customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06" },
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer INVALID_TOKEN_123` }
+        await runCheck('Integrity: Fake Customer UUID', 'sales-orders', {
+            customer_id: "123e4567-e89b-12d3-a456-426614174000",
+            so_items: [{ item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4", quantity: 1, unit_price: 100 }]
         });
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(401);
-    });
-
-    test('Boundary: Block Negative Quantity', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
-            customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-            so_items: [{
-                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-                quantity: -99, // ILLEGAL
-                unit_price: 100
-            }]
-        };
-
-        console.log('[ACTION] Sending SO with negative quantity...');
-        const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-        });
-
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
-
-    test('Integrity: Block Non-Existent Customer UUID', async ({ page }) => {
-        const app = new AppManager(page);
-        const token = await app._getAuthToken();
-        const apiBase = "http://157.180.20.112:8001/api";
-
-        const payload = {
-            customer_id: "123e4567-e89b-12d3-a456-426614174000", // FAKE VALID-FORMAT UUID
-            so_items: [{
-                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-                quantity: 1, unit_price: 100
-            }]
-        };
-
-        console.log('[ACTION] Sending SO with non-existent customer_id...');
-        const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-        });
-
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
-
-    // --- PROFESSIONAL STATE & BOUNDARY TESTS ---
-
-    test('State Violation: Block Invoicing a DRAFT SO', async ({ page }) => {
-        const app = new AppManager(page);
-        const apiBase = "http://157.180.20.112:8001/api";
-        const token = await app._getAuthToken();
-
-        // 1. Dynamic Item Discovery
-        console.log('[ACTION] Discovering valid item for state violation test...');
-        const item = await app.captureRandomItemDetails();
-
-        // 2. Create a DRAFT Sales Order
+        // --- STATE VIOLATION ---
+        console.log('[AUDIT] Scenario: Invoicing a DRAFT Sales Order');
+        const item = await app.captureRandomItemDataAPI();
         const so = await app.api.sales.createSalesOrderAPI({ itemId: item.itemId });
-
-        // 3. Attempt to Invoice (Should fail because SO is not approved)
-        console.log(`[ACTION] Attempting state violation: Invoicing DRAFT SO ${so.ref}...`);
-        const response = await page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
+        const invResp = await page.request.post(`${apiBase}/invoices?${meta.yearParams}`, {
             data: {
                 customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-                invoice_date: new Date().toISOString(),
                 released_sales_order_items: [{ so_item_id: so.soItemId, released_quantity: 1 }]
             },
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+            headers: { 'x-company': meta.company, 'Authorization': `Bearer ${token}` }
         });
+        expect(invResp.status()).toBe(422);
+        console.log(`[RESULT] Status: ${invResp.status()} (Intercepted)`);
 
-        console.log(`[OK] Received status: ${response.status()}`);
-        expect(response.status()).toBe(422);
-    });
-
-    test('Boundary: Block Extreme Financial Inputs', async ({ page }) => {
-        const app = new AppManager(page);
-        const apiBase = "http://157.180.20.112:8001/api";
-        const token = await app._getAuthToken();
-
-        const payload = {
+        await runCheck('Boundary: Financial Overflow', 'sales-orders', {
             customer_id: "32f1aeb4-531f-4104-ad07-f3761a97dd06",
-            so_items: [{
-                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
-                quantity: 999999999999, // OVERFLOW QTY
-                unit_price: 999999999999 // OVERFLOW PRICE
+            so_items: [{ 
+                item_id: "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4", 
+                quantity: 9999999999, 
+                unit_price: 9999999999 
             }]
-        };
+        }, [400, 422]);
 
-        console.log('[ACTION] Sending SO with extreme numeric values...');
-        const response = await page.request.post(`${apiBase}/sales-orders?year=2018&period=yearly&calendar=ec`, {
-            data: payload,
-            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-        });
-
-        console.log(`[OK] Received status: ${response.status()}`);
-        // System should handle overflow or have a limit
-        expect(response.status()).toBeGreaterThanOrEqual(400);
+        console.log('[FINISH] Master Sales Forensic Audit Complete. All guardrails verified.');
+        await page.close();
     });
 });

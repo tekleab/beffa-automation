@@ -30,19 +30,30 @@ test.describe('Sequential Partial Payments @regression @sales', () => {
 
         // --- STAGE 1: INVOICE (Total 100) ---
         console.log('[STEP 1] Creating Invoice for 100.00...');
-        let itemInfo;
-        while (true) {
-            itemInfo = await app.api.inventory.captureRandomItemDataAPI();
-            if (itemInfo.currentStock >= 1) break;
-            console.log(`[RETRY] Item ${itemInfo.itemName} has 0 stock. Searching again...`);
+        let itemInfo = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+
+        // --- SELF-HEALING FALLBACK: If discovery failed, create fresh stock via Purchase API ---
+        if (!itemInfo) {
+            console.log('[ACTION] 🔧 Inventory Seeding Triggered: Warehouse appears empty. Buying stock via API...');
+            const seedItem = await app.api.inventory.captureRandomItemDataAPI({ minStock: 0 });
+            const purchase = await app.createBillAPI({
+                ...seedItem,
+                locationId: seedItem.locationId,
+                warehouseId: seedItem.warehouseId
+            }, 50, 1000); 
+            await app.advanceDocumentAPI(purchase.id, 'bills');
+            console.log(`[SUCCESS] 🔧 Seeding Complete. Waiting for Sync...`);
+            await app.api.inventory.pollStockAPI(seedItem.itemId, 50);
+            itemInfo = seedItem;
         }
+
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: meta.customerId,
             itemId: itemInfo.itemId,
             quantity: 1,
             unitPrice: 100, // Total 100
-            locationId: meta.locationId,
-            warehouseId: meta.warehouseId
+            locationId: itemInfo.locationId,
+            warehouseId: itemInfo.warehouseId
         });
 
         await app.advanceDocumentAPI(inv.id, 'invoices');
