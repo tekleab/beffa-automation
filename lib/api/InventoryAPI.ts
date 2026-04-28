@@ -199,7 +199,7 @@ export class InventoryAPI extends BasePage {
     };
   }
 
-  async getItemDetailsAPI(itemId: string): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number } | null> {
+  async getItemDetailsAPI(itemId: string, locationId?: string): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number } | null> {
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -222,22 +222,28 @@ export class InventoryAPI extends BasePage {
     const json = await safeJson(response);
 
     if (!json) {
-      console.log(`[INFO] Direct Item API for ${itemId} failed (un-parseable). Trying search...`);
-      // 🛡️ Try search with the plural endpoint (guessed based on singular)
+      console.log(`[INFO] Direct Item API for ${itemId} failed. Trying search...`);
       const searchResp = await this.page.request.get(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
         headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
       });
       const searchJson = await safeJson(searchResp);
-      if (!searchJson) {
-         console.log(`[INFO] Search Item API failed: un-parseable JSON response.`);
-         return null;
-      }
-      const item = searchJson.items?.[0] || searchJson.data?.[0]; // Support different response keys
+      if (!searchJson) return null;
+      const item = searchJson.items?.[0] || searchJson.data?.[0];
       if (!item) return null;
-      return { itemName: item.name, itemId: item.id, currentStock: item.current_stock || 0, unitCost: item.unit_cost || 0 };
+      
+      let stock = (item.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
+      if (locationId) {
+          const loc = (item.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
+          stock = loc?.quantity || 0;
+      }
+      return { itemName: item.name, itemId: item.id, currentStock: stock, unitCost: item.unit_cost || 0 };
     }
-    const stock = (json.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
-      || json.current_stock || json.quantity || 0;
+
+    let stock = (json.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
+    if (locationId) {
+        const loc = (json.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
+        stock = loc?.quantity || 0;
+    }
 
     return {
       itemName: json.name,
@@ -247,10 +253,10 @@ export class InventoryAPI extends BasePage {
     };
   }
 
-  async pollStockAPI(itemId: string, expectedStock: number, maxRetries: number = 30): Promise<number> {
-    console.log(`[ACTION] API Polling: Waiting for stock to hit ${expectedStock}...`);
+  async pollStockAPI(itemId: string, expectedStock: number, locationId?: string, maxRetries: number = 30): Promise<number> {
+    console.log(`[ACTION] API Polling: Waiting for stock at location ${locationId || 'GLOBAL'} to hit ${expectedStock}...`);
     for (let i = 0; i < maxRetries; i++) {
-        const details = await this.getItemDetailsAPI(itemId);
+        const details = await this.getItemDetailsAPI(itemId, locationId);
         const current = details?.currentStock || 0;
         if (current === expectedStock) {
             console.log(`[SUCCESS] API Confirmed: Stock correctly reached ${expectedStock}.`);
@@ -259,7 +265,7 @@ export class InventoryAPI extends BasePage {
         console.log(`[INFO] Attempt ${i+1}: Stock is ${current}. Retrying in 2s...`);
         await this.page.waitForTimeout(2000);
     }
-    const finalDetails = await this.getItemDetailsAPI(itemId);
+    const finalDetails = await this.getItemDetailsAPI(itemId, locationId);
     return finalDetails?.currentStock || 0;
   }
 
@@ -272,10 +278,20 @@ export class InventoryAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    
     console.log(`[ACTION] Fetching Journal via API for UUID: ${receiptId}`);
-    const response = await this.page.request.get(`${apiBase}/receipts/${receiptId}?${params}`, {
+    // TRY SINGULAR FIRST (ERP pattern for detail views)
+    let response = await this.page.request.get(`${apiBase}/receipt/${receiptId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
+
+    if (response.status() === 404) {
+        console.log(`[INFO] Singular endpoint 404. Trying plural: /receipts/${receiptId}`);
+        response = await this.page.request.get(`${apiBase}/receipts/${receiptId}?${params}`, {
+            headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        });
+    }
 
     if (!response.ok()) {
       console.log(`[WARN] Journals API failed: ${response.status()}`);
@@ -289,7 +305,7 @@ export class InventoryAPI extends BasePage {
     }
 
     const json = JSON.parse(text);
-    const journal = json.cash_disbursement_journal;
+    const journal = json.cash_disbursement_journal || json.cash_receipt_journal;
 
     if (!journal || !journal.journal_entries) {
       console.log('[WARNING] No journal entries found in API response yet.');

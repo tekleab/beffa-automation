@@ -23,6 +23,8 @@ test.describe('Sales Impact Flow @regression', () => {
         const soResult = await app.createSalesOrderAPI({
             itemId: initial.itemId,
             quantity: saleQty,
+            locationId: initial.locationId,
+            warehouseId: initial.warehouseId
         });
 
         if (!soResult.success) {
@@ -50,7 +52,9 @@ test.describe('Sales Impact Flow @regression', () => {
         const invResult = await app.createInvoiceAPI({
             customerId: soResult.customerId,
             soItemId: soItemId, // Use SO Item ID for linking
-            releasedQuantity: saleQty
+            releasedQuantity: saleQty,
+            locationId: initial.locationId,
+            warehouseId: initial.warehouseId
         });
 
         if (!invResult.success) {
@@ -76,8 +80,9 @@ test.describe('Sales Impact Flow @regression', () => {
         let success = false;
 
         for (let attempt = 0; attempt < 3; attempt++) {
-            final = await app.getItemDetailsAPI(initial.itemId);
-            console.log(`[POLL] Attempt ${attempt + 1}: Found ${final?.currentStock ?? 'NULL'} | Expected ${expectedStock}`);
+            final = await app.getItemDetailsAPI(initial.itemId, initial.locationId);
+            const currentStock = final?.currentStock ?? 'NULL';
+            console.log(`[POLL] Attempt ${attempt + 1}: Found ${currentStock} at location ${initial.locationId} | Expected ${expectedStock}`);
             
             if (final && final.currentStock === expectedStock) {
                 success = true;

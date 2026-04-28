@@ -213,7 +213,9 @@ export class SalesAPI extends BasePage {
       due_date: dueDate.toISOString().split('T')[0] + 'T00:00:00Z',
       released_sales_order_items: [{
         so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
-        released_quantity: data.releasedQuantity || 1
+        released_quantity: data.releasedQuantity || 1,
+        warehouse_id: data.warehouseId || meta.warehouseId,
+        location_id: data.locationId || meta.locationId
       }],
       status: 'draft'
     };
