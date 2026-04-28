@@ -1,0 +1,48 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 380.23ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 20.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 20
+[SUCCESS] "Purchase Order Date" set to Day 20 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2635.56ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2037.11ms
+[INFO] Vendor: Global Imports-6357
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2239.74ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2104.77ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1876.19ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1960.96ms
+[PERFORMANCE] UI - Random Selection: Location: 1957.47ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1917.50ms
+[PERFORMANCE] UI - Random Selection: Tax: 1959.87ms
+[OK] Line item added (Price: 8307)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/28/000138 | Vendor: Global Imports-6357
+[API] Advancing purchase-orders "a690c969-7451-477a-a5e5-f899210aa987" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 3883.52ms
+[OK] PO PO/2026/04/28/000138 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/28/000138 via API
+[ACTION] Fetching PO Context for ID: a690c969-7451-477a-a5e5-f899210aa987...
+[PERFORMANCE] API - Create API Bill from PO: 205.99ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000250
+[API] Advancing bills "5d2833f7-5430-4850-b6e5-f4141c5c55ec" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 5091.15ms
+[OK] Linked Bill BILL/2026/04/28/000250 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/28/000250 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Global Imports-6357"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/28/000250...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/28/000250 is physically present in Global Imports-6357's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/28/000138 -> Bill BILL/2026/04/28/000250
