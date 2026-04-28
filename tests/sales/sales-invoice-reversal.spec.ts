@@ -13,23 +13,68 @@ test.describe.serial('Invoice Reversal Flow @regression', () => {
         console.log('[STEP] Stage 1: Login & Setup');
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        // 1. Pick a random item with stock via API (with Retry for Availability)
+        // 1. Pick a random item with stock via API (with Retry & Auto-Seeding)
         let soData;
         for (let attempt = 0; attempt < 5; attempt++) {
-            initialInfo = await app.captureRandomItemDataAPI();
+            initialInfo = await app.captureRandomItemDataAPI({ minStock: 1 });
+            
+            if (!initialInfo) {
+                console.log(`[ACTION] Discovery Attempt ${attempt + 1}: No items with stock found. Retrying...`);
+                await page.waitForTimeout(2000);
+                continue;
+            }
+
             console.log(`[ACTION] Discovery Attempt ${attempt + 1}: Testing "${initialInfo.itemName}" (Stock: ${initialInfo.currentStock})`);
             
-            soData = await app.createSalesOrderAPI({ itemId: initialInfo.itemId, quantity: 1 });
+            soData = await app.createSalesOrderAPI({ 
+                itemId: initialInfo.itemId, 
+                quantity: 1,
+                locationId: initialInfo.locationId,
+                warehouseId: initialInfo.warehouseId
+            });
             if (soData.success) break;
             
-            if (soData.status === 422 && soData.error?.toLowerCase().includes('insufficient stock')) {
-                console.log(`[WARN] "${initialInfo.itemName}" has physical stock but 0 available. Retrying discovery...`);
+            if (soData.status === 422 && (soData.error?.toLowerCase().includes('insufficient stock') || soData.error?.toLowerCase().includes('quantity'))) {
+                console.log(`[WARN] "${initialInfo.itemName}" failed availability check. Retrying discovery...`);
                 continue;
             }
             throw new Error(`SO API Creation Failed: ${soData.status} - ${soData.error}`);
         }
 
-        if (!soData || !soData.success) throw new Error('Failed to find an available item after 5 attempts.');
+        // --- SELF-HEALING FALLBACK: If discovery failed, create fresh stock via Purchase API ---
+        if (!soData || !soData.success) {
+            console.log('[ACTION] 🔧 Inventory Seeding Triggered: Warehouse appears empty. Buying stock via API...');
+            const meta = await app.api.purchase.discoverMetadataAPI();
+            
+            // Re-discover any item (even if 0 stock) to buy, and capture its specific location
+            const seedItem = await app.api.inventory.captureRandomItemDataAPI({ minStock: 0 });
+            
+            // Buy 50 units into the SEED ITEM'S specific location
+            const purchase = await app.createBillAPI({
+                ...seedItem,
+                locationId: seedItem.locationId,
+                warehouseId: seedItem.warehouseId
+            }, 50, 1000); 
+            
+            // Advance to Approved to increase physical stock
+            await app.advanceDocumentAPI(purchase.id, 'bills');
+            console.log(`[SUCCESS] 🔧 Seeding Complete: Purchased 50 units of "${seedItem.itemName}" into Loc: ${seedItem.locationId}`);
+            
+            // ⏳ WAIT FOR STOCK ENGINE SYNC
+            console.log('[INFO] ⏳ Waiting for Stock engine to process purchase (Max 30s)...');
+            await app.api.inventory.pollStockAPI(seedItem.itemId, 50);
+            
+            // Re-discover the now-stocked item and SELL from THAT EXACT SAME LOCATION
+            initialInfo = seedItem;
+            soData = await app.createSalesOrderAPI({ 
+                itemId: seedItem.itemId, 
+                quantity: 1,
+                locationId: seedItem.locationId,
+                warehouseId: seedItem.warehouseId
+            });
+            
+            if (!soData.success) throw new Error(`Self-Healing Failed: Could not sell seeded stock from Loc ${seedItem.locationId}. Error: ${soData.error}`);
+        }
 
         // ⚡ Fast API Approval
         await app.advanceDocumentAPI(soData.id, 'sales-orders');
