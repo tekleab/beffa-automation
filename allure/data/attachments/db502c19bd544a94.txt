@@ -1,0 +1,48 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 366.41ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 20.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 20
+[SUCCESS] "Purchase Order Date" set to Day 20 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2541.96ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1973.13ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2043.43ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2103.65ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1887.76ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1947.31ms
+[PERFORMANCE] UI - Random Selection: Location: 2038.20ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1855.18ms
+[PERFORMANCE] UI - Random Selection: Tax: 1962.41ms
+[OK] Line item added (Price: 2532)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/28/000105 | Vendor: MOENCO S.C
+[API] Advancing purchase-orders "23ed98c6-d017-49ef-9aad-0e98af661647" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 3931.82ms
+[OK] PO PO/2026/04/28/000105 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/28/000105 via API
+[ACTION] Fetching PO Context for ID: 23ed98c6-d017-49ef-9aad-0e98af661647...
+[PERFORMANCE] API - Create API Bill from PO: 247.52ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000197
+[API] Advancing bills "8533688e-33db-42d3-9298-bd7ccec1e188" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 5204.26ms
+[OK] Linked Bill BILL/2026/04/28/000197 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/28/000197 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "MOENCO S.C"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/28/000197...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/28/000197 is physically present in MOENCO S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/28/000105 -> Bill BILL/2026/04/28/000197
