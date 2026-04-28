@@ -138,7 +138,7 @@ export class InventoryAPI extends BasePage {
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `page=1&pageSize=50&year=${year}&period=${period}&calendar=${calendar}`;
+    const params = `page=1&pageSize=100&year=${year}&period=${period}&calendar=${calendar}`;
 
     console.log(`[ACTION] Discovering random item via API (Year ${year}) [MinStock: ${minStock}]...`);
     await this.startTacticalTimer();
@@ -181,7 +181,7 @@ export class InventoryAPI extends BasePage {
       return null as any; 
     }
 
-    const target = items[Math.floor(Math.random() * Math.min(items.length, items.length < 5 ? items.length : 5))];
+    const target = items[Math.floor(Math.random() * items.length)];
 
     // Find the specific location that satisfied the minStock requirement
     const stockLocs = (target.inventory_item_locations || []).filter((loc: any) => (loc.quantity || 0) >= minStock);
