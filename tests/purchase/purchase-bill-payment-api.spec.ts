@@ -22,24 +22,24 @@ test.describe('Bill-to-Payment API Flow @regression', () => {
         const unitPrice = 2500;
         const billData = await app.createBillAPI(item, billedQty, unitPrice, null);
         const vendorId = null; // vendor was discovered internally by createBillAPI
-        console.log(`[OK] Bill Created: ${billData.billNumber} (UUID: ${billData.billId})`);
+        console.log(`[OK] Bill Created: ${billData.ref} (UUID: ${billData.id})`);
 
         // Approval (UI as requested)
         console.log('[STEP] Phase 3: Approving Bill via UI');
-        await page.goto(`/payables/bills/${billData.billId}/detail`, { waitUntil: 'load' });
+        await page.goto(`/payables/bills/${billData.id}/detail`, { waitUntil: 'load' });
         await app.handleApprovalFlow();
-        console.log(`[OK] Bill ${billData.billNumber} Approved`);
+        console.log(`[OK] Bill ${billData.ref} Approved`);
 
         // Payment 1 (API) - discover vendor from the bill itself
         console.log('[STEP] Phase 4: Creating Full Payment via API');
-        const billInfo = await app.getBillAPI(billData.billId);
+        const billInfo = await app.getBillAPI(billData.id);
         const totalAmount = billInfo.total_amount || (billedQty * unitPrice * 1.15);
         const discoveredVendorId = billInfo.vendor_id || billInfo.vendor?.id;
         console.log(`[INFO] Exact total amount to pay: ${totalAmount}`);
         const payment = await app.createBillPaymentAPI({
             amount: totalAmount,
             vendorId: discoveredVendorId,
-            billId: billData.billId
+            billId: billData.id
         });
         console.log(`[OK] Payment Created: ${payment.ref}. Approving via UI...`);
         await page.goto(`/payables/payments/${payment.id}/detail`, { waitUntil: 'load' });
@@ -63,7 +63,7 @@ test.describe('Bill-to-Payment API Flow @regression', () => {
             payment2 = await app.createBillPaymentAPI({
                 amount: 1,
                 vendorId: discoveredVendorId,
-                billId: billData.billId
+                billId: billData.id
             });
             console.log(`[INFO] Payment 2 created in Draft: ${payment2.ref}. Attempting illegal UI Approval...`);
 
@@ -76,8 +76,8 @@ test.describe('Bill-to-Payment API Flow @regression', () => {
             const statusBadge = page.locator('span.chakra-badge').filter({ hasText: /Approved/i }).first();
             if (await statusBadge.isVisible({ timeout: 5000 })) {
                 console.error(`[FAIL] CRITICAL BUSINESS LOGIC ERROR: Duplicate payment APPROVED via UI.`);
-                console.error(`[INFO] Bill: ${billData.billNumber} | P1: ${payment.ref} | P2: ${payment2.ref}`);
-                throw new Error(`Business Logic Violation: Bill ${billData.billNumber} allowed multiple APPROVED payments via UI. [P1 ID: ${payment.id}, P2 ID: ${payment2.id}]`);
+                console.error(`[INFO] Bill: ${billData.ref} | P1: ${payment.ref} | P2: ${payment2.ref}`);
+                throw new Error(`Business Logic Violation: Bill ${billData.ref} allowed multiple APPROVED payments via UI. [P1 ID: ${payment.id}, P2 ID: ${payment2.id}]`);
             } else {
                 console.log(`[SUCCESS] UI correctly blocked or prevented approval of duplicate payment.`);
             }
@@ -88,7 +88,7 @@ test.describe('Bill-to-Payment API Flow @regression', () => {
 
         // Verification (UI)
         console.log('[STEP] Phase 6: Final Verification in UI');
-        await page.goto(`/payables/bills/${billData.billId}/detail`, { waitUntil: 'load' });
+        await page.goto(`/payables/bills/${billData.id}/detail`, { waitUntil: 'load' });
         await page.reload();
 
         const balanceText = page.locator('div, p, span').filter({ hasText: /Unpaid Amount/i }).locator('xpath=..').first();
