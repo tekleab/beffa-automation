@@ -180,18 +180,19 @@ export class InventoryAPI extends BasePage {
 
     const target = items[Math.floor(Math.random() * Math.min(items.length, items.length < 5 ? items.length : 5))];
 
-    const stock = (target.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0)
-      || target.current_stock || target.quantity || 0;
+    // Find the specific location that satisfied the minStock requirement
+    const stockLocs = (target.inventory_item_locations || []).filter((loc: any) => (loc.quantity || 0) >= minStock);
+    const bestLoc = stockLocs.sort((a: any, b: any) => (b.quantity || 0) - (a.quantity || 0))[0] || target.inventory_item_locations?.[0];
 
-    const firstLoc = target.inventory_item_locations?.[0];
+    const stock = bestLoc?.quantity || 0;
 
     return {
       itemName: target.name,
       itemId: target.id,
       currentStock: stock,
       unitCost: target.unit_cost || 0,
-      locationId: firstLoc?.location_id,
-      warehouseId: firstLoc?.location?.warehouse_id
+      locationId: bestLoc?.location_id,
+      warehouseId: bestLoc?.location?.warehouse_id || bestLoc?.warehouse_id
     };
   }
 

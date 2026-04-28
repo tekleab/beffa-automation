@@ -54,8 +54,8 @@ test.describe('Cross-Document Integrity @regression', () => {
             itemId: itemInfo.itemId,
             quantity: 1,
             unitPrice: 3000,
-            locationId: meta.locationId,
-            warehouseId: meta.warehouseId
+            locationId: itemInfo.locationId,
+            warehouseId: itemInfo.warehouseId
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 

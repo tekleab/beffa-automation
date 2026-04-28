@@ -37,8 +37,8 @@ test.describe('Sales Return & Stock Recovery @regression @sales', () => {
             itemId: itemInfo.itemId,
             quantity: 10,
             unitPrice: 5000,
-            locationId: meta.locationId,
-            warehouseId: meta.warehouseId
+            locationId: itemInfo.locationId,
+            warehouseId: itemInfo.warehouseId
         });
 
         // ⚡ Speed Approval

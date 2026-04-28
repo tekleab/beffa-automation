@@ -54,8 +54,8 @@ test.describe('Revenue Lifecycle & Integrity @regression @sales', () => {
             itemId: item.itemId,
             quantity: 10,
             unitPrice: 5000,
-            locationId: meta.locationId,
-            warehouseId: meta.warehouseId
+            locationId: item.locationId,
+            warehouseId: item.warehouseId
         });
 
         // ⚡ Speed Approval
