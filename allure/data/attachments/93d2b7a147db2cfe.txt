@@ -1,0 +1,23 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 526.06ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1390.05ms
+[OK] Discovered via API: "metal table" | Stock: 16
+[INFO] Item Unit Cost: 1313.72 | Chosen Adjustment Qty: 5 (Total: 6568.6)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 235.06ms
+[PERFORMANCE] API - Inventory Adjustment: 353.48ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/28/000027 (ID: a4b652aa-e9f1-4476-be1d-8bd52a677da2)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/28/000027
+[API] Advancing inventory-adjustments "a4b652aa-e9f1-4476-be1d-8bd52a677da2" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1779.77ms
+[OK] Adjustment ADJ/2026/04/28/000027 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "metal table" (Polling for sync)
+[POLL] Attempt 1/15: Found 21 at location ee1cd563-a9b8-4151-bf88-5c85959fab21 | Expected 21
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units

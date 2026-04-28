@@ -1,0 +1,29 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 494.48ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[STEP 1] Setup: Paid Bill
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 2]...
+[PERFORMANCE] API - Item Discovery (50 Records): 796.05ms
+[PERFORMANCE] API - Create Bill: 329.86ms
+[SUCCESS] Bill created via API: BILL/2026/04/28/000251 (ID: cd09173e-ebbc-4b15-9df1-7793d41a537f)
+[API] Advancing bills "cd09173e-ebbc-4b15-9df1-7793d41a537f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4571.48ms
+[ACTION] Creating Bill Payment for cd09173e-ebbc-4b15-9df1-7793d41a537f via API (CashAcct: ca359c3b-b3c8-4030-8027-7e7e03fc350f)...
+[SUCCESS] Payment created: PAY/2026/04/28/000214 (ID: 0837af1e-f1de-4c59-a692-340c01e9050c)
+[API] Advancing payments "0837af1e-f1de-4c59-a692-340c01e9050c" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: payments: 4485.26ms
+[STEP 2] REVERSAL ATTACK: Voiding a Paid Bill
+[ACTION] Reversing/Voiding Bill cd09173e-ebbc-4b15-9df1-7793d41a537f via API...
+[PASSED] Purchase Guardrail: System correctly blocked reversal of a paid bill.

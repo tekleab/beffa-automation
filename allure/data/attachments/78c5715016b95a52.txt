@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 465.04ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1392.60ms
+[INFO] Item: "DXD wind pump" | UUID: 84d87d4c-0941-44a0-958c-ade5ce5510fa | Stock: 2
+[STEP] Phase 2: Creating SO via API for 2 x "DXD wind pump"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 300.94ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000161 (ID: 3c89f7b0-813c-4ba3-88cc-e9cc5b90e24f, ItemID: ae2d916d-d039-401e-b094-9a5f9ff36023)
+[OK] SO created: SO/2026/04/28/000161 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/28/000161
+[API] Advancing sales-orders "3c89f7b0-813c-4ba3-88cc-e9cc5b90e24f" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4071.13ms
+[OK] SO SO/2026/04/28/000161 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/28/000161
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 266.17ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000118 (ID: 813467d0-c522-4086-9eb5-1f10d1fd973a)
+[OK] Invoice created: INV/2026/04/28/000118 (UUID: 813467d0-c522-4086-9eb5-1f10d1fd973a)
+[STEP] Phase 5: Approving Invoice INV/2026/04/28/000118
+[API] Advancing invoices "813467d0-c522-4086-9eb5-1f10d1fd973a" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4886.97ms
+[OK] Invoice INV/2026/04/28/000118 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "DXD wind pump" (Polling for backend sync)
+[POLL] Attempt 1: Found 0 at location ee1cd563-a9b8-4151-bf88-5c85959fab21 | Expected 0
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 2 to 0

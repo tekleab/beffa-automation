@@ -1,0 +1,56 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 259.10ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering sales metadata (AR, Sales, Currencies)...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Auditing AR: 2b98142d-8f11-43fd-8910-08f681cb174b | Cash: ca359c3b-b3c8-4030-8027-7e7e03fc350f | Inventory: 5beb2d62-bb7e-4c1b-8298-556ac8ebe25e
+[AUDIT] Stage 0: Capturing Absolute Baseline...
+[SNAPSHOT] Cash - Main Office: -3467851.72
+[SNAPSHOT] Accounts Receivable: -709890.74
+[SNAPSHOT] Inventory: 6415450.05
+[SNAPSHOT] Cash Baseline : -3467851.72
+[SNAPSHOT] AR Baseline   : -709890.74
+[SNAPSHOT] Inv Baseline  : 6415450.05
+[STEP 1] Creating Standalone Sales Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 785.23ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "2b98142d-8f11-43fd-8910-08f681cb174b",
+  "customer_id": "a32030e5-c83a-4b06-8cb7-18cf9dab5bac",
+  "invoice_date": "2026-04-28T00:00:00Z",
+  "due_date": "2026-04-30T00:00:00Z",
+  "currency_id": "a1fc7edf-5921-48a5-af27-1cb17ae04ef9",
+  "items": [
+    {
+      "amount": 50000,
+      "general_ledger_account_id": "f1da4f1b-87b0-43c5-bca6-23c359735f53",
+      "item_id": "f359b721-636f-49fb-9c85-7337f9d72c0f",
+      "location_id": "ee1cd563-a9b8-4151-bf88-5c85959fab21",
+      "quantity": 10,
+      "unit_price": 5000,
+      "warehouse_id": "7ed091ba-10b7-428e-bb35-35cf14686a8b"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 280.38ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/28/000117 (ID: b252ace3-2d28-46c4-ac01-b47667d2ba91)
+[API] Advancing invoices "b252ace3-2d28-46c4-ac01-b47667d2ba91" for company: "smoke test"
+[INFO] Advance cycle break. Status: 500
+[WARN] No API advance steps were successful. Verify if document b252ace3-2d28-46c4-ac01-b47667d2ba91 is already approved.
+[PERFORMANCE] API - API Advance: invoices: 225.32ms
+[SUCCESS] Invoice INV/2026/04/28/000117 fully approved.
+[INFO] Waiting 5s for Invoice Ledger Posting...
+[SNAPSHOT] Accounts Receivable: -709890.74
+[SNAPSHOT] Inventory: 6415450.05
+[AUDIT] Stage 1: Verifying Receivable Impact...
+[SNAPSHOT] Current AR: -709890.74 (Shift: 0.00)
