@@ -36,6 +36,110 @@ export class PurchaseAPI extends BasePage {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
+  async discoverRandomVendorAPI(): Promise<{ id: string; name: string }> {
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY || 'smoke test';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    
+    const response = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=10&${params}`, {
+      headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
+    });
+    
+    const data = await response.json();
+    const vendor = (data.items || data.data || [])[0];
+    if (!vendor) throw new Error('Forensic Audit Blocked: No Vendors available in the system.');
+    
+    return { id: vendor.id, name: vendor.name };
+  }
+
+  async discoverMetadataAPI(): Promise<{ apAccountId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string; vendorId: string; withholdingAccountId: string }> {
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}` };
+
+    const safeJson = async (resp: any, label: string) => {
+      const text = await resp.text();
+      if (!resp.ok()) throw new Error(`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`);
+      try { return JSON.parse(text); } catch (e) { throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`); }
+    };
+
+    console.log('[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...');
+
+    // 1. Fetch Accounts
+    const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
+    const accData = await safeJson(accResp, 'Accounts Discovery');
+    const allAccounts = accData.items || accData.data || [];
+    
+    // Improved AP discovery logic
+    const apAccount = 
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
+      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('liability')) ||
+      allAccounts[1] || allAccounts[0];
+
+    // Discovery Withholding Account (Prioritize Payable for Purchases)
+    const wtAccount = 
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding tax payable')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding payable')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding')) ||
+      apAccount;
+
+    console.log(`[META] Discovered AP: "${apAccount?.name}" | WT: "${wtAccount?.name}"`);
+
+    // 2. Fetch Currency
+    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currData = await safeJson(currResp, 'Currency Discovery');
+    const currency = currData.items?.[0] || currData.data?.[0];
+
+    // 3. Fetch Tax
+    const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+    const taxData = await safeJson(taxResp, 'Tax Discovery');
+    const tax = taxData.items?.[0] || taxData.data?.[0];
+
+    // 4. Fetch Location/Warehouse
+    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+    let locationId = '', warehouseId = '';
+    if (locResp.ok()) {
+      const locData = await locResp.json();
+      const firstLoc = (locData.items || locData.data || [])[0];
+      if (firstLoc) {
+        locationId = firstLoc.id;
+        warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id || '';
+      }
+    }
+
+    // 5. Fetch Vendor
+    const vendorResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=5&${params}`, { headers });
+    const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
+    const vendor = (vendorData.items || vendorData.data || [])[0];
+
+    return {
+      apAccountId: apAccount?.id || '',
+      currencyId: currency?.id || '',
+      taxId: tax?.id || '',
+      locationId,
+      warehouseId,
+      vendorId: vendor?.id || '',
+      withholdingAccountId: wtAccount?.id || ''
+    };
+  }
+
   async createPurchaseOrderAPI(itemData: Record<string, any> = {}, qty: number = 10, unitPrice: number = 5000, vendorId: string | null = null): Promise<{ success: boolean; poNumber: string; poId: string }> {
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
@@ -119,7 +223,9 @@ export class PurchaseAPI extends BasePage {
     return { success: true, poNumber: json.po_number, poId: json.id };
   }
 
-  async createBillAPI(itemData: Record<string, any> = {}, qty: number = 10, unitPrice: number = 5000, vendorId: string | null = null): Promise<{ success: boolean; billNumber: string; billId: string }> {
+  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; description?: string } = {}): Promise<{ success: boolean; ref: string; id: string }> {
+    const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, description = null } = params;
+    const finalQty = quantity || qty;
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -128,7 +234,7 @@ export class PurchaseAPI extends BasePage {
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const qs = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     const safeJson = async (resp: any, label: string) => {
@@ -150,14 +256,20 @@ export class PurchaseAPI extends BasePage {
     }
 
     // 2. Discover Accounts (AP + GL)
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
+    
+    // Improved strict AP discovery
+    const discoveredAp = 
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
+      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || 
+      allAccounts[0];
+
     const glAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
 
     // 3. Discover Currency
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currResp = await this.page.request.get(`${apiBase}/currency?${qs}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
@@ -165,7 +277,7 @@ export class PurchaseAPI extends BasePage {
     let locationId = itemData.locationId;
     let warehouseId = itemData.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${qs}`, { headers });
       const locData = await safeJson(locResp, 'Location Discovery');
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
@@ -175,26 +287,26 @@ export class PurchaseAPI extends BasePage {
     }
 
     const payload = {
-      accounts_payable_id: apAccount?.id,
+      accounts_payable_id: apAccountId || discoveredAp?.id,
       currency_id: currency?.id,
       invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
       due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
       items: [{
-        item_id: itemData.itemId,
+        item_id: itemData.itemId || itemData.id,
         general_ledger_account_id: glAccount?.id,
         location_id: locationId,
         quantity: qty,
         tax_id: itemData.taxId || null,
         unit_price: unitPrice,
         warehouse_id: warehouseId,
-        description: `Direct Bill of ${itemData.itemName}`,
+        description: description || `Audit Bill of ${itemData.itemName || itemData.name}`,
         amount: qty * unitPrice
       }],
       vendor_id: resolvedVendorId,
       status: 'draft'
     };
 
-    const response = await this.safePost(`${apiBase}/bills?${params}`, {
+    const response = await this.safePost(`${apiBase}/bills?${qs}`, {
       data: payload,
       headers,
       label: 'Create Bill'
@@ -203,7 +315,7 @@ export class PurchaseAPI extends BasePage {
     if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
     console.log(`[SUCCESS] Bill created via API: ${json.invoice_number} (ID: ${json.id})`);
-    return { success: true, billNumber: json.invoice_number, billId: json.id };
+    return { success: true, ref: json.invoice_number, id: json.id };
   }
   async createBillFromPoAPI(poId: string): Promise<{ success: boolean; billNumber: string; billId: string }> {
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
@@ -385,22 +497,91 @@ export class PurchaseAPI extends BasePage {
     return await response.json();
   }
 
-  async approvePaymentAPI(paymentId: string): Promise<boolean> {
+  async getPaymentAPI(paymentId: string): Promise<any> {
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const params = `year=${year}&period=yearly&calendar=ec`;
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const response = await this.page.request.get(`${apiBase}/payments/${paymentId}?${params}`, {
+      headers: { 'x-company': process.env.BEFFA_COMPANY || 'smoke test', 'Authorization': `Bearer ${token}` }
+    });
+    return await response.json();
+  }
+
+  async reverseBillAPI(billId: string): Promise<boolean> {
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const params = `year=${year}&period=yearly&calendar=ec`;
 
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    console.log(`[ACTION] Reversing/Voiding Bill ${billId} via API...`);
+    const response = await this.page.request.patch(`${apiBase}/bills/${billId}/void?${params}`, {
+      data: { status: 'reversed' },
+      headers: {
+        'x-company': process.env.BEFFA_COMPANY as string,
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) {
+      console.error(`[ERROR] Bill Reversal failed (${response.status()}): ${await response.text()}`);
+      return false;
+    }
+    return true;
+  }
+
+  async approvePaymentAPI(paymentId: string): Promise<boolean> {
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const params = `year=${year}&period=yearly&calendar=ec`;
+
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     console.log(`[ACTION] Approving Payment ${paymentId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/payments/${paymentId}?${params}`, {
       data: { status: 'approved' },
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     return response.ok();
+  }
+
+  async findUnpaidBillAPI(): Promise<{ billId: string; billNumber: string; amount: number; vendorId: string; vendorName: string } | null> {
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY || 'smoke test';
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `status=approved&year=${year}&period=${period}&calendar=${calendar}`;
+    
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    console.log(`[ACTION] API Discovery: Scanning for unpaid approved bills in "${company}"...`);
+    const response = await this.page.request.get(`${apiBase}/bills?pageSize=50&${params}`, {
+      headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (!response.ok()) return null;
+    const json = await response.json();
+    const unpaid = (json.data || json.items || []).find((b: any) => parseFloat(b.balance) > 0);
+    
+    if (unpaid) {
+      console.log(`[OK] API Found Bill: ${unpaid.invoice_number} | Balance: ${unpaid.balance} | Vendor: ${unpaid.vendor?.name}`);
+      return {
+        billId: unpaid.id,
+        billNumber: unpaid.invoice_number,
+        amount: parseFloat(unpaid.balance),
+        vendorId: unpaid.vendor_id,
+        vendorName: unpaid.vendor?.name || 'Unknown Vendor'
+      };
+    }
+    return null;
   }
 
   async getBillJournalEntriesAPI(billId: string): Promise<Array<{ accountCode: string; accountName: string; debit: number; credit: number }>> {

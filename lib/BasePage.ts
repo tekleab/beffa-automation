@@ -126,6 +126,13 @@ export class BasePage {
              break;
         } else if (status === 401) {
             throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. The token for "${company}" is invalid or expired.`);
+        } else if (status === 422) {
+            if (success) {
+                console.log(`[INFO] Approval Cycle complete. Document is now fully Approved.`);
+                break;
+            }
+            const text = await resp.text();
+            throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
         } else {
             console.log(`[INFO] Advance cycle break. Status: ${status}`);
             break;
@@ -499,5 +506,94 @@ export class BasePage {
       if (text) map[text] = h;
     }
     return map;
+  }
+
+  async getAccountBalanceAPI(accountId: string, companyOverride?: string): Promise<number> {
+    const token = await this._getAuthToken();
+    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany') || 'smoke test');
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    
+    // Fetch all accounts and filter locally to ensure we find the exact UUID
+    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=${period}&calendar=${calendar}`;
+    
+    const response = await this.page.request.get(url, {
+      headers: { 
+        'Authorization': `Bearer ${token}`, 
+        'x-company': company,
+        'x-role': 'IT Administrator / User Manager'
+      }
+    });
+
+    if (!response.ok()) {
+      console.log(`[WARN] GL Balance Query Failed. Status: ${response.status()}`);
+      return 0;
+    }
+
+    const data = await response.json();
+    const list = data.items || data.data || [];
+    const targetAccount = list.find((a: any) => a.id === accountId);
+    
+    if (!targetAccount) {
+        console.log(`[WARN] GL Audit: Account ${accountId} not found in the COA list.`);
+        return 0;
+    }
+
+    const balance = parseFloat(targetAccount.balance || targetAccount.current_balance || '0');
+    console.log(`[GL_AUDIT] Account: ${targetAccount.name} | Balance: ${balance.toFixed(2)}`);
+    return balance;
+  }
+
+  async getMultiAccountBalancesAPI(accountIds: string[], companyOverride?: string): Promise<Record<string, number>> {
+    const token = await this._getAuthToken();
+    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany') || 'smoke test');
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    
+    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=${period}&calendar=${calendar}`;
+    const response = await this.page.request.get(url, {
+      headers: { 
+        'Authorization': `Bearer ${token}`, 
+        'x-company': company,
+        'x-role': 'IT Administrator / User Manager'
+      }
+    });
+
+    if (!response.ok()) return {};
+
+    const data = await response.json();
+    const list = data.items || data.data || [];
+    const balances: Record<string, number> = {};
+
+    accountIds.forEach(id => {
+      const acc = list.find((a: any) => a.id === id);
+      if (acc) {
+        balances[id] = parseFloat(acc.balance || acc.current_balance || '0');
+        console.log(`[SNAPSHOT] ${acc.name}: ${balances[id].toFixed(2)}`);
+      }
+    });
+
+    return balances;
+  }
+
+  async getAllAccountsAPI(companyOverride?: string): Promise<any[]> {
+    const token = await this._getAuthToken();
+    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany') || 'smoke test');
+    const year = process.env.BEFFA_YEAR || '2018';
+    
+    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=yearly&calendar=ec`;
+    const response = await this.page.request.get(url, {
+      headers: { 
+        'Authorization': `Bearer ${token}`, 
+        'x-company': company,
+        'x-role': 'IT Administrator / User Manager'
+      }
+    });
+
+    if (!response.ok()) return [];
+    const data = await response.json();
+    return data.items || data.data || [];
   }
 }

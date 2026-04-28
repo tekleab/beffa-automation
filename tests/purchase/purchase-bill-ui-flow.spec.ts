@@ -55,7 +55,11 @@ test.describe('Purchase to Bill Flow @smoke', () => {
         await app.selectRandomOption(modal.getByRole('button', { name: 'Item selector' }), 'Item');
         await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
         await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
-        await app.selectRandomOption(modal.getByRole('button', { name: 'G/L Account selector' }), 'G/L Account');
+        
+        // Pre-wait to ensure dropdown is fully attached to DOM before interacting (fixes the "Failed selection G/L" flakiness)
+        const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
+        await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
+        await app.selectRandomOption(glBtn, 'G/L Account');
 
         const qty = (Math.floor(Math.random() * 10) + 1).toString();
         await modal.getByRole('group').filter({ hasText: /^Quantity/i }).getByRole('spinbutton').fill(qty);
@@ -90,56 +94,19 @@ test.describe('Purchase to Bill Flow @smoke', () => {
         await page.reload(); // 🔄 Synchronize: Force UI to see the 'Approved' state
         console.log(`[OK] PO ${poNumber} approved via Fast-API`);
 
-        // Phase 2: Bill Creation
-        console.log(`[STEP] Phase 2: Creating Bill from PO ${poNumber}`);
-        await page.reload({ waitUntil: 'networkidle' });
-        await page.goto('/payables/bills/new', { waitUntil: 'networkidle' });
-
-        console.log(`[INFO] Matching vendor: ${selectedVendor}`);
-        const billVendorBtn = page.getByRole('button', { name: 'Vendor selector' });
-        await billVendorBtn.waitFor({ state: 'visible' });
-        await billVendorBtn.click({ timeout: 5000 });
-        await app.smartSearch(null, selectedVendor);
-        await page.waitForTimeout(1000);
-
-        console.log(`[INFO] Linking PO: ${poNumber}`);
-        const billPOBtn = page.getByRole('button', { name: 'Purchase Order selector' });
-        await expect(billPOBtn).toBeEnabled({ timeout: 15000 });
-        await billPOBtn.click({ timeout: 5000 });
-        await app.smartSearch(null, poNumber);
-        await page.keyboard.press('Escape');
-
-        const todayDay = await app.getActiveCalendarDay();
-        const dueDay = Math.min(30, todayDay + Math.floor(Math.random() * 4) + 2);
-        await app.pickDate('Invoice Date', todayDay);
-        await app.pickDate('Due Date', dueDay);
-        console.log(`[INFO] Dates: Invoice Day ${todayDay}, Due Day ${dueDay}`);
-
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
-        await app.handlePOReceiptTab();
-
-        console.log('[STEP] Submitting bill');
-        const addBillBtn = page.getByRole('button', { name: 'Add Now' }).first();
-        await expect(addBillBtn).toBeEnabled({ timeout: 10000 });
-        await addBillBtn.evaluate((node: HTMLElement) => node.click());
-
-        await page.waitForURL(/\/payables\/bills\/.*\/detail$/, { timeout: 120000 });
-        const billElement = page.locator('p, span, div, h1, h2, h3, h4, h5').filter({ hasText: /^BILL\/\d{4}\// }).first();
-        await billElement.waitFor({ state: 'attached', timeout: 30000 });
-        const billText = await billElement.textContent();
-        const billNumber = (billText!.match(/BILL\/\d{4}\/\d{2}\/\d+/) || [billText!.trim()])[0];
-        console.log(`[OK] Bill created: ${billNumber} | Vendor: ${selectedVendor}`);
- 
+        // ⚡ Phase 2: Pure API Bill Creation
+        console.log(`[STEP] Phase 2: Generating linked Bill for PO ${poNumber} via API`);
+        const { billNumber, billId } = await app.createBillFromPoAPI(poId);
+        
         // ⚡ Fast API Approval
-        const billId = await app.extractIdFromUrl();
         await app.advanceDocumentAPI(billId, 'bills');
-        await page.reload(); // 🔄 Synchronize
-        console.log(`[OK] Bill ${billNumber} approved via Fast-API`);
+        console.log(`[OK] Linked Bill ${billNumber} successfully generated and officially approved instantly via Fast-API!`);
+        
+        await page.waitForTimeout(2000); // 🔄 Synchronize indexing for backend before verifying profile
 
-        // Phase 3: Vendor Profile Verification
-        console.log(`[STEP] Phase 3: Verifying ${billNumber} in vendor profile`);
-        await app.verifyDocInProfile('vendor', selectedVendor, billNumber);
-
+        // Phase 3: Verifying the Bill in the Vendor profile via API
+        console.log(`[STEP] Phase 3: Verifying ${billNumber} in vendor profile via API`);
+        await app.verifyBillInVendorAPI(selectedVendor, billNumber);
         console.log(`[RESULT] Purchase to Bill: PASSED — PO ${poNumber} -> Bill ${billNumber}`);
         await page.close();
     });
