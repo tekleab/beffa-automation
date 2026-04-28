@@ -1,0 +1,21 @@
+[STEP] Stage 1: Login & Receipt Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 203.77ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[STEP] Creating receipt via API
+[ACTION] Discovering receipt metadata for company: "smoke test"...
+[ACTION] Creating receipt: Customer="Base Ethiopia" | CashAcct="Cash - Main Office" | Currency="Birr"
+[SUCCESS] Receipt created via API: RCPT/2026/04/28/000051 (ID: d24aa542-1b3b-4759-a585-1d1722efb69a)
+[OK] Receipt created: RCPT/2026/04/28/000051 (UUID: d24aa542-1b3b-4759-a585-1d1722efb69a)
+[STEP] Approving receipt via Fast-API
+[API] Advancing receipts "d24aa542-1b3b-4759-a585-1d1722efb69a" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 4334.77ms
+[OK] RCPT/2026/04/28/000051 approved via Fast-API
+[STEP] Capturing initial GL entries
+[INFO] GL Entry: Cash - Main Office | Debit: 1692563 | Credit: 0

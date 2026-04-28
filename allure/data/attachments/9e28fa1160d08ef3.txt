@@ -1,0 +1,41 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 223.16ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 883.66ms
+[INFO] Item: "fifo testitem" | ID: d0814ddf-f1f8-4cd0-ab37-9771c0624848 | Stock: 343
+[STEP] Phase 2: Creating PO via API for "fifo testitem"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 233.01ms
+[SUCCESS] PO created via API: PO/2026/04/28/000112 (ID: 251f828f-d7ad-4c68-8f32-bb63897b5d3c)
+[OK] PO created: PO/2026/04/28/000112
+[API] Advancing purchase-orders "251f828f-d7ad-4c68-8f32-bb63897b5d3c" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 3972.08ms
+[OK] PO PO/2026/04/28/000112 approved via Fast-API
+[STEP] Phase 3: Converting PO PO/2026/04/28/000112 to Bill via API
+[ACTION] Fetching PO Context for ID: 251f828f-d7ad-4c68-8f32-bb63897b5d3c...
+[PERFORMANCE] API - Create API Bill from PO: 238.46ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000215
+[OK] Bill created: BILL/2026/04/28/000215
+[API] Advancing bills "613b67e6-92d2-4458-9638-74bf76f9871b" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4672.84ms
+[OK] Bill BILL/2026/04/28/000215 approved via Fast-API
+[STEP] Phase 4: Ledger verification via API
+[INFO] Captured 5 ledger entries via API
+[INFO] Sample: Cash - Branch Office (1002) — DR: 50000 | CR: 0
+[STEP] Phase 5: Verifying stock for "fifo testitem" via API Polling
+[ACTION] API Polling: Waiting for stock to hit 353...
+[SUCCESS] API Confirmed: Stock correctly reached 353.
+[VERIFY] Item: fifo testitem | Initial: 343 | Received: 10 | Final: 353 | Expected: 353
+[RESULT] Purchase Impact: PASSED
