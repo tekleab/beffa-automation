@@ -52,17 +52,16 @@ test.describe('Inventory Adjustment Flow @regression', () => {
         let postAdj: any = null;
         let success = false;
 
-        for (let attempt = 0; attempt < 3; attempt++) {
-            postAdj = await app.getItemDetailsAPI(initial.itemId);
-            if (!postAdj) postAdj = await app.captureItemDetails(initial.itemName); // UI Fallback
+        for (let attempt = 0; attempt < 15; attempt++) {
+            postAdj = await app.getItemDetailsAPI(initial.itemId, initial.locationId);
             
-            console.log(`[POLL] Attempt ${attempt + 1}: Found ${postAdj?.currentStock ?? 'NULL'} | Expected ${expectedStock}`);
+            console.log(`[POLL] Attempt ${attempt + 1}/15: Found ${postAdj?.currentStock ?? 'NULL'} at location ${initial.locationId} | Expected ${expectedStock}`);
             
             if (postAdj && postAdj.currentStock === expectedStock) {
                 success = true;
                 break;
             }
-            await page.waitForTimeout(5000); // 5s tactical wait for ERP backend sync
+            await page.waitForTimeout(2000); // 2s tactical wait for ERP backend sync
         }
 
         if (!success) {
