@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 401.22ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1095.42ms
+[INFO] Item: "Circuit card RB-5" | UUID: bca2bd18-16d1-424d-85fd-5d5fef178685 | Stock: 15
+[STEP] Phase 2: Creating SO via API for 2 x "Circuit card RB-5"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 292.44ms
+[SUCCESS] Sales Order created via API: SO/2026/04/28/000141 (ID: d03b36ad-de17-4ad9-a156-5b144f0eaa88, ItemID: 154237f6-9c6c-43c4-a650-3d76b071b21f)
+[OK] SO created: SO/2026/04/28/000141 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/28/000141
+[API] Advancing sales-orders "d03b36ad-de17-4ad9-a156-5b144f0eaa88" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 3952.13ms
+[OK] SO SO/2026/04/28/000141 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/28/000141
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 292.14ms
+[SUCCESS] Invoice created via API: INV/2026/04/28/000081 (ID: 07736742-4049-49cd-ac6f-183dae507ee0)
+[OK] Invoice created: INV/2026/04/28/000081 (UUID: 07736742-4049-49cd-ac6f-183dae507ee0)
+[STEP] Phase 5: Approving Invoice INV/2026/04/28/000081
+[API] Advancing invoices "07736742-4049-49cd-ac6f-183dae507ee0" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4680.75ms
+[OK] Invoice INV/2026/04/28/000081 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Circuit card RB-5" (Polling for backend sync)
+[POLL] Attempt 1: Found 13 at location ee1cd563-a9b8-4151-bf88-5c85959fab21 | Expected 13
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 15 to 13
