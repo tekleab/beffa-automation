@@ -1,0 +1,48 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 248.93ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 20.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 20
+[SUCCESS] "Purchase Order Date" set to Day 20 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2513.42ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1931.68ms
+[INFO] Vendor: MIDROC S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1994.79ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2071.12ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1948.24ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1993.35ms
+[PERFORMANCE] UI - Random Selection: Location: 1919.00ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1832.54ms
+[PERFORMANCE] UI - Random Selection: Tax: 1894.25ms
+[OK] Line item added (Price: 9492)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/28/000116 | Vendor: MIDROC S.C
+[API] Advancing purchase-orders "c1c5bfd1-e38a-41f7-8cbc-16e85cd3b469" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 4189.32ms
+[OK] PO PO/2026/04/28/000116 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/28/000116 via API
+[ACTION] Fetching PO Context for ID: c1c5bfd1-e38a-41f7-8cbc-16e85cd3b469...
+[PERFORMANCE] API - Create API Bill from PO: 275.40ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/28/000221
+[API] Advancing bills "3501a896-a752-4f65-9458-2d66a1212275" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 5315.11ms
+[OK] Linked Bill BILL/2026/04/28/000221 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/28/000221 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "MIDROC S.C"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/28/000221...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/28/000221 is physically present in MIDROC S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/28/000116 -> Bill BILL/2026/04/28/000221
