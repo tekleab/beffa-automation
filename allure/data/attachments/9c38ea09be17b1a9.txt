@@ -1,0 +1,35 @@
+[STEP] Phase 1: High-Speed Forensic Login
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 203.53ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[AUDIT] Scenario: Missing Customer ID
+[RESULT] Status: 422
+[AUDIT] Scenario: Empty Items List
+[RESULT] Status: 422
+[AUDIT] Scenario: Missing Item ID
+[RESULT] Status: 422
+[AUDIT] Scenario: Negative Quantity
+[RESULT] Status: 422
+[AUDIT] Scenario: Invoice: Empty SO Links
+[RESULT] Status: 422
+[AUDIT] Scenario: Receipt: Missing Cash Account
+[RESULT] Status: 422
+[AUDIT] Scenario: Security: Invalid Token
+[RESULT] Status: 401
+[AUDIT] Scenario: Integrity: Fake Customer UUID
+[RESULT] Status: 422
+[AUDIT] Scenario: Invoicing a DRAFT Sales Order
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1080.56ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Sales Order: 239.71ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000410 (ID: e6d24b7d-122e-4ff4-aca9-16236be0ac72, ItemID: 3684dfda-f48b-4bac-826b-f879f09b05ec)
+[RESULT] Status: 422 (Intercepted)
+[AUDIT] Scenario: Boundary: Financial Overflow
+[RESULT] Status: 422
+[FINISH] Master Sales Forensic Audit Complete. All guardrails verified.

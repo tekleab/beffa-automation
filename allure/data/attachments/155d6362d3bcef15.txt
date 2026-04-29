@@ -1,0 +1,29 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 368.38ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[STEP 1] Setup: Paid Bill
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 2]...
+[PERFORMANCE] API - Item Discovery (50 Records): 704.91ms
+[PERFORMANCE] API - Create Bill: 251.17ms
+[SUCCESS] Bill created via API: BILL/2026/04/29/000342 (ID: 6e92f8f5-fc47-4b32-affd-4e1c36cf53f3)
+[API] Advancing bills "6e92f8f5-fc47-4b32-affd-4e1c36cf53f3" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4646.25ms
+[ACTION] Creating Bill Payment for 6e92f8f5-fc47-4b32-affd-4e1c36cf53f3 via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/04/29/000123 (ID: e1597e29-cc3a-4330-93db-8f81b158744c)
+[API] Advancing payments "e1597e29-cc3a-4330-93db-8f81b158744c" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: payments: 4209.15ms
+[STEP 2] REVERSAL ATTACK: Voiding a Paid Bill
+[ACTION] Reversing/Voiding Bill 6e92f8f5-fc47-4b32-affd-4e1c36cf53f3 via API...
+[PASSED] Purchase Guardrail: System correctly blocked reversal of a paid bill.

@@ -1,0 +1,50 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 299.29ms
+[WARN] API Login failed (API Login Failed: 500). Falling back to UI Login...
+[ACTION] Verifying current company selection...
+[ACTION] Switching company: "Construction BM" -> "sample"
+[PERFORMANCE] UI - sample Context Mount: 1165.58ms
+[SUCCESS] Company switched to "sample"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 21.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 21
+[SUCCESS] "Purchase Order Date" set to Day 21 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2580.72ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1927.30ms
+[INFO] Vendor: Zelalem H/Giorgis
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2029.34ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2017.88ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2080.56ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2139.29ms
+[PERFORMANCE] UI - Random Selection: Location: 2043.95ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1951.87ms
+[PERFORMANCE] UI - Random Selection: Tax: 2084.58ms
+[OK] Line item added (Price: 6880)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/29/000283 | Vendor: Zelalem H/Giorgis
+[API] Advancing purchase-orders "ef6c8ce3-4120-48a5-b4a6-94888a82598f" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 4048.37ms
+[OK] PO PO/2026/04/29/000283 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/29/000283 via API
+[ACTION] Fetching PO Context for ID: ef6c8ce3-4120-48a5-b4a6-94888a82598f...
+[PERFORMANCE] API - Create API Bill from PO: 244.06ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/29/000345
+[API] Advancing bills "9e91d9e6-db35-4d27-8f45-2af9a7af4e23" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 6020.75ms
+[OK] Linked Bill BILL/2026/04/29/000345 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/29/000345 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Zelalem H/Giorgis"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/29/000345...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/29/000345 is physically present in Zelalem H/Giorgis's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/29/000283 -> Bill BILL/2026/04/29/000345

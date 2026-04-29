@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 338.43ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[STEP] Phase 1: High-Speed Discovery (API)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1081.39ms
+[INFO] Item: "sauna insulation" | Vendor will be auto-discovered via API
+[STEP] Phase 2: Creating Bill via API
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
+[PERFORMANCE] API - Create Bill: 226.29ms
+[SUCCESS] Bill created via API: BILL/2026/04/29/000344 (ID: 164f5253-fc4e-40be-9818-8c0ca264e9ef)
+[OK] Bill Created: BILL/2026/04/29/000344 (UUID: 164f5253-fc4e-40be-9818-8c0ca264e9ef)
+[STEP] Phase 3: Approving Bill via UI
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Submit For Reviewer"
+[INFO] Approval status: "verifier"
+[ACTION] Status changed to "verifier" → Clicking: "Submit For Approver"
+[INFO] Approval status: "approver"
+[ACTION] Status changed to "approver" → Clicking: "Approve"
+[INFO] Approval status: "approved"
+[SUCCESS] Document approved.
+[OK] Bill BILL/2026/04/29/000344 Approved
+[STEP] Phase 4: Creating Full Payment via API
+[INFO] Exact total amount to pay: 14374.999999999998
+[ACTION] Creating Bill Payment for 164f5253-fc4e-40be-9818-8c0ca264e9ef via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/04/29/000126 (ID: 4a685fb1-0938-44b5-91b2-aa508030a6a2)
+[OK] Payment Created: PAY/2026/04/29/000126. Approving via UI...
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Advance"
+[WARN] Approval flow timed out before reaching final status.
+[OK] Payment 1 blocked by system (e.g., insufficient balance) — business rule validated correctly.
+[STEP] Phase 5: Testing Duplicate Payment & UI Approval Blocking
+[ACTION] Creating Bill Payment for 164f5253-fc4e-40be-9818-8c0ca264e9ef via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/04/29/000127 (ID: 4a4ba23e-5c85-476d-9d8c-fe15d16931e2)
+[INFO] Payment 2 created in Draft: PAY/2026/04/29/000127. Attempting illegal UI Approval...
+[INFO] Approval status: "draft"
+[ACTION] Status changed to "draft" → Clicking: "Advance"
+[WARN] Approval flow timed out before reaching final status.
+[SUCCESS] UI correctly blocked or prevented approval of duplicate payment.
+[STEP] Phase 6: Final Verification in UI
+[RESULT] Bill-to-Payment Logic: PASSED (Fully Settled & Protected)

@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 373.95ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1236.23ms
+[OK] Discovered via API: "Switch complete set" | Stock: 43
+[INFO] Item Unit Cost: 39728.71 | Chosen Adjustment Qty: 1 (Total: 39728.71)
+[STEP] Phase 2: Creating Adjustment API (Increase by 1 units)
+[PERFORMANCE] API - Inventory Adjustment: 313.74ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/29/000065 (ID: a00edda5-ad16-4229-9aa0-42e3661790b2)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/29/000065
+[API] Advancing inventory-adjustments "a00edda5-ad16-4229-9aa0-42e3661790b2" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1659.98ms
+[OK] Adjustment ADJ/2026/04/29/000065 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "Switch complete set" (Polling for sync)
+[POLL] Attempt 1/15: Found 44 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 44
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 1 units
