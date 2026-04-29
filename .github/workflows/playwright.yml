@@ -12,10 +12,14 @@ on:
           - regression
           - full
       company:
-        description: 'Company name to test against (e.g., sample, bm technology)'
-        required: false
+        description: 'Company'
+        required: true
         default: 'sample'
-        type: string
+        type: choice
+        options:
+          - 'sample'
+          - 'bm technology'
+          - 'development'
   push:
     branches:
       - main
