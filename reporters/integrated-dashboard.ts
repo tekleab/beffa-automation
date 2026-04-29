@@ -260,6 +260,7 @@ class IntegratedDashboard implements Reporter {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             if (u === 'admin@beffa.com' && p === 'Beff.$#!') {
+                sessionStorage.setItem('beffa_auth', 'true');
                 document.getElementById('loginWall').style.display = 'none';
                 syncDashboard();
             }
