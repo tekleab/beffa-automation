@@ -16,7 +16,7 @@ export default defineConfig({
 
   reporter: [
     ['list'],
-    ['./reporters/luxury-reporter.ts'],
+    ['./reporters/integrated-dashboard.ts'],
     ['./reporters/summary-reporter.ts'],
     ['html', { open: 'never' }],
     [
