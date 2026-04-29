@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 323.38ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1591.71ms
+[INFO] Item: "Downlight" | UUID: 4cf0f47d-5773-4f6a-b651-37891168255e | Stock: 50
+[STEP] Phase 2: Creating SO via API for 2 x "Downlight"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Sales Order: 339.93ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000412 (ID: fc958644-0b11-432c-9c36-95e55491b1b5, ItemID: 59fcbeb3-d24a-4f9a-b6c4-865d8ec94bf4)
+[OK] SO created: SO/2026/04/29/000412 | Customer: 7dbec658-191f-4fb9-8d26-91e73dc8995a
+[STEP] Phase 3: Approving SO SO/2026/04/29/000412
+[API] Advancing sales-orders "fc958644-0b11-432c-9c36-95e55491b1b5" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4168.01ms
+[OK] SO SO/2026/04/29/000412 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/29/000412
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Invoice: 343.77ms
+[SUCCESS] Invoice created via API: INV/2026/04/29/000587 (ID: 4108b24a-a56c-4e17-88a4-5d3878fdf4ab)
+[OK] Invoice created: INV/2026/04/29/000587 (UUID: 4108b24a-a56c-4e17-88a4-5d3878fdf4ab)
+[STEP] Phase 5: Approving Invoice INV/2026/04/29/000587
+[API] Advancing invoices "4108b24a-a56c-4e17-88a4-5d3878fdf4ab" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 5172.97ms
+[OK] Invoice INV/2026/04/29/000587 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Downlight" (Polling for backend sync)
+[POLL] Attempt 1: Found 48 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 48
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 50 to 48
