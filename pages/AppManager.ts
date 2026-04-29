@@ -146,10 +146,9 @@ export class AppManager {
   async getPaymentAPI(...args: Parameters<PurchaseAPI['getPaymentAPI']>) { return await this.api.purchase.getPaymentAPI(...args); }
   async extractIdFromUrl(...args: Parameters<BasePage['extractIdFromUrl']>) { return await this.base.extractIdFromUrl(...args); }
   async advanceDocumentAPI(...args: Parameters<BasePage['advanceDocumentAPI']>) { return await this.base.advanceDocumentAPI(...args); }
-  async captureRandomItemDataAPI(params?: any) { return await this.api.inventory.captureRandomItemDataAPI(params); }
-  async getItemDetailsAPI(...args: Parameters<InventoryAPI['getItemDetailsAPI']>) { return await this.api.inventory.getItemDetailsAPI(...args); }
   async pollStockAPI(...args: Parameters<InventoryAPI['pollStockAPI']>) { return await this.api.inventory.pollStockAPI(...args); }
   async getAccountBalancesAPI() { return await this.base.getAllAccountsAPI(); }
+  async getAllAccountsAPI() { return await this.base.getAllAccountsAPI(); }
   async getMultiAccountBalancesAPI(...args: Parameters<BasePage['getMultiAccountBalancesAPI']>) { return await this.base.getMultiAccountBalancesAPI(...args); }
   async getAccountBalanceAPI(...args: Parameters<BasePage['getAccountBalanceAPI']>) { return await this.base.getAccountBalanceAPI(...args); }
   async getBillJournalEntriesAPI(...args: Parameters<PurchaseAPI['getBillJournalEntriesAPI']>) { return await this.api.purchase.getBillJournalEntriesAPI(...args); }

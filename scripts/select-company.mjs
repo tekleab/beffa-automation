@@ -26,11 +26,11 @@ try {
 } catch { /* no .env — rely on process.env */ }
 
 const merged = { ...process.env, ...env };
-const API_BASE  = 'http://157.180.20.112:8001/api';
-const USER      = merged.BEFFA_USER  || '';
-const PASS      = merged.BEFFA_PASS  || '';
-const DEFAULT   = merged.BEFFA_COMPANY || 'smoke test';
-const TIMEOUT   = 10; // seconds to wait before auto-selecting default
+const API_BASE = 'http://157.180.20.112:8001/api';
+const USER = merged.BEFFA_USER || '';
+const PASS = merged.BEFFA_PASS || '';
+const DEFAULT = merged.BEFFA_COMPANY || 'sample';
+const TIMEOUT = 10; // seconds to wait before auto-selecting default
 
 // ── Fetch company list from the live API ─────────────────────────────────────
 async function fetchCompanies() {
@@ -41,16 +41,16 @@ async function fetchCompanies() {
     const loginRes = await fetch(
       `${API_BASE}/users/login?year=2018&period=yearly&calendar=ec&month=6`,
       {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email: USER, password: PASS }),
-        signal:  abort.signal,
+        body: JSON.stringify({ email: USER, password: PASS }),
+        signal: abort.signal,
       }
     );
     clearTimeout(tid);
     if (!loginRes.ok) {
-        console.warn(`\n    \x1b[31m[LOGIN FAILED]\x1b[0m status: ${loginRes.status}`);
-        return null;
+      console.warn(`\n    \x1b[31m[LOGIN FAILED]\x1b[0m status: ${loginRes.status}`);
+      return null;
     }
 
     const { auth_token } = await loginRes.json();
@@ -61,26 +61,26 @@ async function fetchCompanies() {
       try {
         const res = await fetch(`${API_BASE}${endpoint}`, {
           headers: { 'Authorization': `Bearer ${auth_token}` },
-          signal:  AbortSignal.timeout(10000), // Increased API timeout
+          signal: AbortSignal.timeout(10000), // Increased API timeout
         });
         if (!res.ok) {
-            console.warn(`\n    \x1b[90m[API SKIP]\x1b[0m ${endpoint} returned ${res.status}`);
-            continue;
+          console.warn(`\n    \x1b[90m[API SKIP]\x1b[0m ${endpoint} returned ${res.status}`);
+          continue;
         }
         const responseData = await res.json();
-        
+
         // Handle different possible response structures
         let list = [];
         if (endpoint === '/users/me') {
-            list = responseData.user?.companies || responseData.companies || [];
+          list = responseData.user?.companies || responseData.companies || [];
         } else {
-            list = responseData.items || responseData.data || (Array.isArray(responseData) ? responseData : []);
+          list = responseData.items || responseData.data || (Array.isArray(responseData) ? responseData : []);
         }
 
         if (list && list.length > 0) return list.map(c => c.name || c.company_name || c);
-      } catch (e) { 
+      } catch (e) {
         console.warn(`\n    \x1b[90m[API ERR]\x1b[0m ${endpoint}: ${e.message}`);
-        continue; 
+        continue;
       }
     }
     return null;
@@ -93,8 +93,8 @@ async function fetchCompanies() {
 // ── Interactive prompt with countdown ────────────────────────────────────────
 function promptWithCountdown(companies, defaultCompany, timeoutSecs) {
   return new Promise((resolve) => {
-    let countdown  = timeoutSecs;
-    let answered   = false;
+    let countdown = timeoutSecs;
+    let answered = false;
 
     const rl = createInterface({ input: process.stdin, output: process.stdout });
 
@@ -182,7 +182,7 @@ async function main() {
     ['playwright', 'test', ...playwrightArgs],
     {
       stdio: 'inherit',
-      env:   { ...merged, BEFFA_COMPANY: selected },
+      env: { ...merged, BEFFA_COMPANY: selected },
     }
   );
 

@@ -16,7 +16,7 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-    
+
     // Configure API Base
     let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (base.includes(':4173')) base = base.replace(':4173', ':8001');
@@ -55,7 +55,7 @@ export class BasePage {
   async stopTacticalTimer(label: string, category: 'API' | 'UI' = 'API') {
     const duration = performance.now() - this.startTime;
     console.log(`[PERFORMANCE] ${category} - ${label}: ${duration.toFixed(2)}ms`);
-    
+
     // Attach to Playwright annotations for Allure consumption
     try {
       const { test } = require('@playwright/test');
@@ -84,20 +84,19 @@ export class BasePage {
 
     // Bulletproof Company Detection: Pull directly from ERP state
     const company = await this.page.evaluate(() => {
-        return localStorage.getItem('currentCompany') || 
-               localStorage.getItem('company') || 
-               'Construction BM';
-    });
+      return localStorage.getItem('currentCompany') ||
+        localStorage.getItem('company');
+    }) || process.env.BEFFA_COMPANY || 'sample';
 
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    
+
     const url = `${this.apiBase}/${docType}/${docId}/advance?year=${year}&period=${period}&calendar=${calendar}`;
-    const headers = { 
-      'x-company': company, 
-      'Authorization': `Bearer ${token}`, 
-      'Content-Type': 'application/json' 
+    const headers = {
+      'x-company': company,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     };
 
     console.log(`[API] Advancing ${docType} "${docId}" for company: "${company}"`);
@@ -105,42 +104,42 @@ export class BasePage {
 
     let success = false;
     for (let i = 0; i < 4; i++) {
-        // Most stages in this ERP require an explicit reviewer/approver assignment
-        // We use the ID discovered: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c (System Admin)
-        const payload = { submitted_to: "42477a9a-1f16-40b9-a64d-f0cc067a0b7c" };
-        
-        const resp = await this.page.request.patch(url, { headers, data: payload });
-        const status = resp.status();
-        
-        if (status === 200 || status === 204) {
-            console.log(`[SUCCESS] Approval Step ${i + 1} synchronized via API.`);
-            success = true;
-            await this.page.waitForTimeout(1000); // Backend cooldown
-        } else if (status === 400 || status === 404) {
-             // 400 or 404 after a success usually means we hit the final state
-             if (success) {
-                 console.log(`[INFO] Approval Cycle complete at step ${i}. Document is in Final State.`);
-                 break;
-             }
-             console.log(`[WARN] Advance ignored (Status ${status}). Already in next stage?`);
-             break;
-        } else if (status === 401) {
-            throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. The token for "${company}" is invalid or expired.`);
-        } else if (status === 422) {
-            if (success) {
-                console.log(`[INFO] Approval Cycle complete. Document is now fully Approved.`);
-                break;
-            }
-            const text = await resp.text();
-            throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
-        } else {
-            console.log(`[INFO] Advance cycle break. Status: ${status}`);
-            break;
+      // Most stages in this ERP require an explicit reviewer/approver assignment
+      // We use the ID discovered: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c (System Admin)
+      const payload = { submitted_to: "42477a9a-1f16-40b9-a64d-f0cc067a0b7c" };
+
+      const resp = await this.page.request.patch(url, { headers, data: payload });
+      const status = resp.status();
+
+      if (status === 200 || status === 204) {
+        console.log(`[SUCCESS] Approval Step ${i + 1} synchronized via API.`);
+        success = true;
+        await this.page.waitForTimeout(1000); // Backend cooldown
+      } else if (status === 400 || status === 404) {
+        // 400 or 404 after a success usually means we hit the final state
+        if (success) {
+          console.log(`[INFO] Approval Cycle complete at step ${i}. Document is in Final State.`);
+          break;
         }
+        console.log(`[WARN] Advance ignored (Status ${status}). Already in next stage?`);
+        break;
+      } else if (status === 401) {
+        throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. The token for "${company}" is invalid or expired.`);
+      } else if (status === 422) {
+        if (success) {
+          console.log(`[INFO] Approval Cycle complete. Document is now fully Approved.`);
+          break;
+        }
+        const text = await resp.text();
+        throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
+      } else {
+        console.log(`[INFO] Advance cycle break. Status: ${status}`);
+        break;
+      }
     }
-    
+
     if (!success) {
-        console.log(`[WARN] No API advance steps were successful. Verify if document ${docId} is already approved.`);
+      console.log(`[WARN] No API advance steps were successful. Verify if document ${docId} is already approved.`);
     }
 
     await this.stopTacticalTimer(`API Advance: ${docType}`, 'API');
@@ -160,7 +159,7 @@ export class BasePage {
       await this.stopTacticalTimer(options.label, 'API');
 
       if (response.ok()) return response;
-      
+
       const status = response.status();
       const text = await response.text();
       lastError = { status, text };
@@ -170,17 +169,17 @@ export class BasePage {
         await this.page.waitForTimeout(attempt * 1500); // Backoff wait
         continue;
       }
-      
+
       // If it's a 4xx error, don't retry (it's a real validation error)
       return response;
     }
-    
+
     // If all retries fail, return the last failure for the caller to handle
     const mockResponse = {
-        ok: () => false,
-        status: () => lastError.status,
-        text: async () => lastError.text,
-        json: async () => { try { return JSON.parse(lastError.text); } catch(e) { return {}; } }
+      ok: () => false,
+      status: () => lastError.status,
+      text: async () => lastError.text,
+      json: async () => { try { return JSON.parse(lastError.text); } catch (e) { return {}; } }
     };
     return mockResponse;
   }
@@ -219,7 +218,7 @@ export class BasePage {
     if (!text) return;
     const cleanText = text.trim();
     console.log(`[ACTION] Searching for: "${cleanText}"`);
-    
+
     await this.startTacticalTimer(); // Start Tactical UI Timer
 
     for (let s = 0; s < 3; s++) {
@@ -354,7 +353,7 @@ export class BasePage {
       // Today (April 3rd) = Megabit 25th (EC) -> Offset: +22
       if (gMonth === 4) {
         // Handle Megabit -> Miyazya overflow correctly (30 days max per EC month)
-        const ethiopianDay = (gDay + 22) % 30 || 30; 
+        const ethiopianDay = (gDay + 22) % 30 || 30;
         console.log(`[CALENDAR] Ethiopian mode: Today is mapped to EC Day ${ethiopianDay}.`);
         return ethiopianDay;
       }
@@ -406,7 +405,7 @@ export class BasePage {
   async pickDate(label: string, dayNum?: number): Promise<void> {
     const targetDay = dayNum || await this.getActiveCalendarDay();
     console.log(`[ACTION] Picking date: "${label}" -> Targeting Day ${targetDay}`);
-    
+
     await this.startTacticalTimer(); // Start Tactical UI Timer
 
     let container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
@@ -443,7 +442,7 @@ export class BasePage {
 
   async selectRandomOption(selector: Locator, labelName: string, isOptional: boolean = false): Promise<number> {
     const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
-    
+
     await this.startTacticalTimer(); // Start Tactical UI Timer
 
     for (let i = 0; i < 3; i++) {
@@ -510,17 +509,17 @@ export class BasePage {
 
   async getAccountBalanceAPI(accountId: string, companyOverride?: string): Promise<number> {
     const token = await this._getAuthToken();
-    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany') || 'smoke test');
+    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    
+
     // Fetch all accounts and filter locally to ensure we find the exact UUID
     const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=${period}&calendar=${calendar}`;
-    
+
     const response = await this.page.request.get(url, {
-      headers: { 
-        'Authorization': `Bearer ${token}`, 
+      headers: {
+        'Authorization': `Bearer ${token}`,
         'x-company': company,
         'x-role': 'IT Administrator / User Manager'
       }
@@ -534,10 +533,10 @@ export class BasePage {
     const data = await response.json();
     const list = data.items || data.data || [];
     const targetAccount = list.find((a: any) => a.id === accountId);
-    
+
     if (!targetAccount) {
-        console.log(`[WARN] GL Audit: Account ${accountId} not found in the COA list.`);
-        return 0;
+      console.log(`[WARN] GL Audit: Account ${accountId} not found in the COA list.`);
+      return 0;
     }
 
     const balance = parseFloat(targetAccount.balance || targetAccount.current_balance || '0');
@@ -547,15 +546,15 @@ export class BasePage {
 
   async getMultiAccountBalancesAPI(accountIds: string[], companyOverride?: string): Promise<Record<string, number>> {
     const token = await this._getAuthToken();
-    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany') || 'smoke test');
+    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    
+
     const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=${period}&calendar=${calendar}`;
     const response = await this.page.request.get(url, {
-      headers: { 
-        'Authorization': `Bearer ${token}`, 
+      headers: {
+        'Authorization': `Bearer ${token}`,
         'x-company': company,
         'x-role': 'IT Administrator / User Manager'
       }
@@ -580,13 +579,13 @@ export class BasePage {
 
   async getAllAccountsAPI(companyOverride?: string): Promise<any[]> {
     const token = await this._getAuthToken();
-    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany') || 'smoke test');
+    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
     const year = process.env.BEFFA_YEAR || '2018';
-    
+
     const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=yearly&calendar=ec`;
     const response = await this.page.request.get(url, {
-      headers: { 
-        'Authorization': `Bearer ${token}`, 
+      headers: {
+        'Authorization': `Bearer ${token}`,
         'x-company': company,
         'x-role': 'IT Administrator / User Manager'
       }

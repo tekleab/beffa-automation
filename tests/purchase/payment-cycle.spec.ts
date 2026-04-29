@@ -5,7 +5,7 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS, "smoke test");
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS, "sample");
         await page.waitForTimeout(3000);
     });
 
@@ -16,14 +16,14 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
     test('Integrated Payment Cycle & Duplicate Protection', async ({ page }, testInfo) => {
         test.setTimeout(300000);
         const app = new AppManager(page);
-        await app.switchCompany('smoke test');
+        await app.switchCompany('sample');
 
         // --- GL AUDIT: ABSOLUTE BASELINE (Before anything happens) ---
         const meta = await app.api.purchase.discoverMetadataAPI();
-        const cashAccountId = "ca359c3b-b3c8-4030-8027-7e7e03fc350f"; 
+        const cashAccountId = "ca359c3b-b3c8-4030-8027-7e7e03fc350f";
         const apAccountId = meta.apAccountId;
         const wtAccountId = meta.withholdingAccountId;
-        
+
         console.log(`[AUDIT] Stage 0: Capturing Absolute Baseline...`);
         const balancesStart = await app.getMultiAccountBalancesAPI([cashAccountId, apAccountId, wtAccountId]);
 
@@ -31,7 +31,7 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
         console.log('[STEP 1] Creating Approved Bill via API');
         const item = await app.api.inventory.captureRandomItemDataAPI();
         const vendor = await app.api.purchase.discoverRandomVendorAPI();
-        
+
         const bill = await app.api.purchase.createBillAPI({
             itemData: item,
             qty: 10,
@@ -61,21 +61,21 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
         console.log(`[AUDIT] Stage 0.5: Verifying Bill Posting to AP...`);
         const billJournals = await app.getBillJournalEntriesAPI(bill.id);
         console.log(`[DATA] Bill Journals Found: ${billJournals.length} entries`);
-        
+
         if (billJournals.length < 2) {
             console.log(`[ALARM] UNBALANCED LEDGER: Bill ${bill.ref} has only ${billJournals.length} journal entries!`);
         }
-        
+
         billJournals.forEach(ej => {
             console.log(`[JOURNAL] ${ej.accountName} | Code: ${ej.accountCode} | Dr: ${ej.debit} | Cr: ${ej.credit}`);
         });
 
         const balancesPostBill = await app.getMultiAccountBalancesAPI([cashAccountId, apAccountId, wtAccountId]);
         const billApShift = balancesPostBill[apAccountId] - balancesStart[apAccountId];
-        
+
         console.log(`[LEDGER_RECONCILIATION] Bill Posting Impact:`);
         console.log(`  - AP Shift (Credit): ${Math.abs(billApShift).toFixed(2)} (Should match 50000)`);
-        
+
         if (Math.abs(billApShift) < 49000) {
             console.log(`[CRITICAL_LEDGER] Bill failed to hit Accounts Payable! Balance shift: ${billApShift.toFixed(2)}`);
         } else {
@@ -98,16 +98,16 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
         // --- GL AUDIT: FIRST PAYMENT VERIFICATION ---
         console.log(`[AUDIT] Stage 1: Verifying Happy Path Ledger Impact...`);
         const balancesStage1 = await app.getMultiAccountBalancesAPI([cashAccountId, apAccountId, wtAccountId]);
-        
+
         const cashShift = balancesStage1[cashAccountId] - balancesStart[cashAccountId];
         const wtShift = balancesStage1[wtAccountId] - balancesStart[wtAccountId];
         const totalDiscovery = Math.abs(cashShift) + Math.abs(wtShift);
-        
+
         console.log(`[LEDGER_RECONCILIATION] First Payment Impact:`);
         console.log(`  - Cash Shift       : ${Math.abs(cashShift).toFixed(2)} (98%)`);
         console.log(`  - Withholding Shift: ${Math.abs(wtShift).toFixed(2)} (2%)`);
         console.log(`  - Total Reconciled : ${totalDiscovery.toFixed(2)} (Should match ${amountToPay})`);
-        
+
         if (totalDiscovery < amountToPay - 1) {
             console.log(`[WARN] Recon Gap: Missing ${(amountToPay - totalDiscovery).toFixed(2)}. Check for extra taxes/fees.`);
         }
@@ -144,10 +144,10 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
         // --- PHASE 4: ESCALATION (CAN WE APPROVE THE DUPLICATE?) ---
         if (duplicatePaymentID) {
             console.log(`[STEP 4] ESCALATION: Checking if duplicate payment can be APPROVED`);
-            
+
             try {
                 await app.advanceDocumentAPI(duplicatePaymentID, 'payments');
-                
+
                 // Wait for background posting engine
                 console.log(`[INFO] Waiting 5s for Ledger Posting...`);
                 await page.waitForTimeout(5000);
@@ -155,11 +155,11 @@ test.describe.serial('Payment Lifecycle & Integrity @regression', () => {
                 // --- GL AUDIT: DUPLICATE VERIFICATION ---
                 console.log(`[AUDIT] Stage 2: Verifying Duplicate Ledger Impact...`);
                 const balancesFinal = await app.getMultiAccountBalancesAPI([cashAccountId, apAccountId, wtAccountId]);
-                
+
                 const duplicateCashShift = Math.abs((balancesStage1[cashAccountId] || 0) - (balancesFinal[cashAccountId] || 0));
                 const duplicateApShift = Math.abs((balancesStage1[apAccountId] || 0) - (balancesFinal[apAccountId] || 0));
                 const duplicateWtShift = Math.abs((balancesStage1[wtAccountId] || 0) - (balancesFinal[wtAccountId] || 0));
-                
+
                 console.log(`[AUDIT] Duplicate Ledger Violation Summary:`);
                 console.log(`  - Cash Shift (Duplicate): ${duplicateCashShift.toFixed(2)}`);
                 console.log(`  - AP Shift   (Duplicate): ${duplicateApShift.toFixed(2)}`);

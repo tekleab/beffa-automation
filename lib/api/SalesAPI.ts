@@ -445,7 +445,7 @@ export class SalesAPI extends BasePage {
     // Discover Currency dynamically if not provided
     let currencyId = data.currencyId;
     if (!currencyId) {
-      const currResp = await this.page.request.get(`${apiBase}/currencies?${params}`, { headers });
+      const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
       if (currResp.ok()) {
         const currData = await currResp.json();
         const currency = currData.items?.[0] || currData.data?.[0];

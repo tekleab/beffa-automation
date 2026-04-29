@@ -14,7 +14,7 @@ on:
       company:
         description: 'Company name to test against (e.g., sample, bm technology)'
         required: false
-        default: 'smoke test'
+        default: 'sample'
         type: string
   push:
     branches:
@@ -43,7 +43,7 @@ jobs:
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       # Priority: manual input > repo secret > hardcoded default
       # Priority: manual input (if dispatch) > repo secret > hardcoded default
-      BEFFA_COMPANY: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.company) || secrets.BEFFA_COMPANY || 'smoke test' }}
+      BEFFA_COMPANY: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.company) || secrets.BEFFA_COMPANY || 'sample' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}

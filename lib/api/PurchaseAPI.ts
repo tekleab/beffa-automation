@@ -38,24 +38,24 @@ export class PurchaseAPI extends BasePage {
 
   async discoverRandomVendorAPI(): Promise<{ id: string; name: string }> {
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY || 'smoke test';
+    const company = process.env.BEFFA_COMPANY || 'sample';
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    
+
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
-    
+
     const response = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=10&${params}`, {
       headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
     });
-    
+
     const data = await response.json();
     const vendor = (data.items || data.data || [])[0];
     if (!vendor) throw new Error('Forensic Audit Blocked: No Vendors available in the system.');
-    
+
     return { id: vendor.id, name: vendor.name };
   }
 
@@ -83,9 +83,9 @@ export class PurchaseAPI extends BasePage {
     const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
     const accData = await safeJson(accResp, 'Accounts Discovery');
     const allAccounts = accData.items || accData.data || [];
-    
+
     // Improved AP discovery logic
-    const apAccount = 
+    const apAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
       allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
@@ -94,7 +94,7 @@ export class PurchaseAPI extends BasePage {
       allAccounts[1] || allAccounts[0];
 
     // Discovery Withholding Account (Prioritize Payable for Purchases)
-    const wtAccount = 
+    const wtAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding tax payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding')) ||
@@ -259,11 +259,11 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    
+
     // Improved strict AP discovery
-    const discoveredAp = 
+    const discoveredAp =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
-      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || 
+      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) ||
       allAccounts[0];
 
     const glAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
@@ -339,7 +339,7 @@ export class PurchaseAPI extends BasePage {
     console.log(`[ACTION] Fetching PO Context for ID: ${poId}...`);
     const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     const poData = await safeJson(poResp, `Fetch PO ${poId}`);
-    
+
     // 2. Discover Accounts Payable ID for validation overlay
     const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
@@ -396,40 +396,40 @@ export class PurchaseAPI extends BasePage {
     const vendResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=50&${params}`, { headers });
     const vendData = await vendResp.json();
     const vendor = (vendData.items || vendData.data || []).find((v: any) => v.name.toLowerCase() === vendorName.toLowerCase());
-    
+
     if (!vendor) throw new Error(`API Verification Failed: Could not find Vendor "${vendorName}" in the system.`);
     const vendorId = vendor.id;
 
     // 2. Poll Vendor Bills Ledger (max 15 tries for indexing = ~30s)
     console.log(`[ACTION] API Verifying: Scanning Ledger for ${billNumber}...`);
     const safeJson = async (resp: any, label: string) => {
-        const text = await resp.text();
-        if (!resp.ok()) return null;
-        try { return JSON.parse(text); } catch (e) { return null; }
+      const text = await resp.text();
+      if (!resp.ok()) return null;
+      try { return JSON.parse(text); } catch (e) { return null; }
     };
 
     for (let i = 0; i < 15; i++) {
-        const billResp = await this.page.request.get(`${apiBase}/vendor/${vendorId}/bills?${params}`, { headers });
-        const billData = await safeJson(billResp, 'Vendor Ledger');
-        if (!billData) {
-            console.log(`[WARN] Ledger API busy or returned error. Retrying...`);
-        } else {
-            const bills = billData.data || billData.items || [];
-            const found = bills.find((b: any) => 
-                b.invoice_number === billNumber || 
-                b.bill_no === billNumber || 
-                b.ref === billNumber ||
-                b.bill_number === billNumber ||
-                b.bill_number === billNumber.split('/').pop() ||
-                b.id === billNumber
-            );
-            if (found) {
-                console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
-                return true;
-            }
+      const billResp = await this.page.request.get(`${apiBase}/vendor/${vendorId}/bills?${params}`, { headers });
+      const billData = await safeJson(billResp, 'Vendor Ledger');
+      if (!billData) {
+        console.log(`[WARN] Ledger API busy or returned error. Retrying...`);
+      } else {
+        const bills = billData.data || billData.items || [];
+        const found = bills.find((b: any) =>
+          b.invoice_number === billNumber ||
+          b.bill_no === billNumber ||
+          b.ref === billNumber ||
+          b.bill_number === billNumber ||
+          b.bill_number === billNumber.split('/').pop() ||
+          b.id === billNumber
+        );
+        if (found) {
+          console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
+          return true;
         }
-        console.log(`[INFO] Bill not found in ledger yet (Index pending). Attempt ${i+1}/15. Retrying in 2s...`);
-        await this.page.waitForTimeout(2000);
+      }
+      console.log(`[INFO] Bill not found in ledger yet (Index pending). Attempt ${i + 1}/15. Retrying in 2s...`);
+      await this.page.waitForTimeout(2000);
     }
 
     throw new Error(`[ERROR] API Verification Failed: Bill ${billNumber} never appeared in "${vendorName}" ledger.`);
@@ -465,7 +465,7 @@ export class PurchaseAPI extends BasePage {
     const currency = currData.items?.[0] || currData.data?.[0];
 
     let resolvedCashAccountId = data.cashAccountId || cashAccount?.id;
-    
+
     // In test we sometimes explicitly pass null to trigger validation error
     if ('cashAccountId' in data && data.cashAccountId === null) {
       resolvedCashAccountId = null;
@@ -521,7 +521,7 @@ export class PurchaseAPI extends BasePage {
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const response = await this.page.request.get(`${apiBase}/payments/${paymentId}?${params}`, {
-      headers: { 'x-company': process.env.BEFFA_COMPANY || 'smoke test', 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': process.env.BEFFA_COMPANY || 'sample', 'Authorization': `Bearer ${token}` }
     });
     return await response.json();
   }
@@ -569,12 +569,12 @@ export class PurchaseAPI extends BasePage {
 
   async findUnpaidBillAPI(): Promise<{ billId: string; billNumber: string; amount: number; vendorId: string; vendorName: string } | null> {
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY || 'smoke test';
+    const company = process.env.BEFFA_COMPANY || 'sample';
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `status=approved&year=${year}&period=${period}&calendar=${calendar}`;
-    
+
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -582,11 +582,11 @@ export class PurchaseAPI extends BasePage {
     const response = await this.page.request.get(`${apiBase}/bills?pageSize=50&${params}`, {
       headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
     });
-    
+
     if (!response.ok()) return null;
     const json = await response.json();
     const unpaid = (json.data || json.items || []).find((b: any) => parseFloat(b.balance) > 0);
-    
+
     if (unpaid) {
       console.log(`[OK] API Found Bill: ${unpaid.invoice_number} | Balance: ${unpaid.balance} | Vendor: ${unpaid.vendor?.name}`);
       return {
