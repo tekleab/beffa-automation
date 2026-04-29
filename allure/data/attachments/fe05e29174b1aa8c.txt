@@ -1,0 +1,48 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 399.84ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[CALENDAR] Ethiopian mode: Today is mapped to EC Day 21.
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 21
+[SUCCESS] "Purchase Order Date" set to Day 21 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2763.92ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2071.81ms
+[INFO] Vendor: KAMARIYA PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2040.72ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2168.21ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1897.36ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1911.98ms
+[PERFORMANCE] UI - Random Selection: Location: 1993.14ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1865.97ms
+[PERFORMANCE] UI - Random Selection: Tax: 1943.11ms
+[OK] Line item added (Price: 6799)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/04/29/000282 | Vendor: KAMARIYA PLC
+[API] Advancing purchase-orders "aba49f57-d65a-4b28-92e0-ed86b43dd7aa" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 4062.98ms
+[OK] PO PO/2026/04/29/000282 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/04/29/000282 via API
+[ACTION] Fetching PO Context for ID: aba49f57-d65a-4b28-92e0-ed86b43dd7aa...
+[PERFORMANCE] API - Create API Bill from PO: 247.34ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/29/000340
+[API] Advancing bills "ac597cb0-b02a-44d1-93c8-58896effc6f9" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 5198.36ms
+[OK] Linked Bill BILL/2026/04/29/000340 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/04/29/000340 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "KAMARIYA PLC"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/04/29/000340...
+[SUCCESS] API Confirmed: Bill BILL/2026/04/29/000340 is physically present in KAMARIYA PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/04/29/000282 -> Bill BILL/2026/04/29/000340
