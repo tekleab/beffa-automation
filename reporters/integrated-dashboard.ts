@@ -1,19 +1,23 @@
-import type { Reporter, FullResult, TestCase } from '@playwright/test/reporter';
-import fs from 'fs';
-import path from 'path';
+import type { Reporter, FullResult, TestCase, Suite, FullConfig } from '@playwright/test/reporter';
+import * as fs from 'fs';
+import * as path from 'path';
 
 class IntegratedDashboard implements Reporter {
   private deployDir = path.join(process.cwd(), 'deploy');
+  private rootSuite: Suite | null = null;
 
-  onBegin() {
+  onBegin(config: FullConfig, suite: Suite) {
+    this.rootSuite = suite;
     if (!fs.existsSync(this.deployDir)) fs.mkdirSync(this.deployDir);
   }
 
   async onEnd(result: FullResult) {
+    if (!this.rootSuite) return;
+
     // 1. DYNAMIC FAILURE DISCOVERY
     const capturedIssues: { title: string; category: string; description: string }[] = [];
     
-    const findFailures = (suite: any) => {
+    const findFailures = (suite: Suite) => {
       suite.tests?.forEach((test: TestCase) => {
         const lastResult = test.results[test.results.length - 1];
         if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
@@ -25,14 +29,14 @@ class IntegratedDashboard implements Reporter {
           capturedIssues.push({
             title: test.title,
             category: cat,
-            description: lastResult.error?.message?.split('\n')[0].substring(0, 100) || 'Unexpected system state detected.'
+            description: lastResult.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
           });
         }
       });
-      suite.suites?.forEach((s: any) => findFailures(s));
+      suite.suites?.forEach((s: Suite) => findFailures(s));
     };
 
-    result.suites.forEach(findFailures);
+    findFailures(this.rootSuite);
 
     // 2. BUILD DYNAMIC HTML DROPDOWN
     let reproHtml = '';
@@ -85,7 +89,6 @@ class IntegratedDashboard implements Reporter {
         .metric-card:hover { transform: translateX(10px); }
         .m-val { font-size: 2rem; font-weight: 900; color: #fff; } .m-label { font-size: 0.6rem; color: #64748b; font-weight: 800; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase; }
 
-        /* --- Dynamic Repro Wing --- */
         .repro-wing { position: absolute; right: 40px; top: 40px; width: 340px; z-index: 5000; }
         .wing-header { background: ${issueCount > 0 ? 'rgba(244, 63, 94, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; border: 1px solid ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}; border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
         .wing-title { font-size: 0.65rem; font-weight: 900; color: ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}; letter-spacing: 1.5px; }
@@ -98,7 +101,7 @@ class IntegratedDashboard implements Reporter {
         .issue-desc { font-size: 0.75rem; color: #fff; line-height: 1.3; }
 
         .vcs-context { position: absolute; right: 40px; bottom: 120px; background: var(--glass-deep); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; width: 260px; }
-        .console-bar { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(30px); padding: 12px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
+        .console-bar { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(30px); padding: 12px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
         .btn { border: 1px solid rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 20px; background: rgba(255,255,255,0.03); cursor: pointer; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; gap: 10px; color: #cbd5e1; transition: 0.3s; }
         .btn:hover { background: var(--emerald); color: #020617; }
 
@@ -148,7 +151,7 @@ class IntegratedDashboard implements Reporter {
 
         <div class="vcs-context">
             <div style="font-size: 0.55rem; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 15px;">VCS CONTEXT</div>
-            <div class="vcs-info"><div style="color: var(--emerald); font-weight: 800; font-size: 0.6rem; margin-bottom: 5px;">ACTIVE DEPLOYMENT</div><div>BR: main</div><div style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: b8b2e72</div></div>
+            <div class="vcs-info"><div style="color: var(--emerald); font-weight: 800; font-size: 0.6rem; margin-bottom: 5px;">ACTIVE DEPLOYMENT</div><div>BR: main</div><div style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: 8e38d1f</div></div>
         </div>
 
         <div class="console-bar">
