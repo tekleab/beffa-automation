@@ -1,106 +1,52 @@
-# BEFFA ERP Automation Framework
+# BEFFA ERP High-Integrity Automation Suite 🏗️
 
 > **Author**: Tekleab
-> **Version**: 2.0.0 (TypeScript Edition)
-> **Purpose**: Professional E2E Automation for High-Integrity Financial & ERP Workflows
+> **Version**: 3.0.0
+> **Purpose**: Technical Audit Suite for Financial & Inventory Reconciliation
 
-A high-performance, fully-typed Playwright-based automation suite designed for the BEFFA ERP environment. This framework utilizes an advanced **Modular Page Object Model (POM)** with **Facade delegation** and **Fast Capture API** optimizations, now running entirely on **TypeScript**.
-
----
-
-## 🏗️ Architecture Overview
-
-The framework is built for stability, modularity, type-safety, and speed:
-
-*   **TypeScript Core**: 100% of the framework (Page Objects, Library, API clients, and Spec files) mapped to static types, eliminating runtime errors and providing full IDE code completion.
-*   **Modular POM**: Business logic is decoupled into domain-specific API engines (`lib/api/`) and UI Objects (`pages/`).
-*   **Facade Pattern**: The `AppManager` provides a unified, strictly-typed interface for all tests, ensuring clean orchestration while maintaining scalability.
-*   **Fast Capture API**: Eliminates the bottleneck of UI-based data scraping. Stock discovery and initial state verification occur via direct REST API calls, reducing setup time by **70-80%**.
+A high-performance Playwright-based testing framework designed for the BEFFA ERP environment. This suite focuses on **Business Logic Integrity**, utilizing an **API/UI Hybrid Architecture** that prioritizes both execution speed and data reconciliation across integrated workflows.
 
 ---
 
-## 🚀 Key Features
+## 🏗️ Engineering Architecture
 
-### 1. High-Concurrency Parallel Execution
-Configured with Playwright **Fully Parallel mode**, utilizing **4 workers** simultaneously:
-- Independent test isolation allows all domains (Inventory, Purchases, Sales) to run concurrently via API-driven setup.
+The suite is designed for **deterministic results** in a complex, multi-tenant environment:
 
-### 2. Standardized Domain Handling
-Consistent test patterns across all major ERP modules, guarded by strict TypeScript generic bounds:
-- **Inventory**: Real-time stock adjustments and impact tracking.
-- **Payables**: Full P2P cycle (PO ➔ Bill ➔ Payment) with Ledger verification.
-- **Receivables**: O2C cycle (SO ➔ Invoice ➔ Receipt) with financial reversal logic.
-- **Negative Scenarios**: Deep systemic validation including state violations (draft invoicing), boundary numbers, and data integrity verification.
-
-### 3. CI/CD & Automated Allure Reports to GitHub Pages
-- **Continuous Integration**: Uses `.github/workflows/playwright.yml`. Triggered automatically on `push` to main.
-- **Astonishing Reporting**: Automatically generates a **Primary 3D Luxury Dashboard** at the root URL. Detailed historical trends are preserved in the **[Allure Sub-report](/allure/)**. Viewable globally via GitHub Pages.
-- **Automated Cleanup**: Dedicated `npm run clean` script for purging storage-heavy local traces.
+*   **API/UI Hybrid Workflows**: Tests utilize a REST API layer to instantly establish document states (SO, PO, Invoices), while retaining surgical UI verification for critical user-facing transitions.
+*   **Location-Synchronized Audits**: Every inventory adjustment and sale is strictly locked to a specific `locationId`. This ensures the audit monitors the exact physical shelf affected by the transaction, eliminating stock discrepancies in shared-warehouse environments.
+*   **Resilient Search (Omni-Match)**: Financial ledger verification uses a multi-field matching strategy (scanning `bill_no`, `ref`, and `invoice_number`), ensuring the suite remains stable even if the backend schema evolves.
+*   **Thread-Safe Parallelism**: Optimized for **3 parallel workers**. Collision avoidance is handled via randomized SKU discovery and isolated location targeting per worker thread.
 
 ---
 
-## 🛠️ Getting Started
+## 🚀 Engineering Signals & Design Strategy
 
-### Prerequisites
-- Node.js (v20+)
-- Playwright installed and configured
+### 1. Failure Isolation & Observability
+Every worker failure is isolated for rapid root-cause analysis:
+- **Trace Analysis**: Playwright traces are captured for every failure, providing a full timeline of network calls and DOM state.
+- **Atomic Reporting**: The Allure deployment uses an atomic directory swap logic in CI to prevent data fragmentation and ensure stable historical trends on GitHub Pages.
 
-### Installation
-```bash
-git clone https://github.com/tekleab/beffa-automation.git
-cd beffa-automation
-npm install
-npx playwright install
-```
+### 2. Resilience & Polling Strategy
+To handle backend indexing lag during high-frequency DB operations, the suite implements:
+- **Strategic Polling**: Forensic probes use up to 15 retries with tactical waits (2-5s) to allow backend ledger indexing to complete.
+- **Fail-Safe Capture**: Hybrid methods revert to UI fallbacks if direct API item discovery fails, maximizing the "Pass Rate" while maintaining audit depth.
 
-### Configuration
-Create a `.env` file in the root directory:
-```env
-BASE_URL=http://your-erp-url:4173
-BEFFA_USER=admin@beffa.com
-BEFFA_PASS=your_password
-```
+### 3. CI/CD Integration
+- **GitHub Actions**: Fully automated pipeline triggered on every push.
+- **Environment Guarding**: Context-aware environment variable mapping ensures stable runs across both `pull_request` and `workflow_dispatch` events.
 
 ---
 
-## 🏃 Running Tests
+## 🚧 Known Limitations & Roadmap
 
-| Command | Description |
-|:--- |:--- |
-| `npx playwright test` | **Recommended**: Run all 35 tests in full parallel across 4 workers |
-| `npm run clean` | Purge performance-heavy test results and traces |
-| `npx playwright test --grep @smoke` | Run only the smoke-tagged suite |
-| `npx playwright test --grep @regression` | Run only the regression-tagged suite |
-| `npx playwright test --grep @negative` | Run API-driven negative edge-case suite |
-| `npm run report:allure` | Generate and open local Allure dashboard |
-| `npx playwright test <file> --headed` | **Visual Execution / Debugging** |
-| `npx tsc --noEmit` | **Type-Check** source code compilation locally |
+### Current Limitations
+- **Database Indexing Lag**: Certain ledger views exhibit high latency (up to 15s) during peak parallel loads; this is currently managed via the polling retry strategy.
+- **UI Grid Density**: Large linked-invoice grids in the Receipt UI can occasionally slow down Playwright-to-DOM resolution; handled via the API-First creation pivot.
+
+### Roadmap
+- [ ] **Swagger-Driven API Layer**: Full migration to generated API clients for 100% type-accuracy with the backend.
+- [ ] **Visual Regression**: Implementing screenshot-diffing for the Executive Analytics Dashboard.
+- [ ] **Global Stock Balancer**: A pre-test hook to dynamically re-stock target SKUs via API to prevent inventory exhaustion during long CI runs.
 
 ---
-
-## 📁 Repository Structure
-
-```text
-├── .github/
-│   └── workflows/
-│       └── playwright.yml # CI/CD Config (Allure -> gh-pages)
-├── lib/
-│   ├── api/            # Typed domain-specific REST API engines
-│   └── AuthManager.ts  # High-speed session injection
-├── pages/
-│   ├── AppManager.ts   # Central Orchestration Facade
-│   └── components/
-│       └── SharedUI.ts # Common UI approval & flow logic
-├── reporters/
-│   └── summary-reporter.ts # Custom Playwright CLI output formatting
-├── tests/
-│   ├── inventory/      # Stock adjustment flows
-│   ├── purchase/       # Payables (PO, Bill, Payment)
-│   └── sales/          # Receivables (SO, Invoice, Receipt)
-├── package.json        # Unified script management
-├── playwright.config.ts# Parallel test configuration
-└── tsconfig.json       # TypeScript compiler configuration
-```
-
----
-**Tekleab** — *Continuous Improvement through Automation Engineering*
+**Tekleab** — *Precision Automation Engineering*

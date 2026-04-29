@@ -148,8 +148,8 @@ jobs:
         mkdir -p deploy
         
         # 🏙️ FORCED DASHBOARD GENERATION
-        echo "[INFO] Generating BEFFA Command Center..."
-        npx ts-node -e "import { LuxuryReporter } from './reporters/luxury-reporter'; new LuxuryReporter().onEnd({ status: 'passed' } as any)" || true
+        echo "[INFO] Generating Integrated Dashboard..."
+        npx ts-node -e "import { IntegratedDashboard } from './reporters/integrated-dashboard'; new IntegratedDashboard().onEnd({ status: 'passed' } as any)" || true
         
         # ATOMIC MOVE: Ensure all data folders (test-cases, attachments) are moved
         if [ -d "temp-report" ]; then

@@ -32,8 +32,8 @@ export default defineConfig({
         environmentInfo: {
           OS: 'Linux',
           Node: 'v20.20.2',
-          Project: 'BEFFA ERP V10.2',
-          Engine: 'Tactical-Allure-Core'
+          Project: 'BEFFA ERP High-Integrity Suite',
+          Engine: 'Integrated-Allure-Reporter'
         }
       }
     ]
