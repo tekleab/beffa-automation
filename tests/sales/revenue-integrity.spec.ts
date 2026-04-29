@@ -24,7 +24,7 @@ test.describe('Revenue Lifecycle & Integrity @regression @sales', () => {
         const meta = await app.api.sales.discoverMetadataAPI();
         const arAccountId = meta.arAccountId;
         const revenueAccountId = meta.salesAccountId;
-        const cashAccountId = 'ca359c3b-b3c8-4030-8027-7e7e03fc350f'; // Standard Main Office Cash (verified)
+        const cashAccountId = meta.cashAccountId;
         
         // Dynamic Inventory Discovery
         const allAccounts = await app.getAccountBalancesAPI();
@@ -36,9 +36,10 @@ test.describe('Revenue Lifecycle & Integrity @regression @sales', () => {
         // --- AUDIT STAGE 0: CAPTURING BASELINE ---
         console.log('[AUDIT] Stage 0: Capturing Absolute Baseline...');
         const baseline = await app.getMultiAccountBalancesAPI([cashAccountId, arAccountId, inventoryAccountId]);
-        const startCash = baseline[cashAccountId];
-        const startAr = baseline[arAccountId];
-        const startInv = baseline[inventoryAccountId];
+        
+        const startCash = baseline[cashAccountId] || 0;
+        const startAr = baseline[arAccountId] || 0;
+        const startInv = baseline[inventoryAccountId] || 0;
 
         console.log(`[SNAPSHOT] Cash Baseline : ${startCash.toFixed(2)}`);
         console.log(`[SNAPSHOT] AR Baseline   : ${startAr.toFixed(2)}`);
@@ -92,8 +93,8 @@ test.describe('Revenue Lifecycle & Integrity @regression @sales', () => {
         await page.waitForTimeout(5000);
 
         const stage2 = await app.getMultiAccountBalancesAPI([cashAccountId, arAccountId]);
-        const pay1CashShift = stage2[cashAccountId] - startCash;
-        const pay1ArShift = stage2[arAccountId] - stage1[arAccountId];
+        const pay1CashShift = (stage2[cashAccountId] || 0) - startCash;
+        const pay1ArShift = (stage2[arAccountId] || 0) - (stage1[arAccountId] || 0);
 
         console.log(`[AUDIT] Stage 2: Verifying Receipt Ledger Impact...`);
         console.log(`[SNAPSHOT] Cash Shift : ${pay1CashShift.toFixed(2)}`);
@@ -124,8 +125,8 @@ test.describe('Revenue Lifecycle & Integrity @regression @sales', () => {
             await page.waitForTimeout(5000);
 
             const stage3 = await app.getMultiAccountBalancesAPI([cashAccountId, arAccountId]);
-            const duplicateCashShift = stage3[cashAccountId] - stage2[cashAccountId];
-            const duplicateArShift = stage3[arAccountId] - stage2[arAccountId];
+            const duplicateCashShift = (stage3[cashAccountId] || 0) - (stage2[cashAccountId] || 0);
+            const duplicateArShift = (stage3[arAccountId] || 0) - (stage2[arAccountId] || 0);
 
             console.log(`[AUDIT] Stage 3: Verifying Duplicate Ledger Impact...`);
             console.log(`[SNAPSHOT] Cash Shift (Duplicate): ${duplicateCashShift.toFixed(2)}`);

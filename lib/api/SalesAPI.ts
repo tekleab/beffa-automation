@@ -107,11 +107,20 @@ export class SalesAPI extends BasePage {
       }
     }
 
+    // 6. Fetch Business/Cash Account
+    const cashAccount =
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')) ||
+      allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('cash')) ||
+      allAccounts[0];
+
+    console.log(`[META] Cash Account: "${cashAccount?.name}" (${cashAccount?.id})`);
+
     if (!arAccount || !customer) throw new Error('Metadata Discovery Failed: Missing Account or Customer records.');
 
     return {
       arAccountId: arAccount.id,
       salesAccountId: salesAccount?.id || arAccount.id,
+      cashAccountId: cashAccount?.id || '',
       customerId: customer.id,
       currencyId: currency?.id || '',
       taxId: tax?.id || '',
