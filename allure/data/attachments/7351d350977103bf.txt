@@ -1,0 +1,46 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 369.85ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1206.34ms
+[INFO] Item: "Timer 6 pol 12 H" | UUID: bc20a16d-6949-4c0e-84e4-1724f237bab1 | Stock: 64
+[STEP] Phase 2: Creating SO via API for 2 x "Timer 6 pol 12 H"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[PERFORMANCE] API - Create Sales Order: 269.69ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000429 (ID: 555d6438-7e24-4dd1-892c-9c2f1e43a96d, ItemID: ef6971a2-1ed1-4aa1-80c2-2b36d58df502)
+[OK] SO created: SO/2026/04/29/000429 | Customer: 7dbec658-191f-4fb9-8d26-91e73dc8995a
+[STEP] Phase 3: Approving SO SO/2026/04/29/000429
+[API] Advancing sales-orders "555d6438-7e24-4dd1-892c-9c2f1e43a96d" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 3967.01ms
+[OK] SO SO/2026/04/29/000429 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/29/000429
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[PERFORMANCE] API - Create Invoice: 248.91ms
+[SUCCESS] Invoice created via API: INV/2026/04/29/000622 (ID: 155e4823-e006-488f-bf18-d3633c83ea90)
+[OK] Invoice created: INV/2026/04/29/000622 (UUID: 155e4823-e006-488f-bf18-d3633c83ea90)
+[STEP] Phase 5: Approving Invoice INV/2026/04/29/000622
+[API] Advancing invoices "155e4823-e006-488f-bf18-d3633c83ea90" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4742.76ms
+[OK] Invoice INV/2026/04/29/000622 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Timer 6 pol 12 H" (Polling for backend sync)
+[POLL] Attempt 1: Found 62 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 62
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 64 to 62

@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 416.06ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1294.68ms
+[OK] Discovered via API: "test2" | Stock: 18
+[INFO] Item Unit Cost: 100 | Chosen Adjustment Qty: 5 (Total: 500)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 320.75ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/29/000067 (ID: 5ddf26e3-fd6b-43e8-843a-5f475931ccd5)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/29/000067
+[API] Advancing inventory-adjustments "5ddf26e3-fd6b-43e8-843a-5f475931ccd5" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1875.23ms
+[OK] Adjustment ADJ/2026/04/29/000067 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "test2" (Polling for sync)
+[POLL] Attempt 1/15: Found 23 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 23
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units

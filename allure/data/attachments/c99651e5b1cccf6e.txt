@@ -1,0 +1,43 @@
+[STEP] Stage 1: Login & Setup
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 358.89ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1185.39ms
+[ACTION] Discovery Attempt 1: Testing "steam door 60g 60x202" (Stock: 52)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[PERFORMANCE] API - Create Sales Order: 204.86ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000430 (ID: 2f469a69-fbe9-4b95-a8ea-8a5747f67e22, ItemID: 8e83d2ee-6d40-4688-a852-5febfb0897e3)
+[API] Advancing sales-orders "2f469a69-fbe9-4b95-a8ea-8a5747f67e22" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 3896.58ms
+[OK] Sales Order SO/2026/04/29/000430 approved via Fast-API
+[STEP] Phase 3: Creating Invoice via API from SO SO/2026/04/29/000430
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[PERFORMANCE] API - Create Invoice: 226.79ms
+[SUCCESS] Invoice created via API: INV/2026/04/29/000623 (ID: da938117-5c82-4b9c-a67f-7bc175eebfcf)
+[API] Advancing invoices "da938117-5c82-4b9c-a67f-7bc175eebfcf" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4697.27ms
+[OK] Invoice INV/2026/04/29/000623 approved via Fast-API
+[STEP] Verifying stock deduction via API Polling
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 51...
+[SUCCESS] API Confirmed: Stock correctly reached 51.
+[VERIFY] Expected: 51 | Found: 51
+[OK] Stock decreased correctly after setup.
