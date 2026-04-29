@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 228.20ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1361.79ms
+[INFO] Item: "Steam room special 6F Elysee complete set" | UUID: 8c9c1a28-6c23-48e0-99d0-1e10a2a9be2a | Stock: 2
+[STEP] Phase 2: Creating SO via API for 2 x "Steam room special 6F Elysee complete set"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Sales Order: 281.18ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000418 (ID: 721f6482-aab2-4477-904c-d8e8693315f4, ItemID: b6bd7d6d-8716-4cad-9453-2ec864ddd8a5)
+[OK] SO created: SO/2026/04/29/000418 | Customer: 7dbec658-191f-4fb9-8d26-91e73dc8995a
+[STEP] Phase 3: Approving SO SO/2026/04/29/000418
+[API] Advancing sales-orders "721f6482-aab2-4477-904c-d8e8693315f4" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4070.30ms
+[OK] SO SO/2026/04/29/000418 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/29/000418
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Invoice: 252.34ms
+[SUCCESS] Invoice created via API: INV/2026/04/29/000592 (ID: 6a2faffe-1105-4b50-a4dc-f2e7ed9db559)
+[OK] Invoice created: INV/2026/04/29/000592 (UUID: 6a2faffe-1105-4b50-a4dc-f2e7ed9db559)
+[STEP] Phase 5: Approving Invoice INV/2026/04/29/000592
+[API] Advancing invoices "6a2faffe-1105-4b50-a4dc-f2e7ed9db559" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4893.24ms
+[OK] Invoice INV/2026/04/29/000592 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Steam room special 6F Elysee complete set" (Polling for backend sync)
+[POLL] Attempt 1: Found 0 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 0
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 2 to 0
