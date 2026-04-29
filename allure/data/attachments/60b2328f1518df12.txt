@@ -1,0 +1,32 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 332.02ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1225.29ms
+[STEP 1] Creating Sales Order for 2 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Sales Order: 375.24ms
+[PERFORMANCE] API - Create Sales Order: 276.27ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000422 (ID: fd176c30-ac7f-4348-8b1f-21f800b59556, ItemID: 0199fc19-4419-4c9d-90a1-b61223f8707f)
+[API] Advancing sales-orders "fd176c30-ac7f-4348-8b1f-21f800b59556" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 3900.92ms
+[ATTACK] Attempting to invoice for 6 units (SO only allows 2)...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[API] Advancing invoices "89dec4b3-2cd2-4ece-acf6-3addfd56a6a0" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4984.42ms

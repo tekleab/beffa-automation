@@ -1,0 +1,41 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 345.34ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1210.49ms
+[INFO] Item: "import loc test2" | ID: 80d7d6ce-6ae2-4ba6-b0db-77a32ea7c6dd | Stock: 11
+[STEP] Phase 2: Creating PO via API for "import loc test2"
+[ACTION] Discovered Vendor: "Gentium Concrite Industry"
+[PERFORMANCE] API - Create Purchase Order: 245.42ms
+[SUCCESS] PO created via API: PO/2026/04/29/000292 (ID: 71454e0b-f1d0-4a3f-a72e-5979dc69b2d3)
+[OK] PO created: PO/2026/04/29/000292
+[API] Advancing purchase-orders "71454e0b-f1d0-4a3f-a72e-5979dc69b2d3" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 3916.31ms
+[OK] PO PO/2026/04/29/000292 approved via Fast-API
+[STEP] Phase 3: Converting PO PO/2026/04/29/000292 to Bill via API
+[ACTION] Fetching PO Context for ID: 71454e0b-f1d0-4a3f-a72e-5979dc69b2d3...
+[PERFORMANCE] API - Create API Bill from PO: 210.51ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/04/29/000359
+[OK] Bill created: BILL/2026/04/29/000359
+[API] Advancing bills "96569650-3b4c-4e2f-8712-22eb8aa59b8d" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4940.93ms
+[OK] Bill BILL/2026/04/29/000359 approved via Fast-API
+[STEP] Phase 4: Ledger verification via API
+[INFO] Captured 5 ledger entries via API
+[INFO] Sample: Cash - Branch Office (1002) — DR: 50000 | CR: 0
+[STEP] Phase 5: Verifying stock for "import loc test2" via API Polling
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 21...
+[SUCCESS] API Confirmed: Stock correctly reached 21.
+[VERIFY] Item: import loc test2 | Initial: 11 | Received: 10 | Final: 21 | Expected: 21
+[RESULT] Purchase Impact: PASSED

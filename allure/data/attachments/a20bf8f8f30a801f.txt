@@ -1,0 +1,53 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 203.89ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[STEP 1] Setup: Paid Invoice
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 2]...
+[PERFORMANCE] API - Item Discovery (50 Records): 648.06ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "8479ad17-541c-4b85-a371-59f0536ba6e9",
+  "customer_id": "7dbec658-191f-4fb9-8d26-91e73dc8995a",
+  "invoice_date": "2026-04-29T00:00:00Z",
+  "due_date": "2026-05-01T00:00:00Z",
+  "currency_id": "50567982-ee2f-4391-9400-3149067443a5",
+  "items": [
+    {
+      "amount": 3000,
+      "general_ledger_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
+      "item_id": "86067d3e-5d48-418a-8c92-0f9232f5c21a",
+      "location_id": "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+      "quantity": 1,
+      "unit_price": 3000,
+      "warehouse_id": "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 243.10ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/29/000596 (ID: 01c02b46-2ca1-4714-88f0-a2cce1294a38)
+[API] Advancing invoices "01c02b46-2ca1-4714-88f0-a2cce1294a38" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4627.51ms
+[SUCCESS] Receipt created via API: RCPT/2026/04/29/000319 (ID: b584db01-fff4-4d34-b9f8-5ace2e9abcb3) for Invoice 01c02b46-2ca1-4714-88f0-a2cce1294a38
+[API] Advancing receipts "b584db01-fff4-4d34-b9f8-5ace2e9abcb3" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: receipts: 4043.80ms
+[SUCCESS] Invoice INV/2026/04/29/000596 is fully PAID.
+[STEP 2] REVERSAL ATTACK: Voiding a Paid Invoice
+[PASSED] Sales Guardrail: System blocked reversal of a paid invoice.

@@ -25,7 +25,7 @@
         .crystal-bot-1 { transform: rotateY(0deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-2 { transform: rotateY(90deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-3 { transform: rotateY(180deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-4 { transform: rotateY(270deg) rotateX(-35deg) translateY(100px) scaleY(-1); }
 
         .hud-overlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2000; pointer-events: none; }
-        .status-box { background: var(--glass-deep); padding: 25px 45px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .status-box { background: var(--glass-deep); padding: 25px 45px; border-radius: 20px; border: 1px solid var(--coral); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         .integrity-val { font-size: 3.5rem; font-weight: 1000; color: #fff; margin-bottom: 5px; }
 
         .metrics-stack { position: absolute; left: 40px; top: 120px; display: flex; flex-direction: column; gap: 20px; }
@@ -34,9 +34,9 @@
         .m-val { font-size: 2rem; font-weight: 900; color: #fff; } .m-label { font-size: 0.6rem; color: #64748b; font-weight: 800; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase; }
 
         .repro-wing { position: absolute; right: 40px; top: 40px; width: 340px; z-index: 5000; }
-        .wing-header { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
-        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--emerald); letter-spacing: 1.5px; }
-        .wing-count { background: var(--emerald); color: #fff; font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; font-weight: 900; }
+        .wing-header { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--coral); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
+        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--coral); letter-spacing: 1.5px; }
+        .wing-count { background: var(--coral); color: #fff; font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; font-weight: 900; }
         
         .repro-dropdown { max-height: 0; overflow: hidden; transition: 0.5s ease-in-out; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px); border-radius: 0 0 16px 16px; border: 1px solid rgba(255, 255, 255, 0.1); border-top: none; margin-top: 5px; }
         .repro-wing:hover .repro-dropdown { max-height: 600px; padding: 15px; }
@@ -69,8 +69,8 @@
         <div style="position: absolute; top: 30px; left: 40px; font-size: 1.5rem; font-weight: 950;">befa<span style="color:var(--emerald);">HUB</span></div>
         <div class="metrics-stack">
             <div class="metric-card"><div class="m-val">3</div><div class="m-label">Dynamic Domains Audited</div></div>
-            <div class="metric-card" style="border-left-color: var(--emerald)"><div class="m-val">ACTIVE</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">100%</div><div class="m-label">Security UUID Compliance</div></div>
+            <div class="metric-card" style="border-left-color: var(--coral)"><div class="m-val">BLOCKER</div><div class="m-label">CD Pipeline Status</div></div>
+            <div class="metric-card"><div class="m-val">75%</div><div class="m-label">Security UUID Compliance</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
@@ -78,19 +78,59 @@
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">100%</div>
+                <div id="hudRateValue" class="integrity-val">75%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--emerald); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 0</div>
-                <div style="color: var(--emerald); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: OPTI-PASSED</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 10</div>
+                <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
 
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">0 DETECTED</div>
+                <div class="wing-count">10 DETECTED</div>
             </div>
-            <div class="repro-dropdown"><div class="issue-item" style="border-left-color: var(--emerald); opacity: 0.7;"><div class="issue-tag">CLEAN</div><div class="issue-desc">All financial guardrails passed successfully.</div></div></div>
+            <div class="repro-dropdown">
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Stage 1: Create bill via API, approve, verify stock increase</b>: [31mTest timeout of 400000ms exceeded.[39m</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Integrated Payment Cycle & Duplicate Protection</b>: Error: [CRITICAL_LOGIC_BUG] Integrity Collapse: Duplicate Payment for BILL/2026/04/29/000356 was CRE</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: System must reject invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Audit: System must prevent double-dip overpayments across multi-link receipts</b>: Error: [CRITICAL_LOGIC_BUG] Double-Dip Success: Invoice INV/2026/04/29/000598 is over-paid (Balance:</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Audit: Invoice balance must correctly restore after receipt reversal</b>: Error: [CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Cu</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: System must enforce thread-safe serialization for stock reduction limits</b>: Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desync</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Verify partial receipt correctly updates invoice amount due</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Integrated Sales Cycle & Duplicate Revenue Protection</b>: TypeError: Cannot read properties of undefined (reading 'toFixed')</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Stage 1: Create and approve receipt, capture GL entries via API</b>: Error: API Creation Failed: 500 - {</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Currency Discovery HTTP 500: {</div>
+          </div></div>
         </div>
 
         <div class="vcs-context">

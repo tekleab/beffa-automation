@@ -1,0 +1,88 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 183.81ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[AUDIT] Stage 0: Capturing Absolute Baseline...
+[SNAPSHOT] Accounts Payable: 557900.00
+[SNAPSHOT] Withholding Tax Payable: 130901.50
+[STEP 1] Creating Approved Bill via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 686.99ms
+[PERFORMANCE] API - Create Bill: 244.38ms
+[SUCCESS] Bill created via API: BILL/2026/04/29/000356 (ID: 9a98341d-70fb-4453-b77e-5f83e7c09f4d)
+[API] Advancing bills "9a98341d-70fb-4453-b77e-5f83e7c09f4d" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 4959.02ms
+[DATA] Item Name   : Circuit Card VA/VB/TONIC/HSAJ
+[DATA] Item ID     : cbe3a9cf-6ff8-4cd3-b685-14c07bb3ff5e
+[DATA] Bill Number : BILL/2026/04/29/000356
+[DATA] Bill UUID   : 9a98341d-70fb-4453-b77e-5f83e7c09f4d
+[AUDIT] Bill Line Items (1):
+  - Circuit Card VA/VB/TONIC/HSAJ | Qty: 10 | UnitPrice: 5000 | Subtotal: 50000
+[DATA] Target Amt  : 50000.00
+[INFO] Waiting 5s for Bill Ledger Posting...
+[AUDIT] Stage 0.5: Verifying Bill Posting to AP...
+[DATA] Bill Journals Found: 5 entries
+[JOURNAL] Cash - Branch Office | Code: 1002 | Dr: 50000 | Cr: 0
+[JOURNAL] Withholding Tax Payable | Code: 2104 | Dr: 0 | Cr: 1000
+[JOURNAL] Cost of Others | Code: 5103 | Dr: 0 | Cr: 50000
+[JOURNAL] Inventory | Code: 1301 | Dr: 50000 | Cr: 0
+[JOURNAL] Accounts Payable | Code: 2003 | Dr: 0 | Cr: 49000
+[SNAPSHOT] Accounts Payable: 606900.00
+[SNAPSHOT] Withholding Tax Payable: 131901.50
+[LEDGER_RECONCILIATION] Bill Posting Impact:
+  - AP Shift (Credit): 49000.00 (Should match 50000)
+[SUCCESS] AP Ledger confirmed. Bill amount is now a liability.
+[STEP 2] Settling FULL amount: 50000
+[ACTION] Creating Bill Payment for 9a98341d-70fb-4453-b77e-5f83e7c09f4d via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/04/29/000129 (ID: 2e011dd7-b36b-4902-b37a-fd64e906d2af)
+[API] Advancing payments "2e011dd7-b36b-4902-b37a-fd64e906d2af" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: payments: 4165.11ms
+[INFO] Waiting 5s for Ledger Posting...
+[AUDIT] Stage 1: Verifying Happy Path Ledger Impact...
+[SNAPSHOT] Accounts Payable: 556900.00
+[SNAPSHOT] Withholding Tax Payable: 131901.50
+[LEDGER_RECONCILIATION] First Payment Impact:
+  - Cash Shift       : NaN (98%)
+  - Withholding Shift: 1000.00 (2%)
+  - Total Reconciled : NaN (Should match 50000)
+[AUDIT] After First Payment - Remaining Balance: -1000
+[DATA] Payment 1 UUID : 2e011dd7-b36b-4902-b37a-fd64e906d2af
+[DATA] Payment 1 Ref  : PAY/2026/04/29/000129
+[STEP 3] VIOLATION: Attempting SECOND payment of 50000 for the SAME bill
+[ACTION] Creating Bill Payment for 9a98341d-70fb-4453-b77e-5f83e7c09f4d via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/04/29/000130 (ID: 399fd6fc-ca6d-4255-8d14-640b8b58ea62)
+[REGRESSION] System allowed duplicate payment creation!
+[DATA] Payment 2 UUID : 399fd6fc-ca6d-4255-8d14-640b8b58ea62
+[DATA] Payment 2 Ref  : PAY/2026/04/29/000130
+[STEP 4] ESCALATION: Checking if duplicate payment can be APPROVED
+[API] Advancing payments "399fd6fc-ca6d-4255-8d14-640b8b58ea62" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: payments: 4801.99ms
+[INFO] Waiting 5s for Ledger Posting...
+[AUDIT] Stage 2: Verifying Duplicate Ledger Impact...
+[SNAPSHOT] Accounts Payable: 506900.00
+[SNAPSHOT] Withholding Tax Payable: 131901.50
+[AUDIT] Duplicate Ledger Violation Summary:
+  - Cash Shift (Duplicate): 0.00
+  - AP Shift   (Duplicate): 50000.00
+  - WT Shift   (Duplicate): 0.00
+================================================================================
+[VULNERABILITY DETECTED]: Double-Disbursement Approved for Bill BILL/2026/04/29/000356
+[FINANCIAL IMPACT]: Ledger Compromised - AP Shift: 50000.00 | Cash Shift: 0.00
+================================================================================

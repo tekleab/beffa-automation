@@ -1,0 +1,47 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 145.52ms
+[WARN] API Login failed (API Login Failed: 500). Falling back to UI Login...
+[ACTION] Verifying current company selection...
+[ACTION] Switching company: "Construction BM" -> "sample"
+[PERFORMANCE] UI - sample Context Mount: 1254.75ms
+[SUCCESS] Company switched to "sample"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 750.24ms
+[ATTACK] Submitting Invoice forged for: 2021-04-29T00:00:00Z
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "8479ad17-541c-4b85-a371-59f0536ba6e9",
+  "customer_id": "7dbec658-191f-4fb9-8d26-91e73dc8995a",
+  "invoice_date": "2021-04-29T00:00:00Z",
+  "due_date": "2026-05-01T00:00:00Z",
+  "currency_id": "50567982-ee2f-4391-9400-3149067443a5",
+  "items": [
+    {
+      "amount": 10993.05,
+      "general_ledger_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
+      "item_id": "f31eccae-681e-418f-9244-b4feb17669c6",
+      "location_id": "e8958816-d525-4184-8652-b2d3a40e36a4",
+      "quantity": 1,
+      "unit_price": 10993.05,
+      "warehouse_id": "6d5a0702-cbb8-4d72-936c-cff68196f1ea"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 223.15ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/29/000609 (ID: dd604eb0-25a3-4b95-a1c1-549dc4799946)
+[VULNERABILITY] Backend API accepted back-dated payload! ID: INV/2026/04/29/000609
+[API] Advancing invoices "dd604eb0-25a3-4b95-a1c1-549dc4799946" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[INFO] Advance cycle break. Status: 500
+[PERFORMANCE] API - API Advance: invoices: 3096.68ms
+[AUDIT] Post-Advance Status: pending
+[PASS] Invoice advanced but stopped short of full approval. Dirty Block observed.

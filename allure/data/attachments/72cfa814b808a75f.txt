@@ -1,0 +1,22 @@
+[STEP] Phase 1: Login & Initial Stock Capture
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 340.83ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1134.99ms
+[OK] Discovered via API: "Sauna door DGL 8X19 ASPEN" | Stock: 15
+[INFO] Item Unit Cost: 7026.81 | Chosen Adjustment Qty: 5 (Total: 35134.05)
+[STEP] Phase 2: Creating Adjustment API (Increase by 5 units)
+[PERFORMANCE] API - Inventory Adjustment: 287.61ms
+[SUCCESS] Adjustment created via API: ADJ/2026/04/29/000066 (ID: a9216f44-8718-4e8d-b808-8a93bec4ccd7)
+[STEP] Phase 3: Approving Adjustment ADJ/2026/04/29/000066
+[API] Advancing inventory-adjustments "a9216f44-8718-4e8d-b808-8a93bec4ccd7" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1695.71ms
+[OK] Adjustment ADJ/2026/04/29/000066 approved via Fast-API
+[STEP] Phase 4: Verifying stock impact for "Sauna door DGL 8X19 ASPEN" (Polling for sync)
+[POLL] Attempt 1/15: Found 20 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 20
+[RESULT] Inventory Adjustment: PASSED — Stock correctly increased by 5 units
