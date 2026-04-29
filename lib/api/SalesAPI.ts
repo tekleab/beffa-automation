@@ -257,7 +257,7 @@ export class SalesAPI extends BasePage {
     const payload: Record<string, any> = {
       accounts_receivable_id: meta.arAccountId,
       customer_id: custId,
-      invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      invoice_date: data.invoiceDate || new Date().toISOString().split('T')[0] + 'T00:00:00Z',
       due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] + 'T00:00:00Z',
       currency_id: meta.currencyId,
       items: [{
@@ -268,6 +268,8 @@ export class SalesAPI extends BasePage {
         quantity: q,
         unit_price: unitPrice,
         warehouse_id: data.warehouseId || meta.warehouseId,
+        ...(data.discount_amount && { discount_amount: data.discount_amount }),
+        ...(data.discount_type && { discount_type: data.discount_type })
       }],
       released_sales_order_items: []
       // NOTE: sales_order_id intentionally omitted (null crashes backend)
@@ -428,23 +430,27 @@ export class SalesAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' };
 
-    // Discover Cash Account dynamically
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
-    let cashAccountId;
-    if (acctResp.ok()) {
-      const acctData = await acctResp.json();
-      const allAccounts = acctData.items || acctData.data || [];
-      const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
-      if (cashAcct) cashAccountId = cashAcct.id;
+    // Discover Cash Account dynamically if not provided
+    let cashAccountId = data.cashAccountId;
+    if (!cashAccountId) {
+      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      if (acctResp.ok()) {
+        const acctData = await acctResp.json();
+        const allAccounts = acctData.items || acctData.data || [];
+        const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
+        if (cashAcct) cashAccountId = cashAcct.id;
+      }
     }
 
-    // Discover Currency dynamically
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
-    let currencyId;
-    if (currResp.ok()) {
-      const currData = await currResp.json();
-      const currency = currData.items?.[0] || currData.data?.[0];
-      if (currency) currencyId = currency.id;
+    // Discover Currency dynamically if not provided
+    let currencyId = data.currencyId;
+    if (!currencyId) {
+      const currResp = await this.page.request.get(`${apiBase}/currencies?${params}`, { headers });
+      if (currResp.ok()) {
+        const currData = await currResp.json();
+        const currency = currData.items?.[0] || currData.data?.[0];
+        if (currency) currencyId = currency.id;
+      }
     }
 
     const payload = {
