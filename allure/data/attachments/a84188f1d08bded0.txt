@@ -1,0 +1,44 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 201.28ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1000.80ms
+[INFO] Item: "Scatola wall mount" | UUID: 932806c3-c22f-4508-86f5-ea24b1a20cc8 | Stock: 100
+[STEP] Phase 2: Creating SO via API for 1 x "Scatola wall mount"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Sales Order: 259.45ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000165 (ID: 9a5ad8e7-df59-4c91-838e-05eb638752a9, ItemID: 9f2b7b2f-8973-4d4f-b179-e497f8b740fa)
+[OK] SO created: SO/2026/04/29/000165 | Customer: a32030e5-c83a-4b06-8cb7-18cf9dab5bac
+[STEP] Phase 3: Approving SO SO/2026/04/29/000165
+[API] Advancing sales-orders "9a5ad8e7-df59-4c91-838e-05eb638752a9" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 3871.73ms
+[OK] SO SO/2026/04/29/000165 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/29/000165
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[PERFORMANCE] API - Create Invoice: 238.55ms
+[SUCCESS] Invoice created via API: INV/2026/04/29/000122 (ID: b6ca053a-341c-436c-85f7-c3e8a244b031)
+[OK] Invoice created: INV/2026/04/29/000122 (UUID: b6ca053a-341c-436c-85f7-c3e8a244b031)
+[STEP] Phase 5: Approving Invoice INV/2026/04/29/000122
+[API] Advancing invoices "b6ca053a-341c-436c-85f7-c3e8a244b031" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4713.58ms
+[OK] Invoice INV/2026/04/29/000122 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Scatola wall mount" (Polling for backend sync)
+[POLL] Attempt 1: Found 99 at location ee1cd563-a9b8-4151-bf88-5c85959fab21 | Expected 99
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 100 to 99
