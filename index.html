@@ -36,7 +36,7 @@
             background-size: 50px 50px;
         }
 
-        /* --- Grid & Scanner --- */
+        /* --- Scanner Beam --- */
         .observation-deck::after {
             content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px;
             background: linear-gradient(to right, transparent, var(--emerald), transparent);
@@ -46,7 +46,7 @@
         }
         @keyframes scannerBeam { 0% { top: -10%; } 100% { top: 110%; } }
 
-        /* --- Crystal Hologram --- */
+        /* --- 3D Crystal --- */
         .hologram-stage { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 400px; height: 400px; perspective: 1000px; }
         .crystal { position: relative; width: 120px; height: 200px; margin: 80px auto; transform-style: preserve-3d; animation: rotateCrystal 15s infinite linear; }
         @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
@@ -60,34 +60,46 @@
         .crystal-bot-3 { transform: rotateY(180deg) rotateX(-35deg) translateY(100px) scaleY(-1); }
         .crystal-bot-4 { transform: rotateY(270deg) rotateX(-35deg) translateY(100px) scaleY(-1); }
 
-        .hud-overlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2000; }
+        .hud-overlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2000; pointer-events: none; }
         .status-box { background: var(--glass-deep); padding: 25px 45px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         .integrity-val { font-size: 3.5rem; font-weight: 1000; color: #fff; margin-bottom: 5px; }
-        .violation-tag { font-size: 0.65rem; color: var(--coral); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; }
 
-        /* --- Metric Cards --- */
+        /* --- Metrics --- */
         .metrics-stack { position: absolute; left: 40px; top: 120px; display: flex; flex-direction: column; gap: 20px; }
-        .metric-card { background: var(--glass-deep); border-left: 4px solid var(--emerald); padding: 20px 30px; border-radius: 12px; width: 300px; position: relative; border: 1px solid rgba(255,255,255,0.05); border-left-width: 4px; transition: 0.3s; }
+        .metric-card { background: var(--glass-deep); border-left: 4px solid var(--emerald); padding: 20px 30px; border-radius: 12px; width: 300px; border: 1px solid rgba(255,255,255,0.05); border-left-width: 4px; transition: 0.3s; cursor: default; }
         .metric-card:hover { transform: translateX(10px); }
         .m-val { font-size: 2rem; font-weight: 900; color: #fff; }
         .m-label { font-size: 0.6rem; color: #64748b; font-weight: 800; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase; }
 
-        /* --- Reproduction issues wing --- */
-        .repro-wing { position: absolute; right: 40px; top: 40px; width: 340px; }
-        .wing-header { background: rgba(244, 63, 94, 0.2); border: 1px solid var(--coral); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--coral); letter-spacing: 1px; }
-        .wing-count { background: var(--coral); color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; }
+        /* --- Repro Wing (INTEGRATED DROPDOWN) --- */
+        .repro-wing { position: absolute; right: 40px; top: 40px; width: 340px; z-index: 5000; }
+        .wing-header { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--coral); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
+        .wing-header:hover { background: rgba(244, 63, 94, 0.25); }
+        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--coral); letter-spacing: 1.5px; }
+        .wing-count { background: var(--coral); color: #fff; font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; font-weight: 900; }
+        
+        .repro-dropdown { 
+            max-height: 0; overflow: hidden; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px); 
+            border-radius: 0 0 16px 16px; border: 1px solid rgba(244, 63, 94, 0.2); border-top: none; 
+            margin-top: 5px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .repro-wing:hover .repro-dropdown { max-height: 500px; padding: 15px; }
+        
+        .issue-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border-left: 3px solid var(--coral); margin-bottom: 10px; cursor: pointer; transition: 0.3s; }
+        .issue-item:hover { background: rgba(255,255,255,0.06); transform: scale(1.02); }
+        .issue-tag { font-size: 0.55rem; color: var(--coral); font-weight: 900; text-transform: uppercase; margin-bottom: 5px; opacity: 0.8; }
+        .issue-desc { font-size: 0.75rem; color: #fff; line-height: 1.3; }
 
-        /* --- VCS & Context --- */
+        /* --- VCS & Console --- */
         .vcs-context { position: absolute; right: 40px; bottom: 120px; background: var(--glass-deep); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; width: 260px; }
-        .vcs-label { font-size: 0.55rem; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 15px; }
         .vcs-info { border-left: 2px solid var(--emerald); padding-left: 15px; font-size: 0.7rem; color: #fff; }
-
-        .console-bar { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); padding: 12px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .console-bar { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(30px); padding: 12px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
         .btn { border: 1px solid rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 20px; background: rgba(255,255,255,0.03); cursor: pointer; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: #cbd5e1; }
         .btn:hover { background: var(--emerald); color: #020617; box-shadow: var(--neon-glow); }
 
-        #loginWall { position: fixed; inset: 0; background: #020617; z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        #loginWall { position: fixed; inset: 0; background: #020617; z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(25px); }
         .login-card { background: rgba(15, 23, 42, 0.9); border: 1px solid var(--emerald); padding: 60px; border-radius: 30px; width: 420px; text-align: center; }
         .lux-input { width: 100%; background: #000; border: 1px solid #334155; padding: 16px; border-radius: 10px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 16px; background: var(--emerald); border: none; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
@@ -104,7 +116,7 @@
     </div>
 
     <div class="observation-deck">
-        <div style="position: absolute; top: 30px; left: 40px; font-size: 1.5rem; font-weight: 950; letter-spacing: -1px;">befa<span style="color:var(--emerald);">HUB</span></div>
+        <div style="position: absolute; top: 30px; left: 40px; font-size: 1.5rem; font-weight: 950;">befa<span style="color:var(--emerald);">HUB</span></div>
         
         <div class="metrics-stack">
             <div class="metric-card">
@@ -124,26 +136,15 @@
             </div>
         </div>
 
-        <div class="hologram-stage">
-            <div class="crystal">
-                <div class="crystal-face crystal-top-1"></div>
-                <div class="crystal-face crystal-top-2"></div>
-                <div class="crystal-face crystal-top-3"></div>
-                <div class="crystal-face crystal-top-4"></div>
-                <div class="crystal-face crystal-bot-1"></div>
-                <div class="crystal-face crystal-bot-2"></div>
-                <div class="crystal-face crystal-bot-3"></div>
-                <div class="crystal-face crystal-bot-4"></div>
-            </div>
-        </div>
+        <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
 
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">0%</div>
+                <div id="hudRateValue" class="integrity-val">75%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div class="violation-tag">Critical Violations: 3</div>
-                <div style="color: var(--coral); font-size: 0.8rem; font-weight: 900; margin-top: 5px;">STATUS: CRITICAL</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">CRITICAL VIOLATIONS: 3</div>
+                <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
 
@@ -152,21 +153,35 @@
                 <div class="wing-title">REPRODUCED ISSUES</div>
                 <div class="wing-count">3 DETECTED</div>
             </div>
+            <div class="repro-dropdown">
+                <div class="issue-item">
+                    <div class="issue-tag">LOGIC_VULN</div>
+                    <div class="issue-desc"><b>Over-Invoicing Bypass</b>: System allowed invoicing 6 units against a 2-unit approved SO.</div>
+                </div>
+                <div class="issue-item">
+                    <div class="issue-tag">SECURITY_RACE</div>
+                    <div class="issue-desc"><b>Inventory Double-Spend</b>: Non-atomic stock deduction allowed simultaneous sub-zero bypass.</div>
+                </div>
+                <div class="issue-item">
+                    <div class="issue-tag">API_CRASH</div>
+                    <div class="issue-desc"><b>Multi-Link 500</b>: Unhandled backend state during duplicate receipt settlement.</div>
+                </div>
+            </div>
         </div>
 
         <div class="vcs-context">
-            <div class="vcs-label">VCS CONTEXT</div>
+            <div style="font-size: 0.55rem; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 15px;">VCS CONTEXT</div>
             <div class="vcs-info">
                 <div style="color: var(--emerald); font-weight: 800; font-size: 0.6rem; margin-bottom: 5px;">ACTIVE DEPLOYMENT</div>
-                <div id="commitId">BR: main</div>
-                <div id="shaId" style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: aaa323d</div>
+                <div>BR: main</div>
+                <div style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: aaa323d</div>
             </div>
         </div>
 
         <div class="console-bar">
-            <div class="btn" onclick="window.open('./allure/', '_blank')"><span>📊</span> OPEN DETAILED ALLURE</div>
-            <div class="btn"><span>🟢</span> SLACK: BROADCAST</div>
-            <div class="btn"><span>🔵</span> JIRA: ESCALATE</div>
+            <div class="btn" onclick="window.open('./allure/', '_blank')">📊 OPEN DETAILED ALLURE</div>
+            <div class="btn">🟢 SLACK: BROADCAST</div>
+            <div class="btn">🔵 JIRA: ESCALATE</div>
         </div>
     </div>
 
@@ -187,9 +202,7 @@
                 const stats = data.statistic || { passed: 0, total: 100 };
                 const rate = Math.floor((stats.passed / stats.total) * 100);
                 document.getElementById('hudRateValue').innerText = rate + '%';
-            } catch(e) {
-                document.getElementById('hudRateValue').innerText = '75%';
-            }
+            } catch(e) { document.getElementById('hudRateValue').innerText = '75%'; }
         }
     </script>
 </body>
