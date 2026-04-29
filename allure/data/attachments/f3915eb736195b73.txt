@@ -1,0 +1,45 @@
+[STEP] Phase 1: Login & Item Discovery
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 196.36ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1247.16ms
+[INFO] Item: "Steam generator 12 VA" | UUID: 31330bed-141d-48ae-b546-c9cb0f29dbd3 | Stock: 8
+[STEP] Phase 2: Creating SO via API for 2 x "Steam generator 12 VA"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Sales Order: 285.12ms
+[SUCCESS] Sales Order created via API: SO/2026/04/29/000414 (ID: ea75d539-a7ac-4ea6-84b1-0b1f10bb6c78, ItemID: eb0c8b0a-f3e3-418a-a6ef-acce165a8bd7)
+[OK] SO created: SO/2026/04/29/000414 | Customer: 7dbec658-191f-4fb9-8d26-91e73dc8995a
+[STEP] Phase 3: Approving SO SO/2026/04/29/000414
+[API] Advancing sales-orders "ea75d539-a7ac-4ea6-84b1-0b1f10bb6c78" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: sales-orders: 4026.65ms
+[OK] SO SO/2026/04/29/000414 approved via Fast-API
+[STEP] Phase 4: Creating Invoice via API from SO SO/2026/04/29/000414
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[PERFORMANCE] API - Create Invoice: 219.15ms
+[PERFORMANCE] API - Create Invoice: 247.66ms
+[SUCCESS] Invoice created via API: INV/2026/04/29/000588 (ID: b8af881a-caf0-473c-8d2f-23013dfc0904)
+[OK] Invoice created: INV/2026/04/29/000588 (UUID: b8af881a-caf0-473c-8d2f-23013dfc0904)
+[STEP] Phase 5: Approving Invoice INV/2026/04/29/000588
+[API] Advancing invoices "b8af881a-caf0-473c-8d2f-23013dfc0904" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4946.14ms
+[OK] Invoice INV/2026/04/29/000588 approved via Fast-API
+[STEP] Phase 6: Verifying stock for "Steam generator 12 VA" (Polling for backend sync)
+[POLL] Attempt 1: Found 6 at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 | Expected 6
+[RESULT] Sales Impact: PASSED - Stock correctly decreased from 8 to 6
