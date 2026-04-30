@@ -60,28 +60,31 @@ export default defineConfig({
 
   projects: [
     {
+      name: 'Forensic-Sales',
+      testMatch: /sales\/.*(audit|logic|concurrency|security|isolation).*\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Forensic-Purchase',
+      testMatch: /purchase\/.*(procurement|audit|logic|concurrency|security|isolation).*\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Sales-Workflows',
+      testMatch: /sales\/.*\.spec\.ts/,
+      testIgnore: [/.*(audit|logic|concurrency|security|isolation).*/],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Purchase-Workflows',
+      testMatch: /purchase\/.*\.spec\.ts/,
+      testIgnore: [/.*(procurement|audit|logic|concurrency|security|isolation).*/],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'Inventory',
       testMatch: /inventory\/.*\.spec\.ts/,
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
-    {
-      name: 'Purchases',
-      testMatch: /purchase\/.*\.spec\.ts/,
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
-    {
-      name: 'Sales',
-      testMatch: /sales\/.*\.spec\.ts/,
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 
