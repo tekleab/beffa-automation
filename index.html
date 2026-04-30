@@ -80,7 +80,7 @@
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
                 <div id="hudRateValue" class="integrity-val">75%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 13</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 4</div>
                 <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
@@ -88,60 +88,24 @@
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">13 DETECTED</div>
+                <div class="wing-count">4 DETECTED</div>
             </div>
             <div class="repro-dropdown">
           <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Stage 1: Create bill via API, approve, verify stock increase</b>: [31mTest timeout of 400000ms exceeded.[39m</div>
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: System must reject zero, negative, and fractional receipt amounts</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoContain[2m([22m[32mexpected[39m[2m) // in</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Sales Check: Vulnerability for PAID Invoice</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
+            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 504 - {</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Integrated Payment Cycle & Duplicate Protection</b>: Error: [CRITICAL_LOGIC_BUG] Integrity Collapse: Duplicate Payment for BILL/2026/04/29/000364 was CRE</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Create PO via UI, approve, create linked bill, verify in vendor profile</b>: Error: [ERROR] API Verification Failed: Bill BILL/2026/04/29/000367 never appeared in "Manenderas" l</div>
+            <div class="issue-desc"><b>Create PO via UI, approve, create linked bill, verify in vendor profile</b>: Error: [ERROR] Failed selection for Item</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: System must prevent double-dip overpayments across multi-link receipts</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must handle concurrent duplicate receipts atomically</b>: Error: Currency Discovery HTTP 500: {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must enforce thread-safe serialization for stock reduction limits</b>: Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desync</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Forensic Audit: Invoice Void & Stock Restoration</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Verify partial receipt correctly updates invoice amount due</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Integrated Sales Cycle & Duplicate Revenue Protection</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Stage 1: Create and approve receipt, capture GL entries via API</b>: Error: API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
+            <div class="issue-desc"><b>Guardrail: System must handle concurrent stock adjustments atomically</b>: TypeError: app.api.inventory.adjustStockAPI is not a function</div>
           </div></div>
         </div>
 
