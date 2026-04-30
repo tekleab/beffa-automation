@@ -9,6 +9,7 @@ import { AppManager } from '../../pages/AppManager';
  * General Ledger correctly reflects reversals and partial scenarios.
  */
 test.describe('Accounting & Ledger Flow Logic Audits @logic @sales', () => {
+    test.describe.configure({ mode: 'serial' });
 
     test.setTimeout(500000);
 

@@ -42,7 +42,7 @@ test.describe('Purchase Impact Flow @regression', () => {
         console.log(`[INFO] Captured ${entries.length} ledger entries via API`);
 
         if (entries.length > 0) {
-            console.log(`[INFO] Sample: ${entries[0].accountName} (${entries[0].accountCode}) — DR: ${entries[0].debit} | CR: ${entries[0].credit}`);
+            console.log(`[INFO] sample: ${entries[0].accountName} (${entries[0].accountCode}) — DR: ${entries[0].debit} | CR: ${entries[0].credit}`);
         } else {
             console.log('[WARN] No journal entries found yet. ERP indexing might be delayed.');
         }

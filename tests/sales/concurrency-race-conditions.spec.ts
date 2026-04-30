@@ -8,6 +8,7 @@ import { AppManager } from '../../pages/AppManager';
  * verify database atomicity, row-level locking, and thread-safe operations.
  */
 test.describe('Concurrency & Race Condition Audits @security @concurrency @sales', () => {
+    test.describe.configure({ mode: 'serial' });
 
     test.setTimeout(500000);
 

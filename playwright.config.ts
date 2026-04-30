@@ -10,10 +10,10 @@ export default defineConfig({
   timeout: 600000,
   expect: { timeout: 30000 },
 
-  fullyParallel: true,
-  workers: 2,
-  retries: 0, // Disable retries for immediate failure feedback
-
+  fullyParallel: false,
+  workers: 1,
+  retries: 0,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
     ['./reporters/integrated-dashboard.ts'],

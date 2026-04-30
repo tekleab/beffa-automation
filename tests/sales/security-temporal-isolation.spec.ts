@@ -7,7 +7,8 @@ import { AppManager } from '../../pages/AppManager';
  * This suite verifies the core multi-tenant and regulatory boundaries of the 
  * system, including data leakage (IDOR) and temporal forgery (Back-dating).
  */
-test.describe('Security & Temporal Isolation Audits @security @isolation @sales', () => {
+test.describe('Security & Temporal Isolation Audits @security @sales', () => {
+    test.describe.configure({ mode: 'serial' });
 
     test.setTimeout(300000);
 

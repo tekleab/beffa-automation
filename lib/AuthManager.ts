@@ -124,7 +124,7 @@ export class AuthManager extends BasePage {
     const cleanTarget = targetName.trim();
     console.log('[ACTION] Verifying current company selection...');
 
-    // Ensure we are on a page where the company switcher is visible
+    // Ensure we are on a page where sample switcher is visible
     await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 });
     const currentName = (await this.companyBtn.innerText()).trim();
 

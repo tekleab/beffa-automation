@@ -8,7 +8,8 @@ import { AppManager } from '../../pages/AppManager';
  * mathematical overflows, negative amounts, and illegal document states (Void)
  * are strictly enforced at the API layer.
  */
-test.describe('Financial Integrity Boundaries @security @regression @sales', () => {
+test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
+    test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ page }) => {
         // Shared login logic could go here if needed, but we keep tests isolated
