@@ -1,0 +1,48 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 486.02ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[STEP 1] Setting up baseline: Creating & Approving a valid Invoice...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1012.45ms
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "8479ad17-541c-4b85-a371-59f0536ba6e9",
+  "customer_id": "7dbec658-191f-4fb9-8d26-91e73dc8995a",
+  "invoice_date": "2026-04-30T00:00:00Z",
+  "due_date": "2026-05-02T00:00:00Z",
+  "currency_id": "50567982-ee2f-4391-9400-3149067443a5",
+  "items": [
+    {
+      "amount": 500,
+      "general_ledger_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
+      "item_id": "3498574f-5dbf-4373-818e-d01a23300217",
+      "location_id": "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+      "quantity": 1,
+      "unit_price": 500,
+      "warehouse_id": "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 305.07ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/30/000676 (ID: dbec1a76-8817-46ed-acad-195c900e2d98)
+[API] Advancing invoices "dbec1a76-8817-46ed-acad-195c900e2d98" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 5490.12ms
+[ATTACK] Submitting receipt with amount = 0...
+[SECONDARY_BUG] Backend must return proper validation (e.g. 422) instead of crashing with 500
+[ATTACK] Submitting receipt with amount = -100...

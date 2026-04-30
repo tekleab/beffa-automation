@@ -1,0 +1,64 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 536.04ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering environment metadata...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1085.04ms
+[SNAPSHOT] Baseline Item: "Wooden bucket Classic NM" | Stock: 49
+[STEP 1] Creating Invoice for 10 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "8479ad17-541c-4b85-a371-59f0536ba6e9",
+  "customer_id": "7dbec658-191f-4fb9-8d26-91e73dc8995a",
+  "invoice_date": "2026-04-30T00:00:00Z",
+  "due_date": "2026-05-02T00:00:00Z",
+  "currency_id": "50567982-ee2f-4391-9400-3149067443a5",
+  "items": [
+    {
+      "amount": 50000,
+      "general_ledger_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
+      "item_id": "86067d3e-5d48-418a-8c92-0f9232f5c21a",
+      "location_id": "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+      "quantity": 10,
+      "unit_price": 5000,
+      "warehouse_id": "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 349.80ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/04/30/000675 (ID: 97a68f9c-2a22-4b45-a91e-da1d3c5d9bce)
+[API] Advancing invoices "97a68f9c-2a22-4b45-a91e-da1d3c5d9bce" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 5253.36ms
+[SUCCESS] Invoice INV/2026/04/30/000675 approved.
+[INFO] Waiting 5s for Stock Engine sync...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 39...
+[SUCCESS] API Confirmed: Stock correctly reached 39.
+[SNAPSHOT] Post-Sale Stock: 39
+[SUCCESS] Inventory Depletion confirmed. Stock logic is healthy.
+[STEP 2] VOIDING Invoice INV/2026/04/30/000675 via API...
+[SUCCESS] Invoice 97a68f9c-2a22-4b45-a91e-da1d3c5d9bce reversed via API /void endpoint
+[SUCCESS] Invoice INV/2026/04/30/000675 marked as REVERSED (VOID).
+[INFO] Waiting 8s for Stock & Ledger Reconciliation...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 49...
+[SUCCESS] API Confirmed: Stock correctly reached 49.
+[SNAPSHOT] Accounts Receivable: -11780.67
+[AUDIT] Stage 3 Results:
+[SNAPSHOT] Final Stock : 49 (Expected: 49)
+[SNAPSHOT] Final AR    : -11780.67
+[PASSED] Full Stock & Revenue Recovery Verified.
