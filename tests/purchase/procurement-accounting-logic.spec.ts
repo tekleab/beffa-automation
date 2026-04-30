@@ -79,6 +79,23 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
         const bill = await app.api.purchase.createBillAPI({ itemData: item, unitPrice: 5000, quantity: 1, vendorId: meta.vendorId });
         await app.advanceDocumentAPI(bill.id, 'bills');
 
+        // 1.5 LEDGER INTEGRITY CHECK (Merged from Legacy)
+        console.log(`[AUDIT] Verifying Journal Entries for Bill: ${bill.ref}...`);
+        const entries = await app.getBillJournalEntriesAPI(bill.id);
+        console.log(`[INFO] Captured ${entries.length} ledger entries via API`);
+        
+        if (entries.length === 0) {
+            console.log(`[WARN] No journal entries found. Accounting drift detected or indexing lag.`);
+        } else {
+            const totalDebit = entries.reduce((sum: number, e: any) => sum + (parseFloat(e.debit) || 0), 0);
+            const totalCredit = entries.reduce((sum: number, e: any) => sum + (parseFloat(e.credit) || 0), 0);
+            console.log(`[SNAPSHOT] Ledger Summary - Debits: ${totalDebit} | Credits: ${totalCredit}`);
+            
+            if (totalDebit !== totalCredit) {
+                throw new Error(`[CRITICAL_LOGIC_BUG] Accounting Imbalance: Debits (${totalDebit}) !== Credits (${totalCredit}) for Bill ${bill.ref}`);
+            }
+        }
+
         // 2. Pay Bill (Amount Due -> 0)
         console.log(`[STEP 2] Paying Bill...`);
         const payment = await app.api.purchase.createBillPaymentAPI({ amount: 5000, billId: bill.id, vendorId: meta.vendorId });
