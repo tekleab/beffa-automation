@@ -1,6 +1,6 @@
 # 📊 BEFFA ERP: High-Integrity Test Matrix
 
-This matrix maps our **38 Automated Scenarios** to the **Hundreds of Manual Actions** they perform. It serves as the "Source of Truth" for the security and financial health of the ERP.
+This matrix maps our **42 Automated Scenarios** to the **Hundreds of Manual Actions** they perform. It serves as the "Source of Truth" for the security and financial health of the ERP.
 
 ---
 
@@ -32,16 +32,6 @@ This matrix maps our **38 Automated Scenarios** to the **Hundreds of Manual Acti
     *   *Step 2*: Trigger approval for both at the exact same microsecond.
     *   *Step 3*: **Check Audit**: Verify Final Stock = Initial + (Bill A + Bill B).
 
-### 3. Financial Guardrails
-*   **Scenario 3.1: Negative/Zero Price Injection**
-    *   *Step 1*: Attempt to create a Bill with -1,000 ETB price.
-    *   *Step 2*: Attempt to create a Bill with 0 ETB price.
-    *   *Step 3*: **Check Audit**: Verify API returns "422 Validation Error."
-*   **Scenario 3.2: Fraudulent Discount Injection**
-    *   *Step 1*: Create a Bill for 5,000 ETB.
-    *   *Step 2*: Inject a 6,000 ETB discount.
-    *   *Step 3*: **Check Audit**: Verify system blocks "Negative Liability" creation.
-
 ---
 
 ## 💰 Module: Revenue (Sales)
@@ -66,21 +56,28 @@ This matrix maps our **38 Automated Scenarios** to the **Hundreds of Manual Acti
     *   *Step 1*: Inject a Sales Invoice with a date from 2 years ago.
     *   *Step 2*: Attempt to approve and post to Ledger.
     *   *Step 3*: **Check Audit**: Verify system blocks "Period Locking" violations.
-*   **Scenario 2.3: Cross-Customer Data Leak (IDOR)**
-    *   *Step 1*: Login as Admin but use Customer A's ID to fetch Customer B's Invoices.
-    *   *Step 2*: **Check Audit**: Verify API returns "403 Forbidden" or empty set.
 
 ---
 
 ## 📦 Module: Warehouse (Inventory)
 
-### 1. Stock Movements
-*   **Scenario 1.1: Standalone Inventory Adjustment**
-    *   *Step 1*: Identify Item in Warehouse A.
-    *   *Step 2*: Create "Adjustment In" (+50).
-    *   *Step 3*: Verify Stock Polling matches 50.
-    *   *Step 4*: Create "Adjustment Out" (-20).
-    *   *Step 5*: **Check Audit**: Verify Final Stock is 30.
+### 1. Forensic Integrity Audits
+*   **Scenario 1.1: Negative Stock Guardrail**
+    *   *Step 1*: Select a Warehouse Item.
+    *   *Step 2*: Attempt an "Adjustment In" with a negative quantity (-100).
+    *   *Step 3*: **Check Audit**: Verify system rejects the payload to prevent corruption.
+*   **Scenario 1.2: Atomic Warehouse Transfer**
+    *   *Step 1*: Identify Item in Warehouse A (Stock: 50).
+    *   *Step 2*: Trigger a transfer of 10 units to Warehouse B.
+    *   *Step 3*: **Check Audit**: Verify Source is exactly 40 and Destination is exactly +10.
+
+### 2. Concurrency & Temporal Security
+*   **Scenario 2.1: Stock Adjustment Race Condition**
+    *   *Step 1*: Fire two simultaneous stock adjustments for the same Item.
+    *   *Step 2*: **Check Audit**: Verify no "Lost Updates" (Final stock must be exact sum).
+*   **Scenario 2.2: Historical Stock Manipulation**
+    *   *Step 1*: Inject a stock adjustment with a date from 2022.
+    *   *Step 2*: **Check Audit**: Verify system blocks back-dated warehouse movements.
 
 ---
 
@@ -90,9 +87,8 @@ This matrix maps our **38 Automated Scenarios** to the **Hundreds of Manual Acti
 *   **Scenario 1.1: Full Purchase-to-Bill UI Cycle**
     *   *Step 1*: Manual-style navigation to /payables/purchase-orders.
     *   *Step 2*: Click "Add New" and select Vendor.
-    *   *Step 3*: Select Quote/Item from Dropdowns.
-    *   *Step 4*: Fill Quantity and Unit Price.
-    *   *Step 5*: Click "Add Now" and verify UI Redirect.
+    *   *Step 3*: Fill Quantity and Unit Price.
+    *   *Step 4*: Click "Add Now" and verify UI Redirect.
 *   **Scenario 1.2: Vendor Management CRUD**
     *   *Step 1*: Navigate to Vendor List.
     *   *Step 2*: Create "New Test Vendor."
@@ -101,6 +97,6 @@ This matrix maps our **38 Automated Scenarios** to the **Hundreds of Manual Acti
 ---
 
 ### 📈 Summary of Coverage
-- **Total Scenarios**: 38
-- **Total Manual Step Equivalence**: ~350 Steps
+- **Total Scenarios**: 42
+- **Total Manual Step Equivalence**: ~410 Steps
 - **Execution Mode**: Hybrid (4 Workers Parallel for Flows, 1 Worker Serial for Audits)

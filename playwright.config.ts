@@ -70,6 +70,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'Forensic-Inventory',
+      testMatch: /inventory\/.*(integrity|audit|logic|concurrency|security|temporal).*\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'Sales-Workflows',
       testMatch: /sales\/.*\.spec\.ts/,
       testIgnore: [/.*(audit|logic|concurrency|security|isolation).*/],

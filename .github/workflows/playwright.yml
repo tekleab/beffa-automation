@@ -99,6 +99,9 @@ jobs:
 
         echo "🛡️ Running Purchase Forensic Audit (Sequential)..."
         npx playwright test --project=Forensic-Purchase --workers=1
+
+        echo "🛡️ Running Inventory Forensic Audit (Sequential)..."
+        npx playwright test --project=Forensic-Inventory --workers=1
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
