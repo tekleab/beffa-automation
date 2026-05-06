@@ -36,7 +36,7 @@ export class SalesAPI extends BasePage {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
-  async discoverMetadataAPI(): Promise<{ arAccountId: string; salesAccountId: string; customerId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string }> {
+  async discoverMetadataAPI(): Promise<{ arAccountId: string; salesAccountId: string; cashAccountId: string; customerId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string }> {
     let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
