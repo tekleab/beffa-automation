@@ -1,0 +1,74 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 448.16ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[FIFO] Stage 1: Creating Item with Beginning Balance (10 units @ $100)...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[STAGE 1] Beginning Balance: 10 @ $100
+[FIFO] Stage 2: Adding Layer 1 (20 units @ $200)...
+[PERFORMANCE] API - Inventory Adjustment: 299.15ms
+[SUCCESS] Adjustment created via API: ADJ/2026/05/06/000143 (ID: b3850788-a9de-42cc-9c50-d4a35f9edb93)
+[API] Advancing inventory-adjustments "b3850788-a9de-42cc-9c50-d4a35f9edb93" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1831.14ms
+[ACTION] Triggering API Process for Adjustment: b3850788-a9de-42cc-9c50-d4a35f9edb93
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[STAGE 2] Stock: 30 | Master Cost: $100 (Expect: $100)
+[FIFO] Stage 3: Adding Layer 2 (15 units @ $300)...
+[PERFORMANCE] API - Inventory Adjustment: 277.10ms
+[SUCCESS] Adjustment created via API: ADJ/2026/05/06/000144 (ID: 5c4db287-eed0-47e0-baaf-e95a2b077e43)
+[API] Advancing inventory-adjustments "5c4db287-eed0-47e0-baaf-e95a2b077e43" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1836.94ms
+[ACTION] Triggering API Process for Adjustment: 5c4db287-eed0-47e0-baaf-e95a2b077e43
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 45...
+[SUCCESS] API Confirmed: Stock correctly reached 45.
+[STAGE 3] Stock: 45 | Master Cost: $100 (Expect: $100)
+[FIFO] Stage 4: Draining Layer 1 and 10 units of Layer 2...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (2b98142d-8f11-43fd-8910-08f681cb174b)
+[META] Sales Account: "Sales" (f1da4f1b-87b0-43c5-bca6-23c359735f53)
+[META] Location: "smoke test location" (85ef160e-775e-44e2-83ee-c8280de0c1b5) | Warehouse: f3d0c9cc-045f-46c0-a5a2-d43eddb01be2
+[META] Cash Account: "Cash - Main Office" (ca359c3b-b3c8-4030-8027-7e7e03fc350f)
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "2b98142d-8f11-43fd-8910-08f681cb174b",
+  "customer_id": "a32030e5-c83a-4b06-8cb7-18cf9dab5bac",
+  "invoice_date": "2026-05-06T00:00:00Z",
+  "due_date": "2026-05-08T00:00:00Z",
+  "currency_id": "a1fc7edf-5921-48a5-af27-1cb17ae04ef9",
+  "items": [
+    {
+      "amount": 10000,
+      "general_ledger_account_id": "f1da4f1b-87b0-43c5-bca6-23c359735f53",
+      "item_id": "a25637b1-7ff7-4797-b75e-eb6efe59a1d1",
+      "location_id": "85ef160e-775e-44e2-83ee-c8280de0c1b5",
+      "quantity": 20,
+      "unit_price": 500,
+      "warehouse_id": "f3d0c9cc-045f-46c0-a5a2-d43eddb01be2"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 285.64ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/05/06/000210 (ID: 79ae3682-b759-48ac-a381-45661e4292f1)
+[API] Advancing invoices "79ae3682-b759-48ac-a381-45661e4292f1" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: invoices: 4904.54ms
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 25...
+[SUCCESS] API Confirmed: Stock correctly reached 25.
+[AUDIT REPORT] ---------------------------------------
+[AUDIT REPORT] Invoice #: INV/2026/05/06/000210
+[AUDIT REPORT] Item    : FIFO-AUDIT-1778069302716 (a25637b1-7ff7-4797-b75e-eb6efe59a1d1)
+[AUDIT REPORT] Account : Inventory (Inventories)
+[AUDIT REPORT] Impact  : 2000
+[AUDIT REPORT] Expected: 3000 (FIFO Layering)
+[AUDIT REPORT] Status  : ❌ DISCREPANCY (Possible ERP FIFO Bug)
+[AUDIT REPORT] ---------------------------------------

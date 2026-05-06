@@ -80,7 +80,7 @@
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
                 <div id="hudRateValue" class="integrity-val">75%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 4</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 9</div>
                 <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
@@ -88,7 +88,7 @@
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">4 DETECTED</div>
+                <div class="wing-count">9 DETECTED</div>
             </div>
             <div class="repro-dropdown">
           <div class="issue-item">
@@ -97,15 +97,35 @@
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 504 - {</div>
+            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 422 - {</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
             <div class="issue-desc"><b>Create PO via UI, approve, create linked bill, verify in vendor profile</b>: Error: [ERROR] Failed selection for Item</div>
           </div>
           <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Validate TIN, create vendor, edit, remove</b>: Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Audit: 7-Stage Average Cost Validation & COGS Accuracy</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeCloseTo[2m([22m[32mexpected[39m[2m, [2</div>
+          </div>
+          <div class="issue-item">
             <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must handle concurrent stock adjustments atomically</b>: TypeError: app.api.inventory.adjustStockAPI is not a function</div>
+            <div class="issue-desc"><b>Guardrail: System must handle concurrent stock adjustments atomically</b>: Error: [CRITICAL_LOGIC_BUG] Stock Race Condition: Concurrent adjustments caused lost updates. Expect</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>Audit: 7-Stage FIFO Layer Validation & COGS Accuracy</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeCloseTo[2m([22m[32mexpected[39m[2m, [2</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: System must reject negative quantity adjustments</b>: Error: [VULNERABILITY] System accepted negative stock adjustment! Inventory corruption possible.</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: System must explicitly reject historical back-dated adjustments</b>: Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustme</div>
           </div></div>
         </div>
 
