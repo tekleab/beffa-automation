@@ -1,0 +1,331 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: inventory/inventory-fifo-audit.spec.ts >> FIFO Costing Forensic Audit @security @inventory @costing >> Audit: 7-Stage FIFO Layer Validation & COGS Accuracy
+- Location: tests/inventory/inventory-fifo-audit.spec.ts:14:9
+
+# Error details
+
+```
+Error: expect(received).toBeCloseTo(expected, precision)
+
+Expected: 3000
+Received: 0
+
+Expected precision:    2
+Expected difference: < 0.005
+Received difference:   3000
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - img "smoke test" [ref=e10]: st
+        - generic [ref=e11]:
+          - button "smoke test" [ref=e12] [cursor=pointer]:
+            - generic: smoke test
+            - img [ref=e14]
+          - generic [ref=e16] [cursor=pointer]:
+            - button "Company Detail" [ref=e17]:
+              - img [ref=e18]
+            - button "Edit Company" [ref=e21]:
+              - img [ref=e22]
+            - button "Company Detail" [ref=e25]:
+              - img [ref=e26]
+      - generic [ref=e29]:
+        - button "New" [ref=e30] [cursor=pointer]:
+          - text: New
+          - img [ref=e32]
+        - generic [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: "5"
+          - img "Notifications" [ref=e38]
+        - button "EC" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+          - paragraph [ref=e44]: EC
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+        - generic [ref=e49] [cursor=pointer]:
+          - img "System" [ref=e51]: S
+          - generic [ref=e52]:
+            - generic [ref=e53]: System
+            - paragraph [ref=e54]: IT Administrator / User Manager
+    - generic [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - img "smoke test" [ref=e62]: st
+          - paragraph [ref=e63]: Welcome, System
+        - paragraph [ref=e65]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+        - generic [ref=e66]:
+          - link "Dashboard" [ref=e67] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Settings" [ref=e68] [cursor=pointer]:
+            - /url: /settings/company/details
+        - generic [ref=e69]:
+          - link "Add Customer" [ref=e70] [cursor=pointer]:
+            - /url: /receivables/customers/new
+            - img [ref=e73]
+            - text: Add Customer
+          - link "Add Invoice" [ref=e74] [cursor=pointer]:
+            - /url: /receivables/invoices/new
+            - img [ref=e77]
+            - text: Add Invoice
+          - link "Add Receipt" [ref=e78] [cursor=pointer]:
+            - /url: /receivables/receipts/new
+            - img [ref=e81]
+            - text: Add Receipt
+          - link "Add Sales Order" [ref=e82] [cursor=pointer]:
+            - /url: /receivables/sale-orders/new
+            - img [ref=e85]
+            - text: Add Sales Order
+        - paragraph [ref=e87]: Quick Access
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - link "Sales Sales" [ref=e91] [cursor=pointer]:
+              - /url: /receivables/overview/
+              - button "Sales Sales" [ref=e92]:
+                - generic [ref=e93]:
+                  - img "Sales" [ref=e94]
+                  - paragraph [ref=e95]: Sales
+            - link "Purchase Purchase" [ref=e97] [cursor=pointer]:
+              - /url: /payables/overview/
+              - button "Purchase Purchase" [ref=e98]:
+                - generic [ref=e99]:
+                  - img "Purchase" [ref=e100]
+                  - paragraph [ref=e101]: Purchase
+            - link "Accounting Accounting" [ref=e103] [cursor=pointer]:
+              - /url: /accounting/overview
+              - button "Accounting Accounting" [ref=e104]:
+                - generic [ref=e105]:
+                  - img "Accounting" [ref=e106]
+                  - paragraph [ref=e107]: Accounting
+            - link "Leases Leases" [ref=e109] [cursor=pointer]:
+              - /url: /leases/leases/?page=1&pageSize=15
+              - button "Leases Leases" [ref=e110]:
+                - generic [ref=e111]:
+                  - img "Leases" [ref=e112]
+                  - paragraph [ref=e113]: Leases
+            - link "Assets Assets" [ref=e115] [cursor=pointer]:
+              - /url: /assets/overview
+              - button "Assets Assets" [ref=e116]:
+                - generic [ref=e117]:
+                  - img "Assets" [ref=e118]
+                  - paragraph [ref=e119]: Assets
+            - link "Budgets Budgets" [ref=e121] [cursor=pointer]:
+              - /url: /public-sector-budgets/overview
+              - button "Budgets Budgets" [ref=e122]:
+                - generic [ref=e123]:
+                  - img "Budgets" [ref=e124]
+                  - paragraph [ref=e125]: Budgets
+            - link "Payroll Payroll" [ref=e127] [cursor=pointer]:
+              - /url: /payrolls
+              - button "Payroll Payroll" [ref=e128]:
+                - generic [ref=e129]:
+                  - img "Payroll" [ref=e130]
+                  - paragraph [ref=e131]: Payroll
+            - link "Report Report" [ref=e133] [cursor=pointer]:
+              - /url: /reports
+              - button "Report Report" [ref=e134]:
+                - generic [ref=e135]:
+                  - img "Report" [ref=e136]
+                  - paragraph [ref=e137]: Report
+          - button "View All" [ref=e138] [cursor=pointer]:
+            - text: View All
+            - img [ref=e140]
+      - img "Floating Icon" [ref=e143]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  20  | 
+  21  |         // ⚪ STAGE 1: Beginning Balance (Historical Layer)
+  22  |         const itemCode = `FIFO-AUDIT-${Date.now()}`;
+  23  |         console.log(`[FIFO] Stage 1: Creating Item with Beginning Balance (10 units @ $100)...`);
+  24  |         const item = await app.api.inventory.createInventoryItemAPI({
+  25  |             name: itemCode,
+  26  |             item_id: itemCode,
+  27  |             part_number: `PN-${itemCode.split('-').pop()}`,
+  28  |             item_class: 'MER',
+  29  |             quantity: 10,
+  30  |             unit_cost: 100,
+  31  |             default_location_id: envMeta.locationId,
+  32  |             default_warehouse_id: envMeta.warehouseId
+  33  |         });
+  34  | 
+  35  |         await app.api.inventory.pollStockAPI(item.id, 10);
+  36  |         const stage1 = await app.api.inventory.getItemDetailsAPI(item.id);
+  37  |         console.log(`[STAGE 1] Beginning Balance: ${stage1.currentStock} @ $${stage1.unitCost}`);
+  38  |         expect(stage1.currentStock).toBe(10);
+  39  |         expect(stage1.unitCost).toBe(100);
+  40  | 
+  41  |         // 🟦 STAGE 2: Adding Layer 1 (20 units @ $200)
+  42  |         console.log(`[FIFO] Stage 2: Adding Layer 1 (20 units @ $200)...`);
+  43  |         const adj1 = await app.api.inventory.createInventoryAdjustmentAPI({
+  44  |             itemId: item.id,
+  45  |             quantity: 20,
+  46  |             cost: 200,
+  47  |             isWriteDown: false,
+  48  |             warehouseId: envMeta.warehouseId,
+  49  |             locationId: envMeta.locationId
+  50  |         });
+  51  |         if (adj1.id) {
+  52  |             await app.advanceDocumentAPI(adj1.id, 'inventory-adjustments');
+  53  |             await app.api.inventory.processAdjustmentAPI(adj1.id);
+  54  |         }
+  55  |         
+  56  |         await app.api.inventory.pollStockAPI(item.id, 30);
+  57  |         const stage2 = await app.api.inventory.getItemDetailsAPI(item.id);
+  58  |         console.log(`[STAGE 2] Stock: ${stage2?.currentStock} | Master Cost: $${stage2?.unitCost} (Expect: $100)`);
+  59  |         expect(stage2?.currentStock).toBe(30);
+  60  |         expect(stage2?.unitCost).toBe(100);
+  61  | 
+  62  |         // 🟨 STAGE 3: Adding Layer 2 (15 units @ $300)
+  63  |         console.log(`[FIFO] Stage 3: Adding Layer 2 (15 units @ $300)...`);
+  64  |         const adj2 = await app.api.inventory.createInventoryAdjustmentAPI({
+  65  |             itemId: item.id,
+  66  |             quantity: 15,
+  67  |             cost: 300,
+  68  |             isWriteDown: false,
+  69  |             warehouseId: envMeta.warehouseId,
+  70  |             locationId: envMeta.locationId
+  71  |         });
+  72  |         if (adj2.id) {
+  73  |             await app.advanceDocumentAPI(adj2.id, 'inventory-adjustments');
+  74  |             await app.api.inventory.processAdjustmentAPI(adj2.id);
+  75  |         }
+  76  | 
+  77  |         await app.api.inventory.pollStockAPI(item.id, 45);
+  78  |         const stage3 = await app.api.inventory.getItemDetailsAPI(item.id);
+  79  |         console.log(`[STAGE 3] Stock: ${stage3?.currentStock} | Master Cost: $${stage3?.unitCost} (Expect: $100)`);
+  80  |         expect(stage3?.currentStock).toBe(45);
+  81  |         expect(stage3?.unitCost).toBe(100);
+  82  | 
+  83  |         // 🟩 STAGE 4: Invoice 1 — The Deep Consumption (20 units)
+  84  |         console.log(`[FIFO] Stage 4: Draining Layer 1 and 10 units of Layer 2...`);
+  85  |         const inv1 = await app.api.sales.createStandaloneInvoiceAPI({
+  86  |             customerId: envMeta.customerId,
+  87  |             itemId: item.id,
+  88  |             quantity: 20,
+  89  |             unitPrice: 500,
+  90  |             locationId: envMeta.locationId,
+  91  |             warehouseId: envMeta.warehouseId
+  92  |         });
+  93  |         await app.advanceDocumentAPI(inv1.id, 'invoices');
+  94  | 
+  95  |         await app.api.inventory.pollStockAPI(item.id, 25);
+  96  |         
+  97  |         // 🔍 FORENSIC AUDIT: Check Journals for COGS accuracy
+  98  |         const journals = await app.api.inventory.getJournalEntriesAPI(inv1.id);
+  99  |         
+  100 |         // Find the Inventory credit entry (Asset reduction) or COGS debit (Expense)
+  101 |         const cogsEntry = journals.find(j => 
+  102 |             ((j.accountType?.toLowerCase().includes('cost of sales') || j.accountName?.toLowerCase().includes('cost of others')) && parseFloat(j.debit) > 0) ||
+  103 |             ((j.accountType?.toLowerCase().includes('inventories') || j.accountName?.toLowerCase().includes('inventory')) && parseFloat(j.credit) > 0)
+  104 |         );
+  105 |         
+  106 |         const actualCostImpact = parseFloat(cogsEntry?.credit || cogsEntry?.debit || '0');
+  107 |         
+  108 |         // FIFO Calculation: Drains 10 units from BB ($100) + 10 units from Layer 1 ($200) = 3000
+  109 |         const expectedCogs = (10 * 100) + (10 * 200); 
+  110 |         console.log(`[AUDIT REPORT] ---------------------------------------`);
+  111 |         console.log(`[AUDIT REPORT] Invoice #: ${inv1.ref}`);
+  112 |         console.log(`[AUDIT REPORT] Item    : ${item.itemName} (${item.id})`);
+  113 |         console.log(`[AUDIT REPORT] Account : ${cogsEntry?.accountName} (${cogsEntry?.accountType})`);
+  114 |         console.log(`[AUDIT REPORT] Impact  : ${actualCostImpact}`);
+  115 |         console.log(`[AUDIT REPORT] Expected: ${expectedCogs} (FIFO Layering)`);
+  116 |         console.log(`[AUDIT REPORT] Status  : ${actualCostImpact === expectedCogs ? '✅ MATCH' : '❌ DISCREPANCY (Possible ERP FIFO Bug)'}`);
+  117 |         console.log(`[AUDIT REPORT] ---------------------------------------`);
+  118 | 
+  119 |         // FINAL ASSERTION
+> 120 |         expect(actualCostImpact).toBeCloseTo(expectedCogs, 2);
+      |                                  ^ Error: expect(received).toBeCloseTo(expected, precision)
+  121 | 
+  122 |         const stage4 = await app.api.inventory.getItemDetailsAPI(item.id);
+  123 |         console.log(`[STAGE 4] Stock: ${stage4?.currentStock} | Master Cost Jump: $${stage4?.unitCost} (Expect: $200)`);
+  124 |         expect(stage4?.currentStock).toBe(25);
+  125 |         expect(stage4?.unitCost).toBe(200);
+  126 | 
+  127 |         // 🟥 STAGE 5: Adjustment 1 — The Smart Loss (-5 units)
+  128 |         console.log(`[FIFO] Stage 5: Verifying Cost of Loss (-5 units)...`);
+  129 |         const adjLoss = await app.api.inventory.createInventoryAdjustmentAPI({
+  130 |             itemId: item.id,
+  131 |             quantity: 5,
+  132 |             isWriteDown: true,
+  133 |             warehouseId: envMeta.warehouseId,
+  134 |             locationId: envMeta.locationId
+  135 |         });
+  136 |         if (adjLoss.id) {
+  137 |             await app.advanceDocumentAPI(adjLoss.id, 'inventory-adjustments');
+  138 |             await app.api.inventory.processAdjustmentAPI(adjLoss.id);
+  139 |         }
+  140 | 
+  141 |         await app.api.inventory.pollStockAPI(item.id, 20);
+  142 |         const stage5 = await app.api.inventory.getItemDetailsAPI(item.id);
+  143 |         console.log(`[STAGE 5] Stock: ${stage5?.currentStock} | Master Cost: $${stage5?.unitCost} (Expect: $200)`);
+  144 |         expect(stage5?.currentStock).toBe(20);
+  145 |         expect(stage5?.unitCost).toBe(200);
+  146 | 
+  147 |         // 🟪 STAGE 6: Adjustment 2 — Cost Revaluation
+  148 |         console.log(`[FIFO] Stage 6: Revaluing inventory (DNA Modification)...`);
+  149 |         const adjReval = await app.api.inventory.createInventoryAdjustmentAPI({
+  150 |             itemId: item.id,
+  151 |             quantity: 0,
+  152 |             cost: 190, 
+  153 |             isWriteDown: false,
+  154 |             warehouseId: envMeta.warehouseId,
+  155 |             locationId: envMeta.locationId,
+  156 |             adjusted_by: 'cost'
+  157 |         });
+  158 |         if (adjReval.id) {
+  159 |             await app.advanceDocumentAPI(adjReval.id, 'inventory-adjustments');
+  160 |             await app.api.inventory.processAdjustmentAPI(adjReval.id);
+  161 |         }
+  162 | 
+  163 |         const stage6 = await app.api.inventory.getItemDetailsAPI(item.id);
+  164 |         console.log(`[STAGE 6] Master Cost immediately revalued to: $${stage6.unitCost} (Expect: $190)`);
+  165 |         expect(stage6.unitCost).toBe(190);
+  166 | 
+  167 |         // 💀 STAGE 7: Invoice 2 — The Final Boss (15 units)
+  168 |         console.log(`[FIFO] Stage 7: The Final Boss Sale (15 units)...`);
+  169 |         const inv2 = await app.api.sales.createStandaloneInvoiceAPI({
+  170 |             customerId: envMeta.customerId,
+  171 |             itemId: item.id,
+  172 |             quantity: 15,
+  173 |             unitPrice: 600,
+  174 |             locationId: envMeta.locationId,
+  175 |             warehouseId: envMeta.warehouseId
+  176 |         });
+  177 |         await app.advanceDocumentAPI(inv2.id, 'invoices');
+  178 | 
+  179 |         await app.api.inventory.pollStockAPI(item.id, 5);
+  180 |         const finalState = await app.api.inventory.getItemDetailsAPI(item.id);
+  181 |         console.log(`[FINAL] Audit Complete. Stock: ${finalState?.currentStock} | Final Master Cost: $${finalState?.unitCost}`);
+  182 |         expect(finalState?.currentStock).toBe(5);
+  183 |         expect(finalState?.unitCost).toBe(290); // (The remaining 5 units were from the $300 layer, revalued to $290)
+  184 |     });
+  185 | });
+  186 | 
+```
