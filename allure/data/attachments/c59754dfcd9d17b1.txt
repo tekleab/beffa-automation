@@ -1,0 +1,49 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 207.20ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 592.53ms
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
+[PERFORMANCE] API - Create Bill: 257.48ms
+[SUCCESS] Bill created via API: BILL/2026/05/18/000436 (ID: 857fe0d6-2300-46ff-bd62-cc8eeaa271f9)
+[API] Advancing bills "857fe0d6-2300-46ff-bd62-cc8eeaa271f9" for company: "sample"
+[SUCCESS] Approval Step 1 synchronized via API.
+[SUCCESS] Approval Step 2 synchronized via API.
+[SUCCESS] Approval Step 3 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: bills: 5203.63ms
+[ATTACK] Injecting bounds-breaking discount: -3500
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[META] Standalone Invoice Payload: {
+  "accounts_receivable_id": "8479ad17-541c-4b85-a371-59f0536ba6e9",
+  "customer_id": "7dbec658-191f-4fb9-8d26-91e73dc8995a",
+  "invoice_date": "2026-05-18T00:00:00Z",
+  "due_date": "2026-05-20T00:00:00Z",
+  "currency_id": "50567982-ee2f-4391-9400-3149067443a5",
+  "items": [
+    {
+      "amount": 1000,
+      "general_ledger_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
+      "item_id": "8c9c1a28-6c23-48e0-99d0-1e10a2a9be2a",
+      "location_id": "e8958816-d525-4184-8652-b2d3a40e36a4",
+      "quantity": 1,
+      "unit_price": 1000,
+      "warehouse_id": "6d5a0702-cbb8-4d72-936c-cff68196f1ea",
+      "discount_amount": 3500,
+      "discount_type": "cash"
+    }
+  ],
+  "released_sales_order_items": []
+}
+[PERFORMANCE] API - Standalone Invoice: 210.39ms
