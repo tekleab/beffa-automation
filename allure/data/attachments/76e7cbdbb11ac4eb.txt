@@ -1,0 +1,20 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 394.29ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "smoke test"
+[WAC] Stage 1: Creating Item with Initial Batch (10 units @ $100)...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[STAGE 1] Initial State: 10 @ $100
+[WAC] Stage 2: Adding Batch 2 (20 units @ $200)...
+[PERFORMANCE] API - Inventory Adjustment: 303.52ms
+[SUCCESS] Adjustment created via API: ADJ/2026/05/18/000158 (ID: b655d104-a4c0-4edf-80b2-a69e7c087050)
+[API] Advancing inventory-adjustments "b655d104-a4c0-4edf-80b2-a69e7c087050" for company: "smoke test"
+[SUCCESS] Approval Step 1 synchronized via API.
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 1695.75ms
+[ACTION] Triggering API Process for Adjustment: b655d104-a4c0-4edf-80b2-a69e7c087050
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[STAGE 2] Stock: 30 | New Moving Average: $100 (Expect: $166.67)
