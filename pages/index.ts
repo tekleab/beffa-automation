@@ -1,0 +1,11 @@
+export { PortfolioPage } from './PortfolioPage';
+export { BasePage } from './BasePage';
+export { Navigation } from './components/Navigation';
+export { HeroSection } from './components/HeroSection';
+export { StatsSection } from './components/StatsSection';
+export { SkillsSection } from './components/SkillsSection';
+export { ExperienceSection } from './components/ExperienceSection';
+export { ModulesSection } from './components/ModulesSection';
+export { PortfolioSection } from './components/PortfolioSection';
+export { ContactSection } from './components/ContactSection';
+export { Footer } from './components/Footer';
