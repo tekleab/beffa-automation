@@ -1,0 +1,53 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 341.99ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2505.01ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1950.76ms
+[INFO] Vendor: MIDROC S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2039.51ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2052.41ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1914.92ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1947.38ms
+[PERFORMANCE] UI - Random Selection: Location: 1867.52ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1802.15ms
+[PERFORMANCE] UI - Random Selection: Tax: 1916.07ms
+[OK] Line item added (Price: 2332)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/25/000310 | Vendor: MIDROC S.C
+[API] Advancing purchase-orders "7ae6df41-01bd-4c16-baca-70691fddb0df" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/7ae6df41-01bd-4c16-baca-70691fddb0df/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/7ae6df41-01bd-4c16-baca-70691fddb0df/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 7ae6df41-01bd-4c16-baca-70691fddb0df is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 861.39ms
+[OK] PO PO/2026/05/25/000310 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/25/000310 via API
+[ACTION] Fetching PO Context for ID: 7ae6df41-01bd-4c16-baca-70691fddb0df...
+[PERFORMANCE] API - Create API Bill from PO: 231.13ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000442
+[API] Advancing bills "be2f2002-81e1-407c-b6a9-d423fde50134" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/be2f2002-81e1-407c-b6a9-d423fde50134/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/be2f2002-81e1-407c-b6a9-d423fde50134/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document be2f2002-81e1-407c-b6a9-d423fde50134 is already approved.
+[PERFORMANCE] API - API Advance: bills: 767.94ms
+[OK] Linked Bill BILL/2026/05/25/000442 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/25/000442 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "MIDROC S.C"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/25/000442...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/25/000442 is physically present in MIDROC S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/25/000310 -> Bill BILL/2026/05/25/000442

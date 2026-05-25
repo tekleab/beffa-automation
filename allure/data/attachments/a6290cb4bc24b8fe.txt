@@ -1,5 +1,5 @@
 [ACTION] Performing High-Speed API Login for: admin@beffa.com...
-[PERFORMANCE] API - Auth API Verification: 415.48ms
+[PERFORMANCE] API - Auth API Verification: 418.70ms
 [SUCCESS] API Login complete. Session & Metadata injected.
 [ACTION] Verifying current company selection...
 [INFO] Already on company: "sample"
@@ -10,7 +10,7 @@
 [META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
 [META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
 [ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
-[PERFORMANCE] API - Item Discovery (50 Records): 651.00ms
+[PERFORMANCE] API - Item Discovery (50 Records): 654.98ms
 [ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
 [META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
 [META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
@@ -26,7 +26,7 @@
     {
       "amount": 500,
       "general_ledger_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
-      "item_id": "67d7ff47-072c-41b8-b575-8474acabc78b",
+      "item_id": "87e2c23b-b6f5-4a67-a2c7-c4d3f48cd212",
       "location_id": "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
       "quantity": 1,
       "unit_price": 500,
@@ -35,17 +35,17 @@
   ],
   "released_sales_order_items": []
 }
-[PERFORMANCE] API - Standalone Invoice: 266.39ms
-[SUCCESS] Standalone Invoice created via API: INV/2026/05/25/000717 (ID: 6372fd69-5973-4590-9bd1-a13b291937db)
-[API] Advancing invoices "6372fd69-5973-4590-9bd1-a13b291937db" for company: "sample" | URL: http://157.180.20.112:8001/api/invoices/6372fd69-5973-4590-9bd1-a13b291937db/advance?year=2018&period=yearly&calendar=ec
+[PERFORMANCE] API - Standalone Invoice: 285.73ms
+[SUCCESS] Standalone Invoice created via API: INV/2026/05/25/000721 (ID: b3932c45-c504-4cf0-9e3e-a32a9cc89e4f)
+[API] Advancing invoices "b3932c45-c504-4cf0-9e3e-a32a9cc89e4f" for company: "sample" | URL: http://157.180.20.112:8001/api/invoices/b3932c45-c504-4cf0-9e3e-a32a9cc89e4f/advance?year=2018&period=yearly&calendar=ec
 [WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
-[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/invoices/6372fd69-5973-4590-9bd1-a13b291937db/advance?year=2018&period=yearly&calendar=ec | Body: {
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/invoices/b3932c45-c504-4cf0-9e3e-a32a9cc89e4f/advance?year=2018&period=yearly&calendar=ec | Body: {
 	"code": 500,
 	"message": "Something went wrong (E1481)"
 }
 
-[WARN] No API advance steps were successful. Verify if document 6372fd69-5973-4590-9bd1-a13b291937db is already approved.
-[PERFORMANCE] API - API Advance: invoices: 543.66ms
+[WARN] No API advance steps were successful. Verify if document b3932c45-c504-4cf0-9e3e-a32a9cc89e4f is already approved.
+[PERFORMANCE] API - API Advance: invoices: 546.22ms
 [ATTACK] Submitting receipt with amount = 0...
 [SECONDARY_BUG] Backend must return proper validation (e.g. 422) instead of crashing with 500
 [ATTACK] Submitting receipt with amount = -100...
