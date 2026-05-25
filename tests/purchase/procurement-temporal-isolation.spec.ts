@@ -9,7 +9,7 @@ import { AppManager } from'../../pages/AppManager';
  * 2. Verify system strictly segregates bills by Vendor (Anti-IDOR/Data Leak).
  */
 
-test.describe('Procurement Temporal & Data Isolation Audits@purchase @security @regression @full', () => {
+test.describe('Procurement Temporal & Data Isolation Audits @purchase @security @regression @full', () => {
     // Removed serial mode so all tests run even if one fails
     // test.describe.configure({ mode:'serial' });
 

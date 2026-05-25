@@ -8,7 +8,7 @@ import { AppManager } from'../../pages/AppManager';
  * mathematical overflows, negative amounts, and illegal document states (Void)
  * are strictly enforced at the API layer.
  */
-test.describe('Financial Integrity & Boundary Audits@sales @logic @regression @full', () => {
+test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {

@@ -11,7 +11,7 @@ import { AppManager } from'../../pages/AppManager';
  * 4. Verify system enforces mandatory GL account selection for standalone bills.
  */
 
-test.describe('Procurement Integrity & Financial Guardrails@purchase @logic @regression @full', () => {
+test.describe('Procurement Integrity & Financial Guardrails @purchase @logic @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {

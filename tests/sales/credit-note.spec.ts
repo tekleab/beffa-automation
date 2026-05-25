@@ -10,7 +10,7 @@ import { AppManager } from'../../pages/AppManager';
  * 3. Forensic Check: Verify Ledger AR balance clears back to zero after Void.
  */
 
-test.describe('Sales Return & Stock Recovery@sales @regression @full', () => {
+test.describe('Sales Return & Stock Recovery @sales @regression @full', () => {
 
     test('Forensic Audit: Invoice Void & Stock Restoration', async ({ page }) => {
         test.setTimeout(240000);

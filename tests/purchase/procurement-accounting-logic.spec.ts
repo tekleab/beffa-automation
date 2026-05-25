@@ -10,7 +10,7 @@ import { AppManager } from'../../pages/AppManager';
  * 3. Verify Multi-Bill reconciliation: One payment correctly impacts multiple unpaid bills.
  */
 
-test.describe('Procurement Ledger & Flow Logic Audits@purchase @logic @regression @full', () => {
+test.describe('Procurement Ledger & Flow Logic Audits @purchase @logic @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {

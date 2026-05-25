@@ -7,7 +7,7 @@ import { AppManager } from'../../pages/AppManager';
  * This suite simulates high-speed simultaneous multi-user interactions to 
  * verify database atomicity, row-level locking, and thread-safe operations.
  */
-test.describe('Concurrency & Race Condition Audits@sales @concurrency @security @regression @full', () => {
+test.describe('Concurrency & Race Condition Audits @sales @concurrency @security @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test.setTimeout(500000);

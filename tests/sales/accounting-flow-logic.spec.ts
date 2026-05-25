@@ -8,7 +8,7 @@ import { AppManager } from'../../pages/AppManager';
  * Invoices, and Receipts follow a strict, immutable contract and that the 
  * General Ledger correctly reflects reversals and partial scenarios.
  */
-test.describe('Accounting & Ledger Flow Logic Audits@sales @logic @regression @full', () => {
+test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @full', () => {
     test.setTimeout(500000);
 
     /**
