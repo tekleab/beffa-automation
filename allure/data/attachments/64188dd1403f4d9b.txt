@@ -1,0 +1,29 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 193.43ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[STEP 1] Discovering transfer source and destination...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 5]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1101.61ms
+[STEP 2] Executing Warehouse Transfer of 5 units from location 2595ebb0-4e78-4bc5-9321-140d3fd316c7...
+[TRANSFER] OUT: 2595ebb0-4e78-4bc5-9321-140d3fd316c7 → IN: e8958816-d525-4184-8652-b2d3a40e36a4 | Qty: 5
+[PERFORMANCE] API - Transfer OUT: 232.96ms
+[TRANSFER] OUT created: ADJ/2026/05/25/000152 (ID: 7a9afa60-16b0-4a22-aefe-5428ad8790bb)
+[API] Advancing inventory-adjustments "7a9afa60-16b0-4a22-aefe-5428ad8790bb" for company: "sample" | URL: http://157.180.20.112:8001/api/inventory-adjustments/7a9afa60-16b0-4a22-aefe-5428ad8790bb/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[SUCCESS] Approval Step 1 synchronized via API.
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[INFO] Approval Cycle complete. Document is now fully Approved.
+[PERFORMANCE] API - API Advance: inventory-adjustments: 2448.15ms
+[PERFORMANCE] API - Transfer IN: 178.92ms
+[WARN] Transfer failed or not supported in this environment: [TRANSFER] IN adjustment failed: 422 - {
+	"code": 422,
+	"details": {
+		"location_id": [
+			"Item doesn't exist in given location."
+		]
+	},
+	"message": "Validation error when creating inventory adjustment"
+}
+
