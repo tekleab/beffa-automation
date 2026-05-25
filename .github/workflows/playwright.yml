@@ -103,15 +103,16 @@ jobs:
         echo "🚀 Running Standard Workflows in Parallel..."
         npx playwright test --project=Inventory --project=Sales-Workflows --project=Purchase-Workflows --workers=4 $GREP_ARGS
 
+
         # 2. RUN FORENSIC AUDITS (SAFE - 1 Worker)
         echo "🛡️ Running Sales Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS
+        npx playwright test --project=Forensic-Sales --workers=1
 
         echo "🛡️ Running Purchase Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Purchase --workers=1 $GREP_ARGS
+        npx playwright test --project=Forensic-Purchase --workers=1
 
         echo "🛡️ Running Inventory Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS
+        npx playwright test --project=Forensic-Inventory --workers=1
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
