@@ -14,43 +14,58 @@ class IntegratedDashboard implements Reporter {
   async onEnd(result: FullResult) {
     if (!this.rootSuite) return;
 
-    // 1. DYNAMIC FAILURE DISCOVERY
-    const capturedIssues: { title: string; category: string; description: string }[] = [];
-    
-    const findFailures = (suite: Suite) => {
-      suite.tests?.forEach((test: TestCase) => {
-        const lastResult = test.results[test.results.length - 1];
-        if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
-          // Categorize based on title/tags
-          let cat = 'STABILITY';
-          if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
-          if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
-
-          capturedIssues.push({
-            title: test.title,
-            category: cat,
-            description: lastResult.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
-          });
-        }
-      });
-      suite.suites?.forEach((s: Suite) => findFailures(s));
+    // 1. LOAD PREVIOUS ACCUMULATED DATA
+    let accumulated = {
+      totalTests: 0,
+      failedTests: 0,
+      capturedIssues: [] as { title: string; category: string; description: string }[]
     };
 
-    findFailures(this.rootSuite);
+    const jsonPath = path.join(this.deployDir, 'dashboard-accumulated.json');
+    if (fs.existsSync(jsonPath)) {
+      try {
+        accumulated = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      } catch (e) {
+        // Safe fallback if JSON parsing fails
+      }
+    }
 
-    // Calculate actual pass rate dynamically
-    const allTests = this.rootSuite.allTests();
-    const totalTests = allTests.length;
-    const failedTests = allTests.filter(test => {
+    // 2. DISCOVER AND APPEND NEW FAILURES
+    const currentAllTests = this.rootSuite.allTests();
+    const currentFailedTests = currentAllTests.filter(test => {
       const lastResult = test.results[test.results.length - 1];
       return lastResult?.status === 'failed' || lastResult?.status === 'timedOut';
-    }).length;
+    });
+
+    accumulated.totalTests += currentAllTests.length;
+    accumulated.failedTests += currentFailedTests.length;
+
+    currentFailedTests.forEach(test => {
+      const lastResult = test.results[test.results.length - 1];
+      let cat = 'STABILITY';
+      if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+      if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+
+      accumulated.capturedIssues.push({
+        title: test.title,
+        category: cat,
+        description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+      });
+    });
+
+    // Save updated accumulated data for potential subsequent steps
+    fs.writeFileSync(jsonPath, JSON.stringify(accumulated, null, 2));
+
+    // Calculate overall metrics
+    const totalTests = accumulated.totalTests;
+    const failedTests = accumulated.failedTests;
     const passedTests = totalTests - failedTests;
     const passRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 100;
+    const issueCount = accumulated.capturedIssues.length;
+    const capturedIssues = accumulated.capturedIssues;
 
-    // 2. BUILD DYNAMIC HTML DROPDOWN
+    // 3. BUILD DYNAMIC HTML DROPDOWN
     let reproHtml = '';
-    const issueCount = capturedIssues.length;
     
     if (issueCount === 0) {
       reproHtml = '<div class="issue-item" style="border-left-color: var(--emerald); opacity: 0.7;"><div class="issue-tag">CLEAN</div><div class="issue-desc">All financial guardrails passed successfully.</div></div>';

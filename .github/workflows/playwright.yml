@@ -110,6 +110,11 @@ jobs:
         echo "Test Type Selected: $TEST_TYPE (Grep args: $GREP_ARGS)"
         echo "Company Target: $BEFFA_COMPANY"
 
+        # ✅ RESET accumulator so percentages are fresh for THIS run only
+        mkdir -p deploy
+        rm -f deploy/dashboard-accumulated.json
+        echo "🗑️ Reset dashboard accumulator for clean run."
+
         # Disable exit on error so we run ALL batches even if Part 1 fails!
         set +e
         FINAL_EXIT_CODE=0
