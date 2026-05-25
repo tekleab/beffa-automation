@@ -1,0 +1,53 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 447.64ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2543.43ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2034.11ms
+[INFO] Vendor: KAMARIYA PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2234.09ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2085.87ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1896.56ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1931.94ms
+[PERFORMANCE] UI - Random Selection: Location: 1949.00ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1856.04ms
+[PERFORMANCE] UI - Random Selection: Tax: 1975.00ms
+[OK] Line item added (Price: 7693)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/25/000322 | Vendor: KAMARIYA PLC
+[API] Advancing purchase-orders "34a7362f-4d3d-4fcc-9881-49822a795d2a" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/34a7362f-4d3d-4fcc-9881-49822a795d2a/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/34a7362f-4d3d-4fcc-9881-49822a795d2a/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 34a7362f-4d3d-4fcc-9881-49822a795d2a is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 1292.06ms
+[OK] PO PO/2026/05/25/000322 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/25/000322 via API
+[ACTION] Fetching PO Context for ID: 34a7362f-4d3d-4fcc-9881-49822a795d2a...
+[PERFORMANCE] API - Create API Bill from PO: 305.94ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000466
+[API] Advancing bills "0742fa04-67e5-4e06-a652-f70ce21629ef" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/0742fa04-67e5-4e06-a652-f70ce21629ef/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/0742fa04-67e5-4e06-a652-f70ce21629ef/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 0742fa04-67e5-4e06-a652-f70ce21629ef is already approved.
+[PERFORMANCE] API - API Advance: bills: 998.90ms
+[OK] Linked Bill BILL/2026/05/25/000466 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/25/000466 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "KAMARIYA PLC"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/25/000466...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/25/000466 is physically present in KAMARIYA PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/25/000322 -> Bill BILL/2026/05/25/000466

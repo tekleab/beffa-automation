@@ -1,0 +1,37 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 443.69ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 830.89ms
+[STEP 1] Creating PO for 10 units...
+[PERFORMANCE] API - Create Purchase Order: 312.44ms
+[SUCCESS] PO created via API: PO/2026/05/25/000323 (ID: 2ab8bf4d-1af7-4712-9989-bdcc8c97786b)
+[API] Advancing purchase-orders "2ab8bf4d-1af7-4712-9989-bdcc8c97786b" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/2ab8bf4d-1af7-4712-9989-bdcc8c97786b/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/2ab8bf4d-1af7-4712-9989-bdcc8c97786b/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 2ab8bf4d-1af7-4712-9989-bdcc8c97786b is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 546.97ms
+[ATTACK] Attempting to Bill 50 units against the 10-unit PO...
+[ACTION] Fetching PO Context for ID: 2ab8bf4d-1af7-4712-9989-bdcc8c97786b...
+[PERFORMANCE] API - Create API Bill from PO: 301.02ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000470
+[INFO] Bill created for PO. Checking if we can inflate quantity...
+[API] Advancing bills "fa439736-7c16-4c85-9f74-93bef4ed7704" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/fa439736-7c16-4c85-9f74-93bef4ed7704/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/fa439736-7c16-4c85-9f74-93bef4ed7704/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document fa439736-7c16-4c85-9f74-93bef4ed7704 is already approved.
+[PERFORMANCE] API - API Advance: bills: 681.87ms
+[INFO] Bill approved. Verifying if it honored PO limits...
+[PASS] System correctly enforced PO limits.
