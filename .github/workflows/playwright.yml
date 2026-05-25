@@ -97,30 +97,49 @@ jobs:
       continue-on-error: true
       run: |
         # Setup test filters based on user selection
-        GREP_ARGS=""
         if [ "$TEST_TYPE" = "smoke" ]; then
           GREP_ARGS="--grep @smoke"
         elif [ "$TEST_TYPE" = "regression" ]; then
           GREP_ARGS="--grep @regression"
+        elif [ "$TEST_TYPE" = "full" ]; then
+          GREP_ARGS="--grep @full"
+        else
+          GREP_ARGS=""
         fi
 
         echo "Test Type Selected: $TEST_TYPE (Grep args: $GREP_ARGS)"
         echo "Company Target: $BEFFA_COMPANY"
 
-        # 1. RUN CONCURRENT WORKFLOWS (FAST - 4 Workers)
-        echo "🚀 Running Standard Workflows in Parallel..."
-        npx playwright test --project=Inventory --project=Sales-Workflows --project=Purchase-Workflows --workers=4 $GREP_ARGS
+        # Disable exit on error so we run ALL batches even if Part 1 fails!
+        set +e
+        FINAL_EXIT_CODE=0
 
+        # 1. RUN CONCURRENT WORKFLOWS (FAST - 4 Workers)
+        echo "=========================================================="
+        echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
+        echo "=========================================================="
+        npx playwright test --project=Inventory --project=Sales-Workflows --project=Purchase-Workflows --workers=4 $GREP_ARGS || FINAL_EXIT_CODE=$?
 
         # 2. RUN FORENSIC AUDITS (SAFE - 1 Worker)
-        echo "🛡️ Running Sales Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS
+        echo "=========================================================="
+        echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
+        echo "=========================================================="
+        
+        echo "-> Forensic Sales..."
+        npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS || FINAL_EXIT_CODE=$?
 
-        echo "🛡️ Running Purchase Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Purchase --workers=1 $GREP_ARGS
+        echo "-> Forensic Purchase..."
+        npx playwright test --project=Forensic-Purchase --workers=1 $GREP_ARGS || FINAL_EXIT_CODE=$?
 
-        echo "🛡️ Running Inventory Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS
+        echo "-> Forensic Inventory..."
+        npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS || FINAL_EXIT_CODE=$?
+
+        # Re-enable exit on error and exit with the captured code
+        set -e
+        if [ $FINAL_EXIT_CODE -ne 0 ]; then
+          echo "❌ Some test batches failed. Check logs above."
+          exit $FINAL_EXIT_CODE
+        fi
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
