@@ -1,25 +1,46 @@
 #!/usr/bin/env bash
 # scripts/fetch_company.sh
 # ------------------------------------------------------------
-# Retrieves the company identifier from the ERP settings endpoint
-# and exports it to the GitHub Actions environment.
-# Uses BEFFA_TOKEN (or BEFFA_PASS) for Bearer auth.
+# 1. Logs in with BEFFA_USER / BEFFA_PASS to get a fresh Bearer token.
+# 2. Calls the company/settings endpoint.
+# 3. Extracts the X-Company header and writes BEFFA_COMPANY to $GITHUB_ENV.
 # ------------------------------------------------------------
 set -euo pipefail
 
-API_URL="http://168.119.175.142:8001/api/company/settings?year=${BEFFA_YEAR}&period=${BEFFA_PERIOD}&calendar=${BEFFA_CALENDAR}"
-TOKEN="${BEFFA_TOKEN:-${BEFFA_PASS}}"
+BASE="${BASE_URL:-http://168.119.175.142:8001}"
+YEAR="${BEFFA_YEAR:-2018}"
+PERIOD="${BEFFA_PERIOD:-yearly}"
+CALENDAR="${BEFFA_CALENDAR:-ec}"
 
-# Try to read the X-Company header (preferred)
-company=$(curl -s -D - -H "Authorization: Bearer $TOKEN" "$API_URL" -o /dev/null |
-          grep -i '^x-company:' | awk -F': ' '{print $2}' | tr -d '\r')
+echo "[INFO] Fetching fresh auth token from ERP..."
 
-# Fallback: if header missing, pull a field from the JSON payload (e.g., seeding_status as placeholder)
-if [ -z "$company" ]; then
-  payload=$(curl -s -H "Authorization: Bearer $TOKEN" "$API_URL")
-  # use a safe default; you can adjust to any JSON key you prefer
-  company=$(echo "$payload" | jq -r '.seeding_status // "sample"')
+# Step 1: Login and capture the Bearer token
+LOGIN_RESPONSE=$(curl -s -X POST "${BASE}/api/login" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"${BEFFA_USER}\",\"password\":\"${BEFFA_PASS}\"}")
+
+TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.access_token // .token // empty')
+
+if [ -z "$TOKEN" ]; then
+  echo "[ERROR] Could not retrieve auth token. Check BEFFA_USER and BEFFA_PASS secrets."
+  exit 1
 fi
 
-# Export to GitHub Actions env file
-echo "BEFFA_COMPANY=$company" >> "$GITHUB_ENV"
+echo "[OK] Token acquired."
+
+# Step 2: Fetch company settings and capture x-company header
+API_URL="${BASE}/api/company/settings?year=${YEAR}&period=${PERIOD}&calendar=${CALENDAR}"
+
+COMPANY=$(curl -sS -D - \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Accept: application/json" \
+  "${API_URL}" -o /dev/null \
+  | grep -i '^x-company:' | awk -F': ' '{print $2}' | tr -d '\r')
+
+if [ -z "$COMPANY" ]; then
+  echo "[WARN] x-company header not found. Falling back to 'sample'."
+  COMPANY="sample"
+fi
+
+echo "[RESULT] Company resolved: ${COMPANY}"
+echo "BEFFA_COMPANY=${COMPANY}" >> "$GITHUB_ENV"
