@@ -18,7 +18,6 @@ on:
         type: choice
         options:
           - 'sample'
-          - 'sample'
           - 'bm technology'
           - 'development'
   push:
@@ -46,9 +45,9 @@ jobs:
       BASE_URL: ${{ secrets.BASE_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
-      # Priority: manual input > repo secret > hardcoded default
       # Priority: manual input (if dispatch) > repo secret > hardcoded default
-      BEFFA_COMPANY: ${{ secrets.BEFFA_COMPANY || 'sample' }}
+      BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'sample' }}
+      TEST_TYPE: ${{ github.event.inputs.test_type || 'full' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
@@ -89,19 +88,30 @@ jobs:
       if: always()
       continue-on-error: true
       run: |
+        # Setup test filters based on user selection
+        GREP_ARGS=""
+        if [ "$TEST_TYPE" = "smoke" ]; then
+          GREP_ARGS="--grep @smoke"
+        elif [ "$TEST_TYPE" = "regression" ]; then
+          GREP_ARGS="--grep @regression"
+        fi
+
+        echo "Test Type Selected: $TEST_TYPE (Grep args: $GREP_ARGS)"
+        echo "Company Target: $BEFFA_COMPANY"
+
         # 1. RUN CONCURRENT WORKFLOWS (FAST - 4 Workers)
         echo "🚀 Running Standard Workflows in Parallel..."
-        npx playwright test --project=Inventory --project=Sales-Workflows --project=Purchase-Workflows --workers=4
+        npx playwright test --project=Inventory --project=Sales-Workflows --project=Purchase-Workflows --workers=4 $GREP_ARGS
 
         # 2. RUN FORENSIC AUDITS (SAFE - 1 Worker)
         echo "🛡️ Running Sales Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Sales --workers=1
+        npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS
 
         echo "🛡️ Running Purchase Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Purchase --workers=1
+        npx playwright test --project=Forensic-Purchase --workers=1 $GREP_ARGS
 
         echo "🛡️ Running Inventory Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Inventory --workers=1
+        npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
