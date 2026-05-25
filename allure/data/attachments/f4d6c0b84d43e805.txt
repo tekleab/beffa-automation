@@ -1,0 +1,53 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 480.02ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2847.31ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1920.88ms
+[INFO] Vendor: BAMACO PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2015.43ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2037.90ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1900.97ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1918.18ms
+[PERFORMANCE] UI - Random Selection: Location: 1908.66ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1853.50ms
+[PERFORMANCE] UI - Random Selection: Tax: 1900.24ms
+[OK] Line item added (Price: 2917)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/25/000319 | Vendor: BAMACO PLC
+[API] Advancing purchase-orders "28491353-d040-4e27-bb6f-020ec80abd6e" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/28491353-d040-4e27-bb6f-020ec80abd6e/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/28491353-d040-4e27-bb6f-020ec80abd6e/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 28491353-d040-4e27-bb6f-020ec80abd6e is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 1066.87ms
+[OK] PO PO/2026/05/25/000319 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/25/000319 via API
+[ACTION] Fetching PO Context for ID: 28491353-d040-4e27-bb6f-020ec80abd6e...
+[PERFORMANCE] API - Create API Bill from PO: 256.44ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000457
+[API] Advancing bills "35bec81f-0d0a-4dc6-8bd2-f0e80436ee9b" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/35bec81f-0d0a-4dc6-8bd2-f0e80436ee9b/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/35bec81f-0d0a-4dc6-8bd2-f0e80436ee9b/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 35bec81f-0d0a-4dc6-8bd2-f0e80436ee9b is already approved.
+[PERFORMANCE] API - API Advance: bills: 874.57ms
+[OK] Linked Bill BILL/2026/05/25/000457 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/25/000457 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "BAMACO PLC"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/25/000457...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/25/000457 is physically present in BAMACO PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/25/000319 -> Bill BILL/2026/05/25/000457
