@@ -41,7 +41,7 @@ export default defineConfig({
 
   use: {
     baseURL: (process.env.BASE_URL || 'http://localhost:4173').replace(/['"]+/g, ''),
-    viewport: null,
+    viewport: process.env.CI ? { width: 1920, height: 1080 } : null,
 
     launchOptions: {
       args: [
@@ -62,35 +62,29 @@ export default defineConfig({
     {
       name: 'Forensic-Sales',
       testMatch: /sales\/.*(audit|logic|concurrency|security|isolation).*\.spec\.ts/,
-      use: { viewport: null },
     },
     {
       name: 'Forensic-Purchase',
       testMatch: /purchase\/.*(procurement|audit|logic|concurrency|security|isolation).*\.spec\.ts/,
-      use: { viewport: null },
     },
     {
       name: 'Forensic-Inventory',
       testMatch: /inventory\/.*(integrity|audit|logic|concurrency|security|temporal).*\.spec\.ts/,
-      use: { viewport: null },
     },
     {
       name: 'Sales-Workflows',
       testMatch: /sales\/.*\.spec\.ts/,
       testIgnore: [/.*(audit|logic|concurrency|security|isolation).*/],
-      use: { viewport: null },
     },
     {
       name: 'Purchase-Workflows',
       testMatch: /purchase\/.*\.spec\.ts/,
       testIgnore: [/.*(procurement|audit|logic|concurrency|security|isolation).*/],
-      use: { viewport: null },
     },
     {
       name: 'Inventory',
       testMatch: /inventory\/.*\.spec\.ts/,
       testIgnore: [/.*(integrity|audit|logic|concurrency|security|temporal).*/],
-      use: { viewport: null },
     },
   ],
 
