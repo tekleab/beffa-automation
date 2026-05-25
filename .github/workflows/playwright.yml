@@ -113,13 +113,13 @@ jobs:
 
         # 2. RUN FORENSIC AUDITS (SAFE - 1 Worker)
         echo "🛡️ Running Sales Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Sales --workers=1
+        npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS
 
         echo "🛡️ Running Purchase Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Purchase --workers=1
+        npx playwright test --project=Forensic-Purchase --workers=1 $GREP_ARGS
 
         echo "🛡️ Running Inventory Forensic Audit (Sequential)..."
-        npx playwright test --project=Forensic-Inventory --workers=1
+        npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
