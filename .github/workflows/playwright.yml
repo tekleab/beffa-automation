@@ -84,13 +84,12 @@ jobs:
     - name: Install Playwright OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps chromium
-      
-      - name: Fetch Company from ERP API
-        env:
-          BEFFA_TOKEN: ${{ secrets.BEFFA_TOKEN }}
-        run: |
-          chmod +x scripts/fetch_company.sh
-          ./scripts/fetch_company.sh
+
+    - name: Fetch Company from ERP API
+      continue-on-error: true
+      run: |
+        chmod +x scripts/fetch_company.sh
+        ./scripts/fetch_company.sh
 
     - name: Run Playwright tests
       if: always()
