@@ -1,0 +1,39 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 447.87ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1566.66ms
+[STEP 1] Creating Sales Order for 2 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[PERFORMANCE] API - Create Sales Order: 314.42ms
+[SUCCESS] Sales Order created via API: SO/2026/05/25/000456 (ID: 8daf3442-af45-494e-a547-474d97f8780c, ItemID: dcf393d7-596d-47be-ad13-f340a90e5655)
+[API] Advancing sales-orders "8daf3442-af45-494e-a547-474d97f8780c" for company: "sample" | URL: http://157.180.20.112:8001/api/sales-orders/8daf3442-af45-494e-a547-474d97f8780c/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/sales-orders/8daf3442-af45-494e-a547-474d97f8780c/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 8daf3442-af45-494e-a547-474d97f8780c is already approved.
+[PERFORMANCE] API - API Advance: sales-orders: 549.36ms
+[ATTACK] Attempting to invoice for 6 units (SO only allows 2)...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[API] Advancing invoices "741dc637-9214-4ab9-986e-2391cef724f9" for company: "sample" | URL: http://157.180.20.112:8001/api/invoices/741dc637-9214-4ab9-986e-2391cef724f9/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/invoices/741dc637-9214-4ab9-986e-2391cef724f9/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 741dc637-9214-4ab9-986e-2391cef724f9 is already approved.
+[PERFORMANCE] API - API Advance: invoices: 652.85ms
