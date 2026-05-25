@@ -1,0 +1,53 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 454.02ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2953.41ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1951.47ms
+[INFO] Vendor: Derara Guyo
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1985.70ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2106.60ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1860.64ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1933.74ms
+[PERFORMANCE] UI - Random Selection: Location: 1892.83ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1875.11ms
+[PERFORMANCE] UI - Random Selection: Tax: 1957.05ms
+[OK] Line item added (Price: 1790)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/25/000326 | Vendor: Derara Guyo
+[API] Advancing purchase-orders "10c492b9-e993-46d4-b421-e300bf3df370" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/10c492b9-e993-46d4-b421-e300bf3df370/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/10c492b9-e993-46d4-b421-e300bf3df370/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 10c492b9-e993-46d4-b421-e300bf3df370 is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 1123.47ms
+[OK] PO PO/2026/05/25/000326 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/25/000326 via API
+[ACTION] Fetching PO Context for ID: 10c492b9-e993-46d4-b421-e300bf3df370...
+[PERFORMANCE] API - Create API Bill from PO: 284.82ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000482
+[API] Advancing bills "ddafd183-e6a9-46be-ae8f-87d84efdcd24" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/ddafd183-e6a9-46be-ae8f-87d84efdcd24/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/ddafd183-e6a9-46be-ae8f-87d84efdcd24/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document ddafd183-e6a9-46be-ae8f-87d84efdcd24 is already approved.
+[PERFORMANCE] API - API Advance: bills: 979.77ms
+[OK] Linked Bill BILL/2026/05/25/000482 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/25/000482 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Derara Guyo"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/25/000482...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/25/000482 is physically present in Derara Guyo's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/25/000326 -> Bill BILL/2026/05/25/000482

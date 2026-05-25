@@ -1,71 +1,11 @@
 {
-  "totalTests": 32,
-  "failedTests": 13,
+  "totalTests": 4,
+  "failedTests": 1,
   "capturedIssues": [
-    {
-      "title": "Forensic Audit: Invoice Void & Stock Restoration",
-      "category": "STABILITY",
-      "description": "Error: Business Logic Violation: Could not Void an approved invoice."
-    },
     {
       "title": "Create fresh invoice via API, then create receipt and link it",
       "category": "STABILITY",
       "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
-    },
-    {
-      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6"
-    },
-    {
-      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-      "category": "LOGIC_VULN",
-      "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
-    },
-    {
-      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desync"
-    },
-    {
-      "title": "Audit: Bill balance must correctly restore after Payment reversal",
-      "category": "STABILITY",
-      "description": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object."
-    },
-    {
-      "title": "Guardrail: System must handle concurrent duplicate Bill payments atomically",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: System approved 2 full payments for a single Bill! "
-    },
-    {
-      "title": "Guardrail: System must explicitly reject historical back-dated Bills",
-      "category": "LOGIC_VULN",
-      "description": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated bill from 2023"
-    },
-    {
-      "title": "Audit: 7-Stage Average Cost Validation & COGS Accuracy",
-      "category": "STABILITY",
-      "description": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[2"
-    },
-    {
-      "title": "Guardrail: System must handle concurrent stock adjustments atomically",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Stock Race Condition: Concurrent adjustments caused lost updates. Expect"
-    },
-    {
-      "title": "Audit: 7-Stage FIFO Layer Validation & COGS Accuracy",
-      "category": "STABILITY",
-      "description": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object."
-    },
-    {
-      "title": "Guardrail: System must reject negative stock adjustments",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] System accepted and fully approved negative stock adjustment (Ref: ADJ/2"
-    },
-    {
-      "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
-      "category": "LOGIC_VULN",
-      "description": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustme"
     }
   ]
 }
