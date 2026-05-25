@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * PROCUREMENT INTEGRITY BOUNDARIES
@@ -11,8 +11,8 @@ import { AppManager } from '../../pages/AppManager';
  * 4. Verify system enforces mandatory GL account selection for standalone bills.
  */
 
-test.describe('Procurement Integrity & Financial Guardrails @logic @purchase', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Procurement Integrity & Financial Guardrails@purchase @logic @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -77,7 +77,7 @@ test.describe('Procurement Integrity & Financial Guardrails @logic @purchase', (
     /*
     test('Guardrail: System must reject discounts exceeding Bill value', async ({ page }) => {
         // [KNOWN BUG] API allows discounts greater than the total bill amount, causing negative liability. Marking as expected failure so serial tests can continue.
-        test.fail(true, 'Backend allows discount > total (Security Vulnerability)');
+        test.fail(true,'Backend allows discount > total (Security Vulnerability)');
         
         const app = new AppManager(page);
         const meta = await app.api.purchase.discoverMetadataAPI();
@@ -85,7 +85,7 @@ test.describe('Procurement Integrity & Financial Guardrails @logic @purchase', (
 
         console.log(`[ATTACK] Attempting to create Bill of 5000 with 6000 Discount...`);
         // Note: The createBillAPI might need a discount field in payload, 
-        // assuming the backend might have it in 'items' or root.
+        // assuming the backend might have it in'items' or root.
         
         const payload = {
             itemData: item,
@@ -98,7 +98,7 @@ test.describe('Procurement Integrity & Financial Guardrails @logic @purchase', (
         try {
             const bill = await app.api.purchase.createBillAPI(payload as any);
             // If it succeeds, check if we can approve it
-            await app.advanceDocumentAPI(bill.id, 'bills');
+            await app.advanceDocumentAPI(bill.id,'bills');
             throw new Error('[VULNERABILITY] System approved a Bill where Discount > Total! Negative liability created.');
         } catch (err: any) {
             if (err.message.includes('[VULNERABILITY]')) throw err;

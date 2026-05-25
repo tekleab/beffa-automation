@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * CATEGORY 3: Accounting Flow & Ledger Logic
@@ -8,7 +8,7 @@ import { AppManager } from '../../pages/AppManager';
  * Invoices, and Receipts follow a strict, immutable contract and that the 
  * General Ledger correctly reflects reversals and partial scenarios.
  */
-test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () => {
+test.describe('Accounting & Ledger Flow Logic Audits@sales @logic @regression @full', () => {
     test.setTimeout(500000);
 
     /**
@@ -22,7 +22,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
                 quantity: quantity * 2,
                 unitPrice: 100
             });
-            await app.advanceDocumentAPI(bill.id, 'bills');
+            await app.advanceDocumentAPI(bill.id,'bills');
             console.log(`[SEED] Stock replenished for ${item.itemName}.`);
         }
     }
@@ -34,11 +34,11 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        let apiBase = (process.env.BASE_URL || 'http://157.180.20.112:8001').replace(/\/$/, '').replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = (process.env.BASE_URL ||'http://157.180.20.112:8001').replace(/\/$/,'').replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const params = `year=2018&period=yearly&calendar=ec`;
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const params =`year=2018&period=yearly&calendar=ec`;
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         const SO_QTY = 2;
         const OVER_QTY = 6; 
@@ -52,7 +52,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
             locationId: item.locationId,
             warehouseId: item.warehouseId
         });
-        await app.advanceDocumentAPI(so.id, 'sales-orders');
+        await app.advanceDocumentAPI(so.id,'sales-orders');
 
         console.log(`[ATTACK] Attempting to invoice for ${OVER_QTY} units (SO only allows ${SO_QTY})...`);
         const meta = await app.api.sales.discoverMetadataAPI();
@@ -61,14 +61,14 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
                 accounts_receivable_id: meta.arAccountId,
                 currency_id: meta.currencyId,
                 customer_id: meta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: new Date().toISOString().split('T')[0] +'T00:00:00Z',
                 released_sales_order_items: [{
                     so_item_id: so.soItemId,
                     released_quantity: OVER_QTY, 
                     warehouse_id: item.warehouseId,
                     location_id: item.locationId
                 }],
-                status: 'draft'
+                status:'draft'
             },
             headers
         });
@@ -76,7 +76,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
         if ([200, 201].includes(overInvoiceResp.status())) {
             const body = await overInvoiceResp.json();
             try {
-                await app.advanceDocumentAPI(body.id, 'invoices');
+                await app.advanceDocumentAPI(body.id,'invoices');
                 throw new Error(`[CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: ${SO_QTY}, Invoiced: ${OVER_QTY}`);
             } catch (e: any) {
                 if (e.message.includes('CRITICAL_LOGIC_BUG')) throw e;
@@ -94,10 +94,10 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         
-        let apiBase = (process.env.BASE_URL || 'http://157.180.20.112:8001').replace(/\/$/, '').replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = (process.env.BASE_URL ||'http://157.180.20.112:8001').replace(/\/$/,'').replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         const item = await app.captureRandomItemDataAPI({ minStock: 0 });
         await ensureStock(app, item, 5);
@@ -111,7 +111,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
             quantity: 1,
             unitPrice: BASE_PRICE
         });
-        await app.advanceDocumentAPI(so.id, 'sales-orders');
+        await app.advanceDocumentAPI(so.id,'sales-orders');
 
         console.log(`[ATTACK] Injecting malicious price: ${ATTACK_PRICE} (SO Price: ${BASE_PRICE})...`);
         const overInvoiceResp = await page.request.post(`${apiBase}/invoices?year=2018&period=yearly&calendar=ec`, {
@@ -119,7 +119,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
                 accounts_receivable_id: meta.arAccountId,
                 currency_id: meta.currencyId,
                 customer_id: meta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: new Date().toISOString().split('T')[0] +'T00:00:00Z',
                 released_sales_order_items: [{
                     so_item_id: so.soItemId,
                     released_quantity: 1, 
@@ -128,7 +128,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
                     unit_price: ATTACK_PRICE,
                     amount: ATTACK_PRICE
                 }],
-                status: 'draft'
+                status:'draft'
             },
             headers
         });
@@ -136,7 +136,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
         if ([200, 201].includes(overInvoiceResp.status())) {
             const body = await overInvoiceResp.json();
             try {
-                await app.advanceDocumentAPI(body.id, 'invoices');
+                await app.advanceDocumentAPI(body.id,'invoices');
                 const finalInv = await app.api.sales.getInvoiceAPI(body.id);
                 if (Number(finalInv.unreceived_amount) === ATTACK_PRICE) {
                     throw new Error(`[CRITICAL_LOGIC_BUG] Price Injection Allowed! SO: ${BASE_PRICE}, Invoiced: ${ATTACK_PRICE}`);
@@ -168,17 +168,17 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
             locationId: itemInfo.locationId,
             warehouseId: itemInfo.warehouseId
         });
-        await app.advanceDocumentAPI(inv.id, 'invoices');
+        await app.advanceDocumentAPI(inv.id,'invoices');
 
         // Step 1: Valid Partial Payment (40)
         const rct1 = await app.api.sales.createInvoiceReceiptAPI({ amount: 40, customerId: meta.customerId, invoiceId: inv.id });
-        await app.advanceDocumentAPI(rct1.id, 'receipts');
+        await app.advanceDocumentAPI(rct1.id,'receipts');
 
         // Step 2: Attempt Overpayment (80 more) -> Total 120 (Invalid)
         console.log(`[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...`);
         try {
             const rct2 = await app.api.sales.createInvoiceReceiptAPI({ amount: 80, customerId: meta.customerId, invoiceId: inv.id });
-            await app.advanceDocumentAPI(rct2.id, 'receipts');
+            await app.advanceDocumentAPI(rct2.id,'receipts');
             
             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
             if (Number(finalInv.unreceived_amount) < 0) {
@@ -209,7 +209,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
             locationId: item.locationId,
             warehouseId: item.warehouseId
         });
-        await app.advanceDocumentAPI(inv.id, 'invoices');
+        await app.advanceDocumentAPI(inv.id,'invoices');
 
         // Discover Cash Account explicitly to avoid API breakage
         const accounts = await app.getAllAccountsAPI();
@@ -223,7 +223,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales @full', () =>
                 currencyId: meta.currencyId,
                 cashAccountId: cashAcct.id
             });
-            await app.advanceDocumentAPI(rct1.id, 'receipts');
+            await app.advanceDocumentAPI(rct1.id,'receipts');
 
             // 1. Reverse the Receipt FIRST
             console.log(`[ACTION] Reversing Receipt ${rct1.ref}...`);

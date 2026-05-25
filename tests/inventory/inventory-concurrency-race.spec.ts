@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * INVENTORY CONCURRENCY & RACE CONDITIONS
@@ -9,8 +9,8 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Verify thread-safe locking on the item stock row.
  */
 
-test.describe('Inventory Concurrency & Race Condition Audits @security @inventory', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Inventory Concurrency & Race Condition Audits@inventory @concurrency @security @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test('Guardrail: System must handle concurrent stock adjustments atomically', async ({ page }) => {
         const app = new AppManager(page);
@@ -25,8 +25,8 @@ test.describe('Inventory Concurrency & Race Condition Audits @security @inventor
         
         // Fire both at once
         const [res1, res2] = await Promise.allSettled([
-            app.api.inventory.adjustStockAPI({ itemId: item.itemId, quantity: adjustment, type: 'in', warehouseId: item.warehouseId }),
-            app.api.inventory.adjustStockAPI({ itemId: item.itemId, quantity: adjustment, type: 'in', warehouseId: item.warehouseId })
+            app.api.inventory.adjustStockAPI({ itemId: item.itemId, quantity: adjustment, type:'in', warehouseId: item.warehouseId }),
+            app.api.inventory.adjustStockAPI({ itemId: item.itemId, quantity: adjustment, type:'in', warehouseId: item.warehouseId })
         ]);
 
         console.log(`[ACTION] Verifying Final Stock Integrity...`);

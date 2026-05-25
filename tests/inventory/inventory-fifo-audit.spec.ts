@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * 🏆 THE MASTER FIFO FORENSIC AUDIT (7 STAGES)
@@ -8,24 +8,24 @@ import { AppManager } from '../../pages/AppManager';
  * the entire document lifecycle (Purchases -> Sales -> Adjustments).
  */
 
-test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('FIFO Costing Forensic Audit@inventory @security @costing @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test('Audit: 7-Stage FIFO Layer Validation & COGS Accuracy', async ({ page }) => {
-        process.env.BEFFA_COMPANY = 'smoke test';
+        process.env.BEFFA_COMPANY ='smoke test';
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const envMeta = await app.api.inventory.discoverMetadataAPI();
 
         // ⚪ STAGE 1: Beginning Balance (Historical Layer)
-        const itemCode = `FIFO-AUDIT-${Date.now()}`;
+        const itemCode =`FIFO-AUDIT-${Date.now()}`;
         console.log(`[FIFO] Stage 1: Creating Item with Beginning Balance (10 units @ $100)...`);
         const item = await app.api.inventory.createInventoryItemAPI({
             name: itemCode,
             item_id: itemCode,
-            part_number: `PN-${itemCode.split('-').pop()}`,
-            item_class: 'MER',
+            part_number:`PN-${itemCode.split('-').pop()}`,
+            item_class:'MER',
             quantity: 10,
             unit_cost: 100,
             default_location_id: envMeta.locationId,
@@ -49,7 +49,7 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
             locationId: envMeta.locationId
         });
         if (adj1.id) {
-            await app.advanceDocumentAPI(adj1.id, 'inventory-adjustments');
+            await app.advanceDocumentAPI(adj1.id,'inventory-adjustments');
             await app.api.inventory.processAdjustmentAPI(adj1.id);
         }
         
@@ -70,7 +70,7 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
             locationId: envMeta.locationId
         });
         if (adj2.id) {
-            await app.advanceDocumentAPI(adj2.id, 'inventory-adjustments');
+            await app.advanceDocumentAPI(adj2.id,'inventory-adjustments');
             await app.api.inventory.processAdjustmentAPI(adj2.id);
         }
 
@@ -90,7 +90,7 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
             locationId: envMeta.locationId,
             warehouseId: envMeta.warehouseId
         });
-        await app.advanceDocumentAPI(inv1.id, 'invoices');
+        await app.advanceDocumentAPI(inv1.id,'invoices');
 
         await app.api.inventory.pollStockAPI(item.id, 25);
         
@@ -101,9 +101,9 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
         const cogsEntry = journals.find(j => 
             ((j.accountType?.toLowerCase().includes('cost of sales') || j.accountName?.toLowerCase().includes('cost of others')) && parseFloat(j.debit) > 0) ||
             ((j.accountType?.toLowerCase().includes('inventories') || j.accountName?.toLowerCase().includes('inventory')) && parseFloat(j.credit) > 0)
-        );
+);
         
-        const actualCostImpact = parseFloat(cogsEntry?.credit || cogsEntry?.debit || '0');
+        const actualCostImpact = parseFloat(cogsEntry?.credit || cogsEntry?.debit ||'0');
         
         // FIFO Calculation: Drains 10 units from BB ($100) + 10 units from Layer 1 ($200) = 3000
         const expectedCogs = (10 * 100) + (10 * 200); 
@@ -113,7 +113,7 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
         console.log(`[AUDIT REPORT] Account : ${cogsEntry?.accountName} (${cogsEntry?.accountType})`);
         console.log(`[AUDIT REPORT] Impact  : ${actualCostImpact}`);
         console.log(`[AUDIT REPORT] Expected: ${expectedCogs} (FIFO Layering)`);
-        console.log(`[AUDIT REPORT] Status  : ${actualCostImpact === expectedCogs ? '✅ MATCH' : '❌ DISCREPANCY (Possible ERP FIFO Bug)'}`);
+        console.log(`[AUDIT REPORT] Status  : ${actualCostImpact === expectedCogs ?'✅ MATCH' :'❌ DISCREPANCY (Possible ERP FIFO Bug)'}`);
         console.log(`[AUDIT REPORT] ---------------------------------------`);
 
         // FINAL ASSERTION
@@ -134,7 +134,7 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
             locationId: envMeta.locationId
         });
         if (adjLoss.id) {
-            await app.advanceDocumentAPI(adjLoss.id, 'inventory-adjustments');
+            await app.advanceDocumentAPI(adjLoss.id,'inventory-adjustments');
             await app.api.inventory.processAdjustmentAPI(adjLoss.id);
         }
 
@@ -153,10 +153,10 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
             isWriteDown: false,
             warehouseId: envMeta.warehouseId,
             locationId: envMeta.locationId,
-            adjusted_by: 'cost'
+            adjusted_by:'cost'
         });
         if (adjReval.id) {
-            await app.advanceDocumentAPI(adjReval.id, 'inventory-adjustments');
+            await app.advanceDocumentAPI(adjReval.id,'inventory-adjustments');
             await app.api.inventory.processAdjustmentAPI(adjReval.id);
         }
 
@@ -174,7 +174,7 @@ test.describe('FIFO Costing Forensic Audit @security @inventory @costing', () =>
             locationId: envMeta.locationId,
             warehouseId: envMeta.warehouseId
         });
-        await app.advanceDocumentAPI(inv2.id, 'invoices');
+        await app.advanceDocumentAPI(inv2.id,'invoices');
 
         await app.api.inventory.pollStockAPI(item.id, 5);
         const finalState = await app.api.inventory.getItemDetailsAPI(item.id);

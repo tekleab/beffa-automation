@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * CATEGORY 1: Financial Integrity & Sanity Boundaries
@@ -8,8 +8,8 @@ import { AppManager } from '../../pages/AppManager';
  * mathematical overflows, negative amounts, and illegal document states (Void)
  * are strictly enforced at the API layer.
  */
-test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Financial Integrity & Boundary Audits@sales @logic @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {
         // Shared login logic could go here if needed, but we keep tests isolated
@@ -25,7 +25,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
                 quantity: quantity * 2,
                 unitPrice: 100
             });
-            await app.advanceDocumentAPI(bill.id, 'bills');
+            await app.advanceDocumentAPI(bill.id,'bills');
         }
     }
 
@@ -37,15 +37,15 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
-        if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/,'') :'http://157.180.20.112:8001';
+        if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const year = process.env.BEFFA_YEAR || '2018';
-        const period = process.env.BEFFA_PERIOD || 'yearly';
-        const calendar = process.env.BEFFA_CALENDAR || 'ec';
-        const params = `year=${year}&period=${period}&calendar=${calendar}`;
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const year = process.env.BEFFA_YEAR ||'2018';
+        const period = process.env.BEFFA_PERIOD ||'yearly';
+        const calendar = process.env.BEFFA_CALENDAR ||'ec';
+        const params =`year=${year}&period=${period}&calendar=${calendar}`;
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         console.log('[STEP 1] Setting up baseline: Creating & Approving a valid Invoice...');
         const meta = await app.api.sales.discoverMetadataAPI();
@@ -59,7 +59,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
             locationId: item.locationId,
             warehouseId: item.warehouseId
         });
-        await app.advanceDocumentAPI(inv.id, 'invoices');
+        await app.advanceDocumentAPI(inv.id,'invoices');
 
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
         const acctData = await acctResp.json();
@@ -74,7 +74,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
             cash_account_id: cashAcct.id,
             customer_id: meta.customerId,
             date: new Date().toISOString(),
-            payment_method: 'cash',
+            payment_method:'cash',
             currency_id: currency.id,
             invoice_receipts: [{ amount, invoice_id: inv.id }]
         });
@@ -85,7 +85,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
         if ([200, 201].includes(zeroResp.status())) {
             const body = await zeroResp.json();
             try {
-                await app.advanceDocumentAPI(body.id, 'receipts');
+                await app.advanceDocumentAPI(body.id,'receipts');
                 throw new Error(`[CRITICAL_LOGIC_BUG] System approved a ZERO-amount receipt: ${body.ref}`);
             } catch (e: any) { if (e.message.includes('CRITICAL_LOGIC_BUG')) throw e; }
         } else {
@@ -99,7 +99,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
         if ([200, 201].includes(negResp.status())) {
             const body = await negResp.json();
             try {
-                await app.advanceDocumentAPI(body.id, 'receipts');
+                await app.advanceDocumentAPI(body.id,'receipts');
                 throw new Error(`[CRITICAL_LOGIC_BUG] System approved a NEGATIVE-amount receipt: ${body.ref}`);
             } catch (e: any) { if (e.message.includes('CRITICAL_LOGIC_BUG')) throw e; }
         } else {
@@ -133,11 +133,11 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
                 quantity: 1,
                 unitPrice: EXPLOIT_UNIT_PRICE,
                 discount_amount: EXPLOIT_DISCOUNT_CASH,
-                discount_type: 'cash'
+                discount_type:'cash'
             });
 
             try {
-                await app.advanceDocumentAPI(rogueInvoice.id, 'invoices');
+                await app.advanceDocumentAPI(rogueInvoice.id,'invoices');
                 const checkStatus = await app.api.sales.getInvoiceAPI(rogueInvoice.id);
                 if (Number(checkStatus.total_amount) < 0) {
                     throw new Error(`[CRITICAL_LOGIC_BUG] ERP allowed Ghost Discount overflow! Total: ${checkStatus.total_amount}`);
@@ -160,14 +160,14 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        let apiBase = (process.env.BASE_URL || 'http://157.180.20.112:8001').replace(/\/$/, '').replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = (process.env.BASE_URL ||'http://157.180.20.112:8001').replace(/\/$/,'').replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const year = process.env.BEFFA_YEAR || '2018';
-        const period = process.env.BEFFA_PERIOD || 'yearly';
-        const calendar = process.env.BEFFA_CALENDAR || 'ec';
-        const params = `year=${year}&period=${period}&calendar=${calendar}`;
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const year = process.env.BEFFA_YEAR ||'2018';
+        const period = process.env.BEFFA_PERIOD ||'yearly';
+        const calendar = process.env.BEFFA_CALENDAR ||'ec';
+        const params =`year=${year}&period=${period}&calendar=${calendar}`;
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.captureRandomItemDataAPI({ minStock: 0 });
@@ -180,11 +180,11 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
             locationId: item.locationId,
             warehouseId: item.warehouseId
         });
-        await app.advanceDocumentAPI(inv.id, 'invoices');
+        await app.advanceDocumentAPI(inv.id,'invoices');
 
         console.log(`[ACTION] Voiding Invoice ${inv.ref}...`);
         const voidResp = await page.request.patch(`${apiBase}/invoices/${inv.id}/void?${params}`, {
-            data: { status: 'reversed' },
+            data: { status:'reversed' },
             headers
         });
 
@@ -205,7 +205,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
                     cash_account_id: cashAcct.id,
                     customer_id: meta.customerId,
                     date: new Date().toISOString(),
-                    payment_method: 'cash',
+                    payment_method:'cash',
                     currency_id: currency.id,
                     invoice_receipts: [{ amount: 250, invoice_id: inv.id }]
                 },
@@ -215,7 +215,7 @@ test.describe('Financial Integrity & Boundary Audits @logic @sales', () => {
             if ([200, 201].includes(ghostReceiptResp.status())) {
                 const body = await ghostReceiptResp.json();
                 try {
-                    await app.advanceDocumentAPI(body.id, 'receipts');
+                    await app.advanceDocumentAPI(body.id,'receipts');
                     throw new Error(`[CRITICAL_LOGIC_BUG] System allowed ghost payment on voided invoice: ${body.ref}`);
                 } catch (e: any) { if (e.message.includes('CRITICAL_LOGIC_BUG')) throw e; }
             } else {

@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * PROCUREMENT TEMPORAL & DATA ISOLATION
@@ -9,9 +9,9 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Verify system strictly segregates bills by Vendor (Anti-IDOR/Data Leak).
  */
 
-test.describe('Procurement Temporal & Data Isolation Audits @security @purchase', () => {
+test.describe('Procurement Temporal & Data Isolation Audits@purchase @security @regression @full', () => {
     // Removed serial mode so all tests run even if one fails
-    // test.describe.configure({ mode: 'serial' });
+    // test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -26,7 +26,7 @@ test.describe('Procurement Temporal & Data Isolation Audits @security @purchase'
         const item = await app.api.inventory.captureRandomItemDataAPI();
 
         // Target a date 1 year in the past
-        const backDate = '2023-01-01T00:00:00Z';
+        const backDate ='2023-01-01T00:00:00Z';
         console.log(`[ATTACK] Attempting to inject a Bill from ${backDate} (Historical Manipulation)...`);
 
         try {
@@ -43,7 +43,7 @@ test.describe('Procurement Temporal & Data Isolation Audits @security @purchase'
             console.log(`[VULNERABILITY] System accepted back-dated Bill creation: ${bill.ref}`);
             
             // Try to approve it
-            await app.advanceDocumentAPI(bill.id, 'bills');
+            await app.advanceDocumentAPI(bill.id,'bills');
             throw new Error(`[SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated bill from 2023. This allows tax/profit evasion.`);
 
         } catch (err: any) {
@@ -75,12 +75,12 @@ test.describe('Procurement Temporal & Data Isolation Audits @security @purchase'
         // 2. ATTACK: Try to fetch Bill A using Vendor B's context
         console.log(`[ATTACK] Attempting Cross-Vendor IDOR: Fetching Vendor A's bill via Vendor B's ledger...`);
         
-        const apiBase = process.env.BASE_URL?.replace(/\/$/, '') || 'http://157.180.20.112:8001';
+        const apiBase = process.env.BASE_URL?.replace(/\/$/,'') ||'http://157.180.20.112:8001';
         const token = await app._getAuthToken();
-        const company = process.env.BEFFA_COMPANY || 'sample';
+        const company = process.env.BEFFA_COMPANY ||'sample';
         
-        const leakResp = await page.request.get(`${apiBase.replace(':4173', ':8001')}/api/vendor/${vendorB.id}/bills`, {
-            headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
+        const leakResp = await page.request.get(`${apiBase.replace(':4173',':8001')}/api/vendor/${vendorB.id}/bills`, {
+            headers: {'x-company': company,'Authorization':`Bearer ${token}` }
         });
         
         const leakData = await leakResp.json();

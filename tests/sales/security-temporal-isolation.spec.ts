@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * CATEGORY 4: Security & Temporal Isolation
@@ -7,8 +7,8 @@ import { AppManager } from '../../pages/AppManager';
  * This suite verifies the core multi-tenant and regulatory boundaries of the 
  * system, including data leakage (IDOR) and temporal forgery (Back-dating).
  */
-test.describe('Security & Temporal Isolation Audits @security @sales', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Security & Temporal Isolation Audits@sales @security @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test.setTimeout(300000);
 
@@ -18,7 +18,7 @@ test.describe('Security & Temporal Isolation Audits @security @sales', () => {
     async function ensureStock(app: any, item: any, quantity: number) {
         if (Number(item.currentStock) < quantity) {
             const bill = await app.createBillAPI({ ...item }, quantity * 2, 100);
-            await app.advanceDocumentAPI(bill.id, 'bills');
+            await app.advanceDocumentAPI(bill.id,'bills');
         }
     }
 
@@ -29,10 +29,10 @@ test.describe('Security & Temporal Isolation Audits @security @sales', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        let apiBase = (process.env.BASE_URL || 'http://157.180.20.112:8001').replace(/\/$/, '').replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = (process.env.BASE_URL ||'http://157.180.20.112:8001').replace(/\/$/,'').replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         const custResp = await page.request.get(`${apiBase}/customers?page=1&pageSize=10&year=2018&period=yearly&calendar=ec`, { headers });
         const customers = (await custResp.json()).items || [];
@@ -50,7 +50,7 @@ test.describe('Security & Temporal Isolation Audits @security @sales', () => {
             itemId: item.itemId,
             unitPrice: INVOICE_AMT
         });
-        await app.advanceDocumentAPI(invA.id, 'invoices');
+        await app.advanceDocumentAPI(invA.id,'invoices');
 
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec`, { headers });
         const cashAcct = (await acctResp.json()).items?.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || (await acctResp.json()).items?.[0];
@@ -62,7 +62,7 @@ test.describe('Security & Temporal Isolation Audits @security @sales', () => {
                 cash_account_id: cashAcct.id,
                 customer_id: customerB.id,
                 date: new Date().toISOString(),
-                payment_method: 'cash',
+                payment_method:'cash',
                 currency_id: meta.currencyId,
                 invoice_receipts: [{ amount: INVOICE_AMT, invoice_id: invA.id }] 
             },
@@ -72,7 +72,7 @@ test.describe('Security & Temporal Isolation Audits @security @sales', () => {
         if ([200, 201].includes(attackResp.status())) {
             const body = await attackResp.json();
             try {
-                await app.advanceDocumentAPI(body.id, 'receipts');
+                await app.advanceDocumentAPI(body.id,'receipts');
                 const finalInv = await app.api.sales.getInvoiceAPI(invA.id);
                 if (Number(finalInv.unreceived_amount) === 0) {
                     throw new Error(`[CRITICAL_SECURITY_BUG] IDOR VULNERABILITY! Customer B successfully paid Customer A's invoice.`);
@@ -110,7 +110,7 @@ test.describe('Security & Temporal Isolation Audits @security @sales', () => {
             console.log(`[VULNERABILITY] Backend API accepted back-dated payload! ID: ${rogueInvoice.ref}`);
             
             try {
-                await app.advanceDocumentAPI(rogueInvoice.id, 'invoices');
+                await app.advanceDocumentAPI(rogueInvoice.id,'invoices');
                 
                 // CRITICAL HARDEING: Verify final approval state
                 const finalStatus = await app.api.sales.getInvoiceAPI(rogueInvoice.id);

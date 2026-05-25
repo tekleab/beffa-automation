@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * PROCUREMENT ACCOUNTING LOGIC AUDITS
@@ -10,8 +10,8 @@ import { AppManager } from '../../pages/AppManager';
  * 3. Verify Multi-Bill reconciliation: One payment correctly impacts multiple unpaid bills.
  */
 
-test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Procurement Ledger & Flow Logic Audits@purchase @logic @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -26,7 +26,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
         // 1. Create PO for 10 units
         console.log(`[STEP 1] Creating PO for 10 units...`);
         const po = await app.api.purchase.createPurchaseOrderAPI(item, 10, 5000, meta.vendorId);
-        await app.advanceDocumentAPI(po.poId, 'purchase-orders');
+        await app.advanceDocumentAPI(po.poId,'purchase-orders');
 
         // 2. Attempt to Bill for 50 units
         console.log(`[ATTACK] Attempting to Bill 50 units against the 10-unit PO...`);
@@ -37,7 +37,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
             purchase_order_id: po.poId,
             vendor_id: meta.vendorId,
             received_purchase_order_items: [{
-                po_item_id: 'auto-discovered', // Logic inside createBillFromPo handles this, we'll try to override
+                po_item_id:'auto-discovered', // Logic inside createBillFromPo handles this, we'll try to override
                 received_quantity: 50,
                 received_unit_price: 5000
             }]
@@ -52,7 +52,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
             
             // To be thorough, we check if the system allows editing a linked bill to a higher qty than PO
             // This is a common ERP vulnerability.
-            await app.advanceDocumentAPI(bill.billId, 'bills');
+            await app.advanceDocumentAPI(bill.billId,'bills');
             console.log(`[INFO] Bill approved. Verifying if it honored PO limits...`);
             
             const finalBill = await app.api.purchase.getBillAPI(bill.billId);
@@ -77,7 +77,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
         // 1. Create and Approve Bill (5000)
         console.log(`[STEP 1] Creating Bill for 5000...`);
         const bill = await app.api.purchase.createBillAPI({ itemData: item, unitPrice: 5000, quantity: 1, vendorId: meta.vendorId });
-        await app.advanceDocumentAPI(bill.id, 'bills');
+        await app.advanceDocumentAPI(bill.id,'bills');
 
         // 1.5 LEDGER INTEGRITY CHECK (Merged from Legacy)
         console.log(`[AUDIT] Verifying Journal Entries for Bill: ${bill.ref}...`);
@@ -104,7 +104,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
         console.log(`[INFO] Paying exact balance of: ${totalAmountToPay}`);
         
         const payment = await app.api.purchase.createBillPaymentAPI({ amount: totalAmountToPay, billId: bill.id, vendorId: meta.vendorId });
-        await app.advanceDocumentAPI(payment.id, 'payments');
+        await app.advanceDocumentAPI(payment.id,'payments');
 
         // 3. Verify Balance is 0
         let billData = await app.api.purchase.getBillAPI(bill.id);

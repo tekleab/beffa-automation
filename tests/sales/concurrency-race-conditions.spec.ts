@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * CATEGORY 2: Concurrency & Race Conditions
@@ -7,8 +7,8 @@ import { AppManager } from '../../pages/AppManager';
  * This suite simulates high-speed simultaneous multi-user interactions to 
  * verify database atomicity, row-level locking, and thread-safe operations.
  */
-test.describe('Concurrency & Race Condition Audits @security @concurrency @sales', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Concurrency & Race Condition Audits@sales @concurrency @security @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test.setTimeout(500000);
 
@@ -23,7 +23,7 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
                 quantity: quantity * 2,
                 unitPrice: 100
             });
-            await app.advanceDocumentAPI(bill.id, 'bills');
+            await app.advanceDocumentAPI(bill.id,'bills');
         }
     }
 
@@ -35,12 +35,12 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        let apiBase = (process.env.BASE_URL || 'http://157.180.20.112:8001').replace(/\/$/, '').replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = (process.env.BASE_URL ||'http://157.180.20.112:8001').replace(/\/$/,'').replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const year = process.env.BEFFA_YEAR || '2018';
-        const params = `year=${year}&period=yearly&calendar=ec`;
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const year = process.env.BEFFA_YEAR ||'2018';
+        const params =`year=${year}&period=yearly&calendar=ec`;
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.captureRandomItemDataAPI({ minStock: 0 });
@@ -66,14 +66,14 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
             locationId: item.locationId,
             warehouseId: item.warehouseId
         });
-        await app.advanceDocumentAPI(inv.id, 'invoices');
+        await app.advanceDocumentAPI(inv.id,'invoices');
 
         const receiptPayload = {
             amount: INVOICE_AMOUNT,
             cash_account_id: cashAcct.id,
             customer_id: meta.customerId,
             date: new Date().toISOString(),
-            payment_method: 'cash',
+            payment_method:'cash',
             currency_id: currency.id,
             invoice_receipts: [{ amount: INVOICE_AMOUNT, invoice_id: inv.id }]
         };
@@ -89,9 +89,9 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
 
         if (created.length === 2) {
             console.log('[ESCALATION] Both receipts created. Attempting to approve both...');
-            const approvalResults = await Promise.allSettled(created.map(r => app.advanceDocumentAPI(r.id, 'receipts')));
+            const approvalResults = await Promise.allSettled(created.map(r => app.advanceDocumentAPI(r.id,'receipts')));
             let approvedCount = 0;
-            for (const result of approvalResults) { if (result.status === 'fulfilled') approvedCount++; }
+            for (const result of approvalResults) { if (result.status ==='fulfilled') approvedCount++; }
 
             await page.waitForTimeout(5000);
             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
@@ -122,18 +122,18 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
             quantity: 5,
             unitPrice: 1500
         }); 
-        await app.advanceDocumentAPI(bill.id, 'bills');
+        await app.advanceDocumentAPI(bill.id,'bills');
 
-        let apiBase = (process.env.BASE_URL || 'http://157.180.20.112:8001').replace(/\/$/, '').replace(':4173', ':8001');
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        let apiBase = (process.env.BASE_URL ||'http://157.180.20.112:8001').replace(/\/$/,'').replace(':4173',':8001');
+        if (!apiBase.endsWith('/api')) apiBase +='/api';
         const token = await app._getAuthToken();
-        const params = `year=2018&period=yearly&calendar=ec`;
-        const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+        const params =`year=2018&period=yearly&calendar=ec`;
+        const headers = {'x-company': process.env.BEFFA_COMPANY as string,'Authorization':`Bearer ${token}` };
 
         const buildRacePayload = () => ({
             accounts_receivable_id: meta.arAccountId,
             customer_id: meta.customerId,
-            invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+            invoice_date: new Date().toISOString().split('T')[0] +'T00:00:00Z',
             currency_id: meta.currencyId,
             items: [{
                 amount: 3000,
@@ -145,7 +145,7 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
                 warehouse_id: seedItem.warehouseId,
             }],
             released_sales_order_items: [],
-            status: 'draft'
+            status:'draft'
         });
 
         console.log('[ATTACK] Firing 2 concurrent Invoicing requests for the same single unit...');
@@ -158,8 +158,8 @@ test.describe('Concurrency & Race Condition Audits @security @concurrency @sales
             const body1 = await resp1.json();
             const body2 = await resp2.json();
             try {
-                await app.advanceDocumentAPI(body1.id, 'invoices');
-                await app.advanceDocumentAPI(body2.id, 'invoices');
+                await app.advanceDocumentAPI(body1.id,'invoices');
+                await app.advanceDocumentAPI(body2.id,'invoices');
                 throw new Error(`[CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.`);
             } catch (err: any) {
                 if (err.message.includes('CRITICAL_LOGIC_BUG')) throw err;

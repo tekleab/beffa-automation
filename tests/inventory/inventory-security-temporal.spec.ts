@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * INVENTORY TEMPORAL & DATA ISOLATION AUDITS
@@ -9,15 +9,15 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Verify Cross-Warehouse IDOR (Unauthorized stock manipulation).
  */
 
-test.describe('Inventory Temporal & Data Isolation Audits @security @inventory', () => {
-    test.describe.configure({ mode: 'serial' });
+test.describe('Inventory Temporal & Data Isolation Audits@inventory @security @regression @full', () => {
+    test.describe.configure({ mode:'serial' });
 
     test('Guardrail: System must explicitly reject historical back-dated adjustments', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const item = await app.api.inventory.captureRandomItemDataAPI();
-        const backDate = '2022-01-01T00:00:00Z';
+        const backDate ='2022-01-01T00:00:00Z';
         
         console.log(`[ATTACK] Attempting to inject stock adjustment from ${backDate} (Historical Manipulation)...`);
 
@@ -25,7 +25,7 @@ test.describe('Inventory Temporal & Data Isolation Audits @security @inventory',
             await app.api.inventory.adjustStockAPI({
                 itemId: item.itemId,
                 quantity: 100,
-                type: 'in',
+                type:'in',
                 warehouseId: item.warehouseId,
                 date: backDate // Attempted payload injection
             } as any);

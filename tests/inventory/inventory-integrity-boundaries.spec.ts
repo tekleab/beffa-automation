@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * INVENTORY INTEGRITY & BOUNDARY AUDITS
@@ -9,7 +9,7 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Guardrail: system must reject zero-quantity movements.
  */
 
-test.describe('Inventory Integrity & Boundary Audits @logic @inventory', () => {
+test.describe('Inventory Integrity & Boundary Audits@inventory @logic @regression @full', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -33,7 +33,7 @@ test.describe('Inventory Integrity & Boundary Audits @logic @inventory', () => {
             const adj = await app.api.inventory.adjustStockAPI({
                 itemId:      item.itemId,
                 quantity:    -50,
-                type:        'in',
+                type:'in',
                 warehouseId: item.warehouseId,
                 locationId:  item.locationId
             });
@@ -46,7 +46,7 @@ test.describe('Inventory Integrity & Boundary Audits @logic @inventory', () => {
 
             // System allowed it — push through the full approval cycle
             if (adj.id) {
-                await app.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+                await app.advanceDocumentAPI(adj.id,'inventory-adjustments');
             }
 
             throw new Error(`[CRITICAL_LOGIC_BUG] System accepted and fully approved negative stock adjustment (Ref: ${adj.ref} | ID: ${adj.id})! Inventory can go negative.`);
@@ -66,7 +66,7 @@ test.describe('Inventory Integrity & Boundary Audits @logic @inventory', () => {
             const adj = await app.api.inventory.adjustStockAPI({
                 itemId:      item.itemId,
                 quantity:    0,
-                type:        'in',
+                type:'in',
                 warehouseId: item.warehouseId,
                 locationId:  item.locationId
             });
@@ -82,7 +82,7 @@ test.describe('Inventory Integrity & Boundary Audits @logic @inventory', () => {
 
             // Push all the way through the full approval cycle
             if (adj.id) {
-                await app.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+                await app.advanceDocumentAPI(adj.id,'inventory-adjustments');
                 console.log(`[VULNERABILITY] Zero-qty Adjustment was FULLY APPROVED: Ref=${adj.ref} | ID=${adj.id}`);
             }
             throw new Error(`[VULNERABILITY] System accepted and fully approved 0-quantity adjustment (Ref: ${adj.ref} | ID: ${adj.id})! Ledger bloat possible.`);

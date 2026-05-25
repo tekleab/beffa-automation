@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * SALES RETURN & STOCK RECOVERY AUDIT
@@ -10,7 +10,7 @@ import { AppManager } from '../../pages/AppManager';
  * 3. Forensic Check: Verify Ledger AR balance clears back to zero after Void.
  */
 
-test.describe('Sales Return & Stock Recovery @regression @sales', () => {
+test.describe('Sales Return & Stock Recovery@sales @regression @full', () => {
 
     test('Forensic Audit: Invoice Void & Stock Restoration', async ({ page }) => {
         test.setTimeout(240000);
@@ -22,7 +22,7 @@ test.describe('Sales Return & Stock Recovery @regression @sales', () => {
         console.log('[ACTION] Discovering environment metadata...');
         const meta = await app.api.sales.discoverMetadataAPI();
         const arAccountId = meta.arAccountId;
-        const inventoryAccountId = '0e350587-573e-48a0-9c29-ba9792015093'; // Inventory (Code 1301)
+        const inventoryAccountId ='0e350587-573e-48a0-9c29-ba9792015093'; // Inventory (Code 1301)
 
         // 1. Pick a clean item and get its current stock level
         const itemInfo = await app.api.inventory.captureRandomItemDataAPI({ minStock: 10 });
@@ -42,7 +42,7 @@ test.describe('Sales Return & Stock Recovery @regression @sales', () => {
         });
 
         // ⚡ Speed Approval
-        await app.advanceDocumentAPI(inv.id, 'invoices');
+        await app.advanceDocumentAPI(inv.id,'invoices');
         console.log(`[SUCCESS] Invoice ${inv.ref} approved.`);
 
         // Verification: Wait for stock engine to process

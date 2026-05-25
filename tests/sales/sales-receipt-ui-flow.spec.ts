@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { test, expect } from'@playwright/test';
+import { AppManager } from'../../pages/AppManager';
 
-test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @regression', () => {
+test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile@sales @smoke @regression @full', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -28,7 +28,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         await page.goto(`/receivables/sale-orders/${soResult.id}/detail`);
         // ⚡ Fast API Approval
         const soId = await app.extractIdFromUrl();
-        await app.advanceDocumentAPI(soId, 'sales-orders');
+        await app.advanceDocumentAPI(soId,'sales-orders');
         await page.reload(); // 🔄 Synchronization
         console.log(`[OK] Sales Order approved via Fast-API`);
 
@@ -45,12 +45,12 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         await page.goto(`/receivables/invoices/${invResult.id}/detail`);
         // ⚡ Fast API Approval
         const invId = await app.extractIdFromUrl();
-        await app.advanceDocumentAPI(invId, 'invoices');
+        await app.advanceDocumentAPI(invId,'invoices');
         await page.reload(); // 🔄 Synchronization
         console.log(`[OK] Invoice approved via Fast-API`);
 
         // Read customer name directly from the invoice detail page (most reliable)
-        const CUSTOMER_NAME = await page.locator('p.chakra-text.css-0').first().innerText().catch(() => '');
+        const CUSTOMER_NAME = await page.locator('p.chakra-text.css-0').first().innerText().catch(() =>'');
         const INVOICE_ID = invResult.ref;
         console.log(`[INFO] Document Setup Complete: ${INVOICE_ID} for ${CUSTOMER_NAME}`);
 
@@ -73,7 +73,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         // Phase 3: Approval
         console.log('[STEP] Phase 3: Approval flow');
         // ⚡ Fast API Approval
-        await app.advanceDocumentAPI(rcptId, 'receipts');
+        await app.advanceDocumentAPI(rcptId,'receipts');
         await page.reload(); // 🔄 Synchronization
         console.log(`[OK] Receipt approved via Fast-API`);
         console.log('[OK] Receipt approved');
@@ -83,7 +83,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @re
         await page.goto('/receivables/customers');
 
         const searchInput = page.locator('input[placeholder="Search for customers..."]');
-        await searchInput.waitFor({ state: 'visible' });
+        await searchInput.waitFor({ state:'visible' });
         await searchInput.fill(CUSTOMER_NAME);
         await page.waitForTimeout(3000);
 
