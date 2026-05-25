@@ -1,0 +1,53 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 334.87ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2669.96ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2026.09ms
+[INFO] Vendor: Zelalem H/Giorgis
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2143.18ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2225.49ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1930.95ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1954.42ms
+[PERFORMANCE] UI - Random Selection: Location: 1939.09ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1884.04ms
+[PERFORMANCE] UI - Random Selection: Tax: 1976.13ms
+[OK] Line item added (Price: 8909)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/25/000311 | Vendor: Zelalem H/Giorgis
+[API] Advancing purchase-orders "db34cdd4-5e15-4a91-97bf-79bb9444658d" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/db34cdd4-5e15-4a91-97bf-79bb9444658d/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/db34cdd4-5e15-4a91-97bf-79bb9444658d/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document db34cdd4-5e15-4a91-97bf-79bb9444658d is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 923.75ms
+[OK] PO PO/2026/05/25/000311 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/25/000311 via API
+[ACTION] Fetching PO Context for ID: db34cdd4-5e15-4a91-97bf-79bb9444658d...
+[PERFORMANCE] API - Create API Bill from PO: 233.76ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000443
+[API] Advancing bills "d56d40ca-20cd-4bc6-ac7f-fba2b2ee59b6" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/d56d40ca-20cd-4bc6-ac7f-fba2b2ee59b6/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/d56d40ca-20cd-4bc6-ac7f-fba2b2ee59b6/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document d56d40ca-20cd-4bc6-ac7f-fba2b2ee59b6 is already approved.
+[PERFORMANCE] API - API Advance: bills: 747.50ms
+[OK] Linked Bill BILL/2026/05/25/000443 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/25/000443 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Zelalem H/Giorgis"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/25/000443...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/25/000443 is physically present in Zelalem H/Giorgis's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/25/000311 -> Bill BILL/2026/05/25/000443
