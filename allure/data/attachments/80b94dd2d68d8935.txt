@@ -1,0 +1,283 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 238.72ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 644.84ms
+[STEP 1] Creating Bill for 5000...
+[PERFORMANCE] API - Create Bill: 276.65ms
+[SUCCESS] Bill created via API: BILL/2026/05/25/000453 (ID: a2b29047-ce60-4a81-8e20-216959e3e947)
+[API] Advancing bills "a2b29047-ce60-4a81-8e20-216959e3e947" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/a2b29047-ce60-4a81-8e20-216959e3e947/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/a2b29047-ce60-4a81-8e20-216959e3e947/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document a2b29047-ce60-4a81-8e20-216959e3e947 is already approved.
+[PERFORMANCE] API - API Advance: bills: 620.28ms
+[AUDIT] Verifying Journal Entries for Bill: BILL/2026/05/25/000453...
+[INFO] Captured 0 ledger entries via API
+[WARN] No journal entries found. Accounting drift detected or indexing lag.
+[STEP 2] Paying Bill...
+[DEBUG] initialBillData: {
+  "accounts_payable": {
+    "account_id": "2003",
+    "balance": 0,
+    "contra_account": null,
+    "contra_account_id": null,
+    "created_at": "2026-02-04T07:42:59.150471Z",
+    "created_by": "42477a9a-1f16-40b9-a64d-f0cc067a0b7c",
+    "credit": 0,
+    "debit": 0,
+    "default": "",
+    "deleted_by": "00000000-0000-0000-0000-000000000000",
+    "description": "",
+    "general_ledger": null,
+    "id": "c3528c18-a78a-4c28-9a6f-b4a797493f2d",
+    "key_flex_field_value": {
+      "segments": null
+    },
+    "name": "Accounts Payable",
+    "segment": null,
+    "segment_id": null,
+    "subsidiary": null,
+    "subsidiary_id": null,
+    "type": {
+      "id": 0,
+      "name": "",
+      "type": ""
+    },
+    "type_id": 13,
+    "updated_at": "2026-02-04T07:42:59.151605Z",
+    "updated_by": "00000000-0000-0000-0000-000000000000"
+  },
+  "accounts_payable_id": "c3528c18-a78a-4c28-9a6f-b4a797493f2d",
+  "bill_payments": null,
+  "created_at": "2026-05-25T09:03:40.905464Z",
+  "created_by": "42477a9a-1f16-40b9-a64d-f0cc067a0b7c",
+  "currency": {
+    "code": "BRR",
+    "created_at": "2026-02-04T07:42:51.716473Z",
+    "id": "50567982-ee2f-4391-9400-3149067443a5",
+    "is_default": true,
+    "name": "Birr",
+    "rate": 1,
+    "updated_at": "2026-02-04T07:42:51.716508Z"
+  },
+  "currency_id": "50567982-ee2f-4391-9400-3149067443a5",
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "078d9b2d-c0f1-4bfd-88e5-591384abfaf6",
+    "can_edit": true,
+    "color": "#7D838D",
+    "created_at": "2026-02-04T07:51:23.814005Z",
+    "description": "Initial State",
+    "id": "5f926868-bb3f-4030-a9c9-36684b474bd7",
+    "name": "Draft",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "draft",
+    "step_number": 1,
+    "updated_at": "2026-05-04T06:17:12.678286Z",
+    "verb": "Create"
+  },
+  "current_approval_step_id": "5f926868-bb3f-4030-a9c9-36684b474bd7",
+  "deleted_by": "00000000-0000-0000-0000-000000000000",
+  "dff_values": null,
+  "due": 5000,
+  "due_date": "2026-05-25T00:00:00Z",
+  "fiscal_budget": null,
+  "fiscal_budget_id": null,
+  "id": "a2b29047-ce60-4a81-8e20-216959e3e947",
+  "invoice_date": "2026-05-25T00:00:00Z",
+  "invoice_number": "BILL/2026/05/25/000453",
+  "items": [
+    {
+      "amount": 5000,
+      "asset_class_id": null,
+      "asset_id": null,
+      "bill": null,
+      "bill_id": "a2b29047-ce60-4a81-8e20-216959e3e947",
+      "created_at": "2026-05-25T09:03:40.913831Z",
+      "description": "Audit Bill of Your LED 5m",
+      "general_ledger_account": {
+        "account_id": "1002",
+        "balance": -785814.1185000017,
+        "contra_account": null,
+        "contra_account_id": null,
+        "created_at": "2026-02-04T07:42:59.150352Z",
+        "created_by": "42477a9a-1f16-40b9-a64d-f0cc067a0b7c",
+        "credit": 785814.1185000017,
+        "debit": 0,
+        "default": "debit",
+        "deleted_by": "00000000-0000-0000-0000-000000000000",
+        "description": "",
+        "general_ledger": null,
+        "id": "998df511-68ea-48b9-b405-9419eb78145b",
+        "key_flex_field_value": {
+          "segments": null
+        },
+        "name": "Cash - Branch Office",
+        "segment": null,
+        "segment_id": null,
+        "subsidiary": null,
+        "subsidiary_id": null,
+        "type": {
+          "id": 5,
+          "name": "Cash & Cash Equivalents",
+          "type": "current asset"
+        },
+        "type_id": 5,
+        "updated_at": "2026-02-04T07:42:59.151605Z",
+        "updated_by": "00000000-0000-0000-0000-000000000000"
+      },
+      "general_ledger_account_id": "998df511-68ea-48b9-b405-9419eb78145b",
+      "id": "521ec7c1-8c32-405c-956e-465a00bc0ca8",
+      "item": {
+        "bill_items": null,
+        "category": "Finished Goods",
+        "cost_method": {
+          "code": "",
+          "name": ""
+        },
+        "cost_method_code": "FIFO",
+        "created_at": "2026-02-04T07:43:02.473694Z",
+        "created_by": "42477a9a-1f16-40b9-a64d-f0cc067a0b7c",
+        "current_stock": 0,
+        "deleted_by": "00000000-0000-0000-0000-000000000000",
+        "description": null,
+        "dl_budget_account": null,
+        "dl_budget_account_id": null,
+        "dm_budget_account": null,
+        "dm_budget_account_id": null,
+        "fifo_layers": [
+          {
+            "date": "0001-01-01T00:00:00Z",
+            "doc_id": "00000000-0000-0000-0000-000000000000",
+            "doc_type": "import",
+            "original_qty": 3,
+            "remaining_qty": 3,
+            "unit_cost": 79.45,
+            "voided": false
+          }
+        ],
+        "gl_cost_account": null,
+        "gl_cost_account_id": "be25c86a-6298-4dae-83ec-41eb95748225",
+        "gl_inventory_account": null,
+        "gl_inventory_account_id": "44457d58-6964-469f-ad41-db3b896b4e2a",
+        "gl_sales_account": null,
+        "gl_sales_account_id": "403602e4-ce38-4eeb-932f-796a41e51179",
+        "id": "2e10a086-7af5-4732-b180-2d5b776fa3ad",
+        "initial_stock": 0,
+        "invoice_items": null,
+        "item_class": "RWT",
+        "item_id": "inventory/RWT-57",
+        "key_flex_field_value": {
+          "segments": null
+        },
+        "min_stock": 0,
+        "name": "Your LED 5m",
+        "note": "",
+        "nrv": null,
+        "part_number": "",
+        "payment_items": null,
+        "purchase_price": 0,
+        "quantity": 3,
+        "receipt_items": null,
+        "sanda_budget_account": null,
+        "sanda_budget_account_id": null,
+        "selling_price": 0,
+        "serial": "",
+        "status": "active",
+        "stoke_item_amount": 0,
+        "stoke_item_uom": "",
+        "tax": null,
+        "tax_id": null,
+        "unit_cost": 79.45,
+        "unit_of_measurement": "Each (ea)",
+        "updated_at": "2026-05-20T10:09:52.568545Z",
+        "updated_by": "00000000-0000-0000-0000-000000000000",
+        "write_down_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "item_id": "2e10a086-7af5-4732-b180-2d5b776fa3ad",
+      "lease_id": null,
+      "location_id": "2595ebb0-4e78-4bc5-9321-140d3fd316c7",
+      "project_id": null,
+      "quantity": 1,
+      "service_event_id": null,
+      "service_id": null,
+      "tax": null,
+      "tax_id": null,
+      "unit_price": 5000,
+      "updated_at": "2026-05-25T09:03:40.916678Z",
+      "warehouse_id": "cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4",
+      "with_tax": 5000,
+      "withold": 0
+    }
+  ],
+  "net_due": 5000,
+  "paid_amount": 0,
+  "payment_term": null,
+  "payment_term_id": null,
+  "purchase_journal": null,
+  "purchase_journal_id": null,
+  "purchase_order": null,
+  "purchase_order_id": "00000000-0000-0000-0000-000000000000",
+  "received_purchase_order_items": [],
+  "related_files": [],
+  "skip_draft": false,
+  "status": "draft",
+  "unpaid_amount": 5000,
+  "updated_at": "2026-05-25T09:03:40.909448Z",
+  "updated_by": "00000000-0000-0000-0000-000000000000",
+  "vendor": {
+    "address": {
+      "kebele": "Kebele 01",
+      "region": "Addis Ababa City Administration",
+      "woreda": "Woreda 5",
+      "zone": "Bole Subcity"
+    },
+    "balance": 0,
+    "bank_accounts": [
+      {
+        "account": "1000345678901",
+        "name": "Commercial Bank of Ethiopia"
+      }
+    ],
+    "created_at": "2026-02-04T07:43:02.524702Z",
+    "created_by": "42477a9a-1f16-40b9-a64d-f0cc067a0b7c",
+    "deleted_by": "00000000-0000-0000-0000-000000000000",
+    "dff_values": null,
+    "email": "info@gentiumconcrete.com",
+    "error": null,
+    "expense_account": null,
+    "expense_account_id": "cd869f51-f68d-4073-86cf-436515c57dfa",
+    "id": "73616cab-709b-4ce2-8dae-a6807adff4b1",
+    "name": "Gentium Concrite Industry",
+    "phone": "0932267333",
+    "ref": "VEND/2026/02/04/000001",
+    "tin": "0014345098",
+    "type": "service",
+    "updated_at": "2026-02-04T07:43:02.534746Z",
+    "updated_by": "00000000-0000-0000-0000-000000000000",
+    "website": "www.gentiumconcrete.com"
+  },
+  "vendor_id": "73616cab-709b-4ce2-8dae-a6807adff4b1"
+}
+[INFO] Paying exact balance of: 5000
+[ACTION] Creating Bill Payment for a2b29047-ce60-4a81-8e20-216959e3e947 via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/05/25/000160 (ID: 28e1f6d9-dee2-4b00-b740-4a77ba461013)
+[API] Advancing payments "28e1f6d9-dee2-4b00-b740-4a77ba461013" for company: "sample" | URL: http://157.180.20.112:8001/api/payments/28e1f6d9-dee2-4b00-b740-4a77ba461013/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/payments/28e1f6d9-dee2-4b00-b740-4a77ba461013/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 28e1f6d9-dee2-4b00-b740-4a77ba461013 is already approved.
+[PERFORMANCE] API - API Advance: payments: 713.71ms
+[SNAPSHOT] Bill Balance after Payment: 5000

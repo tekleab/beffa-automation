@@ -1,0 +1,45 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 417.60ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 775.82ms
+[STEP 1] Creating target Bill for 1000...
+[PERFORMANCE] API - Create Bill: 271.00ms
+[SUCCESS] Bill created via API: BILL/2026/05/25/000454 (ID: eb120567-b0bd-4d07-b81e-7994de45ac36)
+[API] Advancing bills "eb120567-b0bd-4d07-b81e-7994de45ac36" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/eb120567-b0bd-4d07-b81e-7994de45ac36/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/eb120567-b0bd-4d07-b81e-7994de45ac36/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document eb120567-b0bd-4d07-b81e-7994de45ac36 is already approved.
+[PERFORMANCE] API - API Advance: bills: 634.28ms
+[ATTACK] Triggering Concurrent Payment Race...
+[ACTION] Creating Bill Payment for eb120567-b0bd-4d07-b81e-7994de45ac36 via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/05/25/000161 (ID: 3ab46fa2-edde-46c1-8b5d-2256af483648)
+[ACTION] Creating Bill Payment for eb120567-b0bd-4d07-b81e-7994de45ac36 via API (CashAcct: 892c37c6-e7ba-4178-a8a7-48e57a846080)...
+[SUCCESS] Payment created: PAY/2026/05/25/000162 (ID: d8601149-4c68-45fe-adeb-23478799fa3a)
+[SNAPSHOT] Concurrent Results: 2 / 2 requests fulfilled.
+[API] Advancing payments "3ab46fa2-edde-46c1-8b5d-2256af483648" for company: "sample" | URL: http://157.180.20.112:8001/api/payments/3ab46fa2-edde-46c1-8b5d-2256af483648/advance?year=2018&period=yearly&calendar=ec
+[API] Advancing payments "d8601149-4c68-45fe-adeb-23478799fa3a" for company: "sample" | URL: http://157.180.20.112:8001/api/payments/d8601149-4c68-45fe-adeb-23478799fa3a/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/payments/d8601149-4c68-45fe-adeb-23478799fa3a/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document d8601149-4c68-45fe-adeb-23478799fa3a is already approved.
+[PERFORMANCE] API - API Advance: payments: 861.42ms
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/payments/3ab46fa2-edde-46c1-8b5d-2256af483648/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 3ab46fa2-edde-46c1-8b5d-2256af483648 is already approved.
+[PERFORMANCE] API - API Advance: payments: 969.30ms

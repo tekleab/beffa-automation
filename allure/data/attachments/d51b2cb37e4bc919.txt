@@ -1,0 +1,38 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 384.06ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1377.80ms
+[SEED] Low stock detected (3). Seeding 10 units via Bill...
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
+[PERFORMANCE] API - Create Bill: 288.62ms
+[SUCCESS] Bill created via API: BILL/2026/05/25/000450 (ID: 926b2265-06f8-4f60-ad06-9924c17ab9bc)
+[API] Advancing bills "926b2265-06f8-4f60-ad06-9924c17ab9bc" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/926b2265-06f8-4f60-ad06-9924c17ab9bc/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/926b2265-06f8-4f60-ad06-9924c17ab9bc/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 926b2265-06f8-4f60-ad06-9924c17ab9bc is already approved.
+[PERFORMANCE] API - API Advance: bills: 725.82ms
+[SEED] Stock replenished for Your LED 5m.
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[PERFORMANCE] API - Create Sales Order: 222.52ms
+[API] Advancing sales-orders "" for company: "sample" | URL: http://157.180.20.112:8001/api/sales-orders//advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[WARN] Advance ignored (Status 404). Already in next stage?
+[WARN] No API advance steps were successful. Verify if document  is already approved.
+[PERFORMANCE] API - API Advance: sales-orders: 736.19ms
+[ATTACK] Injecting malicious price: 50 (SO Price: 5000)...
