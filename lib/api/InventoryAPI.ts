@@ -51,7 +51,7 @@ export class InventoryAPI extends BasePage {
     gl_sales_account_id?: string
   }): Promise<{ itemName: string, id: string }> {
     const name = typeof data === 'string' ? data : data.name;
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -133,7 +133,7 @@ export class InventoryAPI extends BasePage {
 
   async discoverMetadataAPI(): Promise<{ locationId: string, warehouseId: string, salesAccountId: string, customerId: string }> {
       const token = await this._getAuthToken();
-      let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+      let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
       if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
       if (!apiBase.endsWith('/api')) apiBase += '/api';
       const headers = { 
@@ -164,7 +164,7 @@ export class InventoryAPI extends BasePage {
 
   async processAdjustmentAPI(id: string): Promise<void> {
       console.log(`[ACTION] Triggering API Process for Adjustment: ${id}`);
-      let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+      let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
       if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
       if (!apiBase.endsWith('/api')) apiBase += '/api';
       const token = await this._getAuthToken();
@@ -183,7 +183,7 @@ export class InventoryAPI extends BasePage {
 
 
   async createInventoryAdjustmentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; error?: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -278,7 +278,7 @@ export class InventoryAPI extends BasePage {
   async captureRandomItemDataAPI(paramsObj: { minStock?: number } = {}): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number; locationId?: string; warehouseId?: string }> {
     const { minStock = 1 } = paramsObj;
     // 🛡️ SMART PORT RESOLVER: Backend is usually 8001, Frontend is 4173.
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     
     // If the URL accidentally points to the frontend port, force it to 8001 for API
     if (apiBase.includes(':4173')) {
@@ -362,7 +362,7 @@ export class InventoryAPI extends BasePage {
   }
 
   async getItemDetailsAPI(itemId: string, locationId?: string): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number } | null> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -448,7 +448,7 @@ export class InventoryAPI extends BasePage {
   }
 
   async getJournalEntriesAPI(receiptId: string): Promise<Array<{ accountCode: string; accountName: string; accountType: string; debit: string; credit: string }>> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -504,5 +504,105 @@ export class InventoryAPI extends BasePage {
   async approveDepartmentRequestAPI(id: string) { console.warn('Stub: approveDepartmentRequestAPI'); }
   async reviewPropertyRequestAPI(id: string) { console.warn('Stub: reviewPropertyRequestAPI'); }
   async issueStoreRequestAPI(id: string) { console.warn('Stub: issueStoreRequestAPI'); }
-  async executeTransferAPI(data: any) { console.warn('Stub: executeTransferAPI'); return { id: 'stub' }; }
+  async executeTransferAPI(data: {
+    itemId: string;
+    quantity: number;
+    fromLocationId: string;
+    fromWarehouseId: string;
+    toLocationId?: string;   // auto-discovered if omitted
+    toWarehouseId?: string;
+  }): Promise<{ outRef: string; inRef: string; fromLocationId: string; toLocationId: string }> {
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const year     = process.env.BEFFA_YEAR     || '2018';
+    const period   = process.env.BEFFA_PERIOD   || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params   = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers  = {
+      'x-company': process.env.BEFFA_COMPANY as string,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'x-role': 'IT Administrator / User Manager'
+    };
+
+    // 1. Discover adjustment account
+    let adjAccountId: string | undefined;
+    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    if (acctResp.ok()) {
+      const acctData = await acctResp.json();
+      const accounts = acctData.items || acctData.data || [];
+      adjAccountId = accounts.find((a: any) => a.account_type?.toLowerCase().includes('expense'))?.id || accounts[0]?.id;
+    }
+
+    // 2. Discover destination location (different from source)
+    let toLocationId  = data.toLocationId;
+    let toWarehouseId = data.toWarehouseId;
+    if (!toLocationId) {
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=20&${params}`, { headers });
+      if (locResp.ok()) {
+        const locData = await locResp.json();
+        const locs = locData.items || locData.data || [];
+        const dest = locs.find((l: any) => l.id !== data.fromLocationId);
+        if (!dest) throw new Error('[TRANSFER] Could not find a second location for destination. Only one location exists.');
+        toLocationId  = dest.id;
+        toWarehouseId = dest.warehouse_id || dest.warehouse?.id;
+      }
+    }
+    if (!toLocationId) throw new Error('[TRANSFER] No destination location resolved.');
+
+    console.log(`[TRANSFER] OUT: ${data.fromLocationId} → IN: ${toLocationId} | Qty: ${data.quantity}`);
+
+    const basePayload = {
+      adjusted_by: 'quantity',
+      adjusted_cost: 0,
+      adjustment_account_id: adjAccountId,
+      inventory_item_id: data.itemId,
+      date: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
+      note: '',
+      reason: 'Automated E2E Warehouse Transfer',
+      skip_draft: false,
+      status: 'draft'
+    };
+
+    // 3. OUT adjustment at source (write-down / negative)
+    const outPayload = {
+      ...basePayload,
+      adjusted_quantity: -data.quantity,
+      is_write_down: 'true',
+      location_id: data.fromLocationId,
+      warehouse_id: data.fromWarehouseId,
+      current_quantity: 0,
+      location_quantity: 0
+    };
+    const outResp = await this.safePost(`${apiBase}/inventory-adjustments?${params}`, { data: outPayload, headers, label: 'Transfer OUT' });
+    if (!outResp.ok()) throw new Error(`[TRANSFER] OUT adjustment failed: ${outResp.status()} - ${await outResp.text()}`);
+    const outJson = await outResp.json();
+    console.log(`[TRANSFER] OUT created: ${outJson.ref} (ID: ${outJson.id})`);
+    await this.advanceDocumentAPI(outJson.id, 'inventory-adjustments');
+
+    // 4. IN adjustment at destination (add stock)
+    const inPayload = {
+      ...basePayload,
+      adjusted_quantity: data.quantity,
+      is_write_down: 'false',
+      location_id: toLocationId,
+      warehouse_id: toWarehouseId,
+      current_quantity: 0,
+      location_quantity: 0
+    };
+    const inResp = await this.safePost(`${apiBase}/inventory-adjustments?${params}`, { data: inPayload, headers, label: 'Transfer IN' });
+    if (!inResp.ok()) throw new Error(`[TRANSFER] IN adjustment failed: ${inResp.status()} - ${await inResp.text()}`);
+    const inJson = await inResp.json();
+    console.log(`[TRANSFER] IN created: ${inJson.ref} (ID: ${inJson.id})`);
+    await this.advanceDocumentAPI(inJson.id, 'inventory-adjustments');
+
+    return {
+      outRef: outJson.ref,
+      inRef:  inJson.ref,
+      fromLocationId: data.fromLocationId,
+      toLocationId:   toLocationId!
+    };
+  }
 }

@@ -17,36 +17,55 @@ test.describe('Inventory Logic & Transfer Audits @logic @inventory', () => {
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log(`[STEP 1] Discovering transfer source and destination...`);
-        const item = await app.api.inventory.captureRandomItemDataAPI();
+        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 5 });
         
-        // We need a second warehouse/location for the transfer
-        // For the audit, we'll try to find a valid destination or use the system defaults
-        const transferQty = 5;
-        const initialSourceStock = item.currentStock;
-        
-        if (initialSourceStock < transferQty) {
-            console.log(`[SKIP] Initial stock (${initialSourceStock}) too low for transfer test.`);
+        if (!item) {
+            console.log(`[SKIP] No item found with enough stock for transfer test.`);
             return;
         }
 
-        console.log(`[STEP 2] Executing Warehouse Transfer of ${transferQty} units...`);
-        // Note: Using the API to trigger a transfer
-        // In this ERP, transfers are often 'Stock Movements' or 'Warehouse Transfers'
+        const transferQty = 5;
+        const initialSourceStock = item.currentStock;
+        
+        console.log(`[STEP 2] Executing Warehouse Transfer of ${transferQty} units from location ${item.locationId}...`);
+        
         try {
             const transfer = await app.api.inventory.executeTransferAPI({
                 itemId: item.itemId,
                 quantity: transferQty,
-                fromWarehouseId: item.warehouseId,
-                toWarehouseId: 'auto-select-different', // Logic inside helper
+                fromLocationId: item.locationId,
+                fromWarehouseId: item.warehouseId
             });
 
-            console.log(`[STEP 3] Verifying Source Stock Reduction...`);
-            const finalSourceStock = await app.api.inventory.pollStockAPI(item.itemId, initialSourceStock - transferQty, item.warehouseId);
-            expect(finalSourceStock).toBe(initialSourceStock - transferQty);
+            console.log(`[SUCCESS] Transfer paired adjustments created & approved: OUT=${transfer.outRef}, IN=${transfer.inRef}`);
 
-            console.log(`[SUCCESS] Warehouse Transfer Logic Confirmed: Stock correctly subtracted from source.`);
+            console.log(`[STEP 3] Verifying Source Stock Reduction...`);
+            const expectedSourceStock = initialSourceStock - transferQty;
+            const finalSourceStock = await app.api.inventory.pollStockAPI(item.itemId, expectedSourceStock, transfer.fromLocationId);
+            
+            console.log(`[STEP 4] Verifying Destination Stock Exists...`);
+            // We don't have the initial dest stock explicitly, but we know it should have increased by transferQty
+            // We just verify we can get the details and it has at least transferQty
+            const destDetails = await app.api.inventory.getItemDetailsAPI(item.itemId, transfer.toLocationId);
+            const finalDestStock = destDetails?.currentStock || 0;
+
+            console.log(`\n========== TRANSFER AUDIT REPORT ==========`);
+            console.log(`[IMPACT] Item               : ${item.itemName}`);
+            console.log(`[IMPACT] Transfer Qty       : ${transferQty}`);
+            console.log(`[IMPACT] Source Loc         : ${transfer.fromLocationId}`);
+            console.log(`[IMPACT] Source Stock BEFORE: ${initialSourceStock}`);
+            console.log(`[IMPACT] Source Stock AFTER : ${finalSourceStock} (expected: ${expectedSourceStock})`);
+            console.log(`[IMPACT] Dest Loc           : ${transfer.toLocationId}`);
+            console.log(`[IMPACT] Dest Stock AFTER   : ${finalDestStock} (must be >= ${transferQty})`);
+            console.log(`=============================================\n`);
+
+            expect(finalSourceStock).toBe(expectedSourceStock);
+            expect(finalDestStock).toBeGreaterThanOrEqual(transferQty);
+
+            console.log(`[SUCCESS] Warehouse Transfer Logic Confirmed: Stock correctly subtracted from source and added to destination.`);
         } catch (err: any) {
             console.log(`[WARN] Transfer failed or not supported in this environment: ${err.message}`);
+            throw err;
         }
     });
 });

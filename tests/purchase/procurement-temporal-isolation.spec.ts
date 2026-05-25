@@ -10,7 +10,8 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 test.describe('Procurement Temporal & Data Isolation Audits @security @purchase', () => {
-    test.describe.configure({ mode: 'serial' });
+    // Removed serial mode so all tests run even if one fails
+    // test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -18,6 +19,8 @@ test.describe('Procurement Temporal & Data Isolation Audits @security @purchase'
     });
 
     test('Guardrail: System must explicitly reject historical back-dated Bills', async ({ page }) => {
+        // [KNOWN BUG] API accepts back-dated historical bills allowing temporal manipulation.
+        
         const app = new AppManager(page);
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.captureRandomItemDataAPI();
@@ -50,6 +53,8 @@ test.describe('Procurement Temporal & Data Isolation Audits @security @purchase'
     });
 
     test('Guardrail: System must strictly segregate bills by Vendor', async ({ page }) => {
+        // [KNOWN BUG] API returns Vendor A's bills when querying Vendor B's ledger.
+        
         const app = new AppManager(page);
         
         console.log(`[STEP 1] Discovering two different vendors...`);

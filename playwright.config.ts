@@ -40,13 +40,13 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: (process.env.BASE_URL || 'http://157.180.20.112:4173').replace(/['"]+/g, ''),
-    viewport: { width: 1920, height: 1080 },
+    baseURL: (process.env.BASE_URL || 'http://localhost:4173').replace(/['"]+/g, ''),
+    viewport: null,
 
     launchOptions: {
       args: [
         '--start-maximized',
-        '--force-device-scale-factor=0.8',
+        '--force-device-scale-factor=0.75',
       ],
     },
 
@@ -62,34 +62,35 @@ export default defineConfig({
     {
       name: 'Forensic-Sales',
       testMatch: /sales\/.*(audit|logic|concurrency|security|isolation).*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: { viewport: null },
     },
     {
       name: 'Forensic-Purchase',
       testMatch: /purchase\/.*(procurement|audit|logic|concurrency|security|isolation).*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: { viewport: null },
     },
     {
       name: 'Forensic-Inventory',
       testMatch: /inventory\/.*(integrity|audit|logic|concurrency|security|temporal).*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: { viewport: null },
     },
     {
       name: 'Sales-Workflows',
       testMatch: /sales\/.*\.spec\.ts/,
       testIgnore: [/.*(audit|logic|concurrency|security|isolation).*/],
-      use: { ...devices['Desktop Chrome'] },
+      use: { viewport: null },
     },
     {
       name: 'Purchase-Workflows',
       testMatch: /purchase\/.*\.spec\.ts/,
       testIgnore: [/.*(procurement|audit|logic|concurrency|security|isolation).*/],
-      use: { ...devices['Desktop Chrome'] },
+      use: { viewport: null },
     },
     {
       name: 'Inventory',
       testMatch: /inventory\/.*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      testIgnore: [/.*(integrity|audit|logic|concurrency|security|temporal).*/],
+      use: { viewport: null },
     },
   ],
 

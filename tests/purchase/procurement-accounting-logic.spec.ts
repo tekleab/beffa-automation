@@ -98,7 +98,12 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
 
         // 2. Pay Bill (Amount Due -> 0)
         console.log(`[STEP 2] Paying Bill...`);
-        const payment = await app.api.purchase.createBillPaymentAPI({ amount: 5000, billId: bill.id, vendorId: meta.vendorId });
+        let initialBillData = await app.api.purchase.getBillAPI(bill.id);
+        console.log(`[DEBUG] initialBillData:`, JSON.stringify(initialBillData, null, 2));
+        let totalAmountToPay = parseFloat(initialBillData.balance ?? initialBillData.amount_due ?? initialBillData.unpaid_amount ?? initialBillData.total ?? 5000);
+        console.log(`[INFO] Paying exact balance of: ${totalAmountToPay}`);
+        
+        const payment = await app.api.purchase.createBillPaymentAPI({ amount: totalAmountToPay, billId: bill.id, vendorId: meta.vendorId });
         await app.advanceDocumentAPI(payment.id, 'payments');
 
         // 3. Verify Balance is 0
@@ -109,7 +114,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
 
         // 4. VOID the Payment
         console.log(`[ACTION] Reversing/Voiding Payment ${payment.ref}...`);
-        const voidSuccess = await app.api.purchase.reverseBillAPI(payment.id); // Reusing void helper
+        const voidSuccess = await app.api.purchase.reversePaymentAPI(payment.id); 
         expect(voidSuccess).toBe(true);
 
         // 5. CRITICAL CHECK: Does the Bill balance go back to 5000?
@@ -124,7 +129,7 @@ test.describe('Procurement Ledger & Flow Logic Audits @logic @purchase', () => {
             throw new Error(`[CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full payment did not restore bill balance! Current: 0, Expected: 5000`);
         }
         
-        expect(currentBalance).toBe(5000);
-        console.log(`[SUCCESS] Ledger Integrity Confirmed. Reversal restored the debt.`);
+        expect(currentBalance).toBe(totalAmountToPay);
+        console.log(`[SUCCESS] Ledger Integrity Confirmed. Reversal restored the exact debt: ${totalAmountToPay}.`);
     });
 });

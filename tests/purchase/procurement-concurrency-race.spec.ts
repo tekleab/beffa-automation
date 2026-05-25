@@ -61,7 +61,7 @@ test.describe('Procurement Concurrency & Race Condition Audits @security @concur
         const item = await app.api.inventory.captureRandomItemDataAPI();
 
         console.log(`[STEP 1] Capturing Baseline for "${item.itemName}"...`);
-        const startStock = await app.api.inventory.pollStockAPI(item.itemId, item.locationId);
+        const startStock = item.currentStock;
         
         // 2. Create 2 Bills for 5 units each
         const bill1 = await app.api.purchase.createBillAPI({ itemData: item, quantity: 5, vendorId: meta.vendorId });
@@ -77,10 +77,9 @@ test.describe('Procurement Concurrency & Race Condition Audits @security @concur
 
         // 4. Verify Final Stock: Must be exactly Start + 10
         console.log(`[AUDIT] Verifying Stock Integrity...`);
-        await page.waitForTimeout(5000); // Wait for stock engine
-        const finalStock = await app.api.inventory.pollStockAPI(item.itemId, item.locationId);
-        
         const expectedStock = startStock + 10;
+        const finalStock = await app.api.inventory.pollStockAPI(item.itemId, expectedStock, item.locationId);
+        
         console.log(`[SNAPSHOT] Start: ${startStock} | Expected: ${expectedStock} | Final: ${finalStock}`);
 
         if (finalStock !== expectedStock) {

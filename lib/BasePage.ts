@@ -18,7 +18,7 @@ export class BasePage {
     this.page = page;
 
     // Configure API Base
-    let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (base.includes(':4173')) base = base.replace(':4173', ':8001');
     if (!base.endsWith('/api')) base += '/api';
     this.apiBase = base;
@@ -96,18 +96,35 @@ export class BasePage {
     const headers = {
       'x-company': company,
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'x-role': 'IT Administrator / User Manager'
     };
 
-    console.log(`[API] Advancing ${docType} "${docId}" for company: "${company}"`);
+    console.log(`[API] Advancing ${docType} "${docId}" for company: "${company}" | URL: ${url}`);
     await this.startTacticalTimer();
 
     let success = false;
     for (let i = 0; i < 4; i++) {
-      // Most stages in this ERP require an explicit reviewer/approver assignment
-      // We use the ID discovered: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c (System Admin)
-      const payload = { submitted_to: "42477a9a-1f16-40b9-a64d-f0cc067a0b7c" };
+      // Get current authenticated user's ID for submitted_to
+      let submittedTo: string | undefined;
+      try {
+        // First: try to get current user ID from /users/me
+        const meResp = await this.page.request.get(`${this.apiBase}/users/me`, { headers });
+        if (meResp.ok()) {
+          const meData = await meResp.json();
+          submittedTo = meData?.id || meData?.user_id;
+          if (submittedTo) console.log(`[INFO] Step ${i + 1}: Current user ID: ${submittedTo}`);
+        }
+      } catch (e: any) {
+        console.log(`[WARN] /users/me failed: ${e.message}`);
+      }
+      // Fallback: correct System Admin UUID for this environment
+      if (!submittedTo) {
+        submittedTo = process.env.BEFFA_ADMIN_ID || '14bb1e8c-496f-4556-99e0-830681fcf3de';
+        console.log(`[WARN] Using fallback user ID: ${submittedTo}`);
+      }
 
+      const payload = { submitted_to: submittedTo };
       const resp = await this.page.request.patch(url, { headers, data: payload });
       const status = resp.status();
 
@@ -133,7 +150,8 @@ export class BasePage {
         const text = await resp.text();
         throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
       } else {
-        console.log(`[INFO] Advance cycle break. Status: ${status}`);
+        const errBody = await resp.text().catch(() => '(unreadable)');
+        console.log(`[ERROR] Advance failed. Status: ${status} | URL: ${url} | Body: ${errBody.substring(0, 300)}`);
         break;
       }
     }

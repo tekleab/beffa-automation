@@ -44,7 +44,7 @@ export class PurchaseAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
 
@@ -60,7 +60,7 @@ export class PurchaseAPI extends BasePage {
   }
 
   async discoverMetadataAPI(): Promise<{ apAccountId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string; vendorId: string; withholdingAccountId: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -141,7 +141,7 @@ export class PurchaseAPI extends BasePage {
   }
 
   async createPurchaseOrderAPI(itemData: Record<string, any> = {}, qty: number = 10, unitPrice: number = 5000, vendorId: string | null = null): Promise<{ success: boolean; poNumber: string; poId: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -223,10 +223,10 @@ export class PurchaseAPI extends BasePage {
     return { success: true, poNumber: json.po_number, poId: json.id };
   }
 
-  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; description?: string } = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, description = null } = params;
+  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string } = {}): Promise<{ success: boolean; ref: string; id: string }> {
+    const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, glAccountId = undefined, discount_amount = 0, description = null } = params;
     const finalQty = quantity || qty;
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -266,7 +266,7 @@ export class PurchaseAPI extends BasePage {
       allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) ||
       allAccounts[0];
 
-    const glAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
+    const resolvedGlAccount = glAccountId !== undefined ? { id: glAccountId } : (allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0]);
 
     // 3. Discover Currency
     const currResp = await this.page.request.get(`${apiBase}/currency?${qs}`, { headers });
@@ -293,14 +293,15 @@ export class PurchaseAPI extends BasePage {
       due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
       items: [{
         item_id: itemData.itemId || itemData.id,
-        general_ledger_account_id: glAccount?.id,
+        general_ledger_account_id: resolvedGlAccount?.id || null,
         location_id: locationId,
-        quantity: qty,
+        quantity: finalQty,
         tax_id: itemData.taxId || null,
         unit_price: unitPrice,
         warehouse_id: warehouseId,
         description: description || `Audit Bill of ${itemData.itemName || itemData.name}`,
-        amount: qty * unitPrice
+        amount: finalQty * unitPrice,
+        discount_amount: discount_amount
       }],
       vendor_id: resolvedVendorId,
       status: 'draft'
@@ -318,7 +319,7 @@ export class PurchaseAPI extends BasePage {
     return { success: true, ref: json.invoice_number, id: json.id };
   }
   async createBillFromPoAPI(poId: string): Promise<{ success: boolean; billNumber: string; billId: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -380,7 +381,7 @@ export class PurchaseAPI extends BasePage {
   }
 
   async verifyBillInVendorAPI(vendorName: string, billNumber: string): Promise<boolean> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -436,7 +437,7 @@ export class PurchaseAPI extends BasePage {
   }
 
   async createBillPaymentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -497,7 +498,7 @@ export class PurchaseAPI extends BasePage {
   }
 
   async getBillAPI(billId: string): Promise<any> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -517,7 +518,7 @@ export class PurchaseAPI extends BasePage {
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
     const params = `year=${year}&period=yearly&calendar=ec`;
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const response = await this.page.request.get(`${apiBase}/payments/${paymentId}?${params}`, {
@@ -531,7 +532,7 @@ export class PurchaseAPI extends BasePage {
     const year = process.env.BEFFA_YEAR || '2018';
     const params = `year=${year}&period=yearly&calendar=ec`;
 
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     console.log(`[ACTION] Reversing/Voiding Bill ${billId} via API...`);
@@ -551,12 +552,37 @@ export class PurchaseAPI extends BasePage {
     return true;
   }
 
+  async reversePaymentAPI(paymentId: string): Promise<boolean> {
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const params = `year=${year}&period=yearly&calendar=ec`;
+
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
+    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    console.log(`[ACTION] Reversing/Voiding Payment ${paymentId} via API...`);
+    const response = await this.page.request.patch(`${apiBase}/payments/${paymentId}/void?${params}`, {
+      data: {}, // The void action is defined in the URL path for payments
+      headers: {
+        'x-company': process.env.BEFFA_COMPANY || 'sample',
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok()) {
+      console.error(`[ERROR] Payment Reversal failed (${response.status()}): ${await response.text()}`);
+      return false;
+    }
+    return true;
+  }
+
   async approvePaymentAPI(paymentId: string): Promise<boolean> {
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
     const params = `year=${year}&period=yearly&calendar=ec`;
 
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     console.log(`[ACTION] Approving Payment ${paymentId} via API...`);
@@ -575,7 +601,7 @@ export class PurchaseAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `status=approved&year=${year}&period=${period}&calendar=${calendar}`;
 
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : 'http://157.180.20.112:8001';
+    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
     if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     console.log(`[ACTION] API Discovery: Scanning for unpaid approved bills in "${company}"...`);

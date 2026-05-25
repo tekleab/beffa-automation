@@ -36,7 +36,7 @@ export class AuthManager extends BasePage {
 
     try {
       // 1. Attempt API Login
-      const loginUrl = `http://157.180.20.112:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+      const loginUrl = `${this.apiBase}/users/login?year=2018&period=yearly&calendar=ec&month=6`;
       await this.startTacticalTimer();
       const response = await this.page.request.post(loginUrl, {
         data: { email: cleanEmail, password: cleanPass },

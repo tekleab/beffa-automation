@@ -138,6 +138,7 @@ export class AppManager {
   async createReceiptAPI(...args: Parameters<SalesAPI['createReceiptAPI']>) { return await this.api.sales.createReceiptAPI(...args); }
   async getJournalEntriesAPI(...args: Parameters<InventoryAPI['getJournalEntriesAPI']>) { return await this.api.inventory.getJournalEntriesAPI(...args); }
   async reverseInvoiceAPI(...args: Parameters<SalesAPI['reverseInvoiceAPI']>) { return await this.api.sales.reverseInvoiceAPI(...args); }
+  async reverseReceiptAPI(...args: Parameters<SalesAPI['reverseReceiptAPI']>) { return await this.api.sales.reverseReceiptAPI(...args); }
   async getBillAPI(...args: Parameters<PurchaseAPI['getBillAPI']>) { return await this.api.purchase.getBillAPI(...args); }
   async approvePaymentAPI(...args: Parameters<PurchaseAPI['approvePaymentAPI']>) { return await this.api.purchase.approvePaymentAPI(...args); }
   async approveInvoiceAPI(...args: Parameters<SalesAPI['approveInvoiceAPI']>) { return await this.api.sales.approveInvoiceAPI(...args); }

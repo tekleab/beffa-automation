@@ -9,8 +9,6 @@ import { AppManager } from '../../pages/AppManager';
  * General Ledger correctly reflects reversals and partial scenarios.
  */
 test.describe('Accounting & Ledger Flow Logic Audits @logic @sales', () => {
-    test.describe.configure({ mode: 'serial' });
-
     test.setTimeout(500000);
 
     /**
@@ -153,7 +151,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales', () => {
     // -------------------------------------------------------------------------
     // TEST 3: Partial Payment & Double-Dip Guardrail
     // -------------------------------------------------------------------------
-    test('Audit: System must prevent double-dip overpayments across multi-link receipts', async ({ page }) => {
+    test('Guardrail: System must prevent double-dip overpayments across multi-link receipts', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         
@@ -195,7 +193,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales', () => {
     // -------------------------------------------------------------------------
     // TEST 4: Partial Reversal Ledger Drift
     // -------------------------------------------------------------------------
-    test('Audit: Invoice balance must correctly restore after receipt reversal', async ({ page }) => {
+    test('Guardrail: Invoice balance must correctly restore after receipt reversal', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         
@@ -227,16 +225,28 @@ test.describe('Accounting & Ledger Flow Logic Audits @logic @sales', () => {
             });
             await app.advanceDocumentAPI(rct1.id, 'receipts');
 
+            // 1. Reverse the Receipt FIRST
             console.log(`[ACTION] Reversing Receipt ${rct1.ref}...`);
-            await app.reverseInvoiceAPI(rct1.id);
+            await app.reverseReceiptAPI(rct1.id);
             
             await page.waitForTimeout(5000);
             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
-            console.log(`[AUDIT] After Reversal: unreceived_amount = ${finalInv.unreceived_amount}`);
+            console.log(`[AUDIT] After Receipt Reversal: unreceived_amount = ${finalInv.unreceived_amount}`);
 
             if (Number(finalInv.unreceived_amount) !== INVOICE_AMOUNT) {
                 throw new Error(`[CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: ${finalInv.unreceived_amount}, Expected: ${INVOICE_AMOUNT}`);
             }
+
+            console.log(`[PASS] Receipt reversed successfully. Invoice balance restored to ${INVOICE_AMOUNT}.`);
+
+            // 2. Reverse the Invoice itself
+            console.log(`[ACTION] Reversing Invoice ${finalInv.invoice_number}...`);
+            await app.reverseInvoiceAPI(inv.id);
+
+            await page.waitForTimeout(2000);
+            const voidedInv = await app.api.sales.getInvoiceAPI(inv.id);
+            console.log(`[AUDIT] After Invoice Reversal: status = ${voidedInv.status}`);
+
         } catch (error: any) {
              if (error.message.includes('CRITICAL_LOGIC_BUG')) throw error;
              console.log(`[PASS/BUG] Transaction failed or was blocked: ${error.message}`);
