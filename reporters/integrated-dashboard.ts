@@ -38,6 +38,16 @@ class IntegratedDashboard implements Reporter {
 
     findFailures(this.rootSuite);
 
+    // Calculate actual pass rate dynamically
+    const allTests = this.rootSuite.allTests();
+    const totalTests = allTests.length;
+    const failedTests = allTests.filter(test => {
+      const lastResult = test.results[test.results.length - 1];
+      return lastResult?.status === 'failed' || lastResult?.status === 'timedOut';
+    }).length;
+    const passedTests = totalTests - failedTests;
+    const passRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 100;
+
     // 2. BUILD DYNAMIC HTML DROPDOWN
     let reproHtml = '';
     const issueCount = capturedIssues.length;
@@ -126,7 +136,7 @@ class IntegratedDashboard implements Reporter {
         <div class="metrics-stack">
             <div class="metric-card"><div class="m-val">3</div><div class="m-label">Dynamic Domains Audited</div></div>
             <div class="metric-card" style="border-left-color: ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}"><div class="m-val">${issueCount > 0 ? 'BLOCKER' : 'ACTIVE'}</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">${issueCount > 0 ? '75%' : '100%'}</div><div class="m-label">Security UUID Compliance</div></div>
+            <div class="metric-card"><div class="m-val">${passRate}%</div><div class="m-label">Security UUID Compliance</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
@@ -134,7 +144,7 @@ class IntegratedDashboard implements Reporter {
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">${issueCount > 0 ? '75%' : '100%'}</div>
+                <div id="hudRateValue" class="integrity-val">${passRate}%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
                 <div style="font-size: 0.6rem; color: ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}; font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: ${issueCount}</div>
                 <div style="color: ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}; font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: ${issueCount > 0 ? 'CRITICAL' : 'OPTI-PASSED'}</div>
