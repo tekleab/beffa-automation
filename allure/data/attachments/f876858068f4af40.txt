@@ -1,0 +1,43 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 218.62ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 764.10ms
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
+[PERFORMANCE] API - Create Bill: 277.49ms
+[SUCCESS] Bill created via API: BILL/2026/05/25/000476 (ID: 6c6237ac-4712-4380-83da-25be587d295e)
+[API] Advancing bills "6c6237ac-4712-4380-83da-25be587d295e" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/6c6237ac-4712-4380-83da-25be587d295e/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/6c6237ac-4712-4380-83da-25be587d295e/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 6c6237ac-4712-4380-83da-25be587d295e is already approved.
+[PERFORMANCE] API - API Advance: bills: 676.73ms
+[ATTACK] Firing 2 concurrent Invoicing requests for the same single unit...
+[API] Advancing invoices "1fe5d8a6-d788-49e6-8d25-89afae415b84" for company: "sample" | URL: http://157.180.20.112:8001/api/invoices/1fe5d8a6-d788-49e6-8d25-89afae415b84/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/invoices/1fe5d8a6-d788-49e6-8d25-89afae415b84/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 1fe5d8a6-d788-49e6-8d25-89afae415b84 is already approved.
+[PERFORMANCE] API - API Advance: invoices: 1301.31ms
+[API] Advancing invoices "c75ce438-4730-4c83-926b-49931bc5d3e3" for company: "sample" | URL: http://157.180.20.112:8001/api/invoices/c75ce438-4730-4c83-926b-49931bc5d3e3/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/invoices/c75ce438-4730-4c83-926b-49931bc5d3e3/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document c75ce438-4730-4c83-926b-49931bc5d3e3 is already approved.
+[PERFORMANCE] API - API Advance: invoices: 771.58ms

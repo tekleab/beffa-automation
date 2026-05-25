@@ -1,0 +1,61 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 388.29ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2557.33ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1914.43ms
+[INFO] Vendor: Gentium Concrite Industry
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 1895.65ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 1893.37ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1798.48ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1879.45ms
+[PERFORMANCE] UI - Random Selection: Location: 1842.04ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1773.45ms
+[PERFORMANCE] UI - Random Selection: Tax: 1811.17ms
+[OK] Line item added (Price: 6763)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/25/000324 | Vendor: Gentium Concrite Industry
+[API] Advancing purchase-orders "2cea66a5-4608-4ad7-b90f-2ff335093553" for company: "sample" | URL: http://157.180.20.112:8001/api/purchase-orders/2cea66a5-4608-4ad7-b90f-2ff335093553/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/purchase-orders/2cea66a5-4608-4ad7-b90f-2ff335093553/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 2cea66a5-4608-4ad7-b90f-2ff335093553 is already approved.
+[PERFORMANCE] API - API Advance: purchase-orders: 1094.16ms
+[OK] PO PO/2026/05/25/000324 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/25/000324 via API
+[ACTION] Fetching PO Context for ID: 2cea66a5-4608-4ad7-b90f-2ff335093553...
+[PERFORMANCE] API - Create API Bill from PO: 250.73ms
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/25/000475
+[API] Advancing bills "ca84b830-0588-4f62-9e32-f9d391396c36" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/ca84b830-0588-4f62-9e32-f9d391396c36/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/ca84b830-0588-4f62-9e32-f9d391396c36/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document ca84b830-0588-4f62-9e32-f9d391396c36 is already approved.
+[PERFORMANCE] API - API Advance: bills: 961.23ms
+[OK] Linked Bill BILL/2026/05/25/000475 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/25/000475 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Gentium Concrite Industry"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/25/000475...
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 1/15. Retrying in 2s...
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 2/15. Retrying in 2s...
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 3/15. Retrying in 2s...
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 4/15. Retrying in 2s...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/25/000475 is physically present in Gentium Concrite Industry's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/25/000324 -> Bill BILL/2026/05/25/000475
