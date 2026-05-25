@@ -1,0 +1,22 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 208.39ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...
+[META] Discovered AP: "Accounts Payable" | WT: "Withholding Tax Payable"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 595.85ms
+[ATTACK] Attempting to inject a Bill from 2023-01-01T00:00:00Z (Historical Manipulation)...
+[PERFORMANCE] API - Create Bill: 240.77ms
+[SUCCESS] Bill created via API: BILL/2026/05/25/000464 (ID: 64968870-4662-4b0a-a6cc-2f1580afa098)
+[VULNERABILITY] System accepted back-dated Bill creation: BILL/2026/05/25/000464
+[API] Advancing bills "64968870-4662-4b0a-a6cc-2f1580afa098" for company: "sample" | URL: http://157.180.20.112:8001/api/bills/64968870-4662-4b0a-a6cc-2f1580afa098/advance?year=2018&period=yearly&calendar=ec
+[WARN] Using fallback user ID: 14bb1e8c-496f-4556-99e0-830681fcf3de
+[ERROR] Advance failed. Status: 500 | URL: http://157.180.20.112:8001/api/bills/64968870-4662-4b0a-a6cc-2f1580afa098/advance?year=2018&period=yearly&calendar=ec | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] No API advance steps were successful. Verify if document 64968870-4662-4b0a-a6cc-2f1580afa098 is already approved.
+[PERFORMANCE] API - API Advance: bills: 567.87ms
