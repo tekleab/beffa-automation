@@ -110,10 +110,12 @@ jobs:
         echo "Test Type Selected: $TEST_TYPE (Grep args: $GREP_ARGS)"
         echo "Company Target: $BEFFA_COMPANY"
 
-        # ✅ RESET accumulator so percentages are fresh for THIS run only
+        # ✅ RESET accumulator and Allure results so THIS run is always fresh and clean
         mkdir -p deploy
         rm -f deploy/dashboard-accumulated.json
-        echo "🗑️ Reset dashboard accumulator for clean run."
+        rm -rf allure-results
+        mkdir -p allure-results
+        echo "🗑️ Reset dashboard accumulator and Allure results for clean $TEST_TYPE run."
 
         # Disable exit on error so we run ALL batches even if Part 1 fails!
         set +e
@@ -163,14 +165,25 @@ jobs:
       if: always()
       run: |
         mkdir -p allure-results
-        echo '{
-          "name": "GitHub Actions",
-          "type": "github",
-          "url": "https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}",
-          "buildOrder": "${{ github.run_id }}",
-          "buildName": "Playwright Tests #${{ github.run_id }}",
-          "buildUrl": "https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}"
-        }' > allure-results/executor.json
+        echo "{
+          \"name\": \"GitHub Actions\",
+          \"type\": \"github\",
+          \"url\": \"https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}\",
+          \"buildOrder\": \"${{ github.run_id }}\",
+          \"buildName\": \"[${{ env.TEST_TYPE }}] Playwright Tests #${{ github.run_id }}\",
+          \"buildUrl\": \"https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}\"
+        }" > allure-results/executor.json
+
+        # Write environment metadata shown in Allure Overview
+        cat > allure-results/environment.properties << EOF
+        Test.Suite=${{ env.TEST_TYPE }}
+        Company=${{ env.BEFFA_COMPANY }}
+        Branch=${{ github.ref_name }}
+        OS=Linux
+        Node=$(node --version)
+        Project=BEFFA ERP High-Integrity Suite
+        Engine=Integrated-Allure-Reporter
+        EOF
 
     - name: Setup Java for Allure
       uses: actions/setup-java@v3
