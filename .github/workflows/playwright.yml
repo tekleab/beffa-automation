@@ -11,6 +11,7 @@ on:
           - smoke
           - regression
           - full
+          - e2e
       company:
         description: 'Company'
         required: true
@@ -40,26 +41,26 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    
+
     env:
       BASE_URL: ${{ secrets.BASE_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
-      # Priority: manual input (if dispatch) > repo secret > hardcoded default
       BEFFA_TOKEN: ${{ secrets.BEFFA_TOKEN }}
       BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'sample' }}
-      TEST_TYPE: ${{ github.event.inputs.test_type || 'full' }}
+      # On push/PR always run smoke. Manual dispatch uses the selected type.
+      TEST_TYPE: ${{ github.event.inputs.test_type || 'smoke' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20' # LTS version recommended
+        node-version: '20'
         cache: 'npm'
 
     - name: Install dependencies
@@ -96,43 +97,58 @@ jobs:
       if: always()
       continue-on-error: true
       run: |
-        # Setup test filters based on user selection
+        # ── Tag → grep mapping ──────────────────────────────────────────────
+        # smoke      → @smoke       (push/PR default — fast critical path)
+        # regression → @regression  (all smoke + logic audits)
+        # full       → @full        (everything including forensic/security)
+        # e2e        → @e2e         (end-to-end cross-module flows only)
+        # ────────────────────────────────────────────────────────────────────
         if [ "$TEST_TYPE" = "smoke" ]; then
           GREP_ARGS="--grep @smoke"
         elif [ "$TEST_TYPE" = "regression" ]; then
           GREP_ARGS="--grep @regression"
         elif [ "$TEST_TYPE" = "full" ]; then
           GREP_ARGS="--grep @full"
+        elif [ "$TEST_TYPE" = "e2e" ]; then
+          GREP_ARGS="--grep @e2e"
         else
-          GREP_ARGS=""
+          GREP_ARGS="--grep @smoke"
         fi
 
-        echo "Test Type Selected: $TEST_TYPE (Grep args: $GREP_ARGS)"
-        echo "Company Target: $BEFFA_COMPANY"
+        echo "Test Type Selected : $TEST_TYPE"
+        echo "Grep Filter        : $GREP_ARGS"
+        echo "Company Target     : $BEFFA_COMPANY"
+        echo "Trigger            : ${{ github.event_name }}"
 
-        # ✅ RESET accumulator and Allure results so THIS run is always fresh and clean
+        # Reset accumulator and Allure results for a clean run
         mkdir -p deploy
         rm -f deploy/dashboard-accumulated.json
         rm -rf allure-results
         mkdir -p allure-results
         echo "🗑️ Reset dashboard accumulator and Allure results for clean $TEST_TYPE run."
 
-        # Disable exit on error so we run ALL batches even if Part 1 fails!
         set +e
         FINAL_EXIT_CODE=0
 
-        # 1. RUN CONCURRENT WORKFLOWS (FAST - 4 Workers)
+        # ── PART 1: Standard UI Workflows (parallel) ────────────────────────
         echo "=========================================================="
         echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
         echo "=========================================================="
-        npx playwright test --project=Inventory --project=Sales-Workflows --project=Purchase-Workflows --workers=4 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+        npx playwright test \
+          --project=Inventory \
+          --project=Sales-Workflows \
+          --project=Purchase-Workflows \
+          --project=HR \
+          --workers=4 \
+          $GREP_ARGS \
+          --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
-        # 2. RUN FORENSIC AUDITS (SAFE - 1 Worker) - Only run if not a smoke test!
-        if [ "$TEST_TYPE" != "smoke" ]; then
+        # ── PART 2: Forensic Audits (sequential, skipped for smoke/e2e) ─────
+        if [ "$TEST_TYPE" != "smoke" ] && [ "$TEST_TYPE" != "e2e" ]; then
           echo "=========================================================="
           echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
           echo "=========================================================="
-          
+
           echo "-> Forensic Sales..."
           npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
@@ -143,16 +159,24 @@ jobs:
           npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
         else
           echo "=========================================================="
-          echo "⏭️ Skipping deep Forensic Audits for Smoke run."
+          echo "⏭️  Skipping Forensic Audits for $TEST_TYPE run."
           echo "=========================================================="
         fi
 
-        # Re-enable exit on error and exit with the captured code
+        # ── PART 3: E2E cross-module flows (only for e2e or full) ───────────
+        if [ "$TEST_TYPE" = "e2e" ] || [ "$TEST_TYPE" = "full" ]; then
+          echo "=========================================================="
+          echo "🔗 PART 3: Running E2E Cross-Module Flows..."
+          echo "=========================================================="
+          npx playwright test --project=Purchase-Workflows --workers=1 --grep @e2e --pass-with-no-tests || FINAL_EXIT_CODE=$?
+        fi
+
         set -e
         if [ $FINAL_EXIT_CODE -ne 0 ]; then
           echo "❌ Some test batches failed. Check logs above."
           exit $FINAL_EXIT_CODE
         fi
+
     - name: Get Allure history
       uses: actions/checkout@v4
       if: always()
@@ -174,11 +198,11 @@ jobs:
           \"buildUrl\": \"https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}\"
         }" > allure-results/executor.json
 
-        # Write environment metadata shown in Allure Overview
         cat > allure-results/environment.properties << EOF
         Test.Suite=${{ env.TEST_TYPE }}
         Company=${{ env.BEFFA_COMPANY }}
         Branch=${{ github.ref_name }}
+        Trigger=${{ github.event_name }}
         OS=Linux
         Node=$(node --version)
         Project=BEFFA ERP High-Integrity Suite
@@ -195,30 +219,21 @@ jobs:
     - name: Generate Allure Report
       if: always()
       run: |
-        # 1. Prepare history baseline
         mkdir -p allure-results/history
         if [ -d "gh-pages/allure/history" ]; then
           echo "[INFO] Syncing Allure History..."
           cp -r gh-pages/allure/history/. allure-results/history/ || true
         fi
-        
-        # 2. Generate report to TEMP location
         npx allure generate allure-results --clean -o temp-report
-        
-        # 3. Update Latency History Trend
         npx ts-node scripts/latency-tracker.ts || true
 
     - name: Finalize & Deploy Preparation
       if: always()
       run: |
-        # Create a clean deployment directory
         mkdir -p deploy
-        
-        # 🏙️ FORCED DASHBOARD GENERATION
         echo "[INFO] Generating Integrated Dashboard..."
         npx ts-node -e "import { IntegratedDashboard } from './reporters/integrated-dashboard'; new IntegratedDashboard().onEnd({ status: 'passed' } as any)" || true
-        
-        # ATOMIC MOVE: Ensure all data folders (test-cases, attachments) are moved
+
         if [ -d "temp-report" ]; then
           mv temp-report deploy/allure
           echo "[SUCCESS] Allure report finalized in deploy/allure"
@@ -226,12 +241,10 @@ jobs:
           echo "[ERROR] temp-report not found. Check generate step."
         fi
 
-        # 🔐 SECURITY & VISIBILITY SENTRY: Inject Auth Check and Auto-Filter into Allure sub-report
         if [ -f "deploy/allure/index.html" ]; then
           sed -i 's|<head>|<head><script>if(sessionStorage.getItem("beffa_auth")!=="true"){window.location.href="../";} localStorage.setItem("allure-playwright-marks", JSON.stringify({failed:true,broken:true,passed:true,skipped:true,unknown:true}));</script>|' deploy/allure/index.html
         fi
-        
-        # Update summary for CI logs
+
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY
 

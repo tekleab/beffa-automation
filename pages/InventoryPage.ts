@@ -126,6 +126,17 @@ export class InventoryPage {
     return { ref: adjID, id: adjUUID };
   }
 
+  async getTableColumnMap(selector: string = 'table thead th'): Promise<Record<string, number>> {
+    const headers = this.page.locator(selector);
+    const count = await headers.count();
+    const map: Record<string, number> = {};
+    for (let h = 0; h < count; h++) {
+      const text = (await headers.nth(h).innerText().catch(() => '')).trim().toLowerCase();
+      if (text) map[text] = h;
+    }
+    return map;
+  }
+
   async findApprovedUnpaidInvoice(): Promise<{ customerName: string; invoiceId: string } | null> {
     console.log("[ACTION] Scanning for an approved, unpaid invoice (Net Due > 0)...");
     await this.page.goto('/receivables/invoices/?page=1&pageSize=30');

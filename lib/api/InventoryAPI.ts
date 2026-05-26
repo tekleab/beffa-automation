@@ -51,8 +51,7 @@ export class InventoryAPI extends BasePage {
     gl_sales_account_id?: string
   }): Promise<{ itemName: string, id: string }> {
     const name = typeof data === 'string' ? data : data.name;
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const headers = {
@@ -133,30 +132,36 @@ export class InventoryAPI extends BasePage {
 
   async discoverMetadataAPI(): Promise<{ locationId: string, warehouseId: string, salesAccountId: string, customerId: string }> {
       const token = await this._getAuthToken();
-      let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-      if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+      let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+        .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+      if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
       if (!apiBase.endsWith('/api')) apiBase += '/api';
       const headers = { 
         'x-company': process.env.BEFFA_COMPANY as string, 
         'Authorization': `Bearer ${token}`,
         'x-role': 'IT Administrator / User Manager'
       };
+      const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1`, { headers });
+      // Locations — fetch up to 50 to find one with a warehouse
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
       const locJson = await locResp.json();
-      const loc = (locJson.items || locJson.data || [])[0];
+      const locs = locJson.items || locJson.data || [];
+      const loc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
+      if (!loc) throw new Error('[METADATA] No locations found. Ensure the environment has at least one warehouse location configured.');
 
-      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50`, { headers });
+      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
       const acctJson = await acctResp.json();
-      const sales = (acctJson.items || acctJson.data || []).find((a: any) => a.name.toLowerCase().includes('sales'))?.id;
+      const sales = (acctJson.items || acctJson.data || []).find((a: any) => a.name?.toLowerCase().includes('sales'))?.id;
 
-      const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=1`, { headers });
+      const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=1&${params}`, { headers });
       const custJson = await custResp.json();
       const cust = (custJson.items?.[0] || custJson.data?.[0])?.id;
+      if (!cust) throw new Error('[METADATA] No customers found. Ensure the environment has at least one customer.');
 
       return {
-          locationId: loc?.id,
-          warehouseId: loc?.warehouse_id || loc?.warehouse?.id,
+          locationId: loc.id,
+          warehouseId: loc.warehouse_id || loc.warehouse?.id,
           salesAccountId: sales,
           customerId: cust
       };
@@ -164,8 +169,7 @@ export class InventoryAPI extends BasePage {
 
   async processAdjustmentAPI(id: string): Promise<void> {
       console.log(`[ACTION] Triggering API Process for Adjustment: ${id}`);
-      let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-      if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+      let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
       if (!apiBase.endsWith('/api')) apiBase += '/api';
       const token = await this._getAuthToken();
       
@@ -183,8 +187,7 @@ export class InventoryAPI extends BasePage {
 
 
   async createInventoryAdjustmentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; error?: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -278,7 +281,7 @@ export class InventoryAPI extends BasePage {
   async captureRandomItemDataAPI(paramsObj: { minStock?: number } = {}): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number; locationId?: string; warehouseId?: string }> {
     const { minStock = 1 } = paramsObj;
     // 🛡️ SMART PORT RESOLVER: Backend is usually 8001, Frontend is 4173.
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     
     // If the URL accidentally points to the frontend port, force it to 8001 for API
     if (apiBase.includes(':4173')) {
@@ -362,8 +365,7 @@ export class InventoryAPI extends BasePage {
   }
 
   async getItemDetailsAPI(itemId: string, locationId?: string): Promise<{ itemName: string; itemId: string; currentStock: number; unitCost: number } | null> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -448,8 +450,7 @@ export class InventoryAPI extends BasePage {
   }
 
   async getJournalEntriesAPI(receiptId: string): Promise<Array<{ accountCode: string; accountName: string; accountType: string; debit: string; credit: string }>> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -512,8 +513,7 @@ export class InventoryAPI extends BasePage {
     toLocationId?: string;   // auto-discovered if omitted
     toWarehouseId?: string;
   }): Promise<{ outRef: string; inRef: string; fromLocationId: string; toLocationId: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year     = process.env.BEFFA_YEAR     || '2018';

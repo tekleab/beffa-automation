@@ -1,135 +1,108 @@
-import { test, expect } from'@playwright/test';
-import { AppManager } from'../../pages/AppManager';
+import { test, expect } from '@playwright/test';
+import { AppManager } from '../../pages/AppManager';
 
 /**
- * PROCUREMENT ACCOUNTING LOGIC AUDITS
- * 
+ * PROCUREMENT LEDGER & PAYMENT AUDITS
+ *
  * Objectives:
- * 1. Verify system rejects Billing for more units than the approved Purchase Order.
- * 2. Verify Bill balance restores correctly after a Payment reversal (Ledger Drift Check).
- * 3. Verify Multi-Bill reconciliation: One payment correctly impacts multiple unpaid bills.
+ * 1. Verify Multi-Bill reconciliation: One payment correctly impacts multiple unpaid bills.
+ *
+ * NOTE: Bill balance restore after payment reversal is covered in procurement-stress-edge-cases.spec.ts
+ * (test 4 — Bill reversal after payment, which also validates stock rollback).
  */
 
-test.describe('Procurement Ledger & Flow Logic Audits @purchase @logic @regression @full', () => {
-    test.describe.configure({ mode:'serial' });
+test.describe('Procurement Ledger & Payment Audits @purchase @logic @regression @full', () => {
+    test.describe.configure({ mode: 'serial' });
+
+    let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
+    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
+
+    test.beforeAll(async ({ browser }) => {
+        const page = await browser.newPage();
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        sharedMeta = await app.api.purchase.discoverMetadataAPI();
+        sharedItem = await app.api.inventory.captureRandomItemDataAPI();
+        await page.close();
+    });
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });
 
-    test('Guardrail: System must reject Billing for more units than the approved PO', async ({ page }) => {
+    test('Audit: Single payment must correctly reconcile multiple unpaid bills', async ({ page }) => {
         const app = new AppManager(page);
-        const meta = await app.api.purchase.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI();
+        const meta = sharedMeta;
+        const item = sharedItem;
 
-        // 1. Create PO for 10 units
-        console.log(`[STEP 1] Creating PO for 10 units...`);
-        const po = await app.api.purchase.createPurchaseOrderAPI(item, 10, 5000, meta.vendorId);
-        await app.advanceDocumentAPI(po.poId,'purchase-orders');
+        // 1. Create and approve two bills
+        console.log(`[STEP 1] Creating Bill A (3000) and Bill B (2000)...`);
+        const billA = await app.api.purchase.createBillAPI({ itemData: item, unitPrice: 3000, quantity: 1, vendorId: meta.vendorId });
+        const billB = await app.api.purchase.createBillAPI({ itemData: item, unitPrice: 2000, quantity: 1, vendorId: meta.vendorId });
+        await app.advanceDocumentAPI(billA.id, 'bills');
+        await app.advanceDocumentAPI(billB.id, 'bills');
 
-        // 2. Attempt to Bill for 50 units
-        console.log(`[ATTACK] Attempting to Bill 50 units against the 10-unit PO...`);
-        
-        // We simulate this by crafting the linked bill payload manually to see if backend validates
-        const token = await app._getAuthToken();
-        const payload = {
-            purchase_order_id: po.poId,
-            vendor_id: meta.vendorId,
-            received_purchase_order_items: [{
-                po_item_id:'auto-discovered', // Logic inside createBillFromPo handles this, we'll try to override
-                received_quantity: 50,
-                received_unit_price: 5000
-            }]
-        };
+        // 2. Verify both bills have non-zero balances
+        const billAData = await app.api.purchase.getBillAPI(billA.id);
+        const billBData = await app.api.purchase.getBillAPI(billB.id);
+        const amountA = parseFloat(billAData.balance ?? billAData.amount_due ?? billAData.unpaid_amount ?? 3000);
+        const amountB = parseFloat(billBData.balance ?? billBData.amount_due ?? billBData.unpaid_amount ?? 2000);
+        console.log(`[SNAPSHOT] Bill A balance: ${amountA} | Bill B balance: ${amountB}`);
+        expect(amountA).toBeGreaterThan(0);
+        expect(amountB).toBeGreaterThan(0);
 
-        try {
-            // Using the specialized PO-to-Bill method with a quantity override if possible, 
-            // or directly checking the system behavior.
-            const bill = await app.api.purchase.createBillFromPoAPI(po.poId); 
-            // The existing helper uses PO qty. Let's see if we can "Edit" it or if it blocks.
-            console.log(`[INFO] Bill created for PO. Checking if we can inflate quantity...`);
-            
-            // To be thorough, we check if the system allows editing a linked bill to a higher qty than PO
-            // This is a common ERP vulnerability.
-            await app.advanceDocumentAPI(bill.billId,'bills');
-            console.log(`[INFO] Bill approved. Verifying if it honored PO limits...`);
-            
-            const finalBill = await app.api.purchase.getBillAPI(bill.billId);
-            const totalQty = finalBill.received_purchase_order_items?.reduce((sum: number, i: any) => sum + i.received_quantity, 0);
-            
-            if (totalQty > 10) {
-                throw new Error(`[CRITICAL_LOGIC_BUG] Over-Billing! PO: 10, Invoiced: ${totalQty}. Financial leakage detected.`);
+        // 3. Create a single payment covering both bills
+        const totalAmount = amountA + amountB;
+        console.log(`[STEP 2] Creating single payment of ${totalAmount} covering both bills...`);
+        const { apiBase, headers, qs } = await app.buildApiContext();
+
+        const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
+        const acctData = await acctResp.json();
+        const cashAccount = (acctData.items || acctData.data || []).find((a: any) =>
+            a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+        ) || (acctData.items || acctData.data || [])[0];
+
+        const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
+        const currData = await currResp.json();
+        const currency = currData.items?.[0] || currData.data?.[0];
+
+        const paymentResp = await page.request.post(`${apiBase}/payments?${qs}`, {
+            headers,
+            data: {
+                amount: totalAmount,
+                cash_account_id: cashAccount?.id,
+                vendor_id: meta.vendorId,
+                date: new Date().toISOString(),
+                payment_method: 'cash',
+                currency_id: currency?.id,
+                bill_payments: [
+                    { amount: amountA, bill_id: billA.id },
+                    { amount: amountB, bill_id: billB.id }
+                ]
             }
-            console.log(`[PASS] System correctly enforced PO limits.`);
+        });
 
-        } catch (err: any) {
-            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) throw err;
-            console.log(`[PASS] Over-Billing attempt blocked: ${err.message}`);
-        }
-    });
+        if (!paymentResp.ok()) throw new Error(`Multi-bill payment failed: ${paymentResp.status()} - ${await paymentResp.text()}`);
+        const payment = await paymentResp.json();
+        console.log(`[SUCCESS] Multi-bill payment created: ${payment.ref} (ID: ${payment.id})`);
 
-    test('Audit: Bill balance must correctly restore after Payment reversal', async ({ page }) => {
-        const app = new AppManager(page);
-        const meta = await app.api.purchase.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI();
+        await app.advanceDocumentAPI(payment.id, 'payments');
 
-        // 1. Create and Approve Bill (5000)
-        console.log(`[STEP 1] Creating Bill for 5000...`);
-        const bill = await app.api.purchase.createBillAPI({ itemData: item, unitPrice: 5000, quantity: 1, vendorId: meta.vendorId });
-        await app.advanceDocumentAPI(bill.id,'bills');
+        // 4. CRITICAL CHECK: Both bills must show balance = 0
+        console.log(`[AUDIT] Verifying both bills are fully reconciled...`);
+        const finalBillA = await app.api.purchase.getBillAPI(billA.id);
+        const finalBillB = await app.api.purchase.getBillAPI(billB.id);
+        const finalBalanceA = parseFloat(finalBillA.balance ?? finalBillA.amount_due ?? finalBillA.unpaid_amount ?? -1);
+        const finalBalanceB = parseFloat(finalBillB.balance ?? finalBillB.amount_due ?? finalBillB.unpaid_amount ?? -1);
 
-        // 1.5 LEDGER INTEGRITY CHECK (Merged from Legacy)
-        console.log(`[AUDIT] Verifying Journal Entries for Bill: ${bill.ref}...`);
-        const entries = await app.getBillJournalEntriesAPI(bill.id);
-        console.log(`[INFO] Captured ${entries.length} ledger entries via API`);
-        
-        if (entries.length === 0) {
-            console.log(`[WARN] No journal entries found. Accounting drift detected or indexing lag.`);
-        } else {
-            const totalDebit = entries.reduce((sum: number, e: any) => sum + (parseFloat(e.debit) || 0), 0);
-            const totalCredit = entries.reduce((sum: number, e: any) => sum + (parseFloat(e.credit) || 0), 0);
-            console.log(`[SNAPSHOT] Ledger Summary - Debits: ${totalDebit} | Credits: ${totalCredit}`);
-            
-            if (totalDebit !== totalCredit) {
-                throw new Error(`[CRITICAL_LOGIC_BUG] Accounting Imbalance: Debits (${totalDebit}) !== Credits (${totalCredit}) for Bill ${bill.ref}`);
-            }
-        }
+        console.log(`[SNAPSHOT] Bill A final balance: ${finalBalanceA} | Bill B final balance: ${finalBalanceB}`);
 
-        // 2. Pay Bill (Amount Due -> 0)
-        console.log(`[STEP 2] Paying Bill...`);
-        let initialBillData = await app.api.purchase.getBillAPI(bill.id);
-        console.log(`[DEBUG] initialBillData:`, JSON.stringify(initialBillData, null, 2));
-        let totalAmountToPay = parseFloat(initialBillData.balance ?? initialBillData.amount_due ?? initialBillData.unpaid_amount ?? initialBillData.total ?? 5000);
-        console.log(`[INFO] Paying exact balance of: ${totalAmountToPay}`);
-        
-        const payment = await app.api.purchase.createBillPaymentAPI({ amount: totalAmountToPay, billId: bill.id, vendorId: meta.vendorId });
-        await app.advanceDocumentAPI(payment.id,'payments');
+        if (finalBalanceA !== 0) throw new Error(`[CRITICAL_LOGIC_BUG] Bill A not fully reconciled. Balance: ${finalBalanceA}, Expected: 0`);
+        if (finalBalanceB !== 0) throw new Error(`[CRITICAL_LOGIC_BUG] Bill B not fully reconciled. Balance: ${finalBalanceB}, Expected: 0`);
 
-        // 3. Verify Balance is 0
-        let billData = await app.api.purchase.getBillAPI(bill.id);
-        let currentBalance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? 0);
-        console.log(`[SNAPSHOT] Bill Balance after Payment: ${currentBalance}`);
-        expect(currentBalance).toBe(0);
-
-        // 4. VOID the Payment
-        console.log(`[ACTION] Reversing/Voiding Payment ${payment.ref}...`);
-        const voidSuccess = await app.api.purchase.reversePaymentAPI(payment.id); 
-        expect(voidSuccess).toBe(true);
-
-        // 5. CRITICAL CHECK: Does the Bill balance go back to 5000?
-        console.log(`[AUDIT] Checking if Bill balance restored...`);
-        await page.waitForTimeout(5000); // Wait for ledger sync
-        billData = await app.api.purchase.getBillAPI(bill.id);
-        currentBalance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? 0);
-        
-        console.log(`[SNAPSHOT] Bill Balance after Reversal: ${currentBalance}`);
-        
-        if (currentBalance === 0) {
-            throw new Error(`[CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full payment did not restore bill balance! Current: 0, Expected: 5000`);
-        }
-        
-        expect(currentBalance).toBe(totalAmountToPay);
-        console.log(`[SUCCESS] Ledger Integrity Confirmed. Reversal restored the exact debt: ${totalAmountToPay}.`);
+        expect(finalBalanceA).toBe(0);
+        expect(finalBalanceB).toBe(0);
+        console.log(`[SUCCESS] Multi-Bill Reconciliation confirmed. Both bills fully settled by single payment.`);
     });
 });

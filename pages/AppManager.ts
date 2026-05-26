@@ -4,6 +4,7 @@ import { BasePage } from '../lib/BasePage';
 import { SalesAPI } from '../lib/api/SalesAPI';
 import { PurchaseAPI } from '../lib/api/PurchaseAPI';
 import { InventoryAPI } from '../lib/api/InventoryAPI';
+import { HrAPI } from '../lib/api/HrAPI';
 import { SharedUI } from './components/SharedUI';
 import { SalesPage } from './SalesPage';
 import { PurchasePage } from './PurchasePage';
@@ -26,6 +27,7 @@ export class AppManager {
     sales: SalesAPI;
     purchase: PurchaseAPI;
     inventory: InventoryAPI;
+    hr: HrAPI;
     general: AppManager;
   };
   ui: {
@@ -62,6 +64,7 @@ export class AppManager {
       sales: new SalesAPI(page),
       purchase: new PurchaseAPI(page),
       inventory: new InventoryAPI(page),
+      hr: new HrAPI(page),
       general: this
     };
     this.ui = {
@@ -75,6 +78,7 @@ export class AppManager {
     this.api.sales._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.purchase._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.inventory._getAuthToken = this.auth._getAuthToken.bind(this.auth);
+    this.api.hr._getAuthToken = this.auth._getAuthToken.bind(this.auth);
 
     this.ui.shared.smartSearch = this.base.smartSearch.bind(this.base);
     // this.ui.shared.smartApprove = this.base.smartApprove.bind(this.base);
@@ -87,6 +91,8 @@ export class AppManager {
     this.ui.purchase.fillDate = this.base.fillDate.bind(this.base);
     this.ui.sales.fillDate = this.base.fillDate.bind(this.base);
   }
+
+  get apiBase(): string { return this.base.apiBase; }
 
   async login(...args: Parameters<AuthManager['login']>) { return await this.auth.login(...args); }
   async switchCompany(...args: Parameters<AuthManager['switchCompany']>) { return await this.auth.switchCompany(...args); }
@@ -153,4 +159,45 @@ export class AppManager {
   async getMultiAccountBalancesAPI(...args: Parameters<BasePage['getMultiAccountBalancesAPI']>) { return await this.base.getMultiAccountBalancesAPI(...args); }
   async getAccountBalanceAPI(...args: Parameters<BasePage['getAccountBalanceAPI']>) { return await this.base.getAccountBalanceAPI(...args); }
   async getBillJournalEntriesAPI(...args: Parameters<PurchaseAPI['getBillJournalEntriesAPI']>) { return await this.api.purchase.getBillJournalEntriesAPI(...args); }
+  async buildApiContext(...args: Parameters<BasePage['buildApiContext']>) { return await this.base.buildApiContext(...args); }
+
+  async createSalesReceiptFromSoAPI(soId: string): Promise<{ receiptNumber: string; receiptId: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+      .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+    if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this.auth._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+    // Fetch SO to get invoice details
+    const soResp = await this.page.request.get(`${apiBase}/sales-order/${soId}?${params}`, { headers });
+    if (!soResp.ok()) throw new Error(`Failed to fetch SO ${soId}: ${soResp.status()}`);
+    const soData = await soResp.json();
+
+    // Find the linked approved invoice
+    const invResp = await this.page.request.get(`${apiBase}/invoices?sales_order_id=${soId}&${params}`, { headers });
+    let invoiceId: string | undefined;
+    let invoiceAmount: number = 0;
+    let customerId: string = soData.customer_id;
+
+    if (invResp.ok()) {
+      const invData = await invResp.json();
+      const inv = (invData.items || invData.data || [])[0];
+      if (inv) { invoiceId = inv.id; invoiceAmount = parseFloat(inv.total_amount || inv.net_total || '0'); }
+    }
+
+    if (!invoiceId) throw new Error(`No invoice found linked to SO ${soId}. Approve an invoice first.`);
+
+    const meta = await this.api.sales.discoverMetadataAPI();
+    const rct = await this.api.sales.createInvoiceReceiptAPI({
+      invoiceId,
+      customerId,
+      amount: invoiceAmount || 1000,
+      currencyId: meta.currencyId,
+      cashAccountId: meta.cashAccountId
+    });
+    return { receiptNumber: rct.ref, receiptId: rct.id };
+  }
 }

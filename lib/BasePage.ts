@@ -12,14 +12,17 @@ export class BasePage {
   actionButtons: string;
   companyBtn: Locator;
   private startTime: number = 0;
-  private apiBase: string = '';
+  apiBase: string = '';
 
   constructor(page: Page) {
     this.page = page;
 
-    // Configure API Base
-    let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (base.includes(':4173')) base = base.replace(':4173', ':8001');
+    // Configure API Base — environment-aware, CI/CD safe
+    let base = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+      .replace(/['"+]+/g, '')
+      .replace(/\/$/, '');
+    if (!base.startsWith('http://') && !base.startsWith('https://')) base = 'http://' + base;
+    base = base.replace(/:4173/, ':8001');
     if (!base.endsWith('/api')) base += '/api';
     this.apiBase = base;
 
@@ -100,106 +103,89 @@ export class BasePage {
       'x-role': 'IT Administrator / User Manager'
     };
 
-    console.log(`[API] Advancing ${docType} "${docId}" for company: "${company}" | URL: ${url}`);
-    await this.startTacticalTimer();
+    console.log(`[API] Advancing ${docType} "${docId}"...`);
+
+    // Fetch current user once before the loop
+    let submittedTo: string | undefined;
+    try {
+      const meResp = await this.page.request.get(`${this.apiBase}/users/me`, { headers });
+      if (meResp.ok()) {
+        const meData = await meResp.json();
+        submittedTo = meData?.user?.id || meData?.id || meData?.user_id;
+        if (submittedTo) console.log(`[INFO] Current user ID: ${submittedTo}`);
+      }
+    } catch (e: any) {
+      // /users/me unavailable, use fallback
+    }
+    submittedTo ??= process.env.BEFFA_ADMIN_ID || '14bb1e8c-496f-4556-99e0-830681fcf3de';
+    const payload = { submitted_to: submittedTo };
 
     let success = false;
     for (let i = 0; i < 4; i++) {
-      // Get current authenticated user's ID for submitted_to
-      let submittedTo: string | undefined;
-      try {
-        // First: try to get current user ID from /users/me
-        const meResp = await this.page.request.get(`${this.apiBase}/users/me`, { headers });
-        if (meResp.ok()) {
-          const meData = await meResp.json();
-          submittedTo = meData?.id || meData?.user_id;
-          if (submittedTo) console.log(`[INFO] Step ${i + 1}: Current user ID: ${submittedTo}`);
-        }
-      } catch (e: any) {
-        console.log(`[WARN] /users/me failed: ${e.message}`);
-      }
-      // Fallback: correct System Admin UUID for this environment
-      if (!submittedTo) {
-        submittedTo = process.env.BEFFA_ADMIN_ID || '14bb1e8c-496f-4556-99e0-830681fcf3de';
-        console.log(`[WARN] Using fallback user ID: ${submittedTo}`);
-      }
-
-      const payload = { submitted_to: submittedTo };
       const resp = await this.page.request.patch(url, { headers, data: payload });
       const status = resp.status();
 
       if (status === 200 || status === 204) {
-        console.log(`[SUCCESS] Approval Step ${i + 1} synchronized via API.`);
         success = true;
-        await this.page.waitForTimeout(1000); // Backend cooldown
+        await this.page.waitForTimeout(1000);
       } else if (status === 400 || status === 404) {
-        // 400 or 404 after a success usually means we hit the final state
-        if (success) {
-          console.log(`[INFO] Approval Cycle complete at step ${i}. Document is in Final State.`);
-          break;
-        }
-        console.log(`[WARN] Advance ignored (Status ${status}). Already in next stage?`);
+        if (success) break;
         break;
       } else if (status === 401) {
-        throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. The token for "${company}" is invalid or expired.`);
+        throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${company}" is invalid or expired.`);
       } else if (status === 422) {
-        if (success) {
-          console.log(`[INFO] Approval Cycle complete. Document is now fully Approved.`);
-          break;
-        }
+        if (success) break;
         const text = await resp.text();
         throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
       } else {
         const errBody = await resp.text().catch(() => '(unreadable)');
-        console.log(`[ERROR] Advance failed. Status: ${status} | URL: ${url} | Body: ${errBody.substring(0, 300)}`);
+        console.log(`[ERROR] Advance failed. Status: ${status} | Body: ${errBody.substring(0, 200)}`);
         break;
       }
     }
 
-    if (!success) {
-      console.log(`[WARN] No API advance steps were successful. Verify if document ${docId} is already approved.`);
-    }
-
-    await this.stopTacticalTimer(`API Advance: ${docType}`, 'API');
+    if (!success) console.log(`[WARN] Advance had no successful steps for ${docType} ${docId}.`);
   }
 
   /**
    * Resilient POST helper that handles transient 500 errors with automatic retries.
    */
+  /**
+   * Builds a reusable API context (base URL + auth headers) for raw page.request calls.
+   * Eliminates the repeated apiBase + headers construction block across test files.
+   */
+  async buildApiContext(): Promise<{ apiBase: string; headers: Record<string, string>; qs: string }> {
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    return {
+      apiBase: this.apiBase,
+      qs: `year=${year}&period=${period}&calendar=${calendar}`,
+      headers: {
+        'x-company': company,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+  }
+
   async safePost(url: string, options: { data: any, headers: any, label: string }): Promise<any> {
     let lastError: any = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
-      await this.startTacticalTimer();
-      const response = await this.page.request.post(url, {
-        data: options.data,
-        headers: options.headers
-      });
-      await this.stopTacticalTimer(options.label, 'API');
-
+      const response = await this.page.request.post(url, { data: options.data, headers: options.headers });
       if (response.ok()) return response;
-
       const status = response.status();
       const text = await response.text();
       lastError = { status, text };
-
       if (status >= 500) {
-        console.warn(`[RETRY ${attempt}/3] ${options.label} hit a 500. Backend might be busy. Waiting...`);
-        await this.page.waitForTimeout(attempt * 1500); // Backoff wait
+        await this.page.waitForTimeout(attempt * 1500);
         continue;
       }
-
-      // If it's a 4xx error, don't retry (it's a real validation error)
       return response;
     }
-
-    // If all retries fail, return the last failure for the caller to handle
-    const mockResponse = {
-      ok: () => false,
-      status: () => lastError.status,
-      text: async () => lastError.text,
-      json: async () => { try { return JSON.parse(lastError.text); } catch (e) { return {}; } }
-    };
-    return mockResponse;
+    return { ok: () => false, status: () => lastError.status, text: async () => lastError.text, json: async () => { try { return JSON.parse(lastError.text); } catch { return {}; } } };
   }
 
 

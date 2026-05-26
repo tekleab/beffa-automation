@@ -2,7 +2,17 @@ import { defineConfig, devices } from '@playwright/test';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
+// Load env — CI uses process.env directly, local uses .env file
 dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+// Resolve base URLs safely — guards against http://http/... malformation
+function resolveUrl(raw: string | undefined, fallback: string): string {
+  let url = (raw || fallback).replace(/['"+]+/g, '').replace(/\/$/, '');
+  if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'http://' + url;
+  return url;
+}
+
+const frontendUrl = resolveUrl(process.env.BASE_URL, 'http://localhost:4173');
 
 export default defineConfig({
   testDir: './tests',
@@ -40,7 +50,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: (process.env.BASE_URL || 'http://localhost:4173').replace(/['"]+/g, ''),
+    baseURL: frontendUrl,
     viewport: process.env.CI ? { width: 1920, height: 1080 } : null,
 
     launchOptions: {
@@ -85,6 +95,10 @@ export default defineConfig({
       name: 'Inventory',
       testMatch: /inventory\/.*\.spec\.ts/,
       testIgnore: [/.*(integrity|audit|logic|concurrency|security|temporal).*/],
+    },
+    {
+      name: 'HR',
+      testMatch: /hr\/.*\.spec\.ts/,
     },
   ],
 

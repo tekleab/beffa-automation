@@ -37,8 +37,7 @@ export class SalesAPI extends BasePage {
   }
 
   async discoverMetadataAPI(): Promise<{ arAccountId: string; salesAccountId: string; cashAccountId: string; customerId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
@@ -130,8 +129,7 @@ export class SalesAPI extends BasePage {
   }
 
   async createSalesOrderAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; customerId: string; soItemId: string | null; status?: number; error?: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -199,8 +197,7 @@ export class SalesAPI extends BasePage {
   }
 
   async createInvoiceAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; status?: number; error?: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
@@ -247,8 +244,7 @@ export class SalesAPI extends BasePage {
   }
 
   async createStandaloneInvoiceAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; amountDue: number; customerId: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
@@ -283,7 +279,6 @@ export class SalesAPI extends BasePage {
       released_sales_order_items: []
       // NOTE: sales_order_id intentionally omitted (null crashes backend)
     };
-    console.log('[META] Standalone Invoice Payload:', JSON.stringify(payload, null, 2));
 
     const token = await this._getAuthToken();
     const response = await this.safePost(`${apiBase}/invoices?${params}`, {
@@ -299,8 +294,7 @@ export class SalesAPI extends BasePage {
   }
 
   async createReceiptAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
@@ -382,8 +376,7 @@ export class SalesAPI extends BasePage {
   }
 
   async reverseInvoiceAPI(invoiceId: string): Promise<boolean> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -411,8 +404,7 @@ export class SalesAPI extends BasePage {
   }
 
   async reverseReceiptAPI(receiptId: string): Promise<boolean> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -439,8 +431,7 @@ export class SalesAPI extends BasePage {
   }
 
   async approveInvoiceAPI(invoiceId: string): Promise<boolean> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -457,8 +448,7 @@ export class SalesAPI extends BasePage {
   }
 
   async createInvoiceReceiptAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -514,8 +504,7 @@ export class SalesAPI extends BasePage {
   }
 
   async getInvoiceAPI(invoiceId: string): Promise<any> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const year = process.env.BEFFA_YEAR || '2018';
@@ -531,8 +520,7 @@ export class SalesAPI extends BasePage {
   }
 
   async getCustomerNameAPI(customerId: string): Promise<string> {
-    let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';
-    if (apiBase.includes(':4173')) apiBase = apiBase.replace(':4173', ':8001');
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const response = await this.page.request.get(`${apiBase}/customers?search=${customerId}`, {
