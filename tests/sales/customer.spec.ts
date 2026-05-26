@@ -31,7 +31,7 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @regressio
         await app.mainPhoneInput.fill("0911223344");
         await app.fillEthiopianAddress(randomRegion.region, randomZone.name, randomWoreda);
 
-        const createBtn = page.locator('button:has-text("Create customer"), button:has-text("Adding Customer")');
+        const createBtn = page.locator('button:has-text("Create customer"), button:has-text("Adding Customer"), button:has-text("Add Now"), button:has-text("Save")').first();
         await createBtn.click();
         await expect(page.getByText(/10 digit|must be 10/i)).toBeVisible();
         console.log('[OK] Invalid TIN correctly blocked');

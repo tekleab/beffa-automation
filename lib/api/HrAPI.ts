@@ -167,18 +167,25 @@ export class HrAPI extends BasePage {
     const glAccount = accounts[0];
     if (!glAccount) throw new Error('HR Metadata: No GL accounts found');
 
-    // Target: Finance and Purchase Department — fetch its job positions directly
+    // Find a department that actually has job positions
     const depts = await this.listDepartments(20);
-    const finDept = depts.find((d: any) => /finance.*purchase|purchase.*finance/i.test(d.name)) || depts[0];
+    const preferred = depts.find((d: any) => /finance.*purchase|purchase.*finance/i.test(d.name));
+    const ordered = preferred ? [preferred, ...depts.filter((d: any) => d !== preferred)] : depts;
 
-    const jpResp = await this.page.request.get(
-      `${this.apiBase}/job-positions?page=1&pageSize=10&department_id=${finDept.id}&${this.params}`,
-      { headers: await this.headers() }
-    );
-    const jobs = (await jpResp.json()).data || [];
-    const job = jobs.find((j: any) => j.id && j.title) || jobs[0];
+    let finDept: any = null;
+    let job: any = null;
 
-    if (!job) throw new Error(`HR Metadata: No job positions found in department "${finDept.name}"`);
+    for (const dept of ordered) {
+      const jpResp = await this.page.request.get(
+        `${this.apiBase}/job-positions?page=1&pageSize=10&department_id=${dept.id}&${this.params}`,
+        { headers: await this.headers() }
+      );
+      const jobs = (await jpResp.json()).data || [];
+      const found = jobs.find((j: any) => j.id && j.title) || jobs[0];
+      if (found) { finDept = dept; job = found; break; }
+    }
+
+    if (!job) throw new Error(`HR Metadata: No job positions found in any department`);
 
     console.log(`[HR META] dept="${finDept.name}" (${finDept.id}) | job="${job.title}" (${job.id})`);
 

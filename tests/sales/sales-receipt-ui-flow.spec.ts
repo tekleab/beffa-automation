@@ -19,6 +19,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         const itemResult = await app.captureRandomItemDetails();
         const soResult = await app.createSalesOrderAPI({ 
             itemId: itemResult.itemId,
+            quantity: 1,
             locationId: itemResult.locationId,
             warehouseId: itemResult.warehouseId
         });
@@ -49,8 +50,9 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         await page.reload(); // 🔄 Synchronization
         console.log(`[OK] Invoice approved via Fast-API`);
 
-        // Read customer name directly from the invoice detail page (most reliable)
-        const CUSTOMER_NAME = await page.locator('p.chakra-text.css-0').first().innerText().catch(() =>'');
+        // Read customer name from meta — more reliable than scraping the DOM
+        const meta = await app.api.sales.discoverMetadataAPI();
+        const CUSTOMER_NAME = await app.getCustomerNameAPI(soResult.customerId) || meta.customerId;
         const INVOICE_ID = invResult.ref;
         console.log(`[INFO] Document Setup Complete: ${INVOICE_ID} for ${CUSTOMER_NAME}`);
 
