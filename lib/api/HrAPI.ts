@@ -155,7 +155,7 @@ export class HrAPI extends BasePage {
     return (await resp.json()).data || [];
   }
 
-  async discoverMetadataAPI(): Promise<{ employeeId: string; glAccountId: string; departmentId: string; departmentName: string; jobPositionId: string; jobPositionTitle: string }> {
+  async discoverMetadataAPI(): Promise<{ employeeId: string; glAccountId: string; departmentId: string; departmentName: string; jobPositionId: string | null; jobPositionTitle: string | null }> {
     const [employees, accounts] = await Promise.all([
       this.listEmployees(10),
       this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=50&${this.params}`, { headers: await this.headers() })
@@ -167,27 +167,39 @@ export class HrAPI extends BasePage {
     const glAccount = accounts[0];
     if (!glAccount) throw new Error('HR Metadata: No GL accounts found');
 
-    // Find a department that actually has job positions
     const depts = await this.listDepartments(20);
     const preferred = depts.find((d: any) => /finance.*purchase|purchase.*finance/i.test(d.name));
     const ordered = preferred ? [preferred, ...depts.filter((d: any) => d !== preferred)] : depts;
+    const finDept = ordered[0];
 
-    let finDept: any = null;
+    // Job positions are optional — not all environments have them configured
     let job: any = null;
-
     for (const dept of ordered) {
       const jpResp = await this.page.request.get(
         `${this.apiBase}/job-positions?page=1&pageSize=10&department_id=${dept.id}&${this.params}`,
         { headers: await this.headers() }
       );
+      if (!jpResp.ok()) continue;
       const jobs = (await jpResp.json()).data || [];
       const found = jobs.find((j: any) => j.id && j.title) || jobs[0];
-      if (found) { finDept = dept; job = found; break; }
+      if (found) { job = found; break; }
     }
 
-    if (!job) throw new Error(`HR Metadata: No job positions found in any department`);
+    if (job) {
+      console.log(`[HR META] dept="${finDept.name}" (${finDept.id}) | job="${job.title}" (${job.id})`);
+    } else {
+      console.log(`[HR META] dept="${finDept.name}" (${finDept.id}) | job=none (no job positions configured)`);
+    }
 
-    console.log(`[HR META] dept="${finDept.name}" (${finDept.id}) | job="${job.title}" (${job.id})`);
+    return {
+      employeeId: employee.id,
+      glAccountId: glAccount.id,
+      departmentId: finDept.id,
+      departmentName: finDept.name,
+      jobPositionId: job?.id ?? null,
+      jobPositionTitle: job?.title ?? null,
+    };
+  }
 
     return {
       employeeId: employee.id,

@@ -6,7 +6,6 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.waitForTimeout(5000);
     });
 
     test('Create fresh invoice via API, then create receipt and link it', async ({ page }) => {
@@ -25,30 +24,23 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         });
         if (!soResult.success) throw new Error("SO API Failed");
 
-        // Approve SO to make it linkable
-        await page.goto(`/receivables/sale-orders/${soResult.id}/detail`);
-        // ⚡ Fast API Approval
-        const soId = await app.extractIdFromUrl();
-        await app.advanceDocumentAPI(soId,'sales-orders');
-        await page.reload(); // 🔄 Synchronization
-        console.log(`[OK] Sales Order approved via Fast-API`);
+        // Approve SO directly via API — no navigation needed
+        await app.advanceDocumentAPI(soResult.id, 'sales-orders');
+        console.log(`[OK] Sales Order ${soResult.ref} approved via API`);
 
         const invResult = await app.createInvoiceAPI({
             customerId: soResult.customerId,
             soId: soResult.id,
             soItemId: soResult.soItemId,
+            releasedQuantity: 1,
             locationId: itemResult.locationId,
             warehouseId: itemResult.warehouseId
         });
         if (!invResult.success) throw new Error("Invoice API Failed");
 
-        // Approve Invoice
-        await page.goto(`/receivables/invoices/${invResult.id}/detail`);
-        // ⚡ Fast API Approval
-        const invId = await app.extractIdFromUrl();
-        await app.advanceDocumentAPI(invId,'invoices');
-        await page.reload(); // 🔄 Synchronization
-        console.log(`[OK] Invoice approved via Fast-API`);
+        // Approve Invoice directly via API
+        await app.advanceDocumentAPI(invResult.id!, 'invoices');
+        console.log(`[OK] Invoice ${invResult.ref} approved via API`);
 
         // Read customer name from meta — more reliable than scraping the DOM
         const meta = await app.api.sales.discoverMetadataAPI();
