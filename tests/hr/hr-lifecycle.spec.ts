@@ -101,7 +101,7 @@ test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @fu
                 pay_method: 'salary',
                 salary: 10000,
                 department_id: meta.departmentId,
-                ...(meta.jobPositionId ? { job_position_id: meta.jobPositionId } : {}),
+                job_position_id: meta.jobPositionId,
                 start_date: today,
             }
         });
@@ -110,7 +110,7 @@ test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @fu
         const contractId = contract.id;
         const contractDeptId = contract.department_id || contract.department?.id || 'MISSING';
         console.log(`[PASS] Contract created: ${contractId}`);
-        console.log(`[INFO] department_id: ${contractDeptId} | job_position_id: ${meta.jobPositionId ?? 'none'}`);
+        console.log(`[INFO] department_id: ${contractDeptId} | job_position_id: ${meta.jobPositionId}`);
         console.log(`[INFO] status: ${contract.status} | contract_status: ${contract.contract_status}`);
         expect(contractDeptId).not.toBe('MISSING');
 

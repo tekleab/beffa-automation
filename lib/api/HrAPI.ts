@@ -155,7 +155,45 @@ export class HrAPI extends BasePage {
     return (await resp.json()).data || [];
   }
 
-  async discoverMetadataAPI(): Promise<{ employeeId: string; glAccountId: string; departmentId: string; departmentName: string; jobPositionId: string | null; jobPositionTitle: string | null }> {
+  /**
+   * Ensures a job position exists in the given department.
+   * If none are found, creates one via API so subsequent tests always have a valid jobPositionId.
+   */
+  async ensureJobPosition(departmentId: string): Promise<{ id: string; title: string }> {
+    const h = await this.headers();
+
+    // 1. Check if any job positions already exist
+    const listResp = await this.page.request.get(
+      `${this.apiBase}/job-positions?page=1&pageSize=10&department_id=${departmentId}&${this.params}`,
+      { headers: h }
+    );
+    if (listResp.ok()) {
+      const jobs = (await listResp.json()).data || [];
+      const existing = jobs.find((j: any) => j.id && j.title) || jobs[0];
+      if (existing) {
+        console.log(`[HR SETUP] Job position already exists: "${existing.title}" (${existing.id})`);
+        return { id: existing.id, title: existing.title };
+      }
+    }
+
+    // 2. None found — create one
+    console.log(`[HR SETUP] No job positions in department ${departmentId}. Creating one...`);
+    const createResp = await this.page.request.post(
+      `${this.apiBase}/job-positions?${this.params}`,
+      { headers: h, data: { title: 'Audit Engineer', department_id: departmentId } }
+    );
+
+    if (!createResp.ok()) {
+      const text = await createResp.text();
+      throw new Error(`Failed to create job position: ${createResp.status()} - ${text.slice(0, 200)}`);
+    }
+
+    const created = await createResp.json();
+    console.log(`[HR SETUP] Job position created: "${created.title}" (${created.id})`);
+    return { id: created.id, title: created.title };
+  }
+
+  async discoverMetadataAPI(): Promise<{ employeeId: string; glAccountId: string; departmentId: string; departmentName: string; jobPositionId: string; jobPositionTitle: string }> {
     const [employees, accounts] = await Promise.all([
       this.listEmployees(10),
       this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=50&${this.params}`, { headers: await this.headers() })
@@ -170,42 +208,18 @@ export class HrAPI extends BasePage {
     const depts = await this.listDepartments(20);
     const preferred = depts.find((d: any) => /finance.*purchase|purchase.*finance/i.test(d.name));
     const ordered = preferred ? [preferred, ...depts.filter((d: any) => d !== preferred)] : depts;
-    const finDept = ordered[0];
+    const targetDept = ordered[0];
 
-    // Job positions are optional — not all environments have them configured
-    let job: any = null;
-    for (const dept of ordered) {
-      const jpResp = await this.page.request.get(
-        `${this.apiBase}/job-positions?page=1&pageSize=10&department_id=${dept.id}&${this.params}`,
-        { headers: await this.headers() }
-      );
-      if (!jpResp.ok()) continue;
-      const jobs = (await jpResp.json()).data || [];
-      const found = jobs.find((j: any) => j.id && j.title) || jobs[0];
-      if (found) { job = found; break; }
-    }
+    // Always guarantee a job position exists — create one if the org chart has none
+    const job = await this.ensureJobPosition(targetDept.id);
 
-    if (job) {
-      console.log(`[HR META] dept="${finDept.name}" (${finDept.id}) | job="${job.title}" (${job.id})`);
-    } else {
-      console.log(`[HR META] dept="${finDept.name}" (${finDept.id}) | job=none (no job positions configured)`);
-    }
+    console.log(`[HR META] dept="${targetDept.name}" (${targetDept.id}) | job="${job.title}" (${job.id})`);
 
     return {
       employeeId: employee.id,
       glAccountId: glAccount.id,
-      departmentId: finDept.id,
-      departmentName: finDept.name,
-      jobPositionId: job?.id ?? null,
-      jobPositionTitle: job?.title ?? null,
-    };
-  }
-
-    return {
-      employeeId: employee.id,
-      glAccountId: glAccount.id,
-      departmentId: finDept.id,
-      departmentName: finDept.name,
+      departmentId: targetDept.id,
+      departmentName: targetDept.name,
       jobPositionId: job.id,
       jobPositionTitle: job.title,
     };
