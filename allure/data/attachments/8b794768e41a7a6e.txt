@@ -1,0 +1,40 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 416.49ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 26
+[SUCCESS] "Purchase Order Date" set to Day 26 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2449.06ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1942.35ms
+[INFO] Vendor: Gentium Concrite Industry
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2024.60ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2107.50ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2499.58ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2545.74ms
+[PERFORMANCE] UI - Random Selection: Location: 2327.16ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1939.43ms
+[PERFORMANCE] UI - Random Selection: Tax: 2352.82ms
+[OK] Line item added (Price: 4200)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/26/000332 | Vendor: Gentium Concrite Industry
+[API] Advancing purchase-orders "b704a4fe-6f31-45e9-a197-8e40d5a3b940"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/26/000332 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/26/000332 via API
+[ACTION] Fetching PO Context for ID: b704a4fe-6f31-45e9-a197-8e40d5a3b940...
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/26/000500
+[API] Advancing bills "b17b58d5-9192-477a-8f10-7c019445cd4d"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/26/000500 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/26/000500 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Gentium Concrite Industry"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/26/000500...
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 1/15. Retrying in 2s...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/26/000500 is physically present in Gentium Concrite Industry's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/26/000332 -> Bill BILL/2026/05/26/000500
