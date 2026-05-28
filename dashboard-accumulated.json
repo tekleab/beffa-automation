@@ -1,6 +1,6 @@
 {
-  "totalTests": 88,
-  "failedTests": 29,
+  "totalTests": 30,
+  "failedTests": 7,
   "capturedIssues": [
     {
       "title": "UI Audit: Customer profile shows zero balance after full payment",
@@ -8,29 +8,9 @@
       "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
     },
     {
-      "title": "Guardrail: Invoice must reject second receipt after full payment",
-      "category": "LOGIC_VULN",
-      "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
-    },
-    {
-      "title": "Audit: Multi-item invoice correctly deducts stock for each line item",
-      "category": "STABILITY",
-      "description": "Error: [VULNERABILITY] Multi-Item Invoice Stock Deduction Failed"
-    },
-    {
-      "title": "Audit: Partial SO release correctly tracks remaining unreleased quantity",
-      "category": "STABILITY",
-      "description": "Error: Currency Discovery HTTP 500: {"
-    },
-    {
       "title": "Create fresh invoice via API, then create receipt and link it",
       "category": "STABILITY",
       "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
-    },
-    {
-      "title": "Audit: SO split into multiple invoices — total must never exceed SO quantity",
-      "category": "STABILITY",
-      "description": "Error: [VULNERABILITY] Split Invoice Stock Mismatch"
     },
     {
       "title": "API: Employee must be created with all required fields",
@@ -45,7 +25,7 @@
     {
       "title": "Full lifecycle: Employee creation through payroll run approval",
       "category": "STABILITY",
-      "description": "Error: Failed to create job position: 422 - {"
+      "description": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m"
     },
     {
       "title": "API: Pay component must be created with correct GL account linkage",
@@ -56,96 +36,6 @@
       "title": "API: Timesheet must be created and advanced through approval",
       "category": "STABILITY",
       "description": "Error: Failed to create job position: 422 - {"
-    },
-    {
-      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6"
-    },
-    {
-      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-      "category": "LOGIC_VULN",
-      "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
-    },
-    {
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "category": "STABILITY",
-      "description": "Error: Invoice-Receipt API Creation Failed: 500 - {"
-    },
-    {
-      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
-      "category": "STABILITY",
-      "description": "Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance"
-    },
-    {
-      "title": "Guardrail: System must handle concurrent duplicate Bill payments atomically",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: System approved 2 full payments for a single Bill! "
-    },
-    {
-      "title": "Guardrail: System must reject approval of a future-dated Bill",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-05-28T00:00:00Z. Future-period AP liab"
-    },
-    {
-      "title": "Guardrail: System must block billing beyond 100% of PO quantity",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] System approved a bill for 1 unit beyond the fully-exhausted PO PO/2026/"
-    },
-    {
-      "title": "Guardrail: Concurrent identical PO submissions must not create duplicate liability",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Duplicate PO race succeeded — both POs approved and billed. Total AP lia"
-    },
-    {
-      "title": "Guardrail: System must reject payment where split array does not match total",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Payment mismatch accepted: total=5000 but only 3000 allocated to bill. B"
-    },
-    {
-      "title": "Guardrail: System must reject payment exceeding bill total",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Bill BILL/2026/05/28/000526: Overpayment of 6000 on 3000 bill created ne"
-    },
-    {
-      "title": "Guardrail: System must prevent double-billing the same PO",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Double-billing allowed! PO PO/2026/05/28/000341 billed twice: BILL/2026/"
-    },
-    {
-      "title": "Guardrail: System must reject payment against a fully-paid bill",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Ghost payment PAY/2026/05/28/000184 accepted on fully-paid bill BILL/202"
-    },
-    {
-      "title": "Guardrail: System must explicitly reject historical back-dated Bills",
-      "category": "LOGIC_VULN",
-      "description": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated bill from 2023"
-    },
-    {
-      "title": "Audit: 7-Stage Average Cost Validation & COGS Accuracy",
-      "category": "STABILITY",
-      "description": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[2"
-    },
-    {
-      "title": "Guardrail: System must handle concurrent stock adjustments atomically",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] Stock Race Condition: Concurrent adjustments caused lost updates. Expect"
-    },
-    {
-      "title": "Audit: 7-Stage FIFO Layer Validation & COGS Accuracy",
-      "category": "STABILITY",
-      "description": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object."
-    },
-    {
-      "title": "Guardrail: System must reject negative stock adjustments",
-      "category": "LOGIC_VULN",
-      "description": "Error: [CRITICAL_LOGIC_BUG] System accepted and fully approved negative stock adjustment (Ref: ADJ/2"
-    },
-    {
-      "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
-      "category": "LOGIC_VULN",
-      "description": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustme"
     }
   ]
 }

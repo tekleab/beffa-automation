@@ -70,7 +70,7 @@
         <div class="metrics-stack">
             <div class="metric-card"><div class="m-val">3</div><div class="m-label">Dynamic Domains Audited</div></div>
             <div class="metric-card" style="border-left-color: var(--coral)"><div class="m-val">BLOCKER</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">67%</div><div class="m-label">Security UUID Compliance</div></div>
+            <div class="metric-card"><div class="m-val">77%</div><div class="m-label">Security UUID Compliance</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
@@ -78,9 +78,9 @@
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">67%</div>
+                <div id="hudRateValue" class="integrity-val">77%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 29</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 7</div>
                 <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
@@ -88,7 +88,7 @@
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">29 DETECTED</div>
+                <div class="wing-count">7 DETECTED</div>
             </div>
             <div class="repro-dropdown">
           <div class="issue-item">
@@ -96,24 +96,8 @@
             <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
           </div>
           <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: Invoice must reject second receipt after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: Multi-item invoice correctly deducts stock for each line item</b>: Error: [VULNERABILITY] Multi-Item Invoice Stock Deduction Failed</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: Partial SO release correctly tracks remaining unreleased quantity</b>: Error: Currency Discovery HTTP 500: {</div>
-          </div>
-          <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
             <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Split Invoice Stock Mismatch</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
@@ -125,7 +109,7 @@
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: Failed to create job position: 422 - {</div>
+            <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoHaveProperty[2m([22m[32mpath[39m[2m)[22m</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
@@ -134,78 +118,6 @@
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
             <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: Failed to create job position: 422 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must prevent double-dip overpayments across multi-link receipts</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: Full cycle GL — AR debited on invoice, cleared on receipt</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: Credit note (void) must reduce AR balance back to pre-sale state</b>: Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must handle concurrent duplicate Bill payments atomically</b>: Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: System approved 2 full payments for a single Bill! </div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject approval of a future-dated Bill</b>: Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-05-28T00:00:00Z. Future-period AP liab</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must block billing beyond 100% of PO quantity</b>: Error: [CRITICAL_LOGIC_BUG] System approved a bill for 1 unit beyond the fully-exhausted PO PO/2026/</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: Concurrent identical PO submissions must not create duplicate liability</b>: Error: [CRITICAL_LOGIC_BUG] Duplicate PO race succeeded — both POs approved and billed. Total AP lia</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject payment where split array does not match total</b>: Error: [CRITICAL_LOGIC_BUG] Payment mismatch accepted: total=5000 but only 3000 allocated to bill. B</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject payment exceeding bill total</b>: Error: [CRITICAL_LOGIC_BUG] Bill BILL/2026/05/28/000526: Overpayment of 6000 on 3000 bill created ne</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must prevent double-billing the same PO</b>: Error: [CRITICAL_LOGIC_BUG] Double-billing allowed! PO PO/2026/05/28/000341 billed twice: BILL/2026/</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject payment against a fully-paid bill</b>: Error: [CRITICAL_LOGIC_BUG] Ghost payment PAY/2026/05/28/000184 accepted on fully-paid bill BILL/202</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must explicitly reject historical back-dated Bills</b>: Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated bill from 2023</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: 7-Stage Average Cost Validation & COGS Accuracy</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeCloseTo[2m([22m[32mexpected[39m[2m, [2</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must handle concurrent stock adjustments atomically</b>: Error: [CRITICAL_LOGIC_BUG] Stock Race Condition: Concurrent adjustments caused lost updates. Expect</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Audit: 7-Stage FIFO Layer Validation & COGS Accuracy</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must reject negative stock adjustments</b>: Error: [CRITICAL_LOGIC_BUG] System accepted and fully approved negative stock adjustment (Ref: ADJ/2</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">LOGIC_VULN</div>
-            <div class="issue-desc"><b>Guardrail: System must explicitly reject historical back-dated adjustments</b>: Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustme</div>
           </div></div>
         </div>
 
