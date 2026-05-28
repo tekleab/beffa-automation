@@ -70,7 +70,7 @@
         <div class="metrics-stack">
             <div class="metric-card"><div class="m-val">3</div><div class="m-label">Dynamic Domains Audited</div></div>
             <div class="metric-card" style="border-left-color: var(--coral)"><div class="m-val">BLOCKER</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">77%</div><div class="m-label">Security UUID Compliance</div></div>
+            <div class="metric-card"><div class="m-val">70%</div><div class="m-label">Security UUID Compliance</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
@@ -78,9 +78,9 @@
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">77%</div>
+                <div id="hudRateValue" class="integrity-val">70%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 7</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 9</div>
                 <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
@@ -88,20 +88,28 @@
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">7 DETECTED</div>
+                <div class="wing-count">9 DETECTED</div>
             </div>
             <div class="repro-dropdown">
+          <div class="issue-item">
+            <div class="issue-tag">STABILITY</div>
+            <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Currency Discovery HTTP 500: {</div>
+          </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
             <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {</div>
+            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for "sample" is invalid or expired.</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>API: Employee must be created with all required fields</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoHaveProperty[2m([22m[32mpath[39m[2m)[22m</div>
+            <div class="issue-desc"><b>Full cycle: PO → Bill → SO → Invoice → stock reconciled</b>: Error: Currency Discovery HTTP 500: {</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: Duplicate employee email must be rejected by the system</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoHaveProperty[2m([22m[32mpath[39m[2m)[22m</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">LOGIC_VULN</div>
