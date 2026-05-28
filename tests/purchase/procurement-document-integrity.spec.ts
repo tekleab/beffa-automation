@@ -235,4 +235,80 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
             console.log(`[PASS] Vendorless bill correctly rejected at creation: HTTP ${noVendorResp.status()}`);
         }
     });
+
+    // ── 6. PO TO BILL 1:1 RECONCILIATION AUDIT ──────────────────────────────────
+    test('Guardrail: System must enforce strict 1:1 reconciliation mapping between Purchase Order and Bill', async ({ page }) => {
+        const app = new AppManager(page);
+        const meta = sharedMeta;
+        const item = sharedItem;
+
+        const poQty = 8;
+        const poPrice = 4500;
+
+        console.log(`[RECONCILE] Step 1: Creating PO for ${poQty} units of "${item.itemName}"...`);
+        const po = await app.api.purchase.createPurchaseOrderAPI(item, poQty, poPrice, meta.vendorId);
+        await app.advanceDocumentAPI(po.poId, 'purchase-orders');
+        console.log(`[RECONCILE] Approved PO: ${po.poNumber} (${po.poId})`);
+
+        console.log(`[RECONCILE] Step 2: Creating Bill converting directly from PO...`);
+        const bill = await app.api.purchase.createBillFromPoAPI(po.poId);
+        await app.advanceDocumentAPI(bill.billId, 'bills');
+        console.log(`[RECONCILE] Approved Bill: ${bill.billNumber} (${bill.billId})`);
+
+        console.log(`[RECONCILE] Step 3: Fetching PO and Bill details to perform audit...`);
+        const { apiBase, headers, qs } = await app.buildApiContext();
+
+        // Fetch PO
+        const poResp = await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers });
+        const poData = await poResp.json();
+
+        // Fetch Bill
+        const billData = await app.api.purchase.getBillAPI(bill.billId);
+
+        // Audit Vendor mapping
+        const poVendorId = poData.vendor_id || poData.vendor?.id;
+        const billVendorId = billData.vendor_id || billData.vendor?.id;
+        if (poVendorId !== billVendorId) {
+            throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: Vendor mismatch. PO Vendor ID: ${poVendorId}, Bill Vendor ID: ${billVendorId}`);
+        }
+
+        // Audit Items mapping
+        const poItems = poData.po_items || [];
+        const billItems = billData.received_purchase_order_items || [];
+
+        if (poItems.length === 0) {
+            throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: Purchase Order ${po.poNumber} has no items.`);
+        }
+        if (billItems.length === 0) {
+            throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: Bill ${bill.billNumber} has no received PO items.`);
+        }
+
+        // Check each line item maps 1:1
+        for (const poItem of poItems) {
+            // Find the matching received PO item in the bill
+            const matchedBillItem = billItems.find((bItem: any) => bItem.po_item_id === poItem.id);
+            if (!matchedBillItem) {
+                throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: PO Line Item (ID: ${poItem.id}) has no matching record in Bill ${bill.billNumber}.`);
+            }
+
+            // Verify quantity
+            if (parseFloat(matchedBillItem.received_quantity) !== parseFloat(poItem.quantity)) {
+                throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: Quantity mismatch. PO Qty: ${poItem.quantity}, Bill Qty: ${matchedBillItem.received_quantity}`);
+            }
+
+            // Verify unit price
+            if (parseFloat(matchedBillItem.received_unit_price) !== parseFloat(poItem.unit_price)) {
+                throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: Unit Price mismatch. PO Price: ${poItem.unit_price}, Bill Price: ${matchedBillItem.received_unit_price}`);
+            }
+        }
+
+        // Audit net due amount equals PO total amount
+        const poTotal = poItems.reduce((sum: number, item: any) => sum + (parseFloat(item.quantity) * parseFloat(item.unit_price)), 0);
+        const billNetDue = parseFloat(billData.net_due ?? billData.due ?? billData.unpaid_amount ?? 0);
+        if (billNetDue !== poTotal) {
+            throw new Error(`[CRITICAL_LOGIC_BUG] 1:1 Reconciliation Fail: Liability mismatch. PO total amount: ${poTotal}, Bill net due: ${billNetDue}`);
+        }
+
+        console.log(`[PASS] 1:1 reconciliation audit succeeded. Bill maps perfectly to Purchase Order.`);
+    });
 });
