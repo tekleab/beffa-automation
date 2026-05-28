@@ -12,8 +12,6 @@ class IntegratedDashboard implements Reporter {
   }
 
   async onEnd(result: FullResult) {
-    if (!this.rootSuite) return;
-
     // 1. LOAD PREVIOUS ACCUMULATED DATA
     let accumulated = {
       totalTests: 0,
@@ -30,31 +28,33 @@ class IntegratedDashboard implements Reporter {
       }
     }
 
-    // 2. DISCOVER AND APPEND NEW FAILURES
-    const currentAllTests = this.rootSuite.allTests();
-    const currentFailedTests = currentAllTests.filter(test => {
-      const lastResult = test.results[test.results.length - 1];
-      return lastResult?.status === 'failed' || lastResult?.status === 'timedOut';
-    });
-
-    accumulated.totalTests += currentAllTests.length;
-    accumulated.failedTests += currentFailedTests.length;
-
-    currentFailedTests.forEach(test => {
-      const lastResult = test.results[test.results.length - 1];
-      let cat = 'STABILITY';
-      if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
-      if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
-
-      accumulated.capturedIssues.push({
-        title: test.title,
-        category: cat,
-        description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+    if (this.rootSuite) {
+      // 2. DISCOVER AND APPEND NEW FAILURES
+      const currentAllTests = this.rootSuite.allTests();
+      const currentFailedTests = currentAllTests.filter(test => {
+        const lastResult = test.results[test.results.length - 1];
+        return lastResult?.status === 'failed' || lastResult?.status === 'timedOut';
       });
-    });
 
-    // Save updated accumulated data for potential subsequent steps
-    fs.writeFileSync(jsonPath, JSON.stringify(accumulated, null, 2));
+      accumulated.totalTests += currentAllTests.length;
+      accumulated.failedTests += currentFailedTests.length;
+
+      currentFailedTests.forEach(test => {
+        const lastResult = test.results[test.results.length - 1];
+        let cat = 'STABILITY';
+        if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+        if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+
+        accumulated.capturedIssues.push({
+          title: test.title,
+          category: cat,
+          description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+        });
+      });
+
+      // Save updated accumulated data for potential subsequent steps
+      fs.writeFileSync(jsonPath, JSON.stringify(accumulated, null, 2));
+    }
 
     // Calculate overall metrics
     const totalTests = accumulated.totalTests;
