@@ -1,21 +1,21 @@
 [ACTION] Performing High-Speed API Login for: admin@beffa.com...
-[PERFORMANCE] API - Auth API Verification: 354.71ms
+[PERFORMANCE] API - Auth API Verification: 446.51ms
 [SUCCESS] API Login complete. Session & Metadata injected.
 [ACTION] Verifying current company selection...
 [INFO] Already on company: "sample"
 [PHASE 1] Discovering item for E2E cycle...
 [ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
-[PERFORMANCE] API - Item Discovery (50 Records): 1241.17ms
-[OK] Item: "Sauna light 40W" | Stock Before: 19
+[PERFORMANCE] API - Item Discovery (50 Records): 1524.08ms
+[OK] Item: "Kärcher t350 with liquid" | Stock Before: 9
 [PHASE 2] Creating & approving Bill via API...
 [ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
-[SUCCESS] Bill created via API: BILL/2026/05/26/000506 (ID: c2376bdb-154d-4952-bc68-fd1f6d500949)
-[API] Advancing bills "c2376bdb-154d-4952-bc68-fd1f6d500949"...
+[SUCCESS] Bill created via API: BILL/2026/05/28/000507 (ID: daa207a5-9313-4259-a3b8-ab39c0bc016e)
+[API] Advancing bills "daa207a5-9313-4259-a3b8-ab39c0bc016e"...
 [INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
-[OK] Bill BILL/2026/05/26/000506 approved.
-[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 24...
-[SUCCESS] API Confirmed: Stock correctly reached 24.
-[AUDIT] Stock after purchase: 24 (Expected: 24)
+[OK] Bill BILL/2026/05/28/000507 approved.
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 14...
+[SUCCESS] API Confirmed: Stock correctly reached 14.
+[AUDIT] Stock after purchase: 14 (Expected: 14)
 [PHASE 3] Creating & approving SO via API...
 [ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
 [META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
@@ -27,31 +27,31 @@
 [META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
 [META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
 [META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
-[SUCCESS] Sales Order created via API: SO/2026/05/26/000479 (ID: ace223ae-0201-4e0c-bf98-b305df6821d3, ItemID: 6c7b20bc-d81a-438c-a7a3-f88259899a0c)
-[API] Advancing sales-orders "ace223ae-0201-4e0c-bf98-b305df6821d3"...
+[SUCCESS] Sales Order created via API: SO/2026/05/28/000481 (ID: d91debd6-b5a3-4d3b-b024-bfddbfc9477f, ItemID: 009b1aa3-72c7-4764-8981-e4b43c3ed397)
+[API] Advancing sales-orders "d91debd6-b5a3-4d3b-b024-bfddbfc9477f"...
 [INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
-[OK] SO SO/2026/05/26/000479 approved.
+[OK] SO SO/2026/05/28/000481 approved.
 [PHASE 3] Creating & approving Invoice via API...
 [ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
 [META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
 [META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
 [META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
 [META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
-[SUCCESS] Invoice created via API: INV/2026/05/26/000823 (ID: 61057639-84fd-4234-ac88-f23bbc90bad2)
-[API] Advancing invoices "61057639-84fd-4234-ac88-f23bbc90bad2"...
+[SUCCESS] Invoice created via API: INV/2026/05/28/000826 (ID: 91c541b0-f0a4-4d21-a675-4b1451677dc9)
+[API] Advancing invoices "91c541b0-f0a4-4d21-a675-4b1451677dc9"...
 [INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
-[OK] Invoice INV/2026/05/26/000823 approved.
-[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 22...
-[SUCCESS] API Confirmed: Stock correctly reached 22.
+[OK] Invoice INV/2026/05/28/000826 approved.
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 12...
+[SUCCESS] API Confirmed: Stock correctly reached 12.
 
 ========== E2E CYCLE AUDIT REPORT ==========
-[ITEM]    Sauna light 40W (855c6cf9-46ba-4d00-9af3-a3f0ed65c9d1)
-[BILL]    BILL/2026/05/26/000506 — purchased 5 units
-[SO]      SO/2026/05/26/000479 — sold 2 units
-[INVOICE] INV/2026/05/26/000823
-[STOCK]   Before Purchase : 19
-[STOCK]   After Purchase  : 24
-[STOCK]   After Sale      : 22 (Expected: 22)
+[ITEM]    Kärcher t350 with liquid (95433a29-cae8-4d95-ad09-9d3189eb49c3)
+[BILL]    BILL/2026/05/28/000507 — purchased 5 units
+[SO]      SO/2026/05/28/000481 — sold 2 units
+[INVOICE] INV/2026/05/28/000826
+[STOCK]   Before Purchase : 9
+[STOCK]   After Purchase  : 14
+[STOCK]   After Sale      : 12 (Expected: 12)
 ============================================
 
 [PASS] E2E Purchase to Sale cycle complete. Inventory correctly reconciled.
