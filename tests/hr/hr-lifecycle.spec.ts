@@ -48,6 +48,24 @@ test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @fu
         // ── STEP 2: Create Pay Component via API ──────────────────────────────
         console.log(`[STEP 2] Creating pay component...`);
         const meta = await app.api.hr.discoverMetadataAPI();
+        
+        // Dynamically find specific department (BM Technologies Group) and job position (QA specialist)
+        const deptResp = await page.request.get(`${app.apiBase}/departments?${params}`, { headers: await getHeaders() });
+        const depts = (await deptResp.json()).data || await deptResp.json();
+        const targetDept = depts.find((d: any) => d.name?.toLowerCase().includes('bm technologies group')) || depts[0];
+        if (targetDept) {
+            meta.departmentId = targetDept.id;
+            meta.departmentName = targetDept.name;
+        }
+
+        const jobResp = await page.request.get(`${app.apiBase}/job-positions?${params}`, { headers: await getHeaders() });
+        const jobs = (await jobResp.json()).data || await jobResp.json();
+        const targetJob = jobs.find((j: any) => j.title?.toLowerCase().includes('qa specialist')) || jobs[0];
+        if (targetJob) {
+            meta.jobPositionId = targetJob.id;
+            meta.jobPositionTitle = targetJob.title;
+        }
+
         console.log(`[INFO] Using dept: ${meta.departmentName} (${meta.departmentId}) | job: ${meta.jobPositionTitle} (${meta.jobPositionId})`);
         const pc = await app.api.hr.createPayComponent(
             `Salary-${ts}`, 'Earning', 'FullyTaxable', `SL${String(ts).slice(-6)}`, meta.glAccountId
@@ -114,63 +132,39 @@ test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @fu
         console.log(`[INFO] status: ${contract.status} | contract_status: ${contract.contract_status}`);
         expect(contractDeptId).not.toBe('MISSING');
 
-        // ── STEP 6: Approve Contract via UI ──────────────────────────────────
-        // API advance always returns E1481 — UI is the only working approval path
-        console.log(`[STEP 6] Approving contract via UI...`);
-        await page.goto(`/human-resources/employees/${empId}/details`, { waitUntil: 'load' });
-        await page.waitForTimeout(2000);
-
-        await page.getByRole('tab', { name: /employment contracts/i }).click();
-        await page.waitForTimeout(2000);
-
-        // Contract card is visible — click Approve button in the action bar
-        const approveBtn = page.locator('button').filter({ hasText: /^approve$/i }).first();
-        await approveBtn.waitFor({ state: 'visible', timeout: 10000 });
-        await approveBtn.click();
-        await page.waitForTimeout(1500);
-
-        // Confirmation dialog: click Approve inside it
-        const confirmDialog = page.getByRole('dialog');
-        if (await confirmDialog.isVisible({ timeout: 3000 }).catch(() => false)) {
-            const confirmApproveBtn = confirmDialog.getByRole('button', { name: /^approve$/i });
-            await confirmApproveBtn.waitFor({ state: 'visible', timeout: 5000 });
-            await confirmApproveBtn.click();
-        }
-        await page.waitForTimeout(2000);
+        // ── STEP 6: Approve Contract via API ──────────────────────────────────
+        // Now that employee has pay structure assigned BEFORE contract creation,
+        // the API advance should work without E1481
+        console.log(`[STEP 6] Approving contract via API...`);
+        const advResp = await page.request.patch(
+            `${app.apiBase}/employee-contracts/${contractId}/advance?${params}`,
+            { headers: await getHeaders(), data: {} }
+        );
+        expect(advResp.ok()).toBe(true);
+        const advBody = await advResp.json();
+        expect(advBody.status?.toLowerCase()).toBe('approved');
+        console.log(`[PASS] Contract approved via API`);
 
         // Confirm via API
-        let contractStatus = 'draft';
-        for (let i = 0; i < 8; i++) {
-            const r = await page.request.get(`${app.apiBase}/employee/${empId}/contracts?${params}`, { headers: await getHeaders() });
-            const text = await r.text();
-            try {
-                const list = JSON.parse(text) as any[];
-                const c = list.find((x: any) => x.id === contractId);
-                contractStatus = c?.status?.toLowerCase() || c?.contract_status?.toLowerCase() || contractStatus;
-            } catch { /* retry */ }
-            if (contractStatus === 'approved' || contractStatus === 'active') break;
-            await page.waitForTimeout(2000);
-        }
-        expect(['approved', 'active']).toContain(contractStatus);
-        console.log(`[PASS] Contract status: ${contractStatus}`);
+        const contractFinal = await page.request.get(`${app.apiBase}/employee/${empId}/contracts?${params}`, { headers: await getHeaders() });
+        const contracts = await contractFinal.json();
+        const c = (contracts as any[]).find((x: any) => x.id === contractId);
+        expect(c?.status?.toLowerCase()).toBe('approved');
+        console.log(`[PASS] Contract status confirmed: ${c?.status}`);
 
-        // ── STEP 7: Verify Employee Status ───────────────────────────────────
-        console.log(`[STEP 7] Verifying employee status...`);
+        // ── STEP 7: Verify Employee is Active ────────────────────────────────
+        console.log(`[STEP 7] Verifying employee is active...`);
         let empStatus = 'inactive';
         for (let i = 0; i < 10; i++) {
             const r = await page.request.get(`${app.apiBase}/employees/${empId}?${params}`, { headers: await getHeaders() });
-            const text = await r.text();
-            try {
-                const body = JSON.parse(text);
-                empStatus = body?.status?.toLowerCase() || body?.employment_status?.toLowerCase() || 'inactive';
-            } catch { console.log(`[WARN] Step 7 non-JSON (attempt ${i + 1}): ${text.slice(0, 120)}`); }
+            empStatus = (await r.json()).status?.toLowerCase();
             if (empStatus === 'active') break;
             await page.waitForTimeout(2000);
         }
-        expect(['active', 'inactive']).toContain(empStatus);
-        console.log(`[PASS] Employee status: ${empStatus}`);
+        expect(empStatus).toBe('active');
+        console.log(`[PASS] Employee is active`);
 
-        // ── STEP 8: Create Payroll Run via API ────────────────────────────────
+        // ── STEP 8: Create Payroll Run ────────────────────────────────────
         console.log(`[STEP 8] Creating payroll run...`);
         const run = await app.api.hr.createPayrollRun(
             `Lifecycle-Run-${ts}`,
