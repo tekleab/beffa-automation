@@ -336,9 +336,8 @@ export class InventoryAPI extends BasePage {
     const items = list.filter((i: any) => {
       const locations = i.inventory_item_locations || [];
       const locationStock = locations.reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
-      // STRICT REQUIREMENT: Item must have explicit location data linked to it to avoid 422 mismatch
-      // AND it must have enough stock to satisfy the test requirement
-      return locations.length > 0 && (locationStock >= minStock);
+      // STRICT REQUIREMENT: Item must be active, have location data, and satisfy minStock
+      return i.status === 'active' && locations.length > 0 && (locationStock >= minStock);
     });
 
     if (items.length === 0) {

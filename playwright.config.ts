@@ -23,6 +23,10 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
+  
+  globalSetup: require.resolve('./global-setup'),
+  globalTeardown: require.resolve('./global-teardown'),
+  
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
