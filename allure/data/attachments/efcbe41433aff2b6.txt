@@ -1,0 +1,38 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 373.93ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 28
+[SUCCESS] "Purchase Order Date" set to Day 28 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2967.27ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2420.90ms
+[INFO] Vendor: BAMACO PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2675.55ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 3375.37ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2189.77ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2180.63ms
+[PERFORMANCE] UI - Random Selection: Location: 2293.44ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2543.54ms
+[PERFORMANCE] UI - Random Selection: Tax: 2436.22ms
+[OK] Line item added (Price: 8452)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/28/000336 | Vendor: BAMACO PLC
+[API] Advancing purchase-orders "446d2668-4db5-486f-81f7-40b92ebbe00a"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/28/000336 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/28/000336 via API
+[ACTION] Fetching PO Context for ID: 446d2668-4db5-486f-81f7-40b92ebbe00a...
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/28/000510
+[API] Advancing bills "0e02728c-4e0a-4d0f-a81f-1c615d6293f1"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/28/000510 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/28/000510 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "BAMACO PLC"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/28/000510...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/28/000510 is physically present in BAMACO PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/28/000336 -> Bill BILL/2026/05/28/000510

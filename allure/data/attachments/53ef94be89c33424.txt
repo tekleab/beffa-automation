@@ -1,0 +1,69 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 317.87ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1116.01ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 0b3e3e2b-71c4-4f50-9afc-6fd7ec8bc194 (steam door 78x2.02)
+[ITEM]  Stock       : 185
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Sales Order created via API: SO/2026/05/28/000485 (ID: 074173cb-3721-412b-bd56-e4179dabe13d, ItemID: 7234d246-788a-4e14-8d72-b4637711d48f)
+[API] Advancing sales-orders "074173cb-3721-412b-bd56-e4179dabe13d"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] SO SO/2026/05/28/000485 approved (ID: 074173cb-3721-412b-bd56-e4179dabe13d)
+[STEP 2] Releasing Batch 1: 4 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/28/000837 (ID: 7b3e7deb-9f22-4a46-b773-4214690a6215)
+[API] Advancing invoices "7b3e7deb-9f22-4a46-b773-4214690a6215"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[OK] Batch 1 invoice INV/2026/05/28/000837 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/28/000838 (ID: 00350376-5e3f-4ab7-97b0-fcc1ed24008d)
+[API] Advancing invoices "00350376-5e3f-4ab7-97b0-fcc1ed24008d"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[OK] Batch 2 invoice INV/2026/05/28/000838 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/05/28/000485 (ID: 074173cb-3721-412b-bd56-e4179dabe13d)
+[DOCUMENT] Invoice 1    : INV/2026/05/28/000837 (ID: 7b3e7deb-9f22-4a46-b773-4214690a6215) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/05/28/000838 (ID: 00350376-5e3f-4ab7-97b0-fcc1ed24008d) — 6 units
+[ITEM]     Item         : steam door 78x2.02 (0b3e3e2b-71c4-4f50-9afc-6fd7ec8bc194)
+[STOCK]    Before       : 185
+[STOCK]    After        : 185
+[STOCK]    Expected     : 175
+================================================
+

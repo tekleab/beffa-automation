@@ -1,0 +1,49 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 203.87ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 628.62ms
+
+========== PRE-TRANSACTION SNAPSHOT ==========
+[ACCOUNT] AR Account    : 8479ad17-541c-4b85-a371-59f0536ba6e9
+[ACCOUNT] Cash Account  : 892c37c6-e7ba-4178-a8a7-48e57a846080
+[ACCOUNT] Sales Account : 403602e4-ce38-4eeb-932f-796a41e51179
+[ITEM]    Item ID        : 1d4b3733-000e-4939-abdb-5f2e3df55c1b (fifo-master)
+[ITEM]    Location ID    : 2595ebb0-4e78-4bc5-9321-140d3fd316c7
+[ITEM]    Warehouse ID   : cb4c2b44-2d3c-45b7-9b9a-1e34639f37a4
+[ITEM]    Stock          : 1112
+[CUSTOMER] Customer ID  : 7dbec658-191f-4fb9-8d26-91e73dc8995a
+==============================================
+
+[GL_AUDIT] Account: Accounts Receivable | Balance: 64869.69
+[GL_AUDIT] Account: Cash - Main Office | Balance: -10169576.86
+[BALANCE] AR Before     : 64869.69
+[BALANCE] Cash Before   : -10169576.86
+
+[STEP 2] Creating & approving standalone invoice...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Standalone Invoice created via API: INV/2026/05/28/000846 (ID: d205c64d-26ea-4e05-aa9b-e08200a416f0)
+[API] Advancing invoices "d205c64d-26ea-4e05-aa9b-e08200a416f0"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[GL_AUDIT] Account: Accounts Receivable | Balance: 65069.69
+
+========== POST-INVOICE SNAPSHOT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/05/28/000846
+[DOCUMENT] Invoice ID   : d205c64d-26ea-4e05-aa9b-e08200a416f0
+[DOCUMENT] Amount       : 500
+[BALANCE] AR After Inv  : 65069.69
+[BALANCE] AR Delta      : 200.00 (Expected: +500)
+============================================
+
+[STEP 3] Creating & approving full receipt...
