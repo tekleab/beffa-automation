@@ -143,7 +143,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
 
             const b1Data = await app.api.purchase.getBillAPI(bill1.billId);
             const b2Data = await app.api.purchase.getBillAPI(bill2.billId);
-            const totalLiability = parseFloat(b1Data.total ?? b1Data.amount ?? 0) + parseFloat(b2Data.total ?? b2Data.amount ?? 0);
+            const totalLiability = parseFloat(b1Data.net_due ?? b1Data.due ?? b1Data.unpaid_amount ?? 0) + parseFloat(b2Data.net_due ?? b2Data.due ?? b2Data.unpaid_amount ?? 0);
 
             console.log(`[SNAPSHOT] Total AP liability from duplicate POs: ${totalLiability}`);
             throw new Error(`[CRITICAL_LOGIC_BUG] Duplicate PO race succeeded — both POs approved and billed. Total AP liability doubled to ${totalLiability}. No deduplication guard exists.`);
