@@ -49,21 +49,21 @@ test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @fu
         console.log(`[STEP 2] Creating pay component...`);
         const meta = await app.api.hr.discoverMetadataAPI();
         
-        // Dynamically find specific department (BM Technologies Group) and job position (QA specialist)
-        const deptResp = await page.request.get(`${app.apiBase}/departments?${params}`, { headers: await getHeaders() });
+        // Dynamically find specific department (BM Technologies Group)
+        const deptResp = await page.request.get(`${app.apiBase}/departments?page=1&pageSize=50&${params}`, { headers: await getHeaders() });
         const depts = (await deptResp.json()).data || await deptResp.json();
         const targetDept = depts.find((d: any) => d.name?.toLowerCase().includes('bm technologies group')) || depts[0];
+        
         if (targetDept) {
             meta.departmentId = targetDept.id;
             meta.departmentName = targetDept.name;
-        }
-
-        const jobResp = await page.request.get(`${app.apiBase}/job-positions?${params}`, { headers: await getHeaders() });
-        const jobs = (await jobResp.json()).data || await jobResp.json();
-        const targetJob = jobs.find((j: any) => j.title?.toLowerCase().includes('qa specialist')) || jobs[0];
-        if (targetJob) {
-            meta.jobPositionId = targetJob.id;
-            meta.jobPositionTitle = targetJob.title;
+            
+            // Safe, paginated lookup for job positions inside that specific department!
+            const job = await app.api.hr.ensureJobPosition(targetDept.id, 'QA specialist');
+            if (job) {
+                meta.jobPositionId = job.id;
+                meta.jobPositionTitle = job.title;
+            }
         }
 
         console.log(`[INFO] Using dept: ${meta.departmentName} (${meta.departmentId}) | job: ${meta.jobPositionTitle} (${meta.jobPositionId})`);

@@ -159,7 +159,7 @@ export class HrAPI extends BasePage {
    * Ensures a job position exists in the given department.
    * If none are found, creates one via API so subsequent tests always have a valid jobPositionId.
    */
-  async ensureJobPosition(departmentId: string): Promise<{ id: string; title: string }> {
+  async ensureJobPosition(departmentId: string, title: string = 'Audit Engineer'): Promise<{ id: string; title: string }> {
     const h = await this.headers();
 
     // 1. Check if any job positions already exist
@@ -169,18 +169,21 @@ export class HrAPI extends BasePage {
     );
     if (listResp.ok()) {
       const jobs = (await listResp.json()).data || [];
-      const existing = jobs.find((j: any) => j.id && j.title) || jobs[0];
+      // Look for the specific title first, fallback to any existing
+      let existing = jobs.find((j: any) => j.id && j.title?.toLowerCase().includes(title.toLowerCase()));
+      if (!existing) existing = jobs.find((j: any) => j.id && j.title);
+      
       if (existing) {
-        console.log(`[HR SETUP] Job position already exists: "${existing.title}" (${existing.id})`);
+        console.log(`[HR SETUP] Job position found: "${existing.title}" (${existing.id})`);
         return { id: existing.id, title: existing.title };
       }
     }
 
     // 2. None found — create one
-    console.log(`[HR SETUP] No job positions in department ${departmentId}. Creating one...`);
+    console.log(`[HR SETUP] No job position found. Creating "${title}" in department ${departmentId}...`);
     const createResp = await this.page.request.post(
       `${this.apiBase}/job-positions?${this.params}`,
-      { headers: h, data: { title: 'Audit Engineer', department_id: departmentId } }
+      { headers: h, data: { title: title, department_id: departmentId } }
     );
 
     if (!createResp.ok()) {
