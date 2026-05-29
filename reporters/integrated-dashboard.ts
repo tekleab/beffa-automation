@@ -12,32 +12,21 @@ class IntegratedDashboard implements Reporter {
   }
 
   async onEnd(result: FullResult) {
-    // 1. LOAD PREVIOUS ACCUMULATED DATA
-    let accumulated = {
-      totalTests: 0,
-      failedTests: 0,
-      capturedIssues: [] as { title: string; category: string; description: string }[]
-    };
-
-    const jsonPath = path.join(this.deployDir, 'dashboard-accumulated.json');
-    if (fs.existsSync(jsonPath)) {
-      try {
-        accumulated = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-      } catch (e) {
-        // Safe fallback if JSON parsing fails
-      }
-    }
+    // Use only current run results (not accumulated) to match Allure
+    let totalTests = 0;
+    let failedTests = 0;
+    let capturedIssues: { title: string; category: string; description: string }[] = [];
 
     if (this.rootSuite) {
-      // 2. DISCOVER AND APPEND NEW FAILURES
+      // Get current run test results only
       const currentAllTests = this.rootSuite.allTests();
       const currentFailedTests = currentAllTests.filter(test => {
         const lastResult = test.results[test.results.length - 1];
         return lastResult?.status === 'failed' || lastResult?.status === 'timedOut';
       });
 
-      accumulated.totalTests += currentAllTests.length;
-      accumulated.failedTests += currentFailedTests.length;
+      totalTests = currentAllTests.length;
+      failedTests = currentFailedTests.length;
 
       currentFailedTests.forEach(test => {
         const lastResult = test.results[test.results.length - 1];
@@ -45,24 +34,18 @@ class IntegratedDashboard implements Reporter {
         if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
         if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
 
-        accumulated.capturedIssues.push({
+        capturedIssues.push({
           title: test.title,
           category: cat,
           description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
         });
       });
-
-      // Save updated accumulated data for potential subsequent steps
-      fs.writeFileSync(jsonPath, JSON.stringify(accumulated, null, 2));
     }
 
-    // Calculate overall metrics
-    const totalTests = accumulated.totalTests;
-    const failedTests = accumulated.failedTests;
+    // Calculate overall metrics for current run only
     const passedTests = totalTests - failedTests;
     const passRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 100;
-    const issueCount = accumulated.capturedIssues.length;
-    const capturedIssues = accumulated.capturedIssues;
+    const issueCount = capturedIssues.length;
 
     // 3. BUILD DYNAMIC HTML DROPDOWN
     let reproHtml = '';
