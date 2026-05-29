@@ -42,9 +42,20 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         await app.advanceDocumentAPI(invResult.id!, 'invoices');
         console.log(`[OK] Invoice ${invResult.ref} approved via API`);
 
-        // Read customer name from meta — more reliable than scraping the DOM
+        // Read customer name from SO result or API — more reliable than scraping the DOM
         const meta = await app.api.sales.discoverMetadataAPI();
-        const CUSTOMER_NAME = await app.getCustomerNameAPI(soResult.customerId) || meta.customerId;
+        let CUSTOMER_NAME = await app.getCustomerNameAPI(soResult.customerId);
+        
+        // Fallback: try to get customer name from SO API response
+        if (!CUSTOMER_NAME) {
+            try {
+                const soData = await app.api.sales.getSalesOrderAPI(soResult.id);
+                CUSTOMER_NAME = soData.customer_name || soData.customer?.name || meta.customerId;
+            } catch (e) {
+                CUSTOMER_NAME = meta.customerId;
+            }
+        }
+        
         const INVOICE_ID = invResult.ref;
         console.log(`[INFO] Document Setup Complete: ${INVOICE_ID} for ${CUSTOMER_NAME}`);
 
@@ -77,12 +88,28 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         await page.goto('/receivables/customers');
 
         const searchInput = page.locator('input[placeholder="Search for customers..."]');
-        await searchInput.waitFor({ state:'visible' });
+        await searchInput.waitFor({ state:'visible', timeout: 10000 });
         await searchInput.fill(CUSTOMER_NAME);
         await page.waitForTimeout(3000);
 
-        await page.locator('table tbody tr').filter({ hasText: CUSTOMER_NAME }).first().locator('td a').first().click({ force: true });
-        await page.waitForSelector('text=Customer Details');
+        // Wait for table to load and find customer row
+        const table = page.locator('table').first();
+        await table.waitFor({ state:'visible', timeout: 10000 });
+        
+        // Try multiple selector strategies for robustness
+        const customerRow = table.locator('tbody tr').filter({ hasText: CUSTOMER_NAME }).first();
+        await customerRow.waitFor({ state:'visible', timeout: 10000 });
+        
+        // Click the customer link - try different selectors
+        const customerLink = customerRow.locator('td a').first();
+        if (await customerLink.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await customerLink.click({ force: true });
+        } else {
+            // Fallback: click the row itself
+            await customerRow.click({ force: true });
+        }
+        
+        await page.waitForURL(url => url.href.includes('/detail'), { timeout: 10000 });
 
         await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
         await page.reload();
