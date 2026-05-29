@@ -232,8 +232,8 @@ jobs:
       if: always()
       run: |
         mkdir -p deploy
-        echo "[INFO] Generating Integrated Dashboard..."
-        npx ts-node -e "import { IntegratedDashboard } from './reporters/integrated-dashboard'; new IntegratedDashboard().onEnd({ status: 'passed' } as any)" || true
+        echo "[INFO] Generating Integrated Dashboard from Playwright results..."
+        npx ts-node scripts/generate-dashboard-from-results.ts || true
 
         if [ -d "temp-report" ]; then
           mv temp-report deploy/allure
