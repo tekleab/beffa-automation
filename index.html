@@ -70,7 +70,7 @@
         <div class="metrics-stack">
             <div class="metric-card"><div class="m-val">3</div><div class="m-label">Dynamic Domains Audited</div></div>
             <div class="metric-card" style="border-left-color: var(--coral)"><div class="m-val">BLOCKER</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">63%</div><div class="m-label">Security UUID Compliance</div></div>
+            <div class="metric-card"><div class="m-val">67%</div><div class="m-label">Security UUID Compliance</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
@@ -78,9 +78,9 @@
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">63%</div>
+                <div id="hudRateValue" class="integrity-val">67%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 11</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 10</div>
                 <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
@@ -88,7 +88,7 @@
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">11 DETECTED</div>
+                <div class="wing-count">10 DETECTED</div>
             </div>
             <div class="repro-dropdown">
           <div class="issue-item">
@@ -97,43 +97,39 @@
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Accounts Discovery HTTP 400: {</div>
+            <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Accounts Discovery HTTP 400: {</div>
+            <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeCloseTo[2m([22m[32mexpected[39m[2m, [2</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Item Discovery HTTP 404: 404 page not found</div>
+            <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Create PO via UI, approve, create linked bill, verify in vendor profile</b>: Error: Fetch PO 4fc60281-d019-4e78-9526-50a376bf5a1b HTTP 400: {</div>
+            <div class="issue-desc"><b>Validate TIN, create vendor, edit, remove</b>: TimeoutError: locator.waitFor: Timeout 60000ms exceeded.</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: Duplicate employee email must be rejected by the system</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoHaveProperty[2m([22m[32mpath[39m[2m)[22m</div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-tag">LOGIC_VULN</div>
+            <div class="issue-desc"><b>Guardrail: Leave application must reject payload missing leave_type_id and reason</b>: Error: Failed to create job position: 422 - {</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Full cycle: PO → Bill → SO → Invoice → stock reconciled</b>: Error: Item Discovery HTTP 404: 404 page not found</div>
+            <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoHaveProperty[2m([22m[32mpath[39m[2m)[22m</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>API: Employee must be created with all required fields</b>: Error: Create employee failed: 400 - {</div>
+            <div class="issue-desc"><b>API: Pay component must be created with correct GL account linkage</b>: Error: Failed to create job position: 422 - {</div>
           </div>
           <div class="issue-item">
             <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>API: Leave applications endpoint must respond with valid pagination</b>: Error: List leave-applications failed: 400</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: Create employee failed: 400 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>API: Pay structure must be created with valid name</b>: Error: Create pay-structure failed: 400 - {</div>
-          </div>
-          <div class="issue-item">
-            <div class="issue-tag">STABILITY</div>
-            <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: List employees failed: 400</div>
+            <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: Failed to create job position: 422 - {</div>
           </div></div>
         </div>
 
