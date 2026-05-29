@@ -1,0 +1,57 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 317.59ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[PHASE 1] Discovering item for E2E cycle...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1143.44ms
+[OK] Item: "Sauna light 40W" | Stock Before: 20
+[PHASE 2] Creating & approving Bill via API...
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
+[SUCCESS] Bill created via API: BILL/2026/05/29/000566 (ID: e9769fa8-a1b2-4fad-ae7a-e7109e33745d)
+[API] Advancing bills "e9769fa8-a1b2-4fad-ae7a-e7109e33745d"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Bill BILL/2026/05/29/000566 approved.
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 25...
+[SUCCESS] API Confirmed: Stock correctly reached 25.
+[AUDIT] Stock after purchase: 25 (Expected: 25)
+[PHASE 3] Creating & approving SO via API...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Sales Order created via API: SO/2026/05/29/000503 (ID: 7dbf390e-f831-4fdd-ae44-47826ca23742, ItemID: c3e5b7bd-1fa4-477e-b199-c48900cddbdc)
+[API] Advancing sales-orders "7dbf390e-f831-4fdd-ae44-47826ca23742"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] SO SO/2026/05/29/000503 approved.
+[PHASE 3] Creating & approving Invoice via API...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/29/000888 (ID: 54fa3a9a-7c55-4915-9bcd-c4a66f653b3e)
+[API] Advancing invoices "54fa3a9a-7c55-4915-9bcd-c4a66f653b3e"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Invoice INV/2026/05/29/000888 approved.
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 23...
+[SUCCESS] API Confirmed: Stock correctly reached 23.
+
+========== E2E CYCLE AUDIT REPORT ==========
+[ITEM]    Sauna light 40W (855c6cf9-46ba-4d00-9af3-a3f0ed65c9d1)
+[BILL]    BILL/2026/05/29/000566 — purchased 5 units
+[SO]      SO/2026/05/29/000503 — sold 2 units
+[INVOICE] INV/2026/05/29/000888
+[STOCK]   Before Purchase : 20
+[STOCK]   After Purchase  : 25
+[STOCK]   After Sale      : 23 (Expected: 23)
+============================================
+
+[PASS] E2E Purchase to Sale cycle complete. Inventory correctly reconciled.
