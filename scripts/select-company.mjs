@@ -26,7 +26,7 @@ try {
 } catch { /* no .env — rely on process.env */ }
 
 const merged = { ...process.env, ...env };
-const API_BASE = 'http://157.180.20.112:8001/api';
+const API_BASE = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/\/$/, '') + '/api';
 const USER = merged.BEFFA_USER || '';
 const PASS = merged.BEFFA_PASS || '';
 const DEFAULT = merged.BEFFA_COMPANY || 'sample';

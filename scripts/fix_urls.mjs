@@ -24,10 +24,10 @@ files.forEach(f => {
   let content = fs.readFileSync(filePath, 'utf8');
 
   const searchStr1 = `let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\\/$/, '') : 'http://157.180.20.112:8001';`;
-  const replaceStr1 = `let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';`;
+  const replaceStr1 = `let base = process.env.BASE_URL ? process.env.BASE_URL.replace(/\\/$/, '').replace(':4173', ':8001') : process.env.API_URL?.replace(':4173', ':8001') || 'http://localhost:8001';`;
 
   const searchStr2 = `let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\\/$/, '') : 'http://157.180.20.112:8001';`;
-  const replaceStr2 = `let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\\/$/, '').replace(':4173', ':8001') : 'http://localhost:8001';`;
+  const replaceStr2 = `let apiBase = process.env.BASE_URL ? process.env.BASE_URL.replace(/\\/$/, '').replace(':4173', ':8001') : process.env.API_URL?.replace(':4173', ':8001') || 'http://localhost:8001';`;
 
   let newContent = content.split(searchStr1).join(replaceStr1);
   newContent = newContent.split(searchStr2).join(replaceStr2);

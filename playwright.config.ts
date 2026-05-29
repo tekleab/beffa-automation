@@ -89,6 +89,9 @@ export default defineConfig({
       name: 'Sales-Workflows',
       testMatch: /sales\/.*\.spec\.ts/,
       testIgnore: [/.*(audit|logic|concurrency|security|isolation).*/],
+      use: {
+        channel: 'chrome',
+      },
     },
     {
       name: 'Purchase-Workflows',

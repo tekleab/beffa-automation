@@ -164,7 +164,7 @@ export class SalesAPI extends BasePage {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
       currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId || meta.customerId,
-      so_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z', // 📅 FIXED FIELD
+      so_date: data.soDate || new Date().toISOString().split('T')[0] + 'T00:00:00Z', // 📅 CUSTOMIZABLE FIELD
       so_items: [{
         amount,
         item_id: data.itemId, // REQUIRED: must pass the item UUID
@@ -215,8 +215,8 @@ export class SalesAPI extends BasePage {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
       currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId, // REQUIRED: must match the SO customer
-      invoice_date: now.toISOString().split('T')[0] + 'T00:00:00Z',
-      due_date: dueDate.toISOString().split('T')[0] + 'T00:00:00Z',
+      invoice_date: data.invoiceDate || now.toISOString().split('T')[0] + 'T00:00:00Z',
+      due_date: data.dueDate || dueDate.toISOString().split('T')[0] + 'T00:00:00Z',
       released_sales_order_items: [{
         so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
         released_quantity: data.releasedQuantity || 1,
@@ -484,7 +484,7 @@ export class SalesAPI extends BasePage {
       amount: data.amount,
       cash_account_id: cashAccountId,
       customer_id: data.customerId, // MUST match the invoice customer
-      date: new Date().toISOString(),
+      date: data.receiptDate || new Date().toISOString(),
       payment_method: 'cash',
       currency_id: currencyId,
       invoice_receipts: [{

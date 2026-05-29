@@ -8,7 +8,7 @@
 # ------------------------------------------------------------
 set -uo pipefail
 
-BASE="${BASE_URL:-http://168.119.175.142:8001}"
+BASE="${API_URL:-${BASE_URL:-http://localhost:8001}}"
 YEAR="${BEFFA_YEAR:-2018}"
 PERIOD="${BEFFA_PERIOD:-yearly}"
 CALENDAR="${BEFFA_CALENDAR:-ec}"
