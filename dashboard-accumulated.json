@@ -1,56 +1,61 @@
 {
   "totalTests": 30,
-  "failedTests": 10,
+  "failedTests": 11,
   "capturedIssues": [
+    {
+      "title": "Validate TIN, create customer, edit, remove",
+      "category": "STABILITY",
+      "description": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded."
+    },
     {
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.get: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Accounts Discovery HTTP 400: {"
     },
     {
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.get: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Accounts Discovery HTTP 400: {"
     },
     {
       "title": "Create fresh invoice via API, then create receipt and link it",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.get: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Item Discovery HTTP 404: 404 page not found"
     },
     {
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.patch: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Fetch PO 4fc60281-d019-4e78-9526-50a376bf5a1b HTTP 400: {"
     },
     {
       "title": "Full cycle: PO → Bill → SO → Invoice → stock reconciled",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.get: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Item Discovery HTTP 404: 404 page not found"
     },
     {
       "title": "API: Employee must be created with all required fields",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.post: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Create employee failed: 400 - {"
     },
     {
       "title": "API: Leave applications endpoint must respond with valid pagination",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.get: connect ECONNREFUSED ::1:8001"
+      "description": "Error: List leave-applications failed: 400"
     },
     {
       "title": "Full lifecycle: Employee creation through payroll run approval",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.post: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Create employee failed: 400 - {"
     },
     {
       "title": "API: Pay structure must be created with valid name",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.post: connect ECONNREFUSED ::1:8001"
+      "description": "Error: Create pay-structure failed: 400 - {"
     },
     {
       "title": "API: Timesheet must be created and advanced through approval",
       "category": "STABILITY",
-      "description": "Error: apiRequestContext.get: connect ECONNREFUSED ::1:8001"
+      "description": "Error: List employees failed: 400"
     }
   ]
 }
