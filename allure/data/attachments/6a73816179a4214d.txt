@@ -1,0 +1,32 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[WARN] API Login failed (apiRequestContext.post: connect ECONNREFUSED ::1:8001
+Call log:
+  - → POST http://localhost:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.7727.15 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+). Falling back to UI Login...
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 29
+[SUCCESS] "Purchase Order Date" set to Day 29 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3682.94ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 3201.12ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2507.72ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 3140.71ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1997.39ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1898.13ms
+[PERFORMANCE] UI - Random Selection: Location: 1906.47ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1859.06ms
+[PERFORMANCE] UI - Random Selection: Tax: 1954.92ms
+[OK] Line item added (Price: 6190)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/29/000355 | Vendor: MOENCO S.C
+[API] Advancing purchase-orders "8d588ea1-5953-40c4-ad32-b8f1bd6782bc"...
