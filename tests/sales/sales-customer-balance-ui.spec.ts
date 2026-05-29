@@ -44,7 +44,28 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @regression @full'
         await page.waitForTimeout(2000);
 
         console.log(`[STEP 4] Asserting invoice ${inv.ref} is visible in customer profile...`);
-        await expect(page.getByText(inv.ref).first()).toBeVisible({ timeout: 30000 });
+        
+        // Log what's actually visible in the tab for debugging
+        const tabContent = await page.locator('table').first().textContent().catch(() => 'No table found');
+        console.log(`[DEBUG] Tab content preview: ${tabContent?.substring(0, 200)}...`);
+        
+        const invoiceLocator = page.getByText(inv.ref).first();
+        const isVisible = await invoiceLocator.isVisible({ timeout: 5000 }).catch(() => false);
+        
+        if (!isVisible) {
+            console.log(`[ERROR] Invoice ${inv.ref} NOT visible in customer profile.`);
+            console.log(`[ERROR] Expected invoice: ${inv.ref}`);
+            console.log(`[ERROR] Customer ID: ${meta.customerId}`);
+            console.log(`[ERROR] Invoice ID: ${inv.id}`);
+            console.log(`[ERROR] Tab content length: ${tabContent?.length || 0}`);
+            
+            // Try to find any invoice in the table
+            const anyInvoice = await page.locator('table tbody tr').count();
+            console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);
+            
+            throw new Error(`Invoice ${inv.ref} not found in customer profile. Expected to see invoice after API approval.`);
+        }
+        
         console.log(`[PASS] Invoice ${inv.ref} confirmed visible in customer profile.`);
     });
 
