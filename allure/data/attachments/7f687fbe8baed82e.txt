@@ -1,0 +1,38 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 535.46ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 30
+[SUCCESS] "Purchase Order Date" set to Day 30 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3147.35ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2921.07ms
+[INFO] Vendor: KAMARIYA PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2248.17ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2221.60ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2070.86ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2039.16ms
+[PERFORMANCE] UI - Random Selection: Location: 1976.64ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1912.21ms
+[PERFORMANCE] UI - Random Selection: Tax: 1986.67ms
+[OK] Line item added (Price: 3113)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/30/000371 | Vendor: KAMARIYA PLC
+[API] Advancing purchase-orders "1392d6cd-7cbe-4aa5-9acd-cea85adab356"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/30/000371 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/30/000371 via API
+[ACTION] Fetching PO Context for ID: 1392d6cd-7cbe-4aa5-9acd-cea85adab356...
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/30/000601
+[API] Advancing bills "b1c5027e-45c1-4268-aac7-847071163055"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/30/000601 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/30/000601 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "KAMARIYA PLC"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/30/000601...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/30/000601 is physically present in KAMARIYA PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/30/000371 -> Bill BILL/2026/05/30/000601
