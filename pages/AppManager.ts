@@ -18,6 +18,11 @@ export class AppManager {
   mainPhoneInput: ReturnType<Page['getByRole']>;
   customerNameInput: ReturnType<Page['getByRole']>;
   customerTinInput: ReturnType<Page['getByRole']>;
+  customerTypeSelect: ReturnType<Page['locator']>;
+  customerPhoneInput: ReturnType<Page['locator']>;
+  createCustomerBtn: ReturnType<Page['locator']>;
+  editCustomerBtn: ReturnType<Page['locator']>;
+  removeCustomerBtn: ReturnType<Page['locator']>;
   approvedStatus: string;
   actionButtons: string;
   companyBtn: ReturnType<Page['locator']>;
@@ -49,6 +54,11 @@ export class AppManager {
     this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
     this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
     this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
+    this.customerTypeSelect = page.locator('#customer_type_id');
+    this.customerPhoneInput = page.locator('#phone');
+    this.createCustomerBtn = page.locator('button:has-text("Create")');
+    this.editCustomerBtn = page.locator('button:has-text("Edit")');
+    this.removeCustomerBtn = page.locator('button:has-text("Remove")');
 
     // Status and Button Selectors
     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';

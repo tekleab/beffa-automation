@@ -1,6 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Get test type from environment variable
+const TEST_TYPE = process.env.TEST_TYPE || 'unknown';
+console.log(`[DASHBOARD] Test Type: ${TEST_TYPE}`);
+
 // Read Playwright results from the test-results directory
 const resultsDir = path.join(process.cwd(), 'test-results');
 let totalTests = 0;
@@ -134,6 +138,7 @@ const htmlTemplate = `
     <div class="observation-deck">
         <div style="position: absolute; top: 30px; left: 40px; font-size: 1.5rem; font-weight: 950;">befa<span style="color:var(--emerald);">HUB</span></div>
         <div class="metrics-stack">
+            <div class="metric-card"><div class="m-val">${TEST_TYPE.toUpperCase()}</div><div class="m-label">Test Type</div></div>
             <div class="metric-card"><div class="m-val">${totalTests}</div><div class="m-label">Total Tests Run</div></div>
             <div class="metric-card" style="border-left-color: ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}"><div class="m-val">${issueCount > 0 ? 'BLOCKER' : 'ACTIVE'}</div><div class="m-label">CD Pipeline Status</div></div>
             <div class="metric-card"><div class="m-val">${passRate}%</div><div class="m-label">Test Pass Rate</div></div>
