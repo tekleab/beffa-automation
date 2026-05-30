@@ -99,21 +99,21 @@ jobs:
       continue-on-error: true
       run: |
         # ── Tag → grep mapping ──────────────────────────────────────────────
-        # smoke      → @smoke       (push/PR default — fast critical path)
-        # regression → @regression  (all smoke + logic audits)
-        # full       → @full        (everything including forensic/security)
+        # smoke      → @smoke       (fast critical path tests only)
+        # regression → @regression  (logic audits and guardrails only)
+        # full       → @smoke @regression (merged smoke + regression)
         # e2e        → @e2e         (end-to-end cross-module flows only)
         # ────────────────────────────────────────────────────────────────────
         if [ "$TEST_TYPE" = "smoke" ]; then
-          GREP_ARGS="--grep @smoke"
+          GREP_ARGS="--grep @smoke --grep-invert @regression"
         elif [ "$TEST_TYPE" = "regression" ]; then
-          GREP_ARGS="--grep @regression"
+          GREP_ARGS="--grep @regression --grep-invert @smoke"
         elif [ "$TEST_TYPE" = "full" ]; then
-          GREP_ARGS="--grep @full"
+          GREP_ARGS="--grep (@smoke|@regression)"
         elif [ "$TEST_TYPE" = "e2e" ]; then
           GREP_ARGS="--grep @e2e"
         else
-          GREP_ARGS="--grep @smoke"
+          GREP_ARGS="--grep @smoke --grep-invert @regression"
         fi
 
         echo "Test Type Selected : $TEST_TYPE"
