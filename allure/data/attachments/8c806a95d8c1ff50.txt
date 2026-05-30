@@ -1,0 +1,57 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 334.72ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[PHASE 1] Discovering item for E2E cycle...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1204.39ms
+[OK] Item: "Steam trans 230/24v 210W" | Stock Before: 33
+[PHASE 2] Creating & approving Bill via API...
+[ACTION] Discovered Vendor: "Gentium Concrite Industry" (ID: 73616cab-709b-4ce2-8dae-a6807adff4b1)
+[SUCCESS] Bill created via API: BILL/2026/05/30/000635 (ID: 49a2c751-0536-4ba8-9e7d-29f712bec7f5)
+[API] Advancing bills "49a2c751-0536-4ba8-9e7d-29f712bec7f5"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Bill BILL/2026/05/30/000635 approved.
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 38...
+[SUCCESS] API Confirmed: Stock correctly reached 38.
+[AUDIT] Stock after purchase: 38 (Expected: 38)
+[PHASE 3] Creating & approving SO via API...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Sales Order created via API: SO/2026/05/30/000521 (ID: e0cc56a3-5605-4e2a-88a4-fde83e9fcd1f, ItemID: 30b14513-d50e-4828-8594-7aa5750147d9)
+[API] Advancing sales-orders "e0cc56a3-5605-4e2a-88a4-fde83e9fcd1f"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] SO SO/2026/05/30/000521 approved.
+[PHASE 3] Creating & approving Invoice via API...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/30/000937 (ID: 7fa49c56-deaa-42f3-a483-8d74e64f4e14)
+[API] Advancing invoices "7fa49c56-deaa-42f3-a483-8d74e64f4e14"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Invoice INV/2026/05/30/000937 approved.
+[ACTION] API Polling: Waiting for stock at location 2595ebb0-4e78-4bc5-9321-140d3fd316c7 to hit 36...
+[SUCCESS] API Confirmed: Stock correctly reached 36.
+
+========== E2E CYCLE AUDIT REPORT ==========
+[ITEM]    Steam trans 230/24v 210W (df2e35b4-00da-40d1-aa34-210beeb66d1c)
+[BILL]    BILL/2026/05/30/000635 — purchased 5 units
+[SO]      SO/2026/05/30/000521 — sold 2 units
+[INVOICE] INV/2026/05/30/000937
+[STOCK]   Before Purchase : 33
+[STOCK]   After Purchase  : 38
+[STOCK]   After Sale      : 36 (Expected: 36)
+============================================
+
+[PASS] E2E Purchase to Sale cycle complete. Inventory correctly reconciled.
