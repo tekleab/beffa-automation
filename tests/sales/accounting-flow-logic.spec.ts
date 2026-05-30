@@ -4,7 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * CATEGORY 3: Accounting Flow & Ledger Logic
  */
-test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @full', () => {
+test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression', () => {
     test.setTimeout(500000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

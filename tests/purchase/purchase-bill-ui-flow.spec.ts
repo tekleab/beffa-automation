@@ -1,7 +1,7 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
-test.describe('Purchase to Bill Flow @purchase @smoke @regression @full', () => {
+test.describe('Purchase to Bill Flow @purchase @smoke', () => {
 
     test('Create PO via UI, approve, create linked bill, verify in vendor profile', async ({ page }) => {
         test.setTimeout(450000);

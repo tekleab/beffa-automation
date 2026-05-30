@@ -4,7 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * CATEGORY 4: Security & Temporal Isolation for Procurement
  */
-test.describe('Procurement Security & Temporal Isolation Audits @purchase @security @regression @full', () => {
+test.describe('Procurement Security & Temporal Isolation Audits @purchase @security @regression', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(300000);
 

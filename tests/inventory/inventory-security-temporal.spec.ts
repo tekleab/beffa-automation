@@ -9,7 +9,7 @@ import { AppManager } from'../../pages/AppManager';
  * 2. Verify Cross-Warehouse IDOR (Unauthorized stock manipulation).
  */
 
-test.describe('Inventory Temporal & Data Isolation Audits @inventory @security @regression @full', () => {
+test.describe('Inventory Temporal & Data Isolation Audits @inventory @security @regression', () => {
     test.describe.configure({ mode:'serial' });
 
     test('Guardrail: System must explicitly reject historical back-dated adjustments', async ({ page }) => {

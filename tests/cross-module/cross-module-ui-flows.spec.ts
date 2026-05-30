@@ -9,7 +9,7 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Purchase: Approved bill reflects outstanding balance in vendor profile UI.
  */
 
-test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @regression @full', () => {
+test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke', () => {
 
     test('Sales UI: Partial payment updates invoice Amount Due correctly', async ({ page }) => {
         test.setTimeout(300000);

@@ -1,7 +1,7 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
-test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sales @smoke @regression @full', () => {
+test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sales @smoke', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
@@ -46,14 +46,9 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         const meta = await app.api.sales.discoverMetadataAPI();
         let CUSTOMER_NAME = await app.getCustomerNameAPI(soResult.customerId);
         
-        // Fallback: try to get customer name from SO API response
+        // Fallback: use the customer ID from SO result
         if (!CUSTOMER_NAME) {
-            try {
-                const soData = await app.api.sales.getSalesOrderAPI(soResult.id);
-                CUSTOMER_NAME = soData.customer_name || soData.customer?.name || meta.customerId;
-            } catch (e) {
-                CUSTOMER_NAME = meta.customerId;
-            }
+            CUSTOMER_NAME = meta.customerId;
         }
         
         const INVOICE_ID = invResult.ref;

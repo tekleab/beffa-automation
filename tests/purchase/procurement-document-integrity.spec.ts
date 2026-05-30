@@ -12,7 +12,7 @@ import { AppManager } from '../../pages/AppManager';
  * 5. Bill with no vendor — orphan AP liability
  */
 
-test.describe('Procurement Document Integrity Attacks @purchase @security @logic @regression @full', () => {
+test.describe('Procurement Document Integrity Attacks @purchase @security @logic @regression', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;

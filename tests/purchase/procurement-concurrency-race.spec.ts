@@ -9,7 +9,7 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Verify system enforces thread-safe serialization for stock additions.
  */
 
-test.describe('Procurement Concurrency & Race Condition Audits @purchase @concurrency @security @regression @full', () => {
+test.describe('Procurement Concurrency & Race Condition Audits @purchase @concurrency @security @regression', () => {
     test.describe.configure({ mode: 'serial' });
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

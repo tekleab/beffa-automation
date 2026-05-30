@@ -9,7 +9,7 @@ import { AppManager } from '../../pages/AppManager';
  * Assert total billed never exceeds PO qty and system blocks a 3rd bill.
  */
 
-test.describe('Procurement PO Split Bill Audit @purchase @logic @regression @full', () => {
+test.describe('Procurement PO Split Bill Audit @purchase @logic @regression', () => {
     test.setTimeout(400000);
 
     test('Audit: PO split into multiple bills — total must never exceed PO quantity', async ({ page }) => {

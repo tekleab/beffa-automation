@@ -4,7 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * INVENTORY ITEM LIFECYCLE AUDITS
  */
-test.describe('Inventory Item Lifecycle Audits @inventory @logic @regression @full', () => {
+test.describe('Inventory Item Lifecycle Audits @inventory @logic @regression', () => {
 
     let sharedEnvMeta: Awaited<ReturnType<AppManager['api']['inventory']['discoverMetadataAPI']>>;
     let sharedSalesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

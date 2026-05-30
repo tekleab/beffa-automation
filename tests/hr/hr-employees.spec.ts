@@ -6,7 +6,7 @@ import { AppManager } from '../../pages/AppManager';
  * Happy path: full creation with all required fields
  * Edge cases: missing required fields, duplicate email, org-chart integrity
  */
-test.describe('HR: Employee Lifecycle @hr @smoke @regression @full', () => {
+test.describe('HR: Employee Lifecycle @hr @smoke', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(300000);
 

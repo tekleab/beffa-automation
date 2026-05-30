@@ -4,7 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * SALES TAX GL AUDIT
  */
-test.describe('Sales Tax GL Audit @sales @logic @regression @full', () => {
+test.describe('Sales Tax GL Audit @sales @logic @regression', () => {
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
