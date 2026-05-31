@@ -39,7 +39,7 @@
     <div class="container">
         <div class="header">
             <div class="logo">befa<span>QA</span></div>
-            <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 06:25:42 UTC</div>
+            <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 06:52:42 UTC</div>
         </div>
         <div class="metrics">
             <div class="metric">
@@ -52,7 +52,7 @@
             </div>
             <div class="metric">
                 <div class="metric-label">Passed</div>
-                <div class="metric-value success">18</div>
+                <div class="metric-value success">21</div>
             </div>
             <div class="metric">
                 <div class="metric-label">Failed</div>
@@ -60,7 +60,7 @@
             </div>
             <div class="metric">
                 <div class="metric-label">Pass Rate</div>
-                <div class="metric-value">30%</div>
+                <div class="metric-value">34%</div>
             </div>
         </div>
         <div class="grid">
@@ -70,7 +70,7 @@
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
                         <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Passed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">18</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">21</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Failed</div>
@@ -78,11 +78,11 @@
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Skipped</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">16</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">13</div>
                         </div>
                     </div>
                     <div style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
-                        <div style="height: 100%; background: var(--success); width: 29.508196721311474%;"></div>
+                        <div style="height: 100%; background: var(--success); width: 34.42622950819672%;"></div>
                     </div>
                 </div>
             </div>
@@ -91,12 +91,89 @@
                 <div class="panel-content" style="max-height: 400px; overflow-y: auto;">
                     
       <div class="issue-item">
+        <div class="issue-tag">LOGIC_VULN</div>
+        <div class="issue-desc"><b>Guardrail: System must reject Invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory inte</div>
+      </div>
+      <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>API: Pay component must be created with correct GL account linkage</b>: Error: Failed to create job position: 422 - {
-	"code": 422,
-	"details": {
-		"code": [
-			"Code is re</div>
+        <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Split Invoice Stock Mismatch
+  SO         : SO/2026/05/31/000591 (ID: bc85dee</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Reject future-dated Invoice from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Validate TIN, create customer, edit, remove</b>: TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('#cu</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Reject future-dated Receipt from next fiscal year (2019)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Edge Case: Reject date with negative timestamp (epoch manipulation)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for getByRole('button</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Verify validation messages for required fields</b>: TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for getByRole('button</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for getByRole('button</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Invoice INV/2026/05/31/001116 not found in customer profile. Expected to see invoice after AP</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Reject future-dated Sales Order from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Verify validation messages for required fields</b>: TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for getByRole('button</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Verify validation messages for required fields</b>: TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for getByRole('button</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Create: New inventory item is created and visible in the system</b>: Error: expect(locator).toBeEnabled() failed
+
+Locator:  getByRole('button', { name: 'Add Now', exact:</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Guardrail: Invoice must reject second receipt after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -108,37 +185,7 @@
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
-Call log:
-  - waiting for getByRole('button',</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">LOGIC_VULN</div>
-        <div class="issue-desc"><b>Guardrail: System must reject Invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory inte</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Reject future-dated Receipt from next fiscal year (2019)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
-Call log:
-  - waiting for getByRole('button',</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
-Call log:
-  - waiting for getByRole('button',</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>API: Employee must be created with all required fields</b>: Error: expect(received).toHaveProperty(path)
-
-Matcher error: received value must not be null nor und</div>
+        <div class="issue-desc"><b>Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice in SO-Invoice chain!</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -146,52 +193,11 @@ Matcher error: received value must not be null nor und</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Edge Case: Reject date with negative timestamp (epoch manipulation)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Reject future-dated Invoice from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Reject future-dated Sales Order from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
-Call log:
-  - waiting for getByRole('button',</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice in SO-Invoice chain!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: Failed to create job position: 422 - {
+        <div class="issue-desc"><b>API: Pay component must be created with correct GL account linkage</b>: Error: Failed to create job position: 422 - {
 	"code": 422,
 	"details": {
 		"code": [
 			"Code is re</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Forensic Audit: Invoice Void & Stock Restoration</b>: Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 9
-Received: 0</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Guardrail: Invoice must reject second receipt after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -201,13 +207,13 @@ Received: 0</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
+        <div class="issue-desc"><b>Guardrail: Duplicate employee email must be rejected by the system</b>: Error: expect(received).toHaveProperty(path)
+
+Matcher error: received value must not be null nor und</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Invoice INV/2026/05/31/001080 not found in customer profile. Expected to see invoice after AP</div>
+        <div class="issue-desc"><b>SO: Reject back-dated Sales Order from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -219,30 +225,21 @@ Received: 0</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
+        <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: expect(received).toHaveProperty(path)
+
+Matcher error: received value must not be null nor und</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
 Call log:
-  - waiting for getByRole('button',</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Reject back-dated Sales Order from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
-Call log:
-  - waiting for getByRole('button',</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Split Invoice Stock Mismatch
-  SO         : SO/2026/05/31/000579 (ID: 25f9f96</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Validate TIN, create customer, edit, remove</b>: TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
-Call log:
-  - waiting for locator('#cu</div>
+  - waiting for getByRole('button</div>
       </div>
                 </div>
             </div>
