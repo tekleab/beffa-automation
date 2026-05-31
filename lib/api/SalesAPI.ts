@@ -55,8 +55,6 @@ export class SalesAPI extends BasePage {
       }
     };
 
-    console.log('[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...');
-
     // 1. Fetch Accounts — API returns type as nested object: {id, name, type}
     const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });
     const accData = await safeJson(accResp, 'Accounts Discovery');
@@ -74,9 +72,6 @@ export class SalesAPI extends BasePage {
       allAccounts.find((a: any) => a.name?.toLowerCase() === 'sales') ||
       allAccounts.find((a: any) => a.type?.type?.toLowerCase().includes('revenue')) ||
       arAccount;
-
-    console.log(`[META] AR Account: "${arAccount?.name}" (${arAccount?.id})`);
-    console.log(`[META] Sales Account: "${salesAccount?.name}" (${salesAccount?.id})`);
 
     // 2. Fetch Customer
     const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
@@ -102,7 +97,6 @@ export class SalesAPI extends BasePage {
       if (firstLoc) {
         locationId = firstLoc.id;
         warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id || '';
-        console.log(`[META] Location: "${firstLoc.name}" (${locationId}) | Warehouse: ${warehouseId}`);
       }
     }
 
@@ -111,8 +105,6 @@ export class SalesAPI extends BasePage {
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')) ||
       allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('cash')) ||
       allAccounts[0];
-
-    console.log(`[META] Cash Account: "${cashAccount?.name}" (${cashAccount?.id})`);
 
     if (!arAccount || !customer) throw new Error('Metadata Discovery Failed: Missing Account or Customer records.');
 
@@ -192,7 +184,6 @@ export class SalesAPI extends BasePage {
     }
     const json = await response.json();
     const soItemId = json.so_items?.[0]?.id || null;
-    console.log(`[SUCCESS] Sales Order created via API: ${json.so_number} (ID: ${json.id}, ItemID: ${soItemId})`);
     return { success: true, ref: json.so_number, id: json.id, customerId: payload.customer_id, soItemId };
   }
 
@@ -239,7 +230,6 @@ export class SalesAPI extends BasePage {
       return { success: false, status: response.status(), error: err };
     }
     const json = await response.json();
-    console.log(`[SUCCESS] Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
     return { success: true, ref: json.invoice_number, id: json.id };
   }
 
@@ -289,7 +279,6 @@ export class SalesAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    console.log(`[SUCCESS] Standalone Invoice created via API: ${json.invoice_number} (ID: ${json.id})`);
     return { success: true, ref: json.invoice_number, id: json.id, amountDue: amount, customerId: custId };
   }
 
@@ -315,8 +304,6 @@ export class SalesAPI extends BasePage {
         throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`);
       }
     };
-
-    console.log(`[ACTION] Discovering receipt metadata for company: "${company}"...`);
 
     // 1. Discover Customer
     const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
@@ -366,12 +353,10 @@ export class SalesAPI extends BasePage {
       }]
     };
 
-    console.log(`[ACTION] Creating receipt: Customer="${customer.name}" | CashAcct="${cashAccount.name}" | Currency="${currency.name}"`);
     const response = await this.page.request.post(`${apiBase}/receipts?${params}`, { data: payload, headers });
 
     if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id})`);
     return { success: true, ref: json.ref, id: json.id };
   }
 
@@ -399,7 +384,6 @@ export class SalesAPI extends BasePage {
       console.error(`[ERROR] Invoice Reversal API failed (${response.status()}): ${err}`);
       return false;
     }
-    console.log(`[SUCCESS] Invoice ${invoiceId} reversed via API /void endpoint`);
     return true;
   }
 
@@ -426,7 +410,6 @@ export class SalesAPI extends BasePage {
       console.error(`[ERROR] Receipt Reversal API failed (${response.status()}): ${err}`);
       return false;
     }
-    console.log(`[SUCCESS] Receipt ${receiptId} reversed via API /void endpoint`);
     return true;
   }
 
@@ -439,7 +422,6 @@ export class SalesAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    console.log(`[ACTION] Approving Invoice ${invoiceId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'approved' },
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
@@ -499,7 +481,6 @@ export class SalesAPI extends BasePage {
     });
     if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    console.log(`[SUCCESS] Receipt created via API: ${json.ref} (ID: ${json.id}) for Invoice ${data.invoiceId}`);
     return { success: true, ref: json.ref, id: json.id };
   }
 

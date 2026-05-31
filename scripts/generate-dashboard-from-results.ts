@@ -35,14 +35,11 @@ const failureCategories = {
 
 if (fs.existsSync(resultsDir)) {
   const files = fs.readdirSync(resultsDir);
-  console.log(`[DASHBOARD] Found ${files.length} files in test-results`);
   
   // Try to read from Allure results first (more reliable)
   const allureDir = path.join(process.cwd(), 'allure-results');
   if (fs.existsSync(allureDir)) {
-    console.log(`[DASHBOARD] Reading from Allure results`);
     const allureFiles = fs.readdirSync(allureDir);
-    console.log(`[DASHBOARD] Found ${allureFiles.length} files in allure-results`);
     for (const file of allureFiles) {
       if (file.endsWith('-result.json')) {
         try {
@@ -53,7 +50,6 @@ if (fs.existsSync(resultsDir)) {
           if (data.fullName || data.name) {
             totalTests++;
             const status = data.status || 'unknown';
-            console.log(`[DASHBOARD] Test: ${data.name || data.fullName}, Status: ${status}`);
             
             if (status === 'passed') {
               passedTests++;
@@ -99,7 +95,6 @@ if (fs.existsSync(resultsDir)) {
       try {
         const content = fs.readFileSync(resultsFile, 'utf8');
         const data = JSON.parse(content);
-        console.log(`[DASHBOARD] Reading results from ${resultsFile}`);
         
         if (data.suites) {
           for (const suite of data.suites) {

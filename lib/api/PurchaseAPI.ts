@@ -75,8 +75,6 @@ export class PurchaseAPI extends BasePage {
       try { return JSON.parse(text); } catch (e) { throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`); }
     };
 
-    console.log('[ACTION] Discovering purchase metadata (Accounts, Vendors, Currencies)...');
-
     // 1. Fetch Accounts
     const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
     const accData = await safeJson(accResp, 'Accounts Discovery');
@@ -97,8 +95,6 @@ export class PurchaseAPI extends BasePage {
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding')) ||
       apAccount;
-
-    console.log(`[META] Discovered AP: "${apAccount?.name}" | WT: "${wtAccount?.name}"`);
 
     // 2. Fetch Currency
     const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
@@ -163,7 +159,6 @@ export class PurchaseAPI extends BasePage {
       const vendor = vendorData.items?.[0] || vendorData.data?.[0];
       if (!vendor) throw new Error('PO Discovery Failed: No vendors found.');
       resolvedVendorId = vendor.id;
-      console.log(`[ACTION] Discovered Vendor: "${vendor.name}"`);
     }
 
     // 2. Discover Accounts (AP + GL)
@@ -216,7 +211,6 @@ export class PurchaseAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`PO API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    console.log(`[SUCCESS] PO created via API: ${json.po_number} (ID: ${json.id})`);
     return { success: true, poNumber: json.po_number, poId: json.id };
   }
 
@@ -248,7 +242,6 @@ export class PurchaseAPI extends BasePage {
       const vendor = vendorData.items?.[0] || vendorData.data?.[0];
       if (!vendor) throw new Error('Bill Discovery Failed: No vendors found in current company.');
       resolvedVendorId = vendor.id;
-      console.log(`[ACTION] Discovered Vendor: "${vendor.name}" (ID: ${resolvedVendorId})`);
     }
 
     // 2. Discover Accounts (AP + GL)
@@ -311,7 +304,6 @@ export class PurchaseAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    console.log(`[SUCCESS] Bill created via API: ${json.invoice_number} (ID: ${json.id})`);
     return { success: true, ref: json.invoice_number, id: json.id };
   }
   async createBillFromPoAPI(poId: string): Promise<{ success: boolean; billNumber: string; billId: string }> {
@@ -332,7 +324,6 @@ export class PurchaseAPI extends BasePage {
     };
 
     // 1. Fetch the Purchase Order to gather its precise mapping metadata
-    console.log(`[ACTION] Fetching PO Context for ID: ${poId}...`);
     const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     const poData = await safeJson(poResp, `Fetch PO ${poId}`);
 
@@ -371,7 +362,6 @@ export class PurchaseAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`PO-to-Bill API Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    console.log(`[SUCCESS] PO directly converted to Bill via API: ${json.invoice_number}`);
     return { success: true, billNumber: json.invoice_number, billId: json.id };
   }
 
@@ -387,7 +377,6 @@ export class PurchaseAPI extends BasePage {
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}` };
 
     // 1. Resolve Vendor ID from Name
-    console.log(`[ACTION] API Verifying: Resolving ID for Vendor "${vendorName}"...`);
     const vendResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=50&${params}`, { headers });
     const vendData = await vendResp.json();
     const vendor = (vendData.items || vendData.data || []).find((v: any) => v.name.toLowerCase() === vendorName.toLowerCase());
@@ -396,7 +385,6 @@ export class PurchaseAPI extends BasePage {
     const vendorId = vendor.id;
 
     // 2. Poll Vendor Bills Ledger (max 15 tries for indexing = ~30s)
-    console.log(`[ACTION] API Verifying: Scanning Ledger for ${billNumber}...`);
     const safeJson = async (resp: any, label: string) => {
       const text = await resp.text();
       if (!resp.ok()) return null;

@@ -32,7 +32,6 @@ export class AuthManager extends BasePage {
       throw new Error('CRITICAL: Automation credentials (BEFFA_USER or BEFFA_PASS) are missing or empty. If running in CI, ensure GitHub Secrets are configured for this repository.');
     }
 
-    console.log(`[ACTION] Performing High-Speed API Login for: ${cleanEmail}...`);
 
     try {
       // 1. Attempt API Login
@@ -82,7 +81,6 @@ export class AuthManager extends BasePage {
       ]);
 
       // 5. Navigate to Home
-      console.log('[SUCCESS] API Login complete. Session & Metadata injected.');
       await this.page.goto('/', { waitUntil: 'load' });
 
     } catch (error: any) {
@@ -122,18 +120,15 @@ export class AuthManager extends BasePage {
   async switchCompany(targetName: string): Promise<void> {
     if (!targetName) return;
     const cleanTarget = targetName.trim();
-    console.log('[ACTION] Verifying current company selection...');
 
     // Ensure we are on a page where sample switcher is visible
     await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 });
     const currentName = (await this.companyBtn.innerText()).trim();
 
     if (currentName.toLowerCase() === cleanTarget.toLowerCase()) {
-      console.log(`[INFO] Already on company: "${currentName}"`);
       return;
     }
 
-    console.log(`[ACTION] Switching company: "${currentName}" -> "${cleanTarget}"`);
     await this.companyBtn.click();
     await this.page.waitForTimeout(1000);
 
@@ -147,7 +142,6 @@ export class AuthManager extends BasePage {
       // Reload is usually automatic on company change in this ERP
       await this.page.waitForURL('**/', { waitUntil: 'load', timeout: 60000 });
       await this.stopTacticalTimer(`${cleanTarget} Context Mount`, 'UI');
-      console.log(`[SUCCESS] Company switched to "${cleanTarget}"`);
       await this.page.waitForTimeout(2000);
     } else {
       console.log(`[WARN] Company option "${cleanTarget}" not found in menu. Staying on "${currentName}"`);

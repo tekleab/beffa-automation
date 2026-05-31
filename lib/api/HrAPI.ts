@@ -174,13 +174,11 @@ export class HrAPI extends BasePage {
       if (!existing) existing = jobs.find((j: any) => j.id && j.title);
       
       if (existing) {
-        console.log(`[HR SETUP] Job position found: "${existing.title}" (${existing.id})`);
         return { id: existing.id, title: existing.title };
       }
     }
 
     // 2. None found — create one
-    console.log(`[HR SETUP] No job position found. Creating "${title}" in department ${departmentId}...`);
     const createResp = await this.page.request.post(
       `${this.apiBase}/job-positions?${this.params}`,
       { headers: h, data: { title: title, department_id: departmentId } }
@@ -192,7 +190,6 @@ export class HrAPI extends BasePage {
     }
 
     const created = await createResp.json();
-    console.log(`[HR SETUP] Job position created: "${created.title}" (${created.id})`);
     return { id: created.id, title: created.title };
   }
 
@@ -215,8 +212,6 @@ export class HrAPI extends BasePage {
 
     // Always guarantee a job position exists — create one if the org chart has none
     const job = await this.ensureJobPosition(targetDept.id);
-
-    console.log(`[HR META] dept="${targetDept.name}" (${targetDept.id}) | job="${job.title}" (${job.id})`);
 
     return {
       employeeId: employee.id,
