@@ -36,7 +36,7 @@ if (fs.existsSync(resultsDir)) {
     const allureFiles = fs.readdirSync(allureDir);
     console.log(`[DASHBOARD] Found ${allureFiles.length} files in allure-results`);
     for (const file of allureFiles) {
-      if (file.endsWith('.json') && file !== 'categories.json' && file !== 'environment.json' && file !== 'executor.json') {
+      if (file.endsWith('-result.json')) {
         try {
           const content = fs.readFileSync(path.join(allureDir, file), 'utf8');
           const data = JSON.parse(content);
@@ -44,9 +44,12 @@ if (fs.existsSync(resultsDir)) {
           // Allure test result structure
           if (data.fullName || data.name) {
             totalTests++;
-            if (data.status === 'passed') {
+            const status = data.status || 'unknown';
+            console.log(`[DASHBOARD] Test: ${data.name || data.fullName}, Status: ${status}`);
+            
+            if (status === 'passed') {
               passedTests++;
-            } else if (data.status === 'failed') {
+            } else if (status === 'failed') {
               failedTests++;
               
               let cat = 'STABILITY';
@@ -59,7 +62,7 @@ if (fs.existsSync(resultsDir)) {
                 category: cat,
                 description: data.statusDetails?.message?.substring(0, 100).replace(/[<>]/g, '') || 'Test failed'
               });
-            } else if (data.status === 'skipped' || data.status === 'broken') {
+            } else if (status === 'skipped' || status === 'broken') {
               skippedTests++;
             }
           }
