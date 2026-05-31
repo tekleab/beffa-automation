@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
+import { Logger } from '../../lib/utils/Logger';
 
 /**
  * SALES CUSTOMER BALANCE UI AUDIT
@@ -47,7 +48,7 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke', () => {
         
         // Log what's actually visible in the tab for debugging
         const tabContent = await page.locator('table').first().textContent().catch(() => 'No table found');
-        console.log(`[DEBUG] Tab content preview: ${tabContent?.substring(0, 200)}...`);
+        Logger.debug(`Tab content preview: ${tabContent?.substring(0, 200)}...`);
         
         const invoiceLocator = page.getByText(inv.ref).first();
         const isVisible = await invoiceLocator.isVisible({ timeout: 5000 }).catch(() => false);
