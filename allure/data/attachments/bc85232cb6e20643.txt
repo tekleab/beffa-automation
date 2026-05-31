@@ -1,0 +1,30 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 441.16ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 31
+[WARN] Could not find day 31. Fallback to direct key press.
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 8099.52ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2557.96ms
+[INFO] Vendor: Ethio Supplies-6356
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 3122.83ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2340.02ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2046.41ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2204.85ms
+[PERFORMANCE] UI - Random Selection: Location: 2247.74ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2071.39ms
+[PERFORMANCE] UI - Random Selection: Tax: 2040.22ms
+[OK] Line item added (Price: 7806)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/31/000405 | Vendor: Ethio Supplies-6356
+[API] Advancing purchase-orders "b6b9e5d2-5c40-465c-b486-1878e86f7cfb"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/31/000405 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/31/000405 via API
+[API] Advancing bills "a95e5e4b-ee93-4f09-bcfc-8bf8e6408c9c"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/31/000699 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/31/000699 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/05/31/000699 is physically present in Ethio Supplies-6356's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/31/000405 -> Bill BILL/2026/05/31/000699
