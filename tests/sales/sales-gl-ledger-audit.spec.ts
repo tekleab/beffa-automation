@@ -18,7 +18,7 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression', () => {
 
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
-        if (!item) { console.log('[SKIP] No stock available.'); return; }
+        if (!item) { throw new Error('[FAIL] No stock available.'); }
 
         const UNIT_PRICE = 500;
 
@@ -111,7 +111,7 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression', () => {
 
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
-        if (!item) { console.log('[SKIP] No stock available.'); return; }
+        if (!item) { throw new Error('[FAIL] No stock available.'); }
 
         const UNIT_PRICE = 800;
 

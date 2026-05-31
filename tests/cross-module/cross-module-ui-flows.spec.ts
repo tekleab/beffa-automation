@@ -25,8 +25,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke', () => {
         const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
 
         if (!item) {
-            console.log(`[SKIP] No item with stock >= 1 found.`);
-            return;
+            throw new Error(`[FAIL] No item with stock >= 1 found.`);
         }
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
@@ -99,8 +98,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke', () => {
         const vendorName = billData.vendor?.name || billData.vendor_name;
 
         if (!vendorId) {
-            console.log(`[SKIP] Could not resolve vendor from bill. Skipping UI verification.`);
-            return;
+            throw new Error(`[FAIL] Could not resolve vendor from bill.`);
         }
 
         console.log(`[STEP 3] Navigating to vendor profile UI...`);

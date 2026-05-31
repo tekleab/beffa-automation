@@ -20,8 +20,7 @@ test.describe('Inventory Logic & Transfer Audits @inventory @logic @regression',
         const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 5 });
         
         if (!item) {
-            console.log(`[SKIP] No item found with enough stock for transfer test.`);
-            return;
+            throw new Error(`[FAIL] No item found with enough stock for transfer test.`);
         }
 
         const transferQty = 5;

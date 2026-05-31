@@ -22,8 +22,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
         const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 51 });
 
         if (!item) {
-            console.log('[SKIP] No item found with stock >= 51. Cannot perform this guardrail test.');
-            return;
+            throw new Error('[FAIL] No item found with stock >= 51. Cannot perform this guardrail test.');
         }
 
         const stockBefore = item.currentStock;

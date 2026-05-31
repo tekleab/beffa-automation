@@ -33,7 +33,7 @@ test.describe('Security & Temporal Isolation Audits @sales @security @regression
 
         const custResp = await page.request.get(`${apiBase}/customers?page=1&pageSize=10&${qs}`, { headers });
         const customers = (await custResp.json()).items || [];
-        if (customers.length < 2) { console.log('[SKIP] Need at least 2 customers.'); return; }
+        if (customers.length < 2) { throw new Error('[FAIL] Need at least 2 customers.'); }
 
         const customerA = customers[0];
         const customerB = customers[1];
