@@ -18,50 +18,105 @@ console.log(`[DASHBOARD] Test Type: ${TEST_TYPE}`);
 console.log(`[DASHBOARD] Run Timestamp: ${RUN_TIMESTAMP}`);
 
 // Read Playwright results from the test-results directory
-const resultsFile = path.join(process.cwd(), 'test-results', 'results.json');
+const resultsDir = path.join(process.cwd(), 'test-results');
 let totalTests = 0;
 let failedTests = 0;
 let capturedIssues: { title: string; category: string; description: string }[] = [];
 
-if (fs.existsSync(resultsFile)) {
-  try {
-    const content = fs.readFileSync(resultsFile, 'utf8');
-    const data = JSON.parse(content);
-    console.log(`[DASHBOARD] Reading results from ${resultsFile}`);
-    
-    // Playwright JSON reporter structure
-    if (data.suites) {
-      for (const suite of data.suites) {
-        if (suite.specs) {
-          for (const spec of suite.specs) {
-            if (spec.tests) {
-              for (const test of spec.tests) {
-                totalTests++;
-                const lastResult = test.results[test.results.length - 1];
-                if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
-                  failedTests++;
-                  
-                  let cat = 'STABILITY';
-                  if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
-                  if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
-                  
-                  capturedIssues.push({
-                    title: test.title,
-                    category: cat,
-                    description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
-                  });
+if (fs.existsSync(resultsDir)) {
+  const files = fs.readdirSync(resultsDir);
+  console.log(`[DASHBOARD] Found ${files.length} files in test-results`);
+  
+  // Try to read from results.json first (JSON reporter)
+  const resultsFile = path.join(resultsDir, 'results.json');
+  if (fs.existsSync(resultsFile)) {
+    try {
+      const content = fs.readFileSync(resultsFile, 'utf8');
+      const data = JSON.parse(content);
+      console.log(`[DASHBOARD] Reading results from ${resultsFile}`);
+      
+      // Playwright JSON reporter structure
+      if (data.suites) {
+        for (const suite of data.suites) {
+          if (suite.specs) {
+            for (const spec of suite.specs) {
+              if (spec.tests) {
+                for (const test of spec.tests) {
+                  totalTests++;
+                  const lastResult = test.results[test.results.length - 1];
+                  if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
+                    failedTests++;
+                    
+                    let cat = 'STABILITY';
+                    if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+                    if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+                    
+                    capturedIssues.push({
+                      title: test.title,
+                      category: cat,
+                      description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+                    });
+                  }
                 }
               }
             }
           }
         }
       }
+    } catch (e) {
+      console.log(`[DASHBOARD] Error parsing ${resultsFile}:`, e);
     }
-  } catch (e) {
-    console.log(`[DASHBOARD] Error parsing ${resultsFile}:`, e);
+  } else {
+    console.log(`[DASHBOARD] Results file not found: ${resultsFile}, trying to read from subdirectories`);
+    
+    // Fallback: read from subdirectories (each test result is in its own directory)
+    for (const file of files) {
+      const filePath = path.join(resultsDir, file);
+      const stat = fs.statSync(filePath);
+      
+      if (stat.isDirectory()) {
+        const resultFile = path.join(filePath, 'results.json');
+        if (fs.existsSync(resultFile)) {
+          try {
+            const content = fs.readFileSync(resultFile, 'utf8');
+            const data = JSON.parse(content);
+            
+            if (data.suites) {
+              for (const suite of data.suites) {
+                if (suite.specs) {
+                  for (const spec of suite.specs) {
+                    if (spec.tests) {
+                      for (const test of spec.tests) {
+                        totalTests++;
+                        const lastResult = test.results[test.results.length - 1];
+                        if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
+                          failedTests++;
+                          
+                          let cat = 'STABILITY';
+                          if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+                          if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+                          
+                          capturedIssues.push({
+                            title: test.title,
+                            category: cat,
+                            description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.log(`[DASHBOARD] Error parsing ${resultFile}:`, e);
+          }
+        }
+      }
+    }
   }
 } else {
-  console.log(`[DASHBOARD] Results file not found: ${resultsFile}`);
+  console.log(`[DASHBOARD] Results directory not found: ${resultsDir}`);
 }
 
 // Calculate metrics
