@@ -1,4 +1,5 @@
 import { Page, Locator } from '@playwright/test';
+import { Logger } from './utils/Logger';
 
 export class BasePage {
   page: Page;
@@ -8,6 +9,20 @@ export class BasePage {
   mainPhoneInput: Locator;
   customerNameInput: Locator;
   customerTinInput: Locator;
+  customerIdInput: Locator;
+  customerTypeSelect: Locator;
+  customerPhoneInput: Locator;
+  customerEmailInput: Locator;
+  customerWebsiteInput: Locator;
+  customerFaxInput: Locator;
+  customerRegionSelect: Locator;
+  customerZoneSelect: Locator;
+  customerWoredaSelect: Locator;
+  customerKebeleInput: Locator;
+  customerSalesAccountInput: Locator;
+  createCustomerBtn: Locator;
+  editCustomerBtn: Locator;
+  removeCustomerBtn: Locator;
   approvedStatus: string;
   actionButtons: string;
   companyBtn: Locator;
@@ -33,8 +48,22 @@ export class BasePage {
 
     // --- Customer Module Selectors ---
     this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
-    this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
-    this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
+    this.customerNameInput = page.locator('#customer_name-input-id');
+    this.customerTinInput = page.locator('#customer_tin-input-id');
+    this.customerIdInput = page.locator('#customer_id');
+    this.customerTypeSelect = page.locator('#type-select-id');
+    this.customerPhoneInput = page.locator('#customer_phone-input-id');
+    this.customerEmailInput = page.locator('#customer_email-input-id');
+    this.customerWebsiteInput = page.locator('#customer_website-input-id');
+    this.customerFaxInput = page.locator('#customer_fax-input-id');
+    this.customerRegionSelect = page.locator('#region');
+    this.customerZoneSelect = page.locator('#zone');
+    this.customerWoredaSelect = page.locator('#woreda');
+    this.customerKebeleInput = page.locator('#kebele');
+    this.customerSalesAccountInput = page.locator('#sales_account_id');
+    this.createCustomerBtn = page.locator('button:has-text("Create customer")');
+    this.editCustomerBtn = page.locator('button:has-text("Edit")').first();
+    this.removeCustomerBtn = page.locator('button:has-text("Remove")');
 
     // Status and Button Selectors
     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
@@ -112,7 +141,7 @@ export class BasePage {
       if (meResp.ok()) {
         const meData = await meResp.json();
         submittedTo = meData?.user?.id || meData?.id || meData?.user_id;
-        if (submittedTo) console.log(`[INFO] Current user ID: ${submittedTo}`);
+        if (submittedTo) Logger.debug(`Current user ID: ${submittedTo}`);
       }
     } catch (e: any) {
       // /users/me unavailable, use fallback
