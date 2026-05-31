@@ -157,13 +157,17 @@ export class SalesPage extends BasePage {
 
   async fillLocation(locationId: string) {
     console.log(`[UI] Filling location: ${locationId}`);
-    await this.page.getByRole('button', { name: /select location/i }).click();
+    const button = this.page.getByRole('button', { name: /select location/i });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.locator('input#location_id').fill(locationId);
   }
 
   async fillWarehouse(warehouseId: string) {
     console.log(`[UI] Filling warehouse: ${warehouseId}`);
-    await this.page.getByRole('button', { name: /select warehouse/i }).click();
+    const button = this.page.getByRole('button', { name: /select warehouse/i });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.locator('input#warehouse_id').fill(warehouseId);
   }
 
@@ -187,12 +191,16 @@ export class SalesPage extends BasePage {
 
   async clickDateButton() {
     console.log(`[UI] Clicking date button`);
-    await this.page.getByRole('button', { name: /date/i }).click();
+    const button = this.page.getByRole('button', { name: /date/i });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
   }
 
   async clickAddLineItem() {
     console.log(`[UI] Clicking Add button for line item`);
-    await this.page.getByRole('button', { name: 'Add' }).click();
+    const button = this.page.getByRole('button', { name: 'Add' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -221,31 +229,41 @@ export class SalesPage extends BasePage {
 
   async clickAddSalesOrder() {
     console.log(`[UI] Clicking Add Sales Order button`);
-    await this.page.getByRole('button', { name: 'Add Sales Order' }).click();
+    const button = this.page.getByRole('button', { name: 'Add Sales Order' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickLineItemButtonSO() {
     console.log(`[UI] Clicking Line Item button (SO)`);
-    await this.page.getByRole('button', { name: 'Line Item' }).click();
+    const button = this.page.getByRole('button', { name: 'Line Item' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickItemTypeButton() {
     console.log(`[UI] Clicking Item button`);
-    await this.page.getByRole('button', { name: 'Item' }).click();
+    const button = this.page.getByRole('button', { name: 'Item' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickSubmitSO() {
     console.log(`[UI] Submitting Sales Order`);
-    await this.page.getByRole('button', { name: 'Add' }).click();
+    const button = this.page.getByRole('button', { name: 'Add' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickViewSO() {
     console.log(`[UI] Clicking view button for SO`);
-    await this.page.getByRole('button', { name: 'view' }).first().click();
+    const button = this.page.getByRole('button', { name: 'view' }).first();
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -265,7 +283,9 @@ export class SalesPage extends BasePage {
 
   async clickSubmitWithoutFields() {
     console.log(`[UI] Clicking submit without filling fields`);
-    await this.page.getByRole('button', { name: 'Add' }).click();
+    const button = this.page.getByRole('button', { name: 'Add' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -281,7 +301,9 @@ export class SalesPage extends BasePage {
 
   async clickAddInvoice() {
     console.log(`[UI] Clicking Add Invoice button`);
-    await this.page.getByRole('button', { name: 'Add Invoice' }).click();
+    const button = this.page.getByRole('button', { name: 'Add Invoice' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -316,19 +338,25 @@ export class SalesPage extends BasePage {
 
   async clickLineItemButtonInvoice() {
     console.log(`[UI] Clicking Line Item button (Invoice)`);
-    await this.page.getByRole('button', { name: 'Line Item' }).click();
+    const button = this.page.getByRole('button', { name: 'Line Item' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickSubmitInvoice() {
     console.log(`[UI] Submitting Invoice`);
-    await this.page.getByRole('button', { name: 'Add' }).click();
+    const button = this.page.getByRole('button', { name: 'Add' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickViewInvoice() {
     console.log(`[UI] Clicking view button for Invoice`);
-    await this.page.getByRole('button', { name: 'view' }).first().click();
+    const button = this.page.getByRole('button', { name: 'view' }).first();
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -359,7 +387,9 @@ export class SalesPage extends BasePage {
 
   async clickAddReceipt() {
     console.log(`[UI] Clicking Add Receipt button`);
-    await this.page.getByRole('button', { name: 'Add Receipt' }).click();
+    const button = this.page.getByRole('button', { name: 'Add Receipt' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -404,19 +434,25 @@ export class SalesPage extends BasePage {
 
   async clickLineItemButtonReceipt() {
     console.log(`[UI] Clicking Line Item button (Receipt)`);
-    await this.page.getByRole('button', { name: 'Line Item' }).click();
+    const button = this.page.getByRole('button', { name: 'Line Item' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickSubmitReceipt() {
     console.log(`[UI] Submitting Receipt`);
-    await this.page.getByRole('button', { name: 'Add' }).click();
+    const button = this.page.getByRole('button', { name: 'Add' });
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickViewReceipt() {
     console.log(`[UI] Clicking view button for Receipt`);
-    await this.page.getByRole('button', { name: 'view' }).first().click();
+    const button = this.page.getByRole('button', { name: 'view' }).first();
+    await button.waitFor({ state: 'visible', timeout: 10000 });
+    await button.click();
     await this.page.waitForLoadState('networkidle');
   }
 
