@@ -217,11 +217,27 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Install Allure CLI
+      if: always()
+      run: |
+        npm install -g allure-commandline
+        allure --version
+
     - name: Generate Allure Report
       if: always()
       run: |
         # Do not sync history - each run should show only its own results
-        npx allure generate allure-results --clean -o temp-report
+        allure generate allure-results --clean -o temp-report
+        # Verify Allure report was generated successfully
+        if [ ! -f "temp-report/index.html" ]; then
+          echo "ERROR: Allure report index.html not found"
+          exit 1
+        fi
+        if [ ! -d "temp-report/app" ]; then
+          echo "ERROR: Allure report app directory not found"
+          exit 1
+        fi
+        echo "Allure report generated successfully"
         npx ts-node scripts/latency-tracker.ts || true
 
     - name: Finalize & Deploy Preparation
