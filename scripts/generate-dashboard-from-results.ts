@@ -20,7 +20,9 @@ console.log(`[DASHBOARD] Run Timestamp: ${RUN_TIMESTAMP}`);
 // Read Playwright results from the test-results directory
 const resultsDir = path.join(process.cwd(), 'test-results');
 let totalTests = 0;
+let passedTests = 0;
 let failedTests = 0;
+let skippedTests = 0;
 let capturedIssues: { title: string; category: string; description: string }[] = [];
 
 if (fs.existsSync(resultsDir)) {
@@ -42,7 +44,9 @@ if (fs.existsSync(resultsDir)) {
           // Allure test result structure
           if (data.fullName || data.name) {
             totalTests++;
-            if (data.status === 'failed') {
+            if (data.status === 'passed') {
+              passedTests++;
+            } else if (data.status === 'failed') {
               failedTests++;
               
               let cat = 'STABILITY';
@@ -55,6 +59,8 @@ if (fs.existsSync(resultsDir)) {
                 category: cat,
                 description: data.statusDetails?.message?.substring(0, 100).replace(/[<>]/g, '') || 'Test failed'
               });
+            } else if (data.status === 'skipped' || data.status === 'broken') {
+              skippedTests++;
             }
           }
         } catch (e) {
@@ -110,7 +116,6 @@ if (fs.existsSync(resultsDir)) {
 }
 
 // Calculate metrics
-const passedTests = totalTests - failedTests;
 const passRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 100;
 const issueCount = capturedIssues.length;
 
