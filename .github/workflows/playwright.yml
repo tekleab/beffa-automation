@@ -180,7 +180,7 @@ jobs:
 
     - name: Get Allure history
       uses: actions/checkout@v4
-      if: always()
+      if: false
       continue-on-error: true
       with:
         ref: gh-pages
@@ -220,11 +220,7 @@ jobs:
     - name: Generate Allure Report
       if: always()
       run: |
-        mkdir -p allure-results/history
-        if [ -d "gh-pages/allure/history" ]; then
-          echo "[INFO] Syncing Allure History..."
-          cp -r gh-pages/allure/history/. allure-results/history/ || true
-        fi
+        # Do not sync history - each run should show only its own results
         npx allure generate allure-results --clean -o temp-report
         npx ts-node scripts/latency-tracker.ts || true
 
