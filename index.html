@@ -5,63 +5,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEFFA QA Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        :root {
-            --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
-            --dark: #0f172a; --darker: #020617; --light: #f8fafc; --gray: #64748b; --border: #1e293b;
-        }
+        :root { --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --dark: #0f172a; --darker: #020617; --light: #f8fafc; --gray: #64748b; --border: #1e293b; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--light); line-height: 1.6; }
         .container { max-width: 1400px; margin: 0 auto; padding: 32px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
         .logo { font-size: 1.5rem; font-weight: 800; } .logo span { color: var(--primary); }
+        .env-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .env-badge.healthy { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .env-badge.degraded { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .env-badge.critical { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
         .metric { background: var(--dark); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
         .metric-label { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; margin-bottom: 8px; }
-        .metric-value { font-size: 2rem; font-weight: 800; }
+        .metric-value { font-size: 2rem; font-weight: 800; animation: fadeInUp 0.6s ease-out; }
         .metric-value.success { color: var(--success); } .metric-value.danger { color: var(--danger); }
-        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px; }
         .panel { background: var(--dark); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         .panel-header { padding: 20px; border-bottom: 1px solid var(--border); font-weight: 700; }
         .panel-content { padding: 20px; }
-        .issue { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
-        .issue-cat { font-size: 0.65rem; font-weight: 700; color: var(--danger); text-transform: uppercase; margin-bottom: 8px; }
-        .issue-title { font-weight: 600; margin-bottom: 4px; }
-        .issue-desc { font-size: 0.8rem; color: var(--gray); }
+        .blocker-item { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .blocker-cat { font-size: 0.65rem; font-weight: 700; color: var(--danger); text-transform: uppercase; margin-bottom: 8px; }
+        .blocker-title { font-weight: 600; margin-bottom: 4px; }
+        .blocker-desc { font-size: 0.8rem; color: var(--gray); }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .chart-container { height: 250px; }
         .actions { display: flex; gap: 12px; margin-top: 24px; }
         .btn { flex: 1; padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--dark); color: var(--light); font-weight: 600; cursor: pointer; text-align: center; }
         .btn:hover { background: var(--primary); border-color: var(--primary); }
         .btn.primary { background: var(--primary); border-color: var(--primary); }
-        @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { .grid, .charts-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="logo">befa<span>QA</span></div>
-            <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 11:07:28 UTC</div>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="env-badge healthy">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite;"></span>
+                    HEALTHY
+                </div>
+                <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 11:32:58 UTC</div>
+            </div>
         </div>
         <div class="metrics">
-            <div class="metric">
-                <div class="metric-label">Test Type</div>
-                <div class="metric-value">FULL</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Total Tests</div>
-                <div class="metric-value">61</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Passed</div>
-                <div class="metric-value success">21</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Failed</div>
-                <div class="metric-value danger">22</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Pass Rate</div>
-                <div class="metric-value">34%</div>
-            </div>
+            <div class="metric"><div class="metric-label">Test Type</div><div class="metric-value">FULL</div></div>
+            <div class="metric"><div class="metric-label">Total Tests</div><div class="metric-value">0</div></div>
+            <div class="metric"><div class="metric-label">Passed</div><div class="metric-value success">0</div></div>
+            <div class="metric"><div class="metric-label">Failed</div><div class="metric-value danger">0</div></div>
+            <div class="metric"><div class="metric-label">Pass Rate</div><div class="metric-value">100%</div></div>
+        </div>
+        <div class="charts-grid">
+            <div class="panel"><div class="panel-header">Pass Rate Trend (7 Days)</div><div class="panel-content"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
+            <div class="panel"><div class="panel-header">Failure Breakdown</div><div class="panel-content"><div class="chart-container"><canvas id="pieChart"></canvas></div></div></div>
         </div>
         <div class="grid">
             <div class="panel">
@@ -70,152 +70,26 @@
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
                         <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Passed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">21</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">0</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Failed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">22</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">0</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Skipped</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">18</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">0</div>
                         </div>
                     </div>
                     <div style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
-                        <div style="height: 100%; background: var(--success); width: 34.42622950819672%;"></div>
+                        <div style="height: 100%; background: var(--success); width: NaN%;"></div>
                     </div>
                 </div>
             </div>
             <div class="panel">
-                <div class="panel-header">Issues (22)</div>
+                <div class="panel-header">Top 3 Critical Blockers</div>
                 <div class="panel-content" style="max-height: 400px; overflow-y: auto;">
-                    
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Split Invoice Stock Mismatch
-  SO         : SO/2026/05/31/000600 (ID: 1610329</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Edge Case: Reject date with negative timestamp (epoch manipulation)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Reject future-dated Sales Order from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: Failed to create job position: 422 - {
-	"code": 422,
-	"details": {
-		"code": [
-			"Code is re</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Invoice INV/2026/05/31/001135 not found in customer profile. Expected to see invoice after AP</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Reject back-dated Receipt from previous fiscal year (2017)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Reject future-dated Invoice from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Reject back-dated Invoice from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice from previous fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Guardrail: Duplicate employee email must be rejected by the system</b>: Error: expect(received).toHaveProperty(path)
-
-Matcher error: received value must not be null nor und</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: Failed to create job position: 422 - {
-	"code": 422,
-	"details": {
-		"code": [
-			"Code is re</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Reject back-dated Sales Order from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Guardrail: Invoice must reject second receipt after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Validate TIN, create customer, edit, remove</b>: TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
-Call log:
-  - waiting for locator('#cu</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">LOGIC_VULN</div>
-        <div class="issue-desc"><b>Guardrail: System must reject Invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory inte</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Complete UI flow - Create, Validate, Approve</b>: Error: Tax Discovery HTTP 400: {
-	"data": null,
-	"error": "conn busy"
-}
-</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice in SO-Invoice chain!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>API: Pay component must be created with correct GL account linkage</b>: Error: Failed to create job position: 422 - {
-	"code": 422,
-	"details": {
-		"code": [
-			"Code is re</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Forensic Audit: Invoice Void & Stock Restoration</b>: Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 42
-Received: 0</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Guardrail: Leave application must reject payload missing leave_type_id and reason</b>: Error: Failed to create job position: 422 - {
-	"code": 422,
-	"details": {
-		"code": [
-			"Code is re</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Reject future-dated Receipt from next fiscal year (2019)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div>
+                    <div style="text-align: center; padding: 32px; color: var(--success);">✓ No critical blockers</div>
                 </div>
             </div>
         </div>
@@ -225,5 +99,32 @@ Received: 0</div>
             <div class="btn">🔵 Jira</div>
         </div>
     </div>
+    <script>
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
+                datasets: [{
+                    label: 'Pass Rate',
+                    data: [85, 90, 95, 92, 97, 98, 100],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }, x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } } } }
+        });
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Logic Bugs', 'UI Flakiness', 'API/Stability', 'Performance'],
+                datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth: 0 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#64748b', padding: 20 } } } }
+        });
+    </script>
 </body>
 </html>
