@@ -6,43 +6,50 @@ const TEST_TYPE = process.env.TEST_TYPE || 'unknown';
 console.log(`[DASHBOARD] Test Type: ${TEST_TYPE}`);
 
 // Read Playwright results from the test-results directory
-const resultsDir = path.join(process.cwd(), 'test-results');
+const resultsFile = path.join(process.cwd(), 'test-results', 'results.json');
 let totalTests = 0;
 let failedTests = 0;
 let capturedIssues: { title: string; category: string; description: string }[] = [];
 
-if (fs.existsSync(resultsDir)) {
-  const files = fs.readdirSync(resultsDir);
-  for (const file of files) {
-    if (file.endsWith('.json')) {
-      try {
-        const content = fs.readFileSync(path.join(resultsDir, file), 'utf8');
-        const data = JSON.parse(content);
-        
-        if (data.tests) {
-          for (const test of data.tests) {
-            totalTests++;
-            const lastResult = test.results[test.results.length - 1];
-            if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
-              failedTests++;
-              
-              let cat = 'STABILITY';
-              if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
-              if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
-              
-              capturedIssues.push({
-                title: test.title,
-                category: cat,
-                description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
-              });
+if (fs.existsSync(resultsFile)) {
+  try {
+    const content = fs.readFileSync(resultsFile, 'utf8');
+    const data = JSON.parse(content);
+    console.log(`[DASHBOARD] Reading results from ${resultsFile}`);
+    
+    // Playwright JSON reporter structure
+    if (data.suites) {
+      for (const suite of data.suites) {
+        if (suite.specs) {
+          for (const spec of suite.specs) {
+            if (spec.tests) {
+              for (const test of spec.tests) {
+                totalTests++;
+                const lastResult = test.results[test.results.length - 1];
+                if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
+                  failedTests++;
+                  
+                  let cat = 'STABILITY';
+                  if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+                  if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+                  
+                  capturedIssues.push({
+                    title: test.title,
+                    category: cat,
+                    description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+                  });
+                }
+              }
             }
           }
         }
-      } catch (e) {
-        // Skip invalid JSON files
       }
     }
+  } catch (e) {
+    console.log(`[DASHBOARD] Error parsing ${resultsFile}:`, e);
   }
+} else {
+  console.log(`[DASHBOARD] Results file not found: ${resultsFile}`);
 }
 
 // Calculate metrics
