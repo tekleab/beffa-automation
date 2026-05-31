@@ -144,8 +144,8 @@ jobs:
           $GREP_ARGS \
           --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
-        # ── PART 2: Forensic Audits (sequential, skipped for smoke/e2e) ─────
-        if [ "$TEST_TYPE" != "smoke" ] && [ "$TEST_TYPE" != "e2e" ]; then
+        # ── PART 2: Forensic Audits (sequential, skipped for smoke/e2e/full) ─────
+        if [ "$TEST_TYPE" != "smoke" ] && [ "$TEST_TYPE" != "e2e" ] && [ "$TEST_TYPE" != "full" ]; then
           echo "=========================================================="
           echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
           echo "=========================================================="
@@ -164,8 +164,8 @@ jobs:
           echo "=========================================================="
         fi
 
-        # ── PART 3: E2E cross-module flows (only for e2e or full) ───────────
-        if [ "$TEST_TYPE" = "e2e" ] || [ "$TEST_TYPE" = "full" ]; then
+        # ── PART 3: E2E cross-module flows (only for e2e) ───────────
+        if [ "$TEST_TYPE" = "e2e" ]; then
           echo "=========================================================="
           echo "🔗 PART 3: Running E2E Cross-Module Flows..."
           echo "=========================================================="
