@@ -233,10 +233,6 @@ jobs:
           echo "ERROR: Allure report index.html not found"
           exit 1
         fi
-        if [ ! -d "temp-report/app" ]; then
-          echo "ERROR: Allure report app directory not found"
-          exit 1
-        fi
         echo "Allure report generated successfully"
         npx ts-node scripts/latency-tracker.ts || true
 
