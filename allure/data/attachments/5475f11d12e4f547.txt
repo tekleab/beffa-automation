@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 215.83ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1195.56ms
+[ATTACK] Attempting to invoice 10009 units of "VIEW-AUDIT-1780173459567" (available: 10)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 10, required: 10009.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+
