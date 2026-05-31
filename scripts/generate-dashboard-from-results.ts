@@ -27,91 +27,81 @@ if (fs.existsSync(resultsDir)) {
   const files = fs.readdirSync(resultsDir);
   console.log(`[DASHBOARD] Found ${files.length} files in test-results`);
   
-  // Try to read from results.json first (JSON reporter)
-  const resultsFile = path.join(resultsDir, 'results.json');
-  if (fs.existsSync(resultsFile)) {
-    try {
-      const content = fs.readFileSync(resultsFile, 'utf8');
-      const data = JSON.parse(content);
-      console.log(`[DASHBOARD] Reading results from ${resultsFile}`);
-      
-      // Playwright JSON reporter structure
-      if (data.suites) {
-        for (const suite of data.suites) {
-          if (suite.specs) {
-            for (const spec of suite.specs) {
-              if (spec.tests) {
-                for (const test of spec.tests) {
-                  totalTests++;
-                  const lastResult = test.results[test.results.length - 1];
-                  if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
-                    failedTests++;
-                    
-                    let cat = 'STABILITY';
-                    if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
-                    if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
-                    
-                    capturedIssues.push({
-                      title: test.title,
-                      category: cat,
-                      description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
-                    });
-                  }
-                }
-              }
+  // Try to read from Allure results first (more reliable)
+  const allureDir = path.join(process.cwd(), 'allure-results');
+  if (fs.existsSync(allureDir)) {
+    console.log(`[DASHBOARD] Reading from Allure results`);
+    const allureFiles = fs.readdirSync(allureDir);
+    console.log(`[DASHBOARD] Found ${allureFiles.length} files in allure-results`);
+    for (const file of allureFiles) {
+      if (file.endsWith('.json') && file !== 'categories.json' && file !== 'environment.json' && file !== 'executor.json') {
+        try {
+          const content = fs.readFileSync(path.join(allureDir, file), 'utf8');
+          const data = JSON.parse(content);
+          
+          // Allure test result structure
+          if (data.fullName || data.name) {
+            totalTests++;
+            if (data.status === 'failed') {
+              failedTests++;
+              
+              let cat = 'STABILITY';
+              const testName = data.fullName || data.name || '';
+              if (testName.toLowerCase().includes('security') || testName.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+              if (testName.toLowerCase().includes('reject') || testName.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+              
+              capturedIssues.push({
+                title: data.name || data.fullName,
+                category: cat,
+                description: data.statusDetails?.message?.substring(0, 100).replace(/[<>]/g, '') || 'Test failed'
+              });
             }
           }
+        } catch (e) {
+          console.log(`[DASHBOARD] Error parsing ${file}:`, e);
         }
       }
-    } catch (e) {
-      console.log(`[DASHBOARD] Error parsing ${resultsFile}:`, e);
     }
   } else {
-    console.log(`[DASHBOARD] Results file not found: ${resultsFile}, trying to read from subdirectories`);
+    console.log(`[DASHBOARD] Allure directory not found: ${allureDir}`);
     
-    // Fallback: read from subdirectories (each test result is in its own directory)
-    for (const file of files) {
-      const filePath = path.join(resultsDir, file);
-      const stat = fs.statSync(filePath);
-      
-      if (stat.isDirectory()) {
-        const resultFile = path.join(filePath, 'results.json');
-        if (fs.existsSync(resultFile)) {
-          try {
-            const content = fs.readFileSync(resultFile, 'utf8');
-            const data = JSON.parse(content);
-            
-            if (data.suites) {
-              for (const suite of data.suites) {
-                if (suite.specs) {
-                  for (const spec of suite.specs) {
-                    if (spec.tests) {
-                      for (const test of spec.tests) {
-                        totalTests++;
-                        const lastResult = test.results[test.results.length - 1];
-                        if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
-                          failedTests++;
-                          
-                          let cat = 'STABILITY';
-                          if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
-                          if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
-                          
-                          capturedIssues.push({
-                            title: test.title,
-                            category: cat,
-                            description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
-                          });
-                        }
-                      }
+    // Fallback: try to read from results.json (JSON reporter)
+    const resultsFile = path.join(resultsDir, 'results.json');
+    if (fs.existsSync(resultsFile)) {
+      try {
+        const content = fs.readFileSync(resultsFile, 'utf8');
+        const data = JSON.parse(content);
+        console.log(`[DASHBOARD] Reading results from ${resultsFile}`);
+        
+        if (data.suites) {
+          for (const suite of data.suites) {
+            if (suite.specs) {
+              for (const spec of suite.specs) {
+                if (spec.tests) {
+                  for (const test of spec.tests) {
+                    totalTests++;
+                    const lastResult = test.results[test.results.length - 1];
+                    if (lastResult?.status === 'failed' || lastResult?.status === 'timedOut') {
+                      failedTests++;
+                      
+                      let cat = 'STABILITY';
+                      if (test.title.toLowerCase().includes('security') || test.title.toLowerCase().includes('concurrency')) cat = 'SECURITY_RACE';
+                      if (test.title.toLowerCase().includes('reject') || test.title.toLowerCase().includes('guardrail')) cat = 'LOGIC_VULN';
+                      
+                      capturedIssues.push({
+                        title: test.title,
+                        category: cat,
+                        description: lastResult?.error?.message?.split('\n')[0].substring(0, 100).replace(/[<>]/g, '') || 'Unexpected system state detected.'
+                      });
                     }
                   }
                 }
               }
             }
-          } catch (e) {
-            console.log(`[DASHBOARD] Error parsing ${resultFile}:`, e);
           }
         }
+      } catch (e) {
+        console.log(`[DASHBOARD] Error parsing ${resultsFile}:`, e);
       }
     }
   }
