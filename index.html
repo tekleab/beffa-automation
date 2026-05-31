@@ -24,7 +24,7 @@
         .crystal-bot-1 { transform: rotateY(0deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-2 { transform: rotateY(90deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-3 { transform: rotateY(180deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-4 { transform: rotateY(270deg) rotateX(-35deg) translateY(100px) scaleY(-1); }
 
         .hud-overlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2000; pointer-events: none; }
-        .status-box { background: var(--glass-deep); padding: 25px 45px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .status-box { background: var(--glass-deep); padding: 25px 45px; border-radius: 20px; border: 1px solid var(--coral); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         .integrity-val { font-size: 3.5rem; font-weight: 1000; color: #fff; margin-bottom: 5px; }
 
         .metrics-stack { position: absolute; left: 40px; top: 120px; display: flex; flex-direction: column; gap: 20px; }
@@ -33,9 +33,9 @@
         .m-val { font-size: 2rem; font-weight: 900; color: #fff; } .m-label { font-size: 0.6rem; color: #64748b; font-weight: 800; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase; }
 
         .repro-wing { position: absolute; right: 40px; top: 40px; width: 340px; z-index: 5000; }
-        .wing-header { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
-        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--emerald); letter-spacing: 1.5px; }
-        .wing-count { background: var(--emerald); color: #fff; font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; font-weight: 900; }
+        .wing-header { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--coral); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
+        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--coral); letter-spacing: 1.5px; }
+        .wing-count { background: var(--coral); color: #fff; font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; font-weight: 900; }
         
         .repro-dropdown { max-height: 0; overflow: hidden; transition: 0.5s ease-in-out; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px); border-radius: 0 0 16px 16px; border: 1px solid rgba(255, 255, 255, 0.1); border-top: none; margin-top: 5px; }
         .repro-wing:hover .repro-dropdown { max-height: 600px; padding: 15px; }
@@ -68,10 +68,10 @@
         <div style="position: absolute; top: 30px; left: 40px; font-size: 1.5rem; font-weight: 950;">befa<span style="color:var(--emerald);">HUB</span></div>
         <div class="metrics-stack">
             <div class="metric-card"><div class="m-val">FULL</div><div class="m-label">Test Type</div></div>
-            <div class="metric-card"><div class="m-val">0</div><div class="m-label">Total Tests Run</div></div>
-            <div class="metric-card" style="border-left-color: var(--emerald)"><div class="m-val">ACTIVE</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">100%</div><div class="m-label">Test Pass Rate</div></div>
-            <div class="metric-card"><div class="m-val" style="font-size: 1.2rem;">May 31, 2026, 05:16:08</div><div class="m-label">Run Timestamp (UTC)</div></div>
+            <div class="metric-card"><div class="m-val">61</div><div class="m-label">Total Tests Run</div></div>
+            <div class="metric-card" style="border-left-color: var(--coral)"><div class="m-val">BLOCKER</div><div class="m-label">CD Pipeline Status</div></div>
+            <div class="metric-card"><div class="m-val">57%</div><div class="m-label">Test Pass Rate</div></div>
+            <div class="metric-card"><div class="m-val" style="font-size: 1.2rem;">May 31, 2026, 05:37:14</div><div class="m-label">Run Timestamp (UTC)</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
@@ -79,24 +79,172 @@
         <div class="hud-overlay">
             <div class="status-box">
                 <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">100%</div>
+                <div id="hudRateValue" class="integrity-val">57%</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--emerald); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 0</div>
-                <div style="color: var(--emerald); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: OPTI-PASSED</div>
+                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 26</div>
+                <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
             </div>
         </div>
 
         <div class="repro-wing">
             <div class="wing-header">
                 <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">0 DETECTED</div>
+                <div class="wing-count">26 DETECTED</div>
             </div>
-            <div class="repro-dropdown"><div class="issue-item" style="border-left-color: var(--emerald); opacity: 0.7;"><div class="issue-tag">CLEAN</div><div class="issue-desc">All financial guardrails passed successfully.</div></div></div>
+            <div class="repro-dropdown">
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Guardrail: Leave application must reject payload missing leave_type_id and reason</b>: Error: Failed to create job position: 422 - {
+	"code": 422,
+	"details": {
+		"code": [
+			"Code is re</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Reject future-dated Invoice from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Verify validation messages for required fields</b>: TimeoutError: page.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('button.chakra</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>API: Pay component must be created with correct GL account linkage</b>: Error: Failed to create job position: 422 - {
+	"code": 422,
+	"details": {
+		"code": [
+			"Code is re</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>UI Audit: Customer profile shows zero balance after full payment</b>: Error: Invoice-Receipt API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"currency_id": [
+	</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice in SO-Invoice chain!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Verify validation messages for required fields</b>: TimeoutError: page.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('button.chakra</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Over-Release Allowed on Fully Released SO
+  SO         : SO/2026/05/31/000555</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Guardrail: Invoice must reject second receipt after full payment</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Invoice INV/2026/05/31/001019 not found in customer profile. Expected to see invoice after AP</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Verify validation messages for required fields</b>: TimeoutError: page.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('button.chakra</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">LOGIC_VULN</div>
+        <div class="issue-desc"><b>Guardrail: System must reject Invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory inte</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Reject future-dated Receipt from next fiscal year (2019)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: page.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('button.chakra</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Reject future-dated Sales Order from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: Failed to create job position: 422 - {
+	"code": 422,
+	"details": {
+		"code": [
+			"Code is re</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Reject back-dated Sales Order from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Receipt: Reject back-dated Receipt from previous fiscal year (2017)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: page.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('button.chakra</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Reject back-dated Invoice from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice from previous fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Edge Case: Reject date with negative timestamp (epoch manipulation)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: page.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('button.chakra</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Forensic Audit: Invoice Void & Stock Restoration</b>: Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 14
+Received: 0</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Validate TIN, create customer, edit, remove</b>: TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('#cu</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: expect(received).toHaveProperty(path)
+
+Matcher error: received value must not be null nor und</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Create fresh invoice via API, then create receipt and link it</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
+      </div></div>
         </div>
 
         <div class="vcs-context">
             <div style="font-size: 0.55rem; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 15px;">VCS CONTEXT</div>
-            <div class="vcs-info"><div style="color: var(--emerald); font-weight: 800; font-size: 0.6rem; margin-bottom: 5px;">ACTIVE DEPLOYMENT</div><div>BR: main</div><div style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: 12b8db9</div></div>
+            <div class="vcs-info"><div style="color: var(--emerald); font-weight: 800; font-size: 0.6rem; margin-bottom: 5px;">ACTIVE DEPLOYMENT</div><div>BR: main</div><div style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: 04700bd</div></div>
         </div>
 
         <div class="console-bar">

@@ -1,0 +1,38 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 382.31ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 31
+[WARN] Could not find day 31. Fallback to direct key press.
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2820.54ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 3207.29ms
+[INFO] Vendor: Beniam
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2597.60ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 3274.47ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2313.75ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2066.15ms
+[PERFORMANCE] UI - Random Selection: Location: 2186.66ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2389.97ms
+[PERFORMANCE] UI - Random Selection: Tax: 2603.18ms
+[OK] Line item added (Price: 4189)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/31/000395 | Vendor: Beniam
+[API] Advancing purchase-orders "8fcf2bde-568f-4c2a-86b9-8566d1891a16"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/31/000395 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/31/000395 via API
+[ACTION] Fetching PO Context for ID: 8fcf2bde-568f-4c2a-86b9-8566d1891a16...
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/31/000668
+[API] Advancing bills "54beecd1-71c3-4998-96a4-058e0551f9ff"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/31/000668 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/31/000668 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Beniam"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/31/000668...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/31/000668 is physically present in Beniam's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/31/000395 -> Bill BILL/2026/05/31/000668
