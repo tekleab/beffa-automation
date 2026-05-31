@@ -1,0 +1,38 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 420.18ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 31
+[WARN] Could not find day 31. Fallback to direct key press.
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3102.61ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2273.47ms
+[INFO] Vendor: Derara Guyo
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2241.40ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2284.82ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2427.91ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2190.51ms
+[PERFORMANCE] UI - Random Selection: Location: 1971.13ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1951.13ms
+[PERFORMANCE] UI - Random Selection: Tax: 2273.52ms
+[OK] Line item added (Price: 8900)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/31/000404 | Vendor: Derara Guyo
+[API] Advancing purchase-orders "b0ea05ad-127f-4b36-bbfb-b6a1c8b2b9e6"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/31/000404 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/31/000404 via API
+[ACTION] Fetching PO Context for ID: b0ea05ad-127f-4b36-bbfb-b6a1c8b2b9e6...
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/31/000695
+[API] Advancing bills "3795310f-23bf-4199-9cf4-bc7994efde34"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/31/000695 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/31/000695 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "Derara Guyo"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/31/000695...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/31/000695 is physically present in Derara Guyo's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/31/000404 -> Bill BILL/2026/05/31/000695

@@ -1,0 +1,68 @@
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 269.21ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1315.77ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 797b22c1-3c80-47cd-b53a-851ccd7d4632 (ZERO-STOCK-1779962630158)
+[ITEM]  Stock       : 11
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Sales Order created via API: SO/2026/05/31/000622 (ID: 36ef82f8-e0a2-4843-92da-587c505d06c0, ItemID: bb5ccd7f-2df3-477e-902a-6a7775d2cd3e)
+[API] Advancing sales-orders "36ef82f8-e0a2-4843-92da-587c505d06c0"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] SO SO/2026/05/31/000622 approved (ID: 36ef82f8-e0a2-4843-92da-587c505d06c0)
+[STEP 2] Releasing Batch 1: 4 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/31/001203 (ID: 9053803d-ea9a-4470-b05d-4c1a3f0dbcad)
+[API] Advancing invoices "9053803d-ea9a-4470-b05d-4c1a3f0dbcad"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Batch 1 invoice INV/2026/05/31/001203 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/31/001204 (ID: eb89cb21-aad5-4f23-91c2-54c9e5b2d0ff)
+[API] Advancing invoices "eb89cb21-aad5-4f23-91c2-54c9e5b2d0ff"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Batch 2 invoice INV/2026/05/31/001204 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/05/31/000622 (ID: 36ef82f8-e0a2-4843-92da-587c505d06c0)
+[DOCUMENT] Invoice 1    : INV/2026/05/31/001203 (ID: 9053803d-ea9a-4470-b05d-4c1a3f0dbcad) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/05/31/001204 (ID: eb89cb21-aad5-4f23-91c2-54c9e5b2d0ff) — 6 units
+[ITEM]     Item         : ZERO-STOCK-1779962630158 (797b22c1-3c80-47cd-b53a-851ccd7d4632)
+[STOCK]    Before       : 11
+[STOCK]    After        : 1
+[STOCK]    Expected     : 1
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[ACTION] Discovering environment metadata (Accounts, Customers, Currencies)...
+[META] AR Account: "Accounts Receivable" (8479ad17-541c-4b85-a371-59f0536ba6e9)
+[META] Sales Account: "Sales" (403602e4-ce38-4eeb-932f-796a41e51179)
+[META] Location: "new-warehouse-location" (e8958816-d525-4184-8652-b2d3a40e36a4) | Warehouse: 6d5a0702-cbb8-4d72-936c-cff68196f1ea
+[META] Cash Account: "Cash - Main Office" (892c37c6-e7ba-4178-a8a7-48e57a846080)
+[SUCCESS] Invoice created via API: INV/2026/05/31/001206 (ID: c7c1770b-4a23-4b3a-ae58-3a43053aaab2)
+[API] Advancing invoices "c7c1770b-4a23-4b3a-ae58-3a43053aaab2"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
