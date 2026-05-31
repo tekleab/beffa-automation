@@ -151,35 +151,35 @@ export class SalesPage extends BasePage {
 
   async fillCustomer(customerId: string, customerButtonClass: string = 'css-lwolnh') {
     console.log(`[UI] Filling customer: ${customerId}`);
-    await this.page.click(`button#customer_id.chakra-button.${customerButtonClass}`);
-    await this.page.fill('input#customer_id.chakra-input.css-cu54mj', customerId);
+    await this.page.locator('button#customer_id').click();
+    await this.page.locator('input#customer_id').fill(customerId);
   }
 
   async fillLocation(locationId: string) {
     console.log(`[UI] Filling location: ${locationId}`);
-    await this.page.click('button#location_id.chakra-button.css-lwolnh:has-text("Select location *")');
-    await this.page.fill('input#location_id.chakra-input.css-cu54mj', locationId);
+    await this.page.getByRole('button', { name: /select location/i }).click();
+    await this.page.locator('input#location_id').fill(locationId);
   }
 
   async fillWarehouse(warehouseId: string) {
     console.log(`[UI] Filling warehouse: ${warehouseId}`);
-    await this.page.click('button#warehouse_id.chakra-button.css-qtt6lp:has-text("Select warehouse *")');
-    await this.page.fill('input#warehouse_id.chakra-input.css-cu54mj', warehouseId);
+    await this.page.getByRole('button', { name: /select warehouse/i }).click();
+    await this.page.locator('input#warehouse_id').fill(warehouseId);
   }
 
   async fillItem(itemId: string) {
     console.log(`[UI] Filling item: ${itemId}`);
-    await this.page.fill('input.chakra-input.css-cu54mj[placeholder="Search..."]', itemId);
+    await this.page.getByPlaceholder('Search...').fill(itemId);
   }
 
   async fillQuantity(quantity: string) {
     console.log(`[UI] Filling quantity: ${quantity}`);
-    await this.page.fill('input.chakra-input.css-bgx4xr[type="number"]', quantity);
+    await this.page.locator('input[type="number"]').first().fill(quantity);
   }
 
   async fillPrice(price: string) {
     console.log(`[UI] Filling price: ${price}`);
-    const priceInputs = await this.page.locator('input.chakra-input.css-bgx4xr[type="number"]').all();
+    const priceInputs = await this.page.locator('input[type="number"]').all();
     if (priceInputs.length > 1) {
       await priceInputs[1].fill(price);
     }
@@ -187,12 +187,12 @@ export class SalesPage extends BasePage {
 
   async clickDateButton() {
     console.log(`[UI] Clicking date button`);
-    await this.page.click('button.trigger-button');
+    await this.page.getByRole('button', { name: /date/i }).click();
   }
 
   async clickAddLineItem() {
     console.log(`[UI] Clicking Add button for line item`);
-    await this.page.click('button.chakra-button.css-1qm6idw:has-text("Add")');
+    await this.page.getByRole('button', { name: 'Add' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -221,31 +221,31 @@ export class SalesPage extends BasePage {
 
   async clickAddSalesOrder() {
     console.log(`[UI] Clicking Add Sales Order button`);
-    await this.page.click('button.chakra-button.css-r0jt5t:has-text("Add Sales Order")');
+    await this.page.getByRole('button', { name: 'Add Sales Order' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickLineItemButtonSO() {
     console.log(`[UI] Clicking Line Item button (SO)`);
-    await this.page.click('button#popover-trigger-:reb:.chakra-button.css-1c5ry1n:has-text("Line Item")');
+    await this.page.getByRole('button', { name: 'Line Item' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickItemTypeButton() {
     console.log(`[UI] Clicking Item button`);
-    await this.page.click('button.chakra-button.css-1fmr6zi:has-text("Item")');
+    await this.page.getByRole('button', { name: 'Item' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickSubmitSO() {
     console.log(`[UI] Submitting Sales Order`);
-    await this.page.click('button.chakra-button.css-1qm6idw:has-text("Add")');
+    await this.page.getByRole('button', { name: 'Add' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickViewSO() {
     console.log(`[UI] Clicking view button for SO`);
-    await this.page.click('button.chakra-button.css-324nk0:has-text("view")').first();
+    await this.page.getByRole('button', { name: 'view' }).first().click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -265,7 +265,7 @@ export class SalesPage extends BasePage {
 
   async clickSubmitWithoutFields() {
     console.log(`[UI] Clicking submit without filling fields`);
-    await this.page.click('button.chakra-button.css-1qm6idw:has-text("Add")');
+    await this.page.getByRole('button', { name: 'Add' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -281,54 +281,54 @@ export class SalesPage extends BasePage {
 
   async clickAddInvoice() {
     console.log(`[UI] Clicking Add Invoice button`);
-    await this.page.click('button.chakra-button.css-r0jt5t:has-text("Add Invoice")');
+    await this.page.getByRole('button', { name: 'Add Invoice' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async fillInvoiceNumber(invoiceNumber: string) {
     console.log(`[UI] Filling invoice number: ${invoiceNumber}`);
-    await this.page.fill('input#invoice_number.chakra-input.css-bgx4xr', invoiceNumber);
+    await this.page.locator('input#invoice_number').fill(invoiceNumber);
   }
 
   async fillCustomerInvoice(customerId: string) {
     console.log(`[UI] Filling customer (Invoice): ${customerId}`);
-    await this.page.click('button#customer_id.chakra-button.css-1lykmmz');
-    await this.page.fill('input#customer_id.chakra-input.css-cu54mj', customerId);
+    await this.page.locator('button#customer_id').click();
+    await this.page.locator('input#customer_id').fill(customerId);
   }
 
   async fillBudgetInvoice(budgetId: string) {
     console.log(`[UI] Filling budget (Invoice): ${budgetId}`);
-    await this.page.click('button#budget_id.chakra-button.css-1lykmmz');
-    await this.page.fill('input#budget_id.chakra-input.css-cu54mj', budgetId);
+    await this.page.locator('button#budget_id').click();
+    await this.page.locator('input#budget_id').fill(budgetId);
   }
 
   async fillAccountsReceivableInvoice(arId: string) {
     console.log(`[UI] Filling accounts receivable (Invoice): ${arId}`);
-    await this.page.click('button#accounts_receivable_id.chakra-button.css-qtt6lp');
-    await this.page.fill('input#accounts_receivable_id.chakra-input.css-cu54mj', arId);
+    await this.page.locator('button#accounts_receivable_id').click();
+    await this.page.locator('input#accounts_receivable_id').fill(arId);
   }
 
   async fillCurrencyInvoice(currencyId: string) {
     console.log(`[UI] Filling currency (Invoice): ${currencyId}`);
-    await this.page.click('button#currency_id.chakra-button.css-1lykmmz');
-    await this.page.fill('input#currency_id.chakra-input.css-cu54mj', currencyId);
+    await this.page.locator('button#currency_id').click();
+    await this.page.locator('input#currency_id').fill(currencyId);
   }
 
   async clickLineItemButtonInvoice() {
     console.log(`[UI] Clicking Line Item button (Invoice)`);
-    await this.page.click('button#popover-trigger-:r16g:.chakra-button.css-1fmr6zi:has-text("Line Item")');
+    await this.page.getByRole('button', { name: 'Line Item' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickSubmitInvoice() {
     console.log(`[UI] Submitting Invoice`);
-    await this.page.click('button.chakra-button.css-1qm6idw:has-text("Add")');
+    await this.page.getByRole('button', { name: 'Add' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickViewInvoice() {
     console.log(`[UI] Clicking view button for Invoice`);
-    await this.page.click('button.chakra-button.css-324nk0:has-text("view")').first();
+    await this.page.getByRole('button', { name: 'view' }).first().click();
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -359,64 +359,64 @@ export class SalesPage extends BasePage {
 
   async clickAddReceipt() {
     console.log(`[UI] Clicking Add Receipt button`);
-    await this.page.click('button.chakra-button.css-r0jt5t:has-text("Add Receipt")');
+    await this.page.getByRole('button', { name: 'Add Receipt' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async fillReceiptRef(ref: string) {
     console.log(`[UI] Filling receipt ref: ${ref}`);
-    await this.page.fill('input#ref.chakra-input.css-bgx4xr', ref);
+    await this.page.locator('input#ref').fill(ref);
   }
 
   async fillCheckNo(checkNo: string) {
     console.log(`[UI] Filling check no: ${checkNo}`);
-    await this.page.fill('input#check_no.chakra-input.css-bgx4xr', checkNo);
+    await this.page.locator('input#check_no').fill(checkNo);
   }
 
   async fillPaymentMethod(paymentMethod: string) {
     console.log(`[UI] Filling payment method: ${paymentMethod}`);
-    await this.page.selectOption('select#payment_method.chakra-select.css-1h4ea1o', paymentMethod);
+    await this.page.locator('select#payment_method').selectOption(paymentMethod);
   }
 
   async fillCustomerReceipt(customerId: string) {
     console.log(`[UI] Filling customer (Receipt): ${customerId}`);
-    await this.page.click('button#customer_id.chakra-button.css-qtt6lp');
-    await this.page.fill('input#customer_id.chakra-input.css-cu54mj', customerId);
+    await this.page.locator('button#customer_id').click();
+    await this.page.locator('input#customer_id').fill(customerId);
   }
 
   async fillCashAccount(cashAccountId: string) {
     console.log(`[UI] Filling cash account: ${cashAccountId}`);
-    await this.page.click('button#cash_account_id.chakra-button.css-qtt6lp');
-    await this.page.fill('input#cash_account_id.chakra-input.css-cu54mj', cashAccountId);
+    await this.page.locator('button#cash_account_id').click();
+    await this.page.locator('input#cash_account_id').fill(cashAccountId);
   }
 
   async fillFiscalBudgetReceipt(budgetId: string) {
     console.log(`[UI] Filling fiscal budget (Receipt): ${budgetId}`);
-    await this.page.click('button#fiscal_budget_id.chakra-button.css-1lykmmz');
-    await this.page.fill('input#fiscal_budget_id.chakra-input.css-cu54mj', budgetId);
+    await this.page.locator('button#fiscal_budget_id').click();
+    await this.page.locator('input#fiscal_budget_id').fill(budgetId);
   }
 
   async fillCurrencyReceipt(currencyId: string) {
     console.log(`[UI] Filling currency (Receipt): ${currencyId}`);
-    await this.page.click('button#currency_id.chakra-button.css-qtt6lp');
-    await this.page.fill('input#currency_id.chakra-input.css-cu54mj', currencyId);
+    await this.page.locator('button#currency_id').click();
+    await this.page.locator('input#currency_id').fill(currencyId);
   }
 
   async clickLineItemButtonReceipt() {
     console.log(`[UI] Clicking Line Item button (Receipt)`);
-    await this.page.click('button#popover-trigger-:r114:.chakra-button.css-1fmr6zi:has-text("Line Item")');
+    await this.page.getByRole('button', { name: 'Line Item' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickSubmitReceipt() {
     console.log(`[UI] Submitting Receipt`);
-    await this.page.click('button.chakra-button.css-1qm6idw:has-text("Add")');
+    await this.page.getByRole('button', { name: 'Add' }).click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async clickViewReceipt() {
     console.log(`[UI] Clicking view button for Receipt`);
-    await this.page.click('button.chakra-button.css-324nk0:has-text("view")').first();
+    await this.page.getByRole('button', { name: 'view' }).first().click();
     await this.page.waitForLoadState('networkidle');
   }
 
