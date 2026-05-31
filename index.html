@@ -4,130 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEFFA Unified Command Center</title>
+    <title>BEFFA QA Dashboard</title>
     <style>
         :root {
-            --emerald: #10b981; --coral: #f43f5e; --amber: #f59e0b;
-            --glass-deep: rgba(2, 6, 23, 0.95); --neon-glow: 0 0 25px rgba(16, 185, 129, 0.6);
+            --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --dark: #0f172a; --darker: #020617; --light: #f8fafc; --gray: #64748b; --border: #1e293b;
         }
-
-        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; }
-        .observation-deck { flex: 1; position: relative; background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px); background-size: 50px 50px; }
-        .observation-deck::after { content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, transparent, var(--emerald), transparent); box-shadow: 0 0 20px var(--emerald); animation: scannerBeam 6s infinite linear; z-index: 10; opacity: 0.3; }
-        @keyframes scannerBeam { 0% { top: -10%; } 100% { top: 110%; } }
-
-        .hologram-stage { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 400px; height: 400px; perspective: 1000px; }
-        .crystal { position: relative; width: 120px; height: 200px; margin: 80px auto; transform-style: preserve-3d; animation: rotateCrystal 15s infinite linear; }
-        @keyframes rotateCrystal { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
-        .crystal-face { position: absolute; width: 0; height: 0; border-left: 60px solid transparent; border-right: 60px solid transparent; border-bottom: 100px solid rgba(16, 185, 129, 0.4); transform-origin: 50% 100%; backdrop-filter: blur(5px); }
-        .crystal-top-1 { transform: rotateY(0deg) rotateX(35deg); } .crystal-top-2 { transform: rotateY(90deg) rotateX(35deg); } .crystal-top-3 { transform: rotateY(180deg) rotateX(35deg); } .crystal-top-4 { transform: rotateY(270deg) rotateX(35deg); }
-        .crystal-bot-1 { transform: rotateY(0deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-2 { transform: rotateY(90deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-3 { transform: rotateY(180deg) rotateX(-35deg) translateY(100px) scaleY(-1); } .crystal-bot-4 { transform: rotateY(270deg) rotateX(-35deg) translateY(100px) scaleY(-1); }
-
-        .hud-overlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2000; pointer-events: none; }
-        .status-box { background: var(--glass-deep); padding: 25px 45px; border-radius: 20px; border: 1px solid var(--coral); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
-        .integrity-val { font-size: 3.5rem; font-weight: 1000; color: #fff; margin-bottom: 5px; }
-
-        .metrics-stack { position: absolute; left: 40px; top: 120px; display: flex; flex-direction: column; gap: 20px; }
-        .metric-card { background: var(--glass-deep); border-left: 4px solid var(--emerald); padding: 20px 30px; border-radius: 12px; width: 300px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .metric-card:hover { transform: translateX(10px); }
-        .m-val { font-size: 2rem; font-weight: 900; color: #fff; } .m-label { font-size: 0.6rem; color: #64748b; font-weight: 800; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase; }
-
-        .repro-wing { position: absolute; right: 40px; top: 40px; width: 340px; z-index: 5000; }
-        .wing-header { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--coral); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
-        .wing-title { font-size: 0.65rem; font-weight: 900; color: var(--coral); letter-spacing: 1.5px; }
-        .wing-count { background: var(--coral); color: #fff; font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; font-weight: 900; }
-        
-        .repro-dropdown { max-height: 0; overflow: hidden; transition: 0.5s ease-in-out; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px); border-radius: 0 0 16px 16px; border: 1px solid rgba(255, 255, 255, 0.1); border-top: none; margin-top: 5px; }
-        .repro-wing:hover .repro-dropdown { max-height: 600px; padding: 15px; }
-        .issue-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border-left: 3px solid var(--coral); margin-bottom: 10px; }
-        .issue-tag { font-size: 0.55rem; color: var(--coral); font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
-        .issue-desc { font-size: 0.75rem; color: #fff; line-height: 1.3; }
-
-        .vcs-context { position: absolute; right: 40px; bottom: 120px; background: var(--glass-deep); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; width: 260px; }
-        .console-bar { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(30px); padding: 12px 40px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
-        .btn { border: 1px solid rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 20px; background: rgba(255,255,255,0.03); cursor: pointer; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; gap: 10px; color: #cbd5e1; transition: 0.3s; }
-        .btn:hover { background: var(--emerald); color: #020617; }
-
-        #loginWall { position: fixed; inset: 0; background: #020617; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: rgba(15, 23, 42, 0.9); border: 1px solid var(--emerald); padding: 60px; border-radius: 30px; width: 420px; text-align: center; }
-        .lux-input { width: 100%; background: #000; border: 1px solid #334155; padding: 16px; border-radius: 10px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
-        .login-btn { width: 100%; padding: 16px; background: var(--emerald); border: none; border-radius: 10px; font-weight: 900; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--light); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 32px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.5rem; font-weight: 800; } .logo span { color: var(--primary); }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .metric { background: var(--dark); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .metric-label { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; margin-bottom: 8px; }
+        .metric-value { font-size: 2rem; font-weight: 800; }
+        .metric-value.success { color: var(--success); } .metric-value.danger { color: var(--danger); }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .panel { background: var(--dark); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .panel-header { padding: 20px; border-bottom: 1px solid var(--border); font-weight: 700; }
+        .panel-content { padding: 20px; }
+        .issue { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .issue-cat { font-size: 0.65rem; font-weight: 700; color: var(--danger); text-transform: uppercase; margin-bottom: 8px; }
+        .issue-title { font-weight: 600; margin-bottom: 4px; }
+        .issue-desc { font-size: 0.8rem; color: var(--gray); }
+        .actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn { flex: 1; padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--dark); color: var(--light); font-weight: 600; cursor: pointer; text-align: center; }
+        .btn:hover { background: var(--primary); border-color: var(--primary); }
+        .btn.primary { background: var(--primary); border-color: var(--primary); }
+        @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div id="loginWall">
-        <div class="login-card">
-            <div style="font-size: 2.2rem; margin-bottom: 40px; font-weight: 900;">befa</div>
-            <input type="text" id="username" class="lux-input" placeholder="admin@beffa.com">
-            <input type="password" id="password" class="lux-input" placeholder="••••••••">
-            <button class="login-btn" onclick="attemptAuth()">Authenticate</button>
+    <div class="container">
+        <div class="header">
+            <div class="logo">befa<span>QA</span></div>
+            <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 06:25:42 UTC</div>
         </div>
-    </div>
-
-    <div class="observation-deck">
-        <div style="position: absolute; top: 30px; left: 40px; font-size: 1.5rem; font-weight: 950;">befa<span style="color:var(--emerald);">HUB</span></div>
-        <div class="metrics-stack">
-            <div class="metric-card"><div class="m-val">FULL</div><div class="m-label">Test Type</div></div>
-            <div class="metric-card"><div class="m-val">61</div><div class="m-label">Total Tests Run</div></div>
-            <div class="metric-card" style="border-left-color: var(--coral)"><div class="m-val">BLOCKER</div><div class="m-label">CD Pipeline Status</div></div>
-            <div class="metric-card"><div class="m-val">61%</div><div class="m-label">Test Pass Rate</div></div>
-            <div class="metric-card"><div class="m-val" style="font-size: 1.2rem;">May 31, 2026, 05:54:54</div><div class="m-label">Run Timestamp (UTC)</div></div>
-        </div>
-
-        <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
-
-        <div class="hud-overlay">
-            <div class="status-box">
-                <div style="font-size: 0.6rem; color: #64748b; letter-spacing: 2px; font-weight: 800;">INTEGRITY ENGINE</div>
-                <div id="hudRateValue" class="integrity-val">61%</div>
-                <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-                <div style="font-size: 0.6rem; color: var(--coral); font-weight: 900; letter-spacing: 1px;">VIOLATIONS DETECTED: 24</div>
-                <div style="color: var(--coral); font-size: 0.8rem; font-weight: 950; margin-top: 5px;">STATUS: CRITICAL</div>
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Test Type</div>
+                <div class="metric-value">FULL</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Total Tests</div>
+                <div class="metric-value">61</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Passed</div>
+                <div class="metric-value success">18</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Failed</div>
+                <div class="metric-value danger">27</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Pass Rate</div>
+                <div class="metric-value">30%</div>
             </div>
         </div>
-
-        <div class="repro-wing">
-            <div class="wing-header">
-                <div class="wing-title">REPRODUCED ISSUES</div>
-                <div class="wing-count">24 DETECTED</div>
+        <div class="grid">
+            <div class="panel">
+                <div class="panel-header">Test Execution Summary</div>
+                <div class="panel-content">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+                        <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                            <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Passed</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">18</div>
+                        </div>
+                        <div style="text-align: center; padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
+                            <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Failed</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">27</div>
+                        </div>
+                        <div style="text-align: center; padding: 16px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                            <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Skipped</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">16</div>
+                        </div>
+                    </div>
+                    <div style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; background: var(--success); width: 29.508196721311474%;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="repro-dropdown">
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Forensic Audit: Invoice Void & Stock Restoration</b>: Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 1147
-Received: 0</div>
-      </div>
+            <div class="panel">
+                <div class="panel-header">Issues (27)</div>
+                <div class="panel-content" style="max-height: 400px; overflow-y: auto;">
+                    
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
         <div class="issue-desc"><b>API: Pay component must be created with correct GL account linkage</b>: Error: Failed to create job position: 422 - {
-	"code": 422,
-	"details": {
-		"code": [
-			"Code is re</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Invoice INV/2026/05/31/001039 not found in customer profile. Expected to see invoice after AP</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Audit: Multi-item invoice correctly deducts stock for each line item</b>: Error: [VULNERABILITY] Multi-Item Invoice Stock Deduction Failed
-  Invoice: INV/2026/05/31/001045
-  </div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Edge Case: Reject date with negative timestamp (epoch manipulation)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Reject back-dated Sales Order from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: Failed to create job position: 422 - {
 	"code": 422,
 	"details": {
 		"code": [
@@ -143,25 +108,35 @@ Received: 0</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Complete UI flow - Create, Validate, Approve</b>: Error: Currency Discovery HTTP 500: {
-	"code": 500,
-	"message": "Error fetching currencies"
-}
-</div>
+        <div class="issue-desc"><b>Receipt: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for getByRole('button',</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">LOGIC_VULN</div>
+        <div class="issue-desc"><b>Guardrail: System must reject Invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory inte</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Reject future-dated Sales Order from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Reject back-dated Receipt from previous fiscal year (2017)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+        <div class="issue-desc"><b>Receipt: Reject future-dated Receipt from next fiscal year (2019)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
 	"code": 500,
 	"message": "Internal Server Error</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: expect(received).toHaveProperty(path)
+        <div class="issue-desc"><b>Receipt: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for getByRole('button',</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for getByRole('button',</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>API: Employee must be created with all required fields</b>: Error: expect(received).toHaveProperty(path)
 
 Matcher error: received value must not be null nor und</div>
       </div>
@@ -171,14 +146,33 @@ Matcher error: received value must not be null nor und</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Split Invoice Stock Mismatch
-  SO         : SO/2026/05/31/000563 (ID: 39d8d80</div>
+        <div class="issue-desc"><b>Edge Case: Reject date with negative timestamp (epoch manipulation)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>SO: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
+        <div class="issue-desc"><b>Invoice: Reject future-dated Invoice from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Reject future-dated Sales Order from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Invoice: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
 Call log:
   - waiting for getByRole('button',</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice in SO-Invoice chain!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Full lifecycle: Employee creation through payroll run approval</b>: Error: Failed to create job position: 422 - {
+	"code": 422,
+	"details": {
+		"code": [
+			"Code is re</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -188,15 +182,10 @@ Call log:
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice in SO-Invoice chain!</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">LOGIC_VULN</div>
-        <div class="issue-desc"><b>Guardrail: System must reject Invoicing for more units than the approved SO</b>: Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory inte</div>
-      </div>
-      <div class="issue-item">
-        <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Invoice: Reject future-dated Invoice from next fiscal year (2019)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!</div>
+        <div class="issue-desc"><b>Forensic Audit: Invoice Void & Stock Restoration</b>: Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 9
+Received: 0</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -206,9 +195,9 @@ Call log:
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Validate TIN, create customer, edit, remove</b>: TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
-Call log:
-  - waiting for locator('#cu</div>
+        <div class="issue-desc"><b>Receipt: Reject back-dated Receipt from previous fiscal year (2017)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
+	"code": 500,
+	"message": "Internal Server Error</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
@@ -218,39 +207,51 @@ Call log:
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>UI Audit: Approved invoice reflects outstanding balance in customer profile</b>: Error: Invoice INV/2026/05/31/001080 not found in customer profile. Expected to see invoice after AP</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>API: Timesheet must be created and advanced through approval</b>: Error: Failed to create job position: 422 - {
+	"code": 422,
+	"details": {
+		"code": [
+			"Code is re</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Verify validation messages for required fields</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for getByRole('button',</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>SO: Reject back-dated Sales Order from previous fiscal year (2017)</b>: Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
         <div class="issue-desc"><b>SO: Complete UI flow - Create, Validate, Approve</b>: TimeoutError: locator.click: Timeout 60000ms exceeded.
 Call log:
   - waiting for getByRole('button',</div>
       </div>
       <div class="issue-item">
         <div class="issue-tag">STABILITY</div>
-        <div class="issue-desc"><b>Receipt: Reject future-dated Receipt from next fiscal year (2019)</b>: Error: Invoice-Receipt API Creation Failed: 500 - {
-	"code": 500,
-	"message": "Internal Server Error</div>
-      </div></div>
+        <div class="issue-desc"><b>Audit: SO split into multiple invoices — total must never exceed SO quantity</b>: Error: [VULNERABILITY] Split Invoice Stock Mismatch
+  SO         : SO/2026/05/31/000579 (ID: 25f9f96</div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-tag">STABILITY</div>
+        <div class="issue-desc"><b>Validate TIN, create customer, edit, remove</b>: TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('#cu</div>
+      </div>
+                </div>
+            </div>
         </div>
-
-        <div class="vcs-context">
-            <div style="font-size: 0.55rem; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 15px;">VCS CONTEXT</div>
-            <div class="vcs-info"><div style="color: var(--emerald); font-weight: 800; font-size: 0.6rem; margin-bottom: 5px;">ACTIVE DEPLOYMENT</div><div>BR: main</div><div style="opacity: 0.6; font-size: 0.55rem; margin-top: 2px;">SHA: 6d617b5</div></div>
-        </div>
-
-        <div class="console-bar">
-            <div class="btn" onclick="window.open('./allure/', '_blank')">📊 OPEN DETAILED ALLURE</div>
-            <div class="btn">🟢 SLACK: BROADCAST</div>
-            <div class="btn">🔵 JIRA: ESCALATE</div>
+        <div class="actions">
+            <div class="btn primary" onclick="window.open('./allure/', '_blank')">📊 View Allure Report</div>
+            <div class="btn">🟢 Slack</div>
+            <div class="btn">🔵 Jira</div>
         </div>
     </div>
-
-    <script>
-        function attemptAuth() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            if (u === 'admin@beffa.com' && p === 'Beff.$#!') {
-                sessionStorage.setItem('beffa_auth', 'true');
-                document.getElementById('loginWall').style.display = 'none';
-            }
-        }
-    </script>
 </body>
 </html>
