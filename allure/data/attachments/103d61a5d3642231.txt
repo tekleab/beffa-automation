@@ -1,0 +1,43 @@
+[PERFORMANCE] API - Auth API Verification: 252.33ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1395.49ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 9c919faa-60a4-4889-b9b7-7cc533fb9f7b (ZERO-STOCK-1779952087823)
+[ITEM]  Stock       : 15
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "f8946c50-ad5e-45b1-92d2-b8ccd07238b9"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] SO SO/2026/05/31/000636 approved (ID: f8946c50-ad5e-45b1-92d2-b8ccd07238b9)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "981e3b1e-3f49-4409-813b-4ea6bb210ca2"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for invoices 981e3b1e-3f49-4409-813b-4ea6bb210ca2.
+[OK] Batch 1 invoice INV/2026/05/31/001242 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "3e84701c-06d7-4a51-9334-e697c98b916f"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Batch 2 invoice INV/2026/05/31/001243 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/05/31/000636 (ID: f8946c50-ad5e-45b1-92d2-b8ccd07238b9)
+[DOCUMENT] Invoice 1    : INV/2026/05/31/001242 (ID: 981e3b1e-3f49-4409-813b-4ea6bb210ca2) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/05/31/001243 (ID: 3e84701c-06d7-4a51-9334-e697c98b916f) — 6 units
+[ITEM]     Item         : ZERO-STOCK-1779952087823 (9c919faa-60a4-4889-b9b7-7cc533fb9f7b)
+[STOCK]    Before       : 15
+[STOCK]    After        : 9
+[STOCK]    Expected     : 5
+================================================
+

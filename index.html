@@ -49,15 +49,15 @@
                     <span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite;"></span>
                     CRITICAL
                 </div>
-                <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 18:14:09 UTC</div>
+                <div style="font-size: 0.8rem; color: var(--gray);">May 31, 2026, 18:31:35 UTC</div>
             </div>
         </div>
         <div class="metrics">
             <div class="metric"><div class="metric-label">Test Type</div><div class="metric-value">FULL</div></div>
             <div class="metric"><div class="metric-label">Total Tests</div><div class="metric-value">61</div></div>
-            <div class="metric"><div class="metric-label">Passed</div><div class="metric-value success">16</div></div>
-            <div class="metric"><div class="metric-label">Failed</div><div class="metric-value danger">28</div></div>
-            <div class="metric"><div class="metric-label">Pass Rate</div><div class="metric-value">26%</div></div>
+            <div class="metric"><div class="metric-label">Passed</div><div class="metric-value success">17</div></div>
+            <div class="metric"><div class="metric-label">Failed</div><div class="metric-value danger">20</div></div>
+            <div class="metric"><div class="metric-label">Pass Rate</div><div class="metric-value">28%</div></div>
         </div>
         <div class="charts-grid">
             <div class="panel"><div class="panel-header">Pass Rate Trend (7 Days)</div><div class="panel-content"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
@@ -70,19 +70,19 @@
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
                         <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Passed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">16</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">17</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Failed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">28</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">20</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Skipped</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">17</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">24</div>
                         </div>
                     </div>
                     <div style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
-                        <div style="height: 100%; background: var(--success); width: 26.229508196721312%;"></div>
+                        <div style="height: 100%; background: var(--success); width: 27.86885245901639%;"></div>
                     </div>
                 </div>
             </div>
@@ -92,19 +92,21 @@
                     
       <div class="blocker-item">
         <div class="blocker-cat">STABILITY</div>
-        <div class="blocker-title">Receipt: Reject back-dated Receipt from previous fiscal year (2017)</div>
+        <div class="blocker-title">Create fresh invoice via API, then create receipt and link it</div>
         <div class="blocker-desc">Error: Invoice-Receipt API Creation Failed: 500 - {
 	"code": 500,
 	"message": "Internal Server Error</div>
       </div>
       <div class="blocker-item">
         <div class="blocker-cat">STABILITY</div>
-        <div class="blocker-title">SO: Reject future-dated Sales Order from next fiscal year (2019)</div>
-        <div class="blocker-desc">Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!</div>
+        <div class="blocker-title">API: Employee must be created with all required fields</div>
+        <div class="blocker-desc">Error: expect(received).toHaveProperty(path)
+
+Matcher error: received value must not be null nor und</div>
       </div>
       <div class="blocker-item">
         <div class="blocker-cat">STABILITY</div>
-        <div class="blocker-title">Guardrail: Leave application must reject payload missing leave_type_id and reason</div>
+        <div class="blocker-title">Full lifecycle: Employee creation through payroll run approval</div>
         <div class="blocker-desc">Error: Failed to create job position: 422 - {
 	"code": 422,
 	"details": {
@@ -128,7 +130,7 @@
                 labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
                 datasets: [{
                     label: 'Pass Rate',
-                    data: [11, 16, 21, 18, 23, 24, 26],
+                    data: [13, 18, 23, 20, 25, 26, 28],
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     fill: true,
@@ -142,7 +144,7 @@
             type: 'doughnut',
             data: {
                 labels: ['Logic Bugs', 'UI Flakiness', 'API/Stability', 'Performance'],
-                datasets: [{ data: [1, 0, 27, 0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth: 0 }]
+                datasets: [{ data: [1, 0, 19, 0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#64748b', padding: 20 } } } }
         });
