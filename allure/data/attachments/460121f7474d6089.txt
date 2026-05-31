@@ -1,0 +1,38 @@
+[STEP] Phase 1: Login & PO Creation
+[ACTION] Performing High-Speed API Login for: admin@beffa.com...
+[PERFORMANCE] API - Auth API Verification: 468.51ms
+[SUCCESS] API Login complete. Session & Metadata injected.
+[ACTION] Verifying current company selection...
+[INFO] Already on company: "sample"
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 31
+[WARN] Could not find day 31. Fallback to direct key press.
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3166.70ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2691.13ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2803.91ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 3080.09ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2236.27ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2168.76ms
+[PERFORMANCE] UI - Random Selection: Location: 2194.26ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2189.38ms
+[PERFORMANCE] UI - Random Selection: Tax: 2376.20ms
+[OK] Line item added (Price: 8303)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/05/31/000394 | Vendor: MOENCO S.C
+[API] Advancing purchase-orders "1e6ed531-969b-46c3-a3d6-7d5781d189dd"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] PO PO/2026/05/31/000394 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/05/31/000394 via API
+[ACTION] Fetching PO Context for ID: 1e6ed531-969b-46c3-a3d6-7d5781d189dd...
+[SUCCESS] PO directly converted to Bill via API: BILL/2026/05/31/000664
+[API] Advancing bills "6b9ac2ad-4a0c-46f5-9986-0ba93c7a7ee9"...
+[INFO] Current user ID: 42477a9a-1f16-40b9-a64d-f0cc067a0b7c
+[OK] Linked Bill BILL/2026/05/31/000664 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/05/31/000664 in vendor profile via API
+[ACTION] API Verifying: Resolving ID for Vendor "MOENCO S.C"...
+[ACTION] API Verifying: Scanning Ledger for BILL/2026/05/31/000664...
+[SUCCESS] API Confirmed: Bill BILL/2026/05/31/000664 is physically present in MOENCO S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/05/31/000394 -> Bill BILL/2026/05/31/000664
