@@ -3,7 +3,19 @@ import * as path from 'path';
 
 // Get test type from environment variable
 const TEST_TYPE = process.env.TEST_TYPE || 'unknown';
+const RUN_TIMESTAMP = new Date().toISOString();
+const RUN_DATE = new Date().toLocaleString('en-US', { 
+  timeZone: 'UTC',
+  month: 'short',
+  day: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false
+});
 console.log(`[DASHBOARD] Test Type: ${TEST_TYPE}`);
+console.log(`[DASHBOARD] Run Timestamp: ${RUN_TIMESTAMP}`);
 
 // Read Playwright results from the test-results directory
 const resultsFile = path.join(process.cwd(), 'test-results', 'results.json');
@@ -149,6 +161,7 @@ const htmlTemplate = `
             <div class="metric-card"><div class="m-val">${totalTests}</div><div class="m-label">Total Tests Run</div></div>
             <div class="metric-card" style="border-left-color: ${issueCount > 0 ? 'var(--coral)' : 'var(--emerald)'}"><div class="m-val">${issueCount > 0 ? 'BLOCKER' : 'ACTIVE'}</div><div class="m-label">CD Pipeline Status</div></div>
             <div class="metric-card"><div class="m-val">${passRate}%</div><div class="m-label">Test Pass Rate</div></div>
+            <div class="metric-card"><div class="m-val" style="font-size: 1.2rem;">${RUN_DATE}</div><div class="m-label">Run Timestamp (UTC)</div></div>
         </div>
 
         <div class="hologram-stage"><div class="crystal"><div class="crystal-face crystal-top-1"></div><div class="crystal-face crystal-top-2"></div><div class="crystal-face crystal-top-3"></div><div class="crystal-face crystal-top-4"></div><div class="crystal-face crystal-bot-1"></div><div class="crystal-face crystal-bot-2"></div><div class="crystal-face crystal-bot-3"></div><div class="crystal-face crystal-bot-4"></div></div></div>
