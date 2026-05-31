@@ -198,7 +198,7 @@ const htmlTemplate = `
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         .chart-container { height: 250px; }
         .actions { display: flex; gap: 12px; margin-top: 24px; }
-        .btn { flex: 1; padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--dark); color: var(--light); font-weight: 600; cursor: pointer; text-align: center; }
+        .btn { flex: 1; padding: 12px 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--dark); color: var(--light); font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; display: block; }
         .btn:hover { background: var(--primary); border-color: var(--primary); }
         .btn.primary { background: var(--primary); border-color: var(--primary); }
         @media (max-width: 1024px) { .grid, .charts-grid { grid-template-columns: 1fr; } }
@@ -258,7 +258,7 @@ const htmlTemplate = `
             </div>
         </div>
         <div class="actions">
-            <div class="btn primary" onclick="window.open('./allure/', '_blank')">📊 View Allure Report</div>
+            <a href="./allure/" target="_blank" class="btn primary">📊 View Allure Report</a>
             <div class="btn">🟢 Slack</div>
             <div class="btn">🔵 Jira</div>
         </div>
