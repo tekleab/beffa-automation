@@ -1,7 +1,7 @@
 # BEFFA ERP High-Integrity Automation Suite 🏗️
 
 > **Author**: Tekleab
-> **Version**: 3.0.0
+> **Version**: 4.0.0
 > **Purpose**: Technical Audit Suite for Financial & Inventory Reconciliation
 
 A high-performance Playwright-based testing framework designed for the BEFFA ERP environment. This suite focuses on **Business Logic Integrity**, utilizing an **API/UI Hybrid Architecture** that prioritizes both execution speed and data reconciliation across integrated workflows.
@@ -16,6 +16,7 @@ The suite is designed for **deterministic results** in a complex, multi-tenant e
 *   **Location-Synchronized Audits**: Every inventory adjustment and sale is strictly locked to a specific `locationId`. This ensures the audit monitors the exact physical shelf affected by the transaction, eliminating stock discrepancies in shared-warehouse environments.
 *   **Resilient Search (Omni-Match)**: Financial ledger verification uses a multi-field matching strategy (scanning `bill_no`, `ref`, and `invoice_number`), ensuring the suite remains stable even if the backend schema evolves.
 *   **Thread-Safe Parallelism**: Optimized for **3 parallel workers**. Collision avoidance is handled via randomized SKU discovery and isolated location targeting per worker thread.
+*   **Structured Logging**: Custom `Logger` utility provides colored, timestamped logs with DEBUG gating for clean CI/CD output.
 
 ---
 
@@ -25,6 +26,7 @@ The suite is designed for **deterministic results** in a complex, multi-tenant e
 Every worker failure is isolated for rapid root-cause analysis:
 - **Trace Analysis**: Playwright traces are captured for every failure, providing a full timeline of network calls and DOM state.
 - **Atomic Reporting**: The Allure deployment uses an atomic directory swap logic in CI to prevent data fragmentation and ensure stable historical trends on GitHub Pages.
+- **Structured Logging**: Custom `Logger` utility with color-coded output, timestamps, and environment variable gating (`DEBUG=true`).
 
 ### 2. Resilience & Polling Strategy
 To handle backend indexing lag during high-frequency DB operations, the suite implements:
@@ -34,10 +36,66 @@ To handle backend indexing lag during high-frequency DB operations, the suite im
 ### 3. CI/CD Integration
 - **GitHub Actions**: Fully automated pipeline triggered on every push.
 - **Environment Guarding**: Context-aware environment variable mapping ensures stable runs across both `pull_request` and `workflow_dispatch` events.
+- **Live Dashboard**: Modern QA CI/CD dashboard with real-time metrics, module breakdown, and 60-second auto-refresh.
+- **Dynamic Module Detection**: Dashboard automatically detects and displays new modules without manual configuration.
 
 ---
 
-## 🚧 Known Limitations & Roadmap
+## 📊 QA Dashboard
+
+A premium dark-mode SaaS-style dashboard for monitoring test execution:
+
+### Features
+- **Metrics Row**: Total Tests, Pass Rate (color-coded), Failed, Skipped, Avg Duration
+- **Module Breakdown**: Dynamic table with sparkline trends for each module
+- **Charts**: 7-day pass rate trend, failure breakdown donut, duration heatmap
+- **Critical Blockers**: Deduplicated blocker tracking with severity badges
+- **CI Run History**: Last 10 runs with commit SHA, trigger, duration, and status
+- **Live Updates**: 60-second polling with cache-busting for real-time data
+
+### Access
+- Local: Open `scripts/qa-dashboard.html` in a browser
+- CI: Deployed to GitHub Pages at `https://<owner>.github.io/<repo>/`
+
+### Data Flow
+1. Playwright generates `playwright-results.json` via JSON reporter
+2. `scripts/generate-results.js` parses results and outputs `scripts/results.json`
+3. GitHub Actions commits `results.json` to the repository
+4. Dashboard fetches `results.json` with cache-busting query parameter
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+- `BASE_URL`: Frontend application URL
+- `API_URL`: Backend API URL
+- `BEFFA_USER`: BEFFA username
+- `BEFFA_PASS`: BEFFA password
+- `BEFFA_TOKEN`: Authentication token
+- `BEFFA_COMPANY`: Company identifier
+- `DEBUG`: Enable debug logging (set to `true` for verbose output)
+
+### Playwright Configuration
+- **Reporter**: JSON output to `playwright-results.json`
+- **Workers**: 1 (sequential execution for stability)
+- **Timeout**: 600 seconds per test
+- **Retries**: 0 (fail fast for immediate feedback)
+
+---
+
+## � Testing Best Practices
+
+See `docs/TESTING_BEST_PRACTICES.md` for comprehensive guidelines on:
+- Test independence and isolation
+- Failure logging and debugging
+- Test organization and naming
+- API vs UI testing strategies
+- Environment variable usage
+
+---
+
+## �🚧 Known Limitations & Roadmap
 
 ### Current Limitations
 - **Database Indexing Lag**: Certain ledger views exhibit high latency (up to 15s) during peak parallel loads; this is currently managed via the polling retry strategy.
@@ -47,6 +105,7 @@ To handle backend indexing lag during high-frequency DB operations, the suite im
 - [ ] **Swagger-Driven API Layer**: Full migration to generated API clients for 100% type-accuracy with the backend.
 - [ ] **Visual Regression**: Implementing screenshot-diffing for the Executive Analytics Dashboard.
 - [ ] **Global Stock Balancer**: A pre-test hook to dynamically re-stock target SKUs via API to prevent inventory exhaustion during long CI runs.
+- [ ] **Dashboard Enhancements**: Add real-time test execution streaming and historical trend analysis.
 
 ---
 **Tekleab** — *Precision Automation Engineering*

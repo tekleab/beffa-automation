@@ -247,6 +247,10 @@ jobs:
         echo "[INFO] Generating results.json for QA Dashboard..."
         node scripts/generate-results.js || true
 
+        echo "[INFO] Copying QA Dashboard to deploy directory..."
+        cp scripts/qa-dashboard.html deploy/qa-dashboard.html
+        cp scripts/results.json deploy/results.json
+
         if [ -d "temp-report" ]; then
           mv temp-report deploy/allure
           echo "[SUCCESS] Allure report finalized in deploy/allure"
@@ -259,6 +263,7 @@ jobs:
         fi
 
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
+        echo "QA Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/qa-dashboard.html" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY
 
     - name: Commit and push results.json
