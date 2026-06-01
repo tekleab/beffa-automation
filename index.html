@@ -861,9 +861,212 @@
             background: var(--border-hover);
             border-radius: 100px;
         }
+        /* ── LOGIN OVERLAY ── */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #080810;
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,110,247,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(29,158,117,0.10) 0%, transparent 60%);
+        }
+
+        #login-overlay.hidden {
+            display: none;
+        }
+
+        .login-card {
+            background: rgba(14,14,26,0.92);
+            border: 1px solid #2a2a42;
+            border-radius: 14px;
+            padding: 44px 40px 36px;
+            width: 360px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(124,110,247,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -60px; left: -60px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(124,110,247,0.12), transparent 70%);
+            pointer-events: none;
+        }
+
+        .login-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .login-brand-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #7c6ef7, #5b52d4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(124,110,247,0.4);
+        }
+
+        .login-brand-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #7c6ef7;
+            line-height: 1;
+        }
+
+        .login-brand-text p {
+            font-size: 10px;
+            color: #8888aa;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 2px;
+        }
+
+        .login-heading {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e8e8f0;
+            margin-bottom: 4px;
+        }
+
+        .login-subheading {
+            font-size: 11px;
+            color: #8888aa;
+            margin-bottom: 24px;
+        }
+
+        .login-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .login-field label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #8888aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .login-field input {
+            background: #111120;
+            border: 1px solid #1e1e30;
+            border-radius: 7px;
+            padding: 10px 14px;
+            color: #e8e8f0;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            user-select: auto;
+        }
+
+        .login-field input:focus {
+            border-color: #7c6ef7;
+            box-shadow: 0 0 0 3px rgba(124,110,247,0.15);
+        }
+
+        .login-error {
+            font-size: 11px;
+            color: #e24b4a;
+            background: rgba(226,75,74,0.1);
+            border: 1px solid rgba(226,75,74,0.2);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .login-error.visible { display: block; }
+
+        .login-btn {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #7c6ef7, #5b52d4);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 6px;
+            font-family: inherit;
+        }
+
+        .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .login-btn:active { transform: translateY(0); }
+
+        .login-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #555570;
+        }
+
+        /* Hide dashboard until authenticated */
+        #dashboard-root { display: none; }
+        #dashboard-root.visible {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
     </style>
 </head>
 <body>
+
+    <!-- ── LOGIN OVERLAY ── -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="login-brand-icon"><i class="ti ti-activity-heartbeat"></i></div>
+                <div class="login-brand-text">
+                    <h1>BEFFA</h1>
+                    <p>ERP Health Monitor</p>
+                </div>
+            </div>
+            <div class="login-heading">Welcome back</div>
+            <div class="login-subheading">Sign in to access the business intelligence dashboard</div>
+            <div class="login-field">
+                <label>Username</label>
+                <input type="text" id="login-username" placeholder="Enter username" autocomplete="username">
+            </div>
+            <div class="login-field">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="Enter password" autocomplete="current-password">
+            </div>
+            <div class="login-error" id="login-error">Invalid credentials. Please try again.</div>
+            <button class="login-btn" id="login-btn" onclick="attemptLogin()">Sign in</button>
+            <div class="login-footer">Access restricted to authorized personnel only</div>
+        </div>
+    </div>
+
+    <!-- ── DASHBOARD (hidden until authenticated) ── -->
+    <div id="dashboard-root">
 
     <!-- Sidebar navigation -->
     <aside>
@@ -1099,7 +1302,61 @@
         </div>
     </main>
 
+    </div><!-- /#dashboard-root -->
+
     <script>
+        // ── AUTH GATE ──
+        // Credentials: username=beffa  password=beffa@2026
+        // Session stored in sessionStorage — user re-authenticates each browser session
+        const _AUTH_SIG = 'YmVmZmE6YmVmZmFAMjAyNg=='; // btoa('beffa:beffa@2026')
+
+        function checkAuth() {
+            if (sessionStorage.getItem('bh_auth') === _AUTH_SIG) {
+                showDashboard();
+            }
+            // else: login overlay is visible by default
+        }
+
+        function showDashboard() {
+            document.getElementById('login-overlay').classList.add('hidden');
+            const root = document.getElementById('dashboard-root');
+            root.classList.add('visible');
+        }
+
+        function attemptLogin() {
+            const user = (document.getElementById('login-username').value || '').trim();
+            const pass = (document.getElementById('login-password').value || '').trim();
+            const sig  = btoa(`${user}:${pass}`);
+            const btn  = document.getElementById('login-btn');
+            const err  = document.getElementById('login-error');
+
+            btn.classList.add('loading');
+            btn.textContent = 'Signing in...';
+            err.classList.remove('visible');
+
+            setTimeout(() => {
+                if (sig === _AUTH_SIG) {
+                    sessionStorage.setItem('bh_auth', sig);
+                    showDashboard();
+                } else {
+                    err.classList.add('visible');
+                    btn.classList.remove('loading');
+                    btn.textContent = 'Sign in';
+                    document.getElementById('login-password').value = '';
+                    document.getElementById('login-password').focus();
+                }
+            }, 600);
+        }
+
+        // Allow Enter key to submit login
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !document.getElementById('login-overlay').classList.contains('hidden')) {
+                attemptLogin();
+            }
+        });
+
+        // Run auth check immediately
+        checkAuth();
         // ── GLOBAL STATE ──
         let currentView = 'overview';
         let rawData = null;
