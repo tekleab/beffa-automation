@@ -22,7 +22,7 @@ async function globalSetup() {
     console.log('[SETUP] ── Pre-flight checks ──────────────────────────────');
 
     const missingSecrets: string[] = [];
-    for (const key of ['BEFFA_USER', 'BEFFA_PASS', 'BEFFA_TOKEN']) {
+    for (const key of ['BEFFA_USER', 'BEFFA_PASS']) {
         if (!process.env[key]) missingSecrets.push(key);
     }
     if (missingSecrets.length > 0) {
@@ -32,7 +32,7 @@ async function globalSetup() {
             `        → Locally: check your .env file against .env.example.`
         );
     }
-    console.log('[SETUP] ✓ Required secrets present (BEFFA_USER, BEFFA_PASS, BEFFA_TOKEN)');
+    console.log('[SETUP] ✓ Required secrets present (BEFFA_USER, BEFFA_PASS)');
 
     // ── 1. Pre-flight: ERP server reachability check ─────────────────────────
     const rawBase = (process.env.BASE_URL || 'http://localhost:4173')
