@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
-import { Logger } from './lib/utils/Logger';
 
 // Load env — CI uses process.env directly, local uses .env file (silent mode to suppress verbose logs)
 dotenv.config({ path: path.resolve(__dirname, '.env'), silent: true });
@@ -29,18 +28,6 @@ export default defineConfig({
   globalSetup: require.resolve('./global-setup'),
   globalTeardown: require.resolve('./global-teardown'),
 
-  // Global afterEach hook for consistent failure logging
-  afterEach: async ({}, testInfo) => {
-    if (testInfo.status === 'failed') {
-      const error = testInfo.error;
-      const errorSummary = error ? error.message.split('\n')[0].substring(0, 200) : 'Unknown error';
-      Logger.fail(`Test failed: ${testInfo.title}`, {
-        error: errorSummary,
-        file: testInfo.file,
-        line: testInfo.line
-      });
-    }
-  },
   
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
