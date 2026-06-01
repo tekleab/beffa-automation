@@ -25,7 +25,7 @@ function collectSpecs(suites, inheritedFile) {
   const out = [];
   if (!suites) return out;
   for (const s of suites) {
-    const fp = s.file || s.title || inheritedFile || '';
+    const fp = s.file || inheritedFile || '';
     if (s.specs) {
       for (const spec of s.specs) out.push({ spec, filePath: fp });
     }
