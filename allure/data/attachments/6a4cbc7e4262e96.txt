@@ -1,0 +1,30 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 448.67ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 1
+[SUCCESS] "Purchase Order Date" set to Day 1 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2569.06ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1948.39ms
+[INFO] Vendor: Zelalem H/Giorgis
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2023.28ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2038.87ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1881.54ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1870.11ms
+[PERFORMANCE] UI - Random Selection: Location: 1921.12ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1831.24ms
+[PERFORMANCE] UI - Random Selection: Tax: 1872.65ms
+[OK] Line item added (Price: 6705)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/01/000424 | Vendor: Zelalem H/Giorgis
+[API] Advancing purchase-orders "d26ebb90-fa2a-4db1-abbe-362b5514c8b9"...
+[OK] PO PO/2026/06/01/000424 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/01/000424 via API
+[API] Advancing bills "16e62676-e980-407c-a29a-bfb10246cafa"...
+[OK] Linked Bill BILL/2026/06/01/000754 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/01/000754 in vendor profile via API
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 1/15. Retrying in 2s...
+[SUCCESS] API Confirmed: Bill BILL/2026/06/01/000754 is physically present in Zelalem H/Giorgis's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/01/000424 -> Bill BILL/2026/06/01/000754
