@@ -341,8 +341,34 @@ export class InventoryAPI extends BasePage {
     });
 
     if (items.length === 0) {
-      console.warn(`[WARN] No items with stock >= ${minStock} found via API. Search failed.`);
-      return null as any; 
+      console.log(`[SELF-HEALING] No active items with stock >= ${minStock} found via API. Dynamically creating a new stocked item...`);
+      
+      const meta = await this.discoverMetadataAPI().catch(() => null);
+      const name = `AUTO-SEEDED-ITEM-${Date.now()}`;
+      
+      try {
+        const newItem = await this.createInventoryItemAPI({
+          name: name,
+          quantity: 100, // Pre-stock with 100 units
+          unit_cost: 10,
+          default_location_id: meta?.locationId,
+          default_warehouse_id: meta?.warehouseId
+        });
+        
+        console.log(`[SELF-HEALING] Dynamically created and pre-stocked new item: "${newItem.itemName}" (ID: ${newItem.id})`);
+        
+        return {
+          itemName: newItem.itemName,
+          itemId: newItem.id,
+          currentStock: 100,
+          unitCost: 10,
+          locationId: meta?.locationId,
+          warehouseId: meta?.warehouseId
+        };
+      } catch (err: any) {
+        console.error(`[SELF-HEALING] Dynamic item creation failed: ${err.message}`);
+        return null as any;
+      }
     }
 
     const target = items[Math.floor(Math.random() * items.length)];
