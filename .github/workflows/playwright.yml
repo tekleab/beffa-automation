@@ -1,4 +1,5 @@
 name: Playwright Tests
+run-name: "[${{ github.event.inputs.test_type || 'full' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
 on:
   workflow_dispatch:
     inputs:
@@ -49,8 +50,8 @@ jobs:
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       BEFFA_TOKEN: ${{ secrets.BEFFA_TOKEN }}
       BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'sample' }}
-      # On push/PR always run full. Manual dispatch uses the selected type.
-      TEST_TYPE: ${{ github.event.inputs.test_type || 'full' }}
+      # push/PR → smoke (fast gate, ~10 min). Use workflow_dispatch for full/regression.
+      TEST_TYPE: ${{ github.event.inputs.test_type || 'smoke' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
@@ -86,6 +87,31 @@ jobs:
     - name: Install Playwright OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps chromium
+
+    - name: ERP Health Check
+      id: erp-health
+      continue-on-error: true
+      run: |
+        echo "[HEALTH] Checking ERP server reachability..."
+        FRONTEND_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE_URL" 2>/dev/null || echo "000")
+        API_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$API_URL" 2>/dev/null || echo "000")
+
+        echo "[HEALTH] Frontend ($BASE_URL) → HTTP $FRONTEND_CODE"
+        echo "[HEALTH] API      ($API_URL)  → HTTP $API_CODE"
+
+        if [ "$FRONTEND_CODE" = "000" ] && [ "$API_CODE" = "000" ]; then
+          echo "::error::❌ ERP server is UNREACHABLE (Frontend: $FRONTEND_CODE, API: $API_CODE). Aborting pipeline."
+          echo "::error::→ Check BASE_URL and API_URL GitHub Secrets and confirm the server is running."
+          exit 1
+        fi
+
+        if [ "$FRONTEND_CODE" = "000" ]; then
+          echo "::warning::Frontend ($BASE_URL) is unreachable — UI tests will likely fail."
+        fi
+        if [ "$API_CODE" = "000" ]; then
+          echo "::warning::API ($API_URL) is unreachable — API-driven tests will likely fail."
+        fi
+        echo "[HEALTH] ✅ ERP server connectivity confirmed."
 
     - name: Fetch Company from ERP API
       if: github.event_name != 'workflow_dispatch'
@@ -144,8 +170,8 @@ jobs:
           $GREP_ARGS \
           --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
-        # ── PART 2: Forensic Audits (sequential, skipped for smoke/e2e/full) ─────
-        if [ "$TEST_TYPE" != "smoke" ] && [ "$TEST_TYPE" != "e2e" ] && [ "$TEST_TYPE" != "full" ]; then
+        # ── PART 2: Forensic Audits (sequential — runs for regression + full) ──────
+        if [ "$TEST_TYPE" = "regression" ] || [ "$TEST_TYPE" = "full" ]; then
           echo "=========================================================="
           echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
           echo "=========================================================="
@@ -211,7 +237,7 @@ jobs:
         EOF
 
     - name: Setup Java for Allure
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       if: always()
       with:
         distribution: 'temurin'
@@ -220,7 +246,8 @@ jobs:
     - name: Install Allure CLI
       if: always()
       run: |
-        npm install -g allure-commandline@latest
+        # Pinned version — prevents surprise breaking upgrades from @latest
+        npm install -g allure-commandline@2.27.0
         export PATH=$(npm bin -g):$PATH
         allure --version
 

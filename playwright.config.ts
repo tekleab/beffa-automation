@@ -23,7 +23,8 @@ export default defineConfig({
 
   fullyParallel: false,
   workers: 1,
-  retries: 0,
+  // 1 retry in CI absorbs transient ERP network hiccups; 0 locally for speed
+  retries: process.env.CI ? 1 : 0,
 
   globalSetup: require.resolve('./global-setup'),
   globalTeardown: require.resolve('./global-teardown'),
@@ -59,8 +60,10 @@ export default defineConfig({
           { name: 'UI / Selector Flakiness', messageRegex: '.*timeout.*|.*waiting for.*', statusDetailsRegex: '.*' }
         ],
         environmentInfo: {
-          OS: 'Linux',
-          Node: 'v20.20.2',
+          OS: process.platform,
+          Node: process.version,
+          Company: process.env.BEFFA_COMPANY || 'sample',
+          FiscalYear: process.env.BEFFA_YEAR || '2018',
           Project: 'BEFFA ERP High-Integrity Suite',
           Engine: 'Integrated-Allure-Reporter'
         }
