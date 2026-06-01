@@ -1,13 +1,37 @@
 {
-  "total": 0,
-  "passed": 0,
-  "failed": 0,
+  "total": 13,
+  "passed": 9,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 0,
-  "avgDurationMs": 0,
-  "lastUpdated": "2026-06-01T10:58:33.943Z",
-  "moduleBreakdown": [],
+  "passRate": 69.2,
+  "avgDurationMs": 36848,
+  "lastUpdated": "2026-06-01T11:12:57.034Z",
+  "moduleBreakdown": [
+    {
+      "module": "Other",
+      "passed": 9,
+      "failed": 4,
+      "skipped": 0,
+      "trend": [
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        69.2
+      ]
+    }
+  ],
   "last10Runs": [
+    {
+      "run": "408",
+      "commit": "51a93c0",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "7m 59s",
+      "passRate": 69.2,
+      "status": "failed"
+    },
     {
       "run": "407",
       "commit": "e476807",
@@ -79,15 +103,32 @@
       "passRate": 0,
       "trigger": "push",
       "status": "failed"
-    },
-    {
-      "run": "398",
-      "commit": "ea2567f",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "trigger": "push",
-      "status": "failed"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.selectOption: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_type_id')\u001b[22m\n\n\n  27 |         await page.goto('/receivables/customers/new');\n  28 |    ",
+      "firstSeen": "2026-06-01T11:09:09.603Z"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/06/01/001476 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
+      "firstSeen": "2026-06-01T11:09:09.680Z"
+    },
+    {
+      "severity": "critical",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers\n  481 |     });\n> 482 |     if (!respo",
+      "firstSeen": "2026-06-01T11:11:25.375Z"
+    },
+    {
+      "severity": "critical",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers\n  481 |     });\n> 482 |     if (!respo",
+      "firstSeen": "2026-06-01T11:09:09.692Z"
+    }
+  ]
 }
