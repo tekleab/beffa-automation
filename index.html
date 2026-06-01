@@ -49,25 +49,26 @@
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 16px;
+            width: 100%;
             height: 100vh;
+            padding: 4px 8px;
             display: grid;
-            grid-template-rows: auto auto 1fr 1fr auto;
-            gap: 6px;
+            grid-template-rows: 36px 80px 180px 100px 160px;
+            gap: 4px;
+            overflow: hidden;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 16px;
+            padding: 0 8px;
             border-bottom: 1px solid var(--border-color);
+            overflow: hidden;
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             -webkit-background-clip: text;
@@ -78,28 +79,30 @@
         .refresh-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 0.875rem;
+            gap: 8px;
+            font-size: 0.75rem;
             color: var(--text-secondary);
         }
 
         .countdown {
             font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: var(--accent-primary);
         }
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 6px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            overflow: hidden;
         }
 
         .metric-card {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 8px;
+            border-radius: 8px;
+            padding: 6px 10px;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
 
@@ -113,19 +116,19 @@
         }
 
         .metric-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .metric-value {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
             line-height: 1;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .metric-value.success { color: var(--success); }
@@ -133,40 +136,45 @@
         .metric-value.danger { color: var(--danger); }
 
         .metric-sub {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: var(--text-tertiary);
         }
 
         .grid-2 {
             display: grid;
             grid-template-columns: 3fr 2fr;
-            gap: 6px;
+            gap: 4px;
+            overflow: hidden;
         }
 
         .panel {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .panel-header {
-            padding: 8px 12px;
+            padding: 3px 10px;
             border-bottom: 1px solid var(--border-color);
             font-weight: 600;
-            font-size: 10px;
+            font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-secondary);
+            flex-shrink: 0;
         }
 
         .panel-content {
-            padding: 8px 12px;
+            padding: 4px 8px;
+            flex: 1;
+            overflow: hidden;
         }
 
-        .chart-container {
-            height: 130px;
-        }
+        .chart-container { height: 120px; overflow: hidden; }
+        .donut-container { height: 110px; overflow: hidden; }
 
         table {
             width: 100%;
@@ -174,33 +182,33 @@
         }
 
         th, td {
-            padding: 12px 16px;
+            padding: 2px 6px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
 
         th {
-            font-size: 0.75rem;
+            font-size: 9px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-secondary);
         }
 
-        td {
-            font-size: 0.875rem;
-        }
+        #module-table td { font-size: 11px; height: 24px; padding: 0 6px; }
+        #history-table td { font-size: 11px; height: 28px; padding: 0 6px; }
+        #history-table tr:nth-child(n+5) { display: none; }
 
         .sparkline {
-            width: 80px;
-            height: 30px;
+            width: 60px;
+            height: 20px;
         }
 
         .badge {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 9px;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -211,59 +219,45 @@
         .badge.success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
         .badge.failed { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
         .badge.running { background: rgba(59, 130, 246, 0.2); color: var(--accent-primary); }
+        .badge.unknown { background: rgba(136,136,136,0.2); color: var(--text-secondary); }
 
         .blocker-item {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
+            border-radius: 5px;
+            padding: 4px 8px;
+            margin-bottom: 3px;
+            overflow: hidden;
         }
 
         .blocker-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 2px;
         }
 
         .blocker-name {
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
         }
 
         .blocker-error {
-            font-size: 0.875rem;
+            font-size: 9px;
             color: var(--text-secondary);
-            margin-bottom: 8px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .blocker-meta {
-            font-size: 0.75rem;
+            font-size: 8px;
             color: var(--text-tertiary);
-        }
-
-        .heatmap-container {
-            display: grid;
-            grid-template-columns: auto repeat(7, 1fr);
-            gap: 4px;
-        }
-
-        .heatmap-cell {
-            aspect-ratio: 1;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .heatmap-label {
-            display: flex;
-            align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
         }
 
         @keyframes countUp {
@@ -271,18 +265,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .animate-count {
-            animation: countUp 0.6s ease-out;
-        }
-
-        @media (max-width: 1024px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 640px) {
-            .metrics-grid { grid-template-columns: 1fr; }
-        }
+        .animate-count { animation: countUp 0.6s ease-out; }
     </style>
 </head>
 <body>
@@ -335,7 +318,7 @@
             <div class="panel">
                 <div class="panel-header">Failure Breakdown</div>
                 <div class="panel-content">
-                    <div class="chart-container">
+                    <div class="donut-container">
                         <canvas id="failureChart"></canvas>
                     </div>
                 </div>
@@ -370,14 +353,6 @@
             </div>
         </div>
 
-        <div class="panel" style="margin-bottom: 6px;">
-            <div class="panel-header">Test Duration Heatmap (Last 7 Days)</div>
-            <div class="panel-content">
-                <div class="heatmap-container" id="heatmap" style="height: 80px;">
-                </div>
-            </div>
-        </div>
-
         <div class="panel">
             <div class="panel-header">CI Run History (Last 10 Runs)</div>
             <div class="panel-content">
@@ -396,6 +371,8 @@
                 </table>
             </div>
         </div>
+        <!-- hidden anchor for renderHeatmap() — keeps JS crash-free -->
+        <div id="heatmap" style="display:none;width:0;height:0;overflow:hidden;"></div>
     </div>
 
     <script>
