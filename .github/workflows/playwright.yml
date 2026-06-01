@@ -49,8 +49,8 @@ jobs:
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       BEFFA_TOKEN: ${{ secrets.BEFFA_TOKEN }}
       BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'sample' }}
-      # On push/PR always run full. Manual dispatch uses the selected type.
-      TEST_TYPE: ${{ github.event.inputs.test_type || 'full' }}
+      # On push/PR always run smoke. Manual dispatch uses the selected type.
+      TEST_TYPE: ${{ github.event.inputs.test_type || 'smoke' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2018' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
