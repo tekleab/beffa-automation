@@ -1,29 +1,37 @@
 {
   "total": 13,
-  "passed": 9,
-  "failed": 4,
-  "skipped": 0,
-  "passRate": 69.2,
-  "avgDurationMs": 36848,
-  "lastUpdated": "2026-06-01T11:12:57.034Z",
+  "passed": 2,
+  "failed": 5,
+  "skipped": 6,
+  "passRate": 15.4,
+  "avgDurationMs": 27974,
+  "lastUpdated": "2026-06-01T11:29:04.316Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 9,
-      "failed": 4,
-      "skipped": 0,
+      "passed": 2,
+      "failed": 5,
+      "skipped": 6,
       "trend": [
-        82,
         84,
         86,
         88,
         90,
         92,
-        69.2
+        69.2,
+        28.6
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "409",
+      "commit": "186ed50",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "6m 3s",
+      "passRate": 15.4,
+      "status": "failed"
+    },
     {
       "run": "408",
       "commit": "51a93c0",
@@ -95,14 +103,6 @@
       "passRate": 0,
       "trigger": "push",
       "status": "failed"
-    },
-    {
-      "run": "399",
-      "commit": "c1e64ea",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "trigger": "push",
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,25 +110,31 @@
       "severity": "medium",
       "title": "Validate TIN, create customer, edit, remove",
       "error": "TimeoutError: locator.selectOption: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_type_id')\u001b[22m\n\n\n  27 |         await page.goto('/receivables/customers/new');\n  28 |    ",
-      "firstSeen": "2026-06-01T11:09:09.603Z"
+      "firstSeen": "2026-06-01T11:26:09.031Z"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/06/01/001476 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
-      "firstSeen": "2026-06-01T11:09:09.680Z"
+      "error": "Error: Invoice INV/2026/06/01/001482 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
+      "firstSeen": "2026-06-01T11:26:09.036Z"
     },
     {
       "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers\n  481 |     });\n> 482 |     if (!respo",
-      "firstSeen": "2026-06-01T11:11:25.375Z"
+      "firstSeen": "2026-06-01T11:27:34.725Z"
     },
     {
       "severity": "critical",
       "title": "Create fresh invoice via API, then create receipt and link it",
       "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers\n  481 |     });\n> 482 |     if (!respo",
-      "firstSeen": "2026-06-01T11:09:09.692Z"
+      "firstSeen": "2026-06-01T11:26:09.070Z"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[1mMatcher error\u001b[22m: \u001b[31mreceived\u001b[39m value must not be null nor undefined\n\nReceived has valu",
+      "firstSeen": "2026-06-01T11:27:58.603Z"
     }
   ]
 }
