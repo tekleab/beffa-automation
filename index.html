@@ -36,12 +36,15 @@
             color: var(--text-primary);
             line-height: 1.5;
             min-height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 16px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         .header {
@@ -458,6 +461,9 @@
         };
 
         let dashboardData = defaultData;
+        let trendChartInstance = null;
+        let donutChartInstance = null;
+        let heatmapChartInstance = null;
 
         // Fetch data from results.json with cache-busting
         async function fetchResults() {
@@ -469,18 +475,18 @@
                     // Map new format to dashboard format
                     dashboardData = {
                         metrics: {
-                            totalTests: data.total,
-                            passRate: data.passRate,
-                            failed: data.failed,
-                            skipped: data.skipped,
-                            avgDuration: data.avgDurationMs / 60000 // Convert ms to minutes
+                            totalTests: Math.max(0, data.total),
+                            passRate: Math.max(0, data.passRate),
+                            failed: Math.max(0, data.failed),
+                            skipped: Math.max(0, data.skipped),
+                            avgDuration: Math.max(0, data.avgDurationMs / 60000) // Convert ms to minutes
                         },
                         modules: data.moduleBreakdown.map(m => ({
                             name: m.module,
-                            total: m.passed + m.failed + m.skipped,
-                            passed: m.passed,
-                            failed: m.failed,
-                            skipped: m.skipped,
+                            total: Math.max(0, m.passed + m.failed + m.skipped),
+                            passed: Math.max(0, m.passed),
+                            failed: Math.max(0, m.failed),
+                            skipped: Math.max(0, m.skipped),
                             trend: m.trend
                         })),
                         failures: {
@@ -501,7 +507,7 @@
                             run: r.run,
                             trigger: r.trigger,
                             duration: r.duration,
-                            passRate: r.passRate,
+                            passRate: Math.max(0, r.passRate),
                             status: r.status
                         })),
                         heatmap: {
@@ -671,7 +677,11 @@
             const ctx = document.getElementById('trendChart').getContext('2d');
             const labels = getLast7Days();
             
-            new Chart(ctx, {
+            if (trendChartInstance) {
+                trendChartInstance.destroy();
+            }
+            
+            trendChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -717,7 +727,11 @@
             const ctx = document.getElementById('failureChart').getContext('2d');
             const data = dashboardData.failures;
             
-            new Chart(ctx, {
+            if (donutChartInstance) {
+                donutChartInstance.destroy();
+            }
+            
+            donutChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(data),
