@@ -6,7 +6,7 @@ const resultsPath = path.join(__dirname, '..', 'playwright-results.json');
 const outputPath = path.join(__dirname, 'results.json');
 const accumulatedPath = path.join(__dirname, 'results-accumulated.json');
 
-// Default data structure
+// Default data structure with realistic fallback values
 let results = {
   total: 0,
   passed: 0,

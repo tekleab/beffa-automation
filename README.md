@@ -1,5 +1,9 @@
 # BEFFA ERP High-Integrity Automation Suite 🏗️
 
+[![CI Status](https://github.com/tekleab/beffa-automation/workflows/Playwright%20Tests/badge.svg?branch=main)](https://github.com/tekleab/beffa-automation/actions/workflows/playwright.yml)
+[![Live Dashboard](https://img.shields.io/badge/dashboard-live-blue)](https://tekleab.github.io/beffa-automation)
+[![Playwright](https://img.shields.io/badge/playwright-1.40.0-2EAD33)](https://playwright.dev)
+
 > **Author**: Tekleab
 > **Version**: 4.0.0
 > **Purpose**: Technical Audit Suite for Financial & Inventory Reconciliation
@@ -65,6 +69,22 @@ A premium dark-mode SaaS-style dashboard for monitoring test execution:
 
 ---
 
+## ⚡ Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/tekleab/beffa-automation.git
+cd beffa-automation
+
+# Copy .env.example to .env and fill in your credentials
+cp .env.example .env
+
+# Run the tests
+npx playwright test
+```
+
+---
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -78,7 +98,7 @@ A premium dark-mode SaaS-style dashboard for monitoring test execution:
 
 ### Playwright Configuration
 - **Reporter**: JSON output to `playwright-results.json`
-- **Workers**: 1 (sequential execution for stability)
+- **Workers**: 4 (parallel execution with collision avoidance via randomized SKU discovery and isolated location targeting)
 - **Timeout**: 600 seconds per test
 - **Retries**: 0 (fail fast for immediate feedback)
 
