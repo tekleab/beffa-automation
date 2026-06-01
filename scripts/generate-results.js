@@ -15,12 +15,7 @@ let results = {
   passRate: 0,
   avgDurationMs: 0,
   lastUpdated: new Date().toISOString(),
-  moduleBreakdown: [
-    { module: 'Sales', passed: 0, failed: 0, skipped: 0, trend: [82, 85, 88, 84, 87, 89, 90] },
-    { module: 'Inventory', passed: 0, failed: 0, skipped: 0, trend: [90, 88, 92, 91, 89, 93, 94] },
-    { module: 'HR', passed: 0, failed: 0, skipped: 0, trend: [85, 87, 86, 88, 90, 89, 91] },
-    { module: 'Cross-Module', passed: 0, failed: 0, skipped: 0, trend: [78, 82, 80, 85, 83, 86, 88] }
-  ],
+  moduleBreakdown: [],
   last10Runs: [],
   criticalBlockers: []
 };
@@ -47,27 +42,26 @@ if (fs.existsSync(resultsPath)) {
     let skippedTests = 0;
     let totalDuration = 0;
     
-    const moduleStats = {
-      'Sales': { passed: 0, failed: 0, skipped: 0 },
-      'Inventory': { passed: 0, failed: 0, skipped: 0 },
-      'HR': { passed: 0, failed: 0, skipped: 0 },
-      'Cross-Module': { passed: 0, failed: 0, skipped: 0 }
-    };
-    
+    const moduleStats = {};
     const blockersMap = {};
     
     suites.forEach(suite => {
       const specPath = suite.spec || '';
-      const moduleName = specPath.includes('sales') ? 'Sales' :
-                        specPath.includes('inventory') ? 'Inventory' :
-                        specPath.includes('hr') ? 'HR' :
-                        specPath.includes('cross-module') ? 'Cross-Module' : 'Other';
-      
-      if (moduleStats[moduleName]) {
-        moduleStats[moduleName].passed += suite.stats?.expected - suite.stats?.failed || 0;
-        moduleStats[moduleName].failed += suite.stats?.failed || 0;
-        moduleStats[moduleName].skipped += suite.stats?.skipped || 0;
+      // Extract module name from path (e.g., tests/sales/... -> Sales)
+      const pathParts = specPath.split('/');
+      const testsIndex = pathParts.indexOf('tests');
+      let moduleName = 'Other';
+      if (testsIndex >= 0 && testsIndex + 1 < pathParts.length) {
+        moduleName = pathParts[testsIndex + 1].charAt(0).toUpperCase() + pathParts[testsIndex + 1].slice(1);
       }
+      
+      if (!moduleStats[moduleName]) {
+        moduleStats[moduleName] = { passed: 0, failed: 0, skipped: 0 };
+      }
+      
+      moduleStats[moduleName].passed += suite.stats?.expected - suite.stats?.failed || 0;
+      moduleStats[moduleName].failed += suite.stats?.failed || 0;
+      moduleStats[moduleName].skipped += suite.stats?.skipped || 0;
       
       totalTests += suite.stats?.expected || 0;
       passedTests += suite.stats?.expected - suite.stats?.failed || 0;
@@ -134,7 +128,7 @@ if (fs.existsSync(resultsPath)) {
         skipped: moduleStats[name].skipped,
         trend: [...trend]
       };
-    });
+    }).sort((a, b) => a.module.localeCompare(b.module)); // Sort modules alphabetically
     
     results.criticalBlockers = Object.values(blockersMap).slice(0, 10);
   } catch (error) {

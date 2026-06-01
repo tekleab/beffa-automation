@@ -214,8 +214,8 @@ export class PurchaseAPI extends BasePage {
     return { success: true, poNumber: json.po_number, poId: json.id };
   }
 
-  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string } = {}): Promise<{ success: boolean; ref: string; id: string }> {
-    const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, glAccountId = undefined, discount_amount = 0, description = null } = params;
+  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string; poId?: string } = {}): Promise<{ success: boolean; ref: string; id: string; error?: string }> {
+    const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, glAccountId = undefined, discount_amount = 0, description = null, poId = null } = params;
     const finalQty = quantity || qty;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
