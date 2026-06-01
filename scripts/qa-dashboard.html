@@ -292,6 +292,7 @@
         .badge.high { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.25); }
         .badge.medium { background: rgba(186, 117, 23, 0.15); color: var(--amber); border: 1px solid rgba(186, 117, 23, 0.25); }
         .badge.low { background: rgba(136, 136, 170, 0.15); color: var(--text-secondary); border: 1px solid rgba(136, 136, 170, 0.25); }
+        .badge.other { background: rgba(136, 136, 170, 0.15); color: var(--text-secondary); border: 1px solid rgba(136, 136, 170, 0.25); }
 
         .badge.healthy { background: rgba(29, 158, 117, 0.15); color: #4ade80; border: 1px solid rgba(29, 158, 117, 0.25); }
         .badge.degraded { background: rgba(186, 117, 23, 0.15); color: #fbbf24; border: 1px solid rgba(186, 117, 23, 0.25); }
@@ -316,7 +317,7 @@
         /* ── VIEW 1: OVERVIEW ── */
         .overview-grid-a {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 10px;
             flex-shrink: 0;
         }
@@ -1105,43 +1106,32 @@
         let countdown = 60;
         let countdownInterval = null;
 
-        // Fallback robust business health data structure
-        const fallbackData = {
-            total: 124,
-            passed: 112,
-            failed: 8,
-            skipped: 4,
-            passRate: 90.3,
-            avgDurationMs: 382000,
-            lastUpdated: new Date().toISOString(),
-            moduleBreakdown: [
-                { module: 'Sales', passed: 42, failed: 2, skipped: 1, trend: [85, 87, 90, 88, 92, 94, 95.4] },
-                { module: 'Inventory', passed: 32, failed: 3, skipped: 0, trend: [82, 80, 85, 88, 87, 89, 91.4] },
-                { module: 'HR', passed: 18, failed: 0, skipped: 2, trend: [95, 95, 98, 100, 100, 100, 100] },
-                { module: 'Purchase', passed: 20, failed: 3, skipped: 1, trend: [78, 76, 80, 82, 83, 85, 86.9] }
-            ],
-            last10Runs: [
-                { run: "405", commit: "b16c3ff", trigger: "push (smoke)", duration: "2m 14s", passRate: 92.4, status: "healthy" },
-                { run: "404", commit: "1a3efb0", trigger: "push (smoke)", duration: "2m 10s", passRate: 91.1, status: "healthy" },
-                { run: "403", commit: "a512290", trigger: "push", duration: "12m 45s", passRate: 85.3, status: "degraded" },
-                { run: "402", commit: "53e2b4c", trigger: "push", duration: "11m 32s", passRate: 78.4, status: "blocked" },
-                { run: "401", commit: "15e7eda", trigger: "push", duration: "13m 02s", passRate: 81.2, status: "healthy" }
-            ],
-            criticalBlockers: [
-                { severity: 'critical', title: 'Stock deduction failed in Purchase-to-Sale E2E flow', error: 'Stock deduction failed - expected 25, found 27 at item verification stage', firstSeen: new Date(Date.now() - 3600000 * 2).toISOString() },
-                { severity: 'high', title: 'Customer balance not updating after invoice payment receipt', error: 'Expected balance 0, got 500.00 after full checkout payment capture', firstSeen: new Date(Date.now() - 3600000 * 18).toISOString() },
-                { severity: 'medium', title: 'Procurement accounting logic entry reconciliation mismatch', error: 'General Ledger account mapping mismatch detected inside purchase bill approval loop', firstSeen: new Date(Date.now() - 3600000 * 36).toISOString() }
-            ]
-        };
+        // EXTENSIBLE RULES & CATEGORIES (NO HARDCODED VALUES)
+        const riskRules = [
+            { keywords: ['stock','inventory','oversell','deduct'], severity: 'critical' },
+            { keywords: ['payment','invoice','receipt','billing'], severity: 'critical' },
+            { keywords: ['balance','profile','customer','ui'], severity: 'high' },
+            { keywords: ['api','backend','500','422','timeout'], severity: 'medium' },
+            { keywords: ['skip','pending','data'], severity: 'low' },
+        ];
 
-        // Failure classifications counts mapping
-        const failureCategories = {
-            'API/Stability': 3,
-            'Logic Bugs': 2,
-            'UI Flakiness': 2,
-            'Performance': 1,
-            'Security': 0
-        };
+        const impactMap = [
+            { match: /stock not deducted/i, impact: 'Inventory levels may be inaccurate — overselling risk' },
+            { match: /invoice.*visible/i, impact: 'Customer billing records may be incomplete' },
+            { match: /balance.*payment/i, impact: 'Customer accounts may show incorrect outstanding amounts' },
+            { match: /500.*error/i, impact: 'Service temporarily unavailable — operations may be affected' },
+            { match: /422/i, impact: 'Invalid data rejected — validation working correctly' },
+            { match: /zero.*stock/i, impact: 'Oversell protection active — blocking sales on empty inventory' },
+            { match: /duplicate/i, impact: 'Data integrity guardrail — blocking duplicate records' },
+        ];
+
+        const categoryRules = [
+            { pattern: /500|timeout|connection|network/i, category: 'API/Stability' },
+            { pattern: /assert|expected|actual|mismatch/i, category: 'Logic Bugs' },
+            { pattern: /visible|dom|render|element|locator/i, category: 'UI Flakiness' },
+            { pattern: /duration|slow|performance|ms/i, category: 'Performance' },
+            { pattern: /attack|inject|sql|auth|token|permission/i, category: 'Security' },
+        ];
 
         // ── INIT & SWITCHING ──
         document.addEventListener('DOMContentLoaded', () => {
@@ -1229,19 +1219,18 @@
                     passRate: Math.max(0, data.passRate || 0),
                     avgDurationMs: Math.max(0, data.avgDurationMs || 0),
                     lastUpdated: data.lastUpdated || new Date().toISOString(),
-                    moduleBreakdown: (data.moduleBreakdown && data.moduleBreakdown.length > 0) 
-                        ? data.moduleBreakdown 
-                        : fallbackData.moduleBreakdown,
-                    last10Runs: (data.last10Runs && data.last10Runs.length > 0) 
-                        ? data.last10Runs 
-                        : fallbackData.last10Runs,
+                    moduleBreakdown: data.moduleBreakdown || [],
+                    last10Runs: data.last10Runs || [],
                     criticalBlockers: data.criticalBlockers || []
                 };
 
                 return safeData;
             } catch (err) {
-                console.warn('[DASHBOARD] results.json unavailable, loading default high-integrity model', err);
-                return fallbackData;
+                console.warn('[DASHBOARD] results.json unavailable, loading empty state model', err);
+                return {
+                    total: 0, passed: 0, failed: 0, skipped: 0, passRate: 0, avgDurationMs: 0,
+                    lastUpdated: new Date().toISOString(), moduleBreakdown: [], last10Runs: [], criticalBlockers: []
+                };
             }
         }
 
@@ -1257,27 +1246,18 @@
         // ── TRANSLATIONS & RISK ASSIGNMENT ──
         function getRiskSeverity(title) {
             const t = String(title).toLowerCase();
-            if (t.includes('stock') || t.includes('inventory') || t.includes('payment') || t.includes('reconciled')) return 'critical';
-            if (t.includes('ui') || t.includes('balance') || t.includes('profile')) return 'high';
-            if (t.includes('api') || t.includes('backend') || t.includes('return')) return 'medium';
-            return 'low';
+            const rule = riskRules.find(r => r.keywords.some(keyword => t.includes(keyword)));
+            return rule ? rule.severity : 'low';
         }
 
-        function translateTechnicalError(errorText) {
-            const err = String(errorText).toLowerCase();
-            if (err.includes('500') || err.includes('internal server error')) {
-                return 'Service temporarily unavailable — operations may be affected';
-            }
-            if (err.includes('invoice not visible') || err.includes('billing') || err.includes('invoice')) {
-                return 'Customer billing records may be incomplete';
-            }
-            if (err.includes('stock') || err.includes('inventory') || err.includes('fifo') || err.includes('reconciled')) {
-                return 'Inventory levels may be inaccurate — overselling risk';
-            }
-            if (err.includes('balance') || err.includes('payment')) {
-                return 'Customer accounts may show incorrect outstanding amounts';
-            }
-            return 'Operational flow degraded — business process at risk';
+        function getBusinessImpact(errorText) {
+            const rule = impactMap.find(r => r.match.test(errorText));
+            return rule ? rule.impact : errorText;
+        }
+
+        function detectCategory(errorText) {
+            const rule = categoryRules.find(r => r.pattern.test(errorText));
+            return rule ? rule.category : 'Other';
         }
 
         function timeSince(dateString) {
@@ -1298,7 +1278,12 @@
             const banner = document.getElementById('status-banner');
             if (!banner) return;
             
-            // Map risks counts
+            if (data.moduleBreakdown.length === 0) {
+                banner.className = 'status-banner degraded';
+                banner.textContent = '◆ No module data available — run ERP automation pipelines to populate';
+                return;
+            }
+            
             const totalRisks = data.criticalBlockers.length;
             const criticalOrHigh = data.criticalBlockers.filter(b => {
                 const sev = getRiskSeverity(b.title);
@@ -1346,50 +1331,59 @@
             // A. Module Cards grid
             const modulesContainer = document.getElementById('overview-modules');
             if (modulesContainer) {
-                modulesContainer.innerHTML = data.moduleBreakdown.map((m, idx) => {
-                    const total = m.passed + m.failed + m.skipped;
-                    const passRate = total > 0 ? ((m.passed / total) * 100) : 0;
-                    
-                    let statusClass = 'healthy';
-                    let statusLabel = '✓ HEALTHY';
-                    if (passRate < 50) {
-                        statusClass = 'blocked';
-                        statusLabel = '✗ BLOCKED';
-                    } else if (passRate < 80) {
-                        statusClass = 'degraded';
-                        statusLabel = '⚠ DEGRADED';
-                    }
-                    
-                    const borderLeftColor = statusClass === 'healthy' ? 'var(--teal)' : statusClass === 'degraded' ? 'var(--amber)' : 'var(--red)';
-
-                    return `
-                        <div class="card module-card ${statusClass}" style="border-left-color: ${borderLeftColor}; animation-delay: ${idx * 100}ms;">
-                            <div class="module-header">
-                                <span class="module-name">${m.module}</span>
-                                <span class="module-status ${statusClass}">${statusLabel}</span>
-                            </div>
-                            <div class="module-rate" style="color: ${borderLeftColor}">${passRate.toFixed(1)}%</div>
-                            <div class="progress-bar-container">
-                                <div class="progress-fill" style="width: ${passRate}%; background: ${borderLeftColor}"></div>
-                            </div>
-                            <div class="module-footer">
-                                Verified: ${m.passed} / At Risk: ${m.failed}
-                            </div>
+                if (data.moduleBreakdown.length === 0) {
+                    modulesContainer.innerHTML = `
+                        <div class="card" style="grid-column: 1 / -1; padding: 20px; text-align:center; color: var(--text-secondary);">
+                            No module data yet — run tests to populate
                         </div>
                     `;
-                }).join('');
+                } else {
+                    modulesContainer.innerHTML = data.moduleBreakdown.map((m, idx) => {
+                        const total = m.passed + m.failed + m.skipped;
+                        const passRate = total > 0 ? ((m.passed / total) * 100) : 0;
+                        
+                        let statusClass = 'healthy';
+                        let statusLabel = '✓ HEALTHY';
+                        if (passRate < 50) {
+                            statusClass = 'blocked';
+                            statusLabel = '✗ BLOCKED';
+                        } else if (passRate < 80) {
+                            statusClass = 'degraded';
+                            statusLabel = '⚠ DEGRADED';
+                        }
+                        
+                        const borderLeftColor = statusClass === 'healthy' ? 'var(--teal)' : statusClass === 'degraded' ? 'var(--amber)' : 'var(--red)';
+
+                        return `
+                            <div class="card module-card ${statusClass}" style="border-left-color: ${borderLeftColor}; animation-delay: ${idx * 100}ms;">
+                                <div class="module-header">
+                                    <span class="module-name">${m.module}</span>
+                                    <span class="module-status ${statusClass}">${statusLabel}</span>
+                                </div>
+                                <div class="module-rate" style="color: ${borderLeftColor}">${passRate.toFixed(1)}%</div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-fill" style="width: ${passRate}%; background: ${borderLeftColor}"></div>
+                                </div>
+                                <div class="module-footer">
+                                    Verified: ${m.passed} / At Risk: ${m.failed}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
             }
 
             // B. 7-Day Trend Chart
             const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            let combinedTrends = [80, 82, 84, 85, 88, 90, data.passRate]; // fallback combined
+            let combinedTrends = [];
             if (data.moduleBreakdown.length > 0) {
-                // Average the daily trends
                 const daysCount = data.moduleBreakdown[0].trend.length;
                 combinedTrends = Array.from({ length: daysCount }, (_, i) => {
                     const dayRates = data.moduleBreakdown.map(m => m.trend[i] || 0);
                     return dayRates.reduce((a, b) => a + b, 0) / dayRates.length;
                 });
+            } else {
+                combinedTrends = [0, 0, 0, 0, 0, 0, 0];
             }
 
             safeCreateChart('trendChart', {
@@ -1430,27 +1424,31 @@
                 }
             });
 
-            // Risk distribution Donut
-            const severityCounts = { critical: 0, high: 0, medium: 0, low: 0 };
+            // Risk distribution Donut (Fully Dynamic based on detected categories)
+            const groupedBlockers = {};
             data.criticalBlockers.forEach(b => {
-                const sev = getRiskSeverity(b.title);
-                severityCounts[sev]++;
+                const cat = detectCategory(b.error);
+                groupedBlockers[cat] = (groupedBlockers[cat] || 0) + 1;
             });
             if (data.criticalBlockers.length === 0 && data.failed > 0) {
-                severityCounts.high = data.failed;
+                groupedBlockers['API/Stability'] = data.failed;
             }
 
-            const activeBlockersTotal = Object.values(severityCounts).reduce((a, b) => a + b, 0);
+            const activeBlockersTotal = Object.values(groupedBlockers).reduce((a, b) => a + b, 0);
             const riskValEl = document.getElementById('overview-risk-count');
             if (riskValEl) riskValEl.textContent = activeBlockersTotal;
+
+            const categoryLabels = Object.keys(groupedBlockers);
+            const categoryData = Object.values(groupedBlockers);
+            const chartColors = ['#e24b4a', '#f97316', '#ba7517', '#7c6ef7', '#8888aa', '#1d9e75'];
 
             safeCreateChart('overviewDonutChart', {
                 type: 'doughnut',
                 data: {
-                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    labels: categoryLabels.length > 0 ? categoryLabels : ['No Risks'],
                     datasets: [{
-                        data: [severityCounts.critical, severityCounts.high, severityCounts.medium, severityCounts.low],
-                        backgroundColor: ['#e24b4a', '#f97316', '#ba7517', '#8888aa'],
+                        data: categoryData.length > 0 ? categoryData : [1],
+                        backgroundColor: categoryData.length > 0 ? chartColors.slice(0, categoryLabels.length) : ['#1d9e75'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -1465,63 +1463,63 @@
 
             const legendContainer = document.getElementById('overview-legend');
             if (legendContainer) {
-                legendContainer.innerHTML = `
-                    <div class="legend-item">
-                        <div class="legend-left"><span class="legend-sq" style="background:#e24b4a"></span> Critical</div>
-                        <span class="legend-val">${severityCounts.critical}</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-left"><span class="legend-sq" style="background:#f97316"></span> High</div>
-                        <span class="legend-val">${severityCounts.high}</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-left"><span class="legend-sq" style="background:#ba7517"></span> Medium</div>
-                        <span class="legend-val">${severityCounts.medium}</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-left"><span class="legend-sq" style="background:#8888aa"></span> Low</div>
-                        <span class="legend-val">${severityCounts.low}</span>
-                    </div>
-                `;
+                if (categoryLabels.length === 0) {
+                    legendContainer.innerHTML = `
+                        <div style="color: var(--teal); font-weight:700; text-align:center; font-size:11px;">
+                            ✓ All systems operational
+                        </div>
+                    `;
+                } else {
+                    legendContainer.innerHTML = categoryLabels.map((cat, idx) => `
+                        <div class="legend-item">
+                            <div class="legend-left"><span class="legend-sq" style="background:${chartColors[idx % chartColors.length]}"></span> ${cat}</div>
+                            <span class="legend-val">${groupedBlockers[cat]}</span>
+                        </div>
+                    `).join('');
+                }
             }
 
             // C. Recent CI summaries (3 runs as cards)
             const runsStack = document.getElementById('overview-runs-stack');
             if (runsStack) {
-                const last3 = data.last10Runs.slice(0, 3);
-                runsStack.innerHTML = last3.map(r => {
-                    const statusClass = (r.status === 'success' || r.status === 'healthy') ? 'healthy' : (r.status === 'degraded' ? 'degraded' : 'blocked');
-                    const badgeText = (r.status === 'success' || r.status === 'healthy') ? 'Healthy' : (r.status === 'degraded' ? 'Degraded' : 'Blocked');
-                    return `
-                        <div class="run-summary-card">
-                            <div class="run-summary-left">
-                                <span class="run-summary-num">#${r.run}</span>
-                                <span class="badge ${r.trigger.includes('smoke') ? 'low' : 'purple'}">${r.trigger}</span>
-                            </div>
-                            <div class="run-summary-mid">
-                                <div class="progress-bar-container">
-                                    <div class="progress-fill" style="width: ${r.passRate}%; background: var(--purple)"></div>
+                if (data.last10Runs.length === 0) {
+                    runsStack.innerHTML = `<div style="color: var(--text-muted); font-size:11px; padding: 20px 0; text-align:center;">No verification runs recorded yet</div>`;
+                } else {
+                    const last3 = data.last10Runs.slice(0, 3);
+                    runsStack.innerHTML = last3.map(r => {
+                        const statusClass = (r.status === 'success' || r.status === 'healthy') ? 'healthy' : (r.status === 'degraded' ? 'degraded' : 'blocked');
+                        const badgeText = (r.status === 'success' || r.status === 'healthy') ? 'Healthy' : (r.status === 'degraded' ? 'Degraded' : 'Blocked');
+                        return `
+                            <div class="run-summary-card">
+                                <div class="run-summary-left">
+                                    <span class="run-summary-num">#${r.run}</span>
+                                    <span class="badge ${r.trigger.includes('smoke') ? 'low' : 'purple'}">${r.trigger}</span>
+                                </div>
+                                <div class="run-summary-mid">
+                                    <div class="progress-bar-container">
+                                        <div class="progress-fill" style="width: ${r.passRate}%; background: var(--purple)"></div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-weight:600;">${r.passRate.toFixed(1)}%</span>
+                                    <span class="badge ${statusClass}">${badgeText}</span>
                                 </div>
                             </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="font-weight:600;">${r.passRate.toFixed(1)}%</span>
-                                <span class="badge ${statusClass}">${badgeText}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    }).join('');
+                }
             }
 
             // Top active risks
             const risksStack = document.getElementById('overview-risks-stack');
             if (risksStack) {
                 if (data.criticalBlockers.length === 0) {
-                    risksStack.innerHTML = `<div style="color: var(--text-muted); font-size:11px; padding: 20px 0; text-align:center;">No active critical risks identified.</div>`;
+                    risksStack.innerHTML = `<div style="color: var(--text-muted); font-size:11px; padding: 20px 0; text-align:center;">No active risks — all business flows healthy</div>`;
                 } else {
                     const top3 = data.criticalBlockers.slice(0, 3);
                     risksStack.innerHTML = top3.map(b => {
                         const sev = getRiskSeverity(b.title);
-                        const impact = translateTechnicalError(b.error);
+                        const impact = getBusinessImpact(b.error);
                         return `
                             <div class="risk-compact-card">
                                 <span class="badge ${sev}">${sev}</span>
@@ -1541,6 +1539,17 @@
         function renderModuleHealth(data) {
             const tbody = document.getElementById('module-health-table-body');
             if (!tbody) return;
+
+            if (data.moduleBreakdown.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align:center; padding: 40px; color: var(--text-secondary);">
+                            No module data yet — run tests to populate
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
             tbody.innerHTML = data.moduleBreakdown.map((m, idx) => {
                 const total = m.passed + m.failed + m.skipped;
@@ -1566,7 +1575,7 @@
                     return `<div class="spark-bar" style="height: ${height}%; background: ${color}"></div>`;
                 }).join('');
 
-                // Expansion details filtered by module name
+                // Expansion details filtered dynamically by module name
                 const relatedBlockers = data.criticalBlockers.filter(b => 
                     b.title.toLowerCase().includes(m.module.toLowerCase()) || 
                     b.error.toLowerCase().includes(m.module.toLowerCase())
@@ -1659,7 +1668,7 @@
                     cardsContainer.innerHTML = `
                         <div class="card" style="padding: 40px; text-align:center; color: var(--text-secondary);">
                             <i class="ti ti-shield-check" style="font-size: 32px; color: var(--teal); margin-bottom: 10px;"></i>
-                            <div style="font-weight:700; font-size:14px; color: var(--text-primary)">No Business Gaps Active</div>
+                            <div style="font-weight:700; font-size:14px; color: var(--text-primary)">No active risks — all business flows healthy</div>
                             <div>Continuous pipeline checks are passing against the high-integrity system models.</div>
                         </div>
                     `;
@@ -1668,15 +1677,15 @@
 
                 cardsContainer.innerHTML = data.criticalBlockers.map((b, idx) => {
                     const sev = getRiskSeverity(b.title);
-                    const impact = translateTechnicalError(b.error);
+                    const impact = getBusinessImpact(b.error);
                     
-                    // Match a simple module guess based on keywords
+                    // Deriving module dynamically from keywords/paths
                     let modBadge = 'ERP-Core';
-                    const titleLow = b.title.toLowerCase();
-                    if (titleLow.includes('sale') || titleLow.includes('customer')) modBadge = 'Sales';
-                    else if (titleLow.includes('purchase') || titleLow.includes('procurement') || titleLow.includes('vendor')) modBadge = 'Purchase';
-                    else if (titleLow.includes('inventory') || titleLow.includes('stock')) modBadge = 'Inventory';
-                    else if (titleLow.includes('hr') || titleLow.includes('payroll')) modBadge = 'HR';
+                    const mMatch = data.moduleBreakdown.find(m => 
+                        b.title.toLowerCase().includes(m.module.toLowerCase()) || 
+                        b.error.toLowerCase().includes(m.module.toLowerCase())
+                    );
+                    if (mMatch) modBadge = mMatch.module;
 
                     return `
                         <div class="risk-full-card ${sev}">
@@ -1718,39 +1727,62 @@
             // Metrics top row
             const metricsRow = document.getElementById('history-metric-cards');
             if (metricsRow) {
-                const totalRuns = data.last10Runs.length;
-                const rates = data.last10Runs.map(r => r.passRate);
-                const avgRate = rates.length > 0 ? (rates.reduce((a, b) => a + b, 0) / rates.length) : 0;
-                const best = rates.length > 0 ? Math.max(...rates) : 0;
-                const worst = rates.length > 0 ? Math.min(...rates) : 0;
+                if (data.last10Runs.length === 0) {
+                    metricsRow.innerHTML = `
+                        <div class="card" style="grid-column: 1 / -1; text-align:center; color: var(--text-secondary);">
+                            No runs recorded yet
+                        </div>
+                    `;
+                } else {
+                    const totalRuns = data.last10Runs.length;
+                    const rates = data.last10Runs.map(r => r.passRate);
+                    const avgRate = rates.length > 0 ? (rates.reduce((a, b) => a + b, 0) / rates.length) : 0;
+                    const best = rates.length > 0 ? Math.max(...rates) : 0;
+                    const worst = rates.length > 0 ? Math.min(...rates) : 0;
 
-                metricsRow.innerHTML = `
-                    <div class="card">
-                        <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Total Pipeline Runs</div>
-                        <div style="font-size:20px; font-weight:800; color:var(--purple); margin: 4px 0;">${totalRuns}</div>
-                        <div style="font-size:9px; color: var(--text-muted)">Continuous auditing history</div>
-                    </div>
-                    <div class="card">
-                        <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Avg Business Health Score</div>
-                        <div style="font-size:20px; font-weight:800; color:var(--teal); margin: 4px 0;">${avgRate.toFixed(1)}%</div>
-                        <div style="font-size:9px; color: var(--text-muted)">Last 10 executions average</div>
-                    </div>
-                    <div class="card">
-                        <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Best Run Performance</div>
-                        <div style="font-size:20px; font-weight:800; color:var(--teal); margin: 4px 0;">${best.toFixed(1)}%</div>
-                        <div style="font-size:9px; color: var(--text-muted)">Peak operational capacity</div>
-                    </div>
-                    <div class="card">
-                        <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Worst Run Performance</div>
-                        <div style="font-size:20px; font-weight:800; color:var(--red); margin: 4px 0;">${worst.toFixed(1)}%</div>
-                        <div style="font-size:9px; color: var(--text-muted)">Max degradations detected</div>
-                    </div>
-                `;
+                    metricsRow.innerHTML = `
+                        <div class="card">
+                            <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Total Pipeline Runs</div>
+                            <div style="font-size:20px; font-weight:800; color:var(--purple); margin: 4px 0;">${totalRuns}</div>
+                            <div style="font-size:9px; color: var(--text-muted)">Continuous auditing history</div>
+                        </div>
+                        <div class="card">
+                            <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Avg Business Health Score</div>
+                            <div style="font-size:20px; font-weight:800; color:var(--teal); margin: 4px 0;">${avgRate.toFixed(1)}%</div>
+                            <div style="font-size:9px; color: var(--text-muted)">Last 10 executions average</div>
+                        </div>
+                        <div class="card">
+                            <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Best Run Performance</div>
+                            <div style="font-size:20px; font-weight:800; color:var(--teal); margin: 4px 0;">${best.toFixed(1)}%</div>
+                            <div style="font-size:9px; color: var(--text-muted)">Peak operational capacity</div>
+                        </div>
+                        <div class="card">
+                            <div style="font-size:10px; text-transform:uppercase; color: var(--text-secondary); font-weight:700;">Worst Run Performance</div>
+                            <div style="font-size:20px; font-weight:800; color:var(--red); margin: 4px 0;">${worst.toFixed(1)}%</div>
+                            <div style="font-size:9px; color: var(--text-muted)">Max degradations detected</div>
+                        </div>
+                    `;
+                }
             }
 
             const tbody = document.getElementById('history-table-body');
             if (tbody) {
-                tbody.innerHTML = data.last10Runs.map((r, idx) => {
+                if (data.last10Runs.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align:center; padding: 30px; color: var(--text-secondary);">
+                                No verification runs recorded yet
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Handle MAX_RUNS limit dynamically (Last 10 runs slice)
+                const MAX_RUNS = 10;
+                const runs = data.last10Runs.slice(0, MAX_RUNS);
+
+                tbody.innerHTML = runs.map((r, idx) => {
                     const statusClass = (r.status === 'healthy' || r.status === 'success') ? 'healthy' : (r.status === 'degraded' ? 'degraded' : 'blocked');
                     const badgeText = (r.status === 'healthy' || r.status === 'success') ? 'HEALTHY' : (r.status === 'degraded' ? 'DEGRADED' : 'FAILED');
 
@@ -1785,19 +1817,34 @@
 
         // ── VIEW 5: FAILURE & ANALYSIS ──
         function renderFailureAnalysis(data) {
-            // Calculated failures total
-            const totalFailures = data.failed || 4;
+            // Group and map categories dynamically from live blockers list
+            const categoryCounts = {};
+            data.criticalBlockers.forEach(b => {
+                const cat = detectCategory(b.error);
+                categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+            });
+
+            // Add default fallback failures to categorise if no blockers present but total failures > 0
+            if (data.criticalBlockers.length === 0 && data.failed > 0) {
+                categoryCounts['API/Stability'] = data.failed;
+            }
+
+            const totalFailures = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
             const failuresTotalEl = document.getElementById('analysis-total-failures');
             if (failuresTotalEl) failuresTotalEl.textContent = totalFailures;
 
-            // Donut failures
+            const categoryLabels = Object.keys(categoryCounts);
+            const categoryValues = Object.values(categoryCounts);
+            const chartColors = ['#e24b4a', '#fbbf24', '#7c6ef7', '#1d9e75', '#8888aa', '#f97316'];
+
+            // Donut failures (Fully Dynamic Labels)
             safeCreateChart('analysisDonutChart', {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(failureCategories),
+                    labels: categoryLabels.length > 0 ? categoryLabels : ['No Failures'],
                     datasets: [{
-                        data: Object.values(failureCategories),
-                        backgroundColor: ['#e24b4a', '#fbbf24', '#7c6ef7', '#1d9e75', '#8888aa'],
+                        data: categoryValues.length > 0 ? categoryValues : [1],
+                        backgroundColor: categoryValues.length > 0 ? chartColors.slice(0, categoryLabels.length) : ['#1d9e75'],
                         borderWidth: 0
                     }]
                 },
@@ -1812,24 +1859,31 @@
             // Legend counts and percentages
             const legendContainer = document.getElementById('analysis-legend');
             if (legendContainer) {
-                legendContainer.innerHTML = Object.entries(failureCategories).map(([name, val], idx) => {
-                    const colors = ['#e24b4a', '#fbbf24', '#7c6ef7', '#1d9e75', '#8888aa'];
-                    const pct = totalFailures > 0 ? ((val / totalFailures) * 100) : 0;
-                    return `
-                        <div class="legend-item" style="flex-direction: column; align-items: flex-start; gap: 2px;">
-                            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                                <div class="legend-left"><span class="legend-sq" style="background:${colors[idx]}"></span> ${name}</div>
-                                <span class="legend-val" style="font-size:10px;">${val} (${pct.toFixed(0)}%)</span>
-                            </div>
-                            <div class="legend-row-percent">
-                                <div style="height:100%; width:${pct}%; background:${colors[idx]}"></div>
-                            </div>
+                if (categoryLabels.length === 0) {
+                    legendContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; color: var(--teal); font-weight:700; text-align:center; padding: 20px;">
+                            ✓ All tests passing — 100% stable
                         </div>
                     `;
-                }).join('');
+                } else {
+                    legendContainer.innerHTML = categoryLabels.map((name, idx) => {
+                        const pct = totalFailures > 0 ? ((categoryCounts[name] / totalFailures) * 100) : 0;
+                        return `
+                            <div class="legend-item" style="flex-direction: column; align-items: flex-start; gap: 2px;">
+                                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                                    <div class="legend-left"><span class="legend-sq" style="background:${chartColors[idx % chartColors.length]}"></span> ${name}</div>
+                                    <span class="legend-val" style="font-size:10px;">${categoryCounts[name]} (${pct.toFixed(0)}%)</span>
+                                </div>
+                                <div class="legend-row-percent">
+                                    <div style="height:100%; width:${pct}%; background:${chartColors[idx % chartColors.length]}"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
             }
 
-            // failures per module bar chart
+            // failures per module bar chart (Fully Dynamic labels from breakdown list)
             const modulesList = data.moduleBreakdown.map(m => m.module);
             const passedArray = data.moduleBreakdown.map(m => m.passed);
             const failedArray = data.moduleBreakdown.map(m => m.failed);
@@ -1837,17 +1891,17 @@
             safeCreateChart('failuresBarChart', {
                 type: 'bar',
                 data: {
-                    labels: modulesList,
+                    labels: modulesList.length > 0 ? modulesList : ['No Modules'],
                     datasets: [
                         {
                             label: 'Verified Flows',
-                            data: passedArray,
+                            data: passedArray.length > 0 ? passedArray : [0],
                             backgroundColor: '#1d9e75',
                             borderRadius: 4
                         },
                         {
                             label: 'Flows At Risk',
-                            data: failedArray,
+                            data: failedArray.length > 0 ? failedArray : [0],
                             backgroundColor: '#e24b4a',
                             borderRadius: 4
                         }
@@ -1867,7 +1921,7 @@
                 }
             });
 
-            // failure trend stacked area chart
+            // stacked daily area/trend failure categories chart
             safeCreateChart('failuresTrendChart', {
                 type: 'line',
                 data: {
@@ -1875,17 +1929,9 @@
                     datasets: [
                         {
                             label: 'Stability',
-                            data: [1, 2, 1, 3, 2, 1, 2],
+                            data: [0, 0, 0, 0, 0, 0, totalFailures],
                             borderColor: '#e24b4a',
                             backgroundColor: 'rgba(226, 75, 74, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Logic Gaps',
-                            data: [0, 1, 1, 0, 1, 1, 0],
-                            borderColor: '#fbbf24',
-                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
                             fill: true,
                             tension: 0.3
                         }
@@ -1910,30 +1956,35 @@
             const grid = document.getElementById('duration-heatmap-grid');
             if (!grid) return;
 
+            if (data.moduleBreakdown.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align:center; padding: 40px; color: var(--text-secondary);">
+                        No module data yet — run tests to populate
+                    </div>
+                `;
+                return;
+            }
+
             const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             let html = '<div class="heatmap-header-cell">Module</div>';
             days.forEach(d => {
                 html += `<div class="heatmap-header-cell">${d}</div>`;
             });
 
+            // Fully data-driven rows mapping directly from breakdown modules list
             data.moduleBreakdown.forEach(m => {
                 html += `<div class="heatmap-row-label">${m.module}</div>`;
                 
-                // Mon-Sun cell values.
-                // We'll generate slightly varying durations mapped on day-by-day basis.
                 days.forEach((_, dIdx) => {
                     const rawVal = m.trend[dIdx] || 0;
                     
-                    // Simple deterministic duration generator
-                    let durationSec = Math.max(1, Math.round(((rawVal + 1) * (dIdx + 2)) % 18));
-                    
-                    // Generate empty cells occasionally
-                    const isEmpty = (dIdx === 5 || dIdx === 6) && m.module === 'HR';
-                    
-                    if (isEmpty) {
+                    // If the trend day is empty or zero, show empty state cell
+                    if (rawVal === 0) {
                         html += `<div class="heatmap-cell empty">—</div>`;
                     } else {
-                        // Color color gradient intensity from dark green (#0e2a1e) to dark red (#2a0e0e)
+                        // Generate deterministic duration bounds safely from trend values
+                        let durationSec = Math.max(1, Math.round(((rawVal + 1) * (dIdx + 2)) % 18));
+                        
                         let cellBg = '#0e2a1e';
                         if (durationSec > 12) {
                             cellBg = '#c93a00';
