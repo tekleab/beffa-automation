@@ -388,8 +388,8 @@
     </div>
 
     <script>
-        // Data object - replace with API call in production
-        const dashboardData = {
+        // Default fallback data
+        const defaultData = {
             metrics: {
                 totalTests: 1247,
                 passRate: 87.5,
@@ -457,8 +457,29 @@
             }
         };
 
+        let dashboardData = defaultData;
+
+        // Fetch data from results.json
+        async function fetchResults() {
+            try {
+                const response = await fetch('./results.json');
+                if (response.ok) {
+                    dashboardData = await response.json();
+                    console.log('[SUCCESS] Loaded data from results.json');
+                    return true;
+                } else {
+                    console.log('[WARN] results.json not found, using default data');
+                    return false;
+                }
+            } catch (error) {
+                console.log('[WARN] Failed to fetch results.json, using default data:', error);
+                return false;
+            }
+        }
+
         // Initialize dashboard
-        function initDashboard() {
+        async function initDashboard() {
+            await fetchResults();
             updateMetrics();
             renderModuleTable();
             renderBlockers();
@@ -713,15 +734,21 @@
             let countdown = 60;
             const countdownEl = document.getElementById('countdown');
             
-            setInterval(() => {
+            setInterval(async () => {
                 countdown--;
                 countdownEl.textContent = countdown + 's';
                 
                 if (countdown <= 0) {
                     countdown = 60;
-                    // In production, call API to refresh data
                     console.log('Refreshing data...');
-                    // initDashboard(); // Uncomment to enable actual refresh
+                    await fetchResults();
+                    updateMetrics();
+                    renderModuleTable();
+                    renderBlockers();
+                    renderHistory();
+                    renderTrendChart();
+                    renderFailureChart();
+                    renderHeatmap();
                 }
             }, 1000);
         }

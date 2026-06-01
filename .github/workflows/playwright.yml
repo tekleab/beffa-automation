@@ -244,6 +244,9 @@ jobs:
         echo "[INFO] Generating Integrated Dashboard from Playwright results..."
         npx ts-node scripts/generate-dashboard-from-results.ts || true
 
+        echo "[INFO] Generating results.json for QA Dashboard..."
+        npx ts-node scripts/generate-results-json.ts || true
+
         if [ -d "temp-report" ]; then
           mv temp-report deploy/allure
           echo "[SUCCESS] Allure report finalized in deploy/allure"
