@@ -258,7 +258,7 @@ const htmlTemplate = `
             </div>
         </div>
         <div class="actions">
-            <a href="./allure/" target="_blank" class="btn primary">📊 View Allure Report</a>
+            <a href="allure/" target="_blank" class="btn primary">📊 View Allure Report</a>
             <div class="btn">🟢 Slack</div>
             <div class="btn">🔵 Jira</div>
         </div>
