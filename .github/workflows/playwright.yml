@@ -1,5 +1,5 @@
 name: Playwright Tests
-run-name: "[${{ github.event.inputs.test_type || 'full' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
+run-name: "[${{ github.event.inputs.test_type || 'smoke' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
 on:
   workflow_dispatch:
     inputs:
@@ -25,9 +25,16 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      # Ignore commits made by the CI bot itself — prevents infinite loop
+      - 'scripts/results.json'
+      - 'scripts/results-accumulated.json'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'scripts/results.json'
+      - 'scripts/results-accumulated.json'
 
 permissions:
   contents: write
