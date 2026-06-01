@@ -245,7 +245,7 @@ jobs:
         npx ts-node scripts/generate-dashboard-from-results.ts || true
 
         echo "[INFO] Generating results.json for QA Dashboard..."
-        npx ts-node scripts/generate-results-json.ts || true
+        node scripts/generate-results.js || true
 
         if [ -d "temp-report" ]; then
           mv temp-report deploy/allure
@@ -260,6 +260,15 @@ jobs:
 
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY
+
+    - name: Commit and push results.json
+      if: always()
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add scripts/results.json scripts/results-accumulated.json
+        git diff --staged --quiet || git commit -m "chore: update results.json from CI run [skip ci]"
+        git push origin HEAD:main
 
     - name: Deploy to GitHub Pages
       if: always()

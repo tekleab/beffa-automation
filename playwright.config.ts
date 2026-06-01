@@ -47,7 +47,7 @@ export default defineConfig({
     ['./reporters/integrated-dashboard.ts'],
     ['./reporters/summary-reporter.ts'],
     ['html', { open: 'never' }],
-    ['json', { outputFile: 'test-results/results.json' }],
+    ['json', { outputFile: 'playwright-results.json' }],
     [
       'allure-playwright',
       {

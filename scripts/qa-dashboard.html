@@ -459,12 +459,57 @@
 
         let dashboardData = defaultData;
 
-        // Fetch data from results.json
+        // Fetch data from results.json with cache-busting
         async function fetchResults() {
             try {
-                const response = await fetch('./results.json');
+                const timestamp = Date.now();
+                const response = await fetch(`./results.json?t=${timestamp}`);
                 if (response.ok) {
-                    dashboardData = await response.json();
+                    const data = await response.json();
+                    // Map new format to dashboard format
+                    dashboardData = {
+                        metrics: {
+                            totalTests: data.total,
+                            passRate: data.passRate,
+                            failed: data.failed,
+                            skipped: data.skipped,
+                            avgDuration: data.avgDurationMs / 60000 // Convert ms to minutes
+                        },
+                        modules: data.moduleBreakdown.map(m => ({
+                            name: m.module,
+                            total: m.passed + m.failed + m.skipped,
+                            passed: m.passed,
+                            failed: m.failed,
+                            skipped: m.skipped,
+                            trend: m.trend
+                        })),
+                        failures: {
+                            'API/Stability': 0,
+                            'Logic Bugs': 0,
+                            'UI Flakiness': 0,
+                            'Performance': 0,
+                            'Security': 0
+                        },
+                        blockers: data.criticalBlockers.map(b => ({
+                            severity: b.severity,
+                            name: b.title,
+                            error: b.error,
+                            firstSeen: b.firstSeen,
+                            occurrences: 1
+                        })),
+                        history: data.last10Runs.map(r => ({
+                            run: r.run,
+                            trigger: r.trigger,
+                            duration: r.duration,
+                            passRate: r.passRate,
+                            status: r.status
+                        })),
+                        heatmap: {
+                            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            modules: data.moduleBreakdown.map(m => m.module),
+                            data: data.moduleBreakdown.map(() => [8, 8, 8, 8, 8, 8, 8])
+                        }
+                    };
                     console.log('[SUCCESS] Loaded data from results.json');
                     return true;
                 } else {
