@@ -49,15 +49,15 @@
                     <span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite;"></span>
                     CRITICAL
                 </div>
-                <div style="font-size: 0.8rem; color: var(--gray);">Jun 01, 2026, 05:04:39 UTC</div>
+                <div style="font-size: 0.8rem; color: var(--gray);">Jun 01, 2026, 05:25:53 UTC</div>
             </div>
         </div>
         <div class="metrics">
             <div class="metric"><div class="metric-label">Test Type</div><div class="metric-value">FULL</div></div>
             <div class="metric"><div class="metric-label">Total Tests</div><div class="metric-value">61</div></div>
-            <div class="metric"><div class="metric-label">Passed</div><div class="metric-value success">16</div></div>
-            <div class="metric"><div class="metric-label">Failed</div><div class="metric-value danger">24</div></div>
-            <div class="metric"><div class="metric-label">Pass Rate</div><div class="metric-value">26%</div></div>
+            <div class="metric"><div class="metric-label">Passed</div><div class="metric-value success">18</div></div>
+            <div class="metric"><div class="metric-label">Failed</div><div class="metric-value danger">22</div></div>
+            <div class="metric"><div class="metric-label">Pass Rate</div><div class="metric-value">30%</div></div>
         </div>
         <div class="charts-grid">
             <div class="panel"><div class="panel-header">Pass Rate Trend (7 Days)</div><div class="panel-content"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
@@ -70,11 +70,11 @@
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
                         <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Passed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">16</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);">18</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Failed</div>
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">24</div>
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger);">22</div>
                         </div>
                         <div style="text-align: center; padding: 16px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
                             <div style="font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-bottom: 8px;">Skipped</div>
@@ -82,7 +82,7 @@
                         </div>
                     </div>
                     <div style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
-                        <div style="height: 100%; background: var(--success); width: 26.229508196721312%;"></div>
+                        <div style="height: 100%; background: var(--success); width: 29.508196721311474%;"></div>
                     </div>
                 </div>
             </div>
@@ -92,22 +92,22 @@
                     
       <div class="blocker-item">
         <div class="blocker-cat">STABILITY</div>
-        <div class="blocker-title">API: Employee must be created with all required fields</div>
-        <div class="blocker-desc">Error: expect(received).toHaveProperty(path)
-
-Matcher error: received value must not be null nor und</div>
+        <div class="blocker-title">UI Audit: Approved invoice reflects outstanding balance in customer profile</div>
+        <div class="blocker-desc">Error: Invoice INV/2026/06/01/001393 not found in customer profile. Expected to see invoice after AP</div>
       </div>
       <div class="blocker-item">
         <div class="blocker-cat">STABILITY</div>
-        <div class="blocker-title">Create fresh invoice via API, then create receipt and link it</div>
+        <div class="blocker-title">Guardrail: Invoice must reject second receipt after full payment</div>
         <div class="blocker-desc">Error: Invoice-Receipt API Creation Failed: 500 - {
 	"code": 500,
 	"message": "Internal Server Error</div>
       </div>
       <div class="blocker-item">
         <div class="blocker-cat">STABILITY</div>
-        <div class="blocker-title">Forensic Audit: Invoice Void & Stock Restoration</div>
-        <div class="blocker-desc">Error: Business Logic Violation: Could not Void an approved invoice.</div>
+        <div class="blocker-title">Validate TIN, create customer, edit, remove</div>
+        <div class="blocker-desc">TimeoutError: locator.selectOption: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('#cu</div>
       </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@ Matcher error: received value must not be null nor und</div>
                 labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
                 datasets: [{
                     label: 'Pass Rate',
-                    data: [11, 16, 21, 18, 23, 24, 26],
+                    data: [15, 20, 25, 22, 27, 28, 30],
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     fill: true,
@@ -140,7 +140,7 @@ Matcher error: received value must not be null nor und</div>
             type: 'doughnut',
             data: {
                 labels: ['Logic Bugs', 'UI Flakiness', 'API/Stability', 'Performance'],
-                datasets: [{ data: [1, 0, 23, 0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth: 0 }]
+                datasets: [{ data: [1, 0, 21, 0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#64748b', padding: 20 } } } }
         });
