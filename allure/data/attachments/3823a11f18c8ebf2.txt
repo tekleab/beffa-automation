@@ -1,0 +1,41 @@
+[PERFORMANCE] API - Auth API Verification: 211.78ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1057.75ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : c8d96816-daf5-4ac8-a2a1-bf9b87869d01 (DUP-GUARD-1780209984061)
+[ITEM]  Stock       : 17
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "ddc66118-801e-415c-af20-709131055dc0"...
+[OK] SO SO/2026/06/01/000709 approved (ID: ddc66118-801e-415c-af20-709131055dc0)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "a56309d2-e15f-4950-967a-444d708c0e00"...
+[OK] Batch 1 invoice INV/2026/06/01/001429 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "f16c174d-3b4e-4c57-bcdf-009cadf08963"...
+[OK] Batch 2 invoice INV/2026/06/01/001431 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/06/01/000709 (ID: ddc66118-801e-415c-af20-709131055dc0)
+[DOCUMENT] Invoice 1    : INV/2026/06/01/001429 (ID: a56309d2-e15f-4950-967a-444d708c0e00) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/06/01/001431 (ID: f16c174d-3b4e-4c57-bcdf-009cadf08963) — 6 units
+[ITEM]     Item         : DUP-GUARD-1780209984061 (c8d96816-daf5-4ac8-a2a1-bf9b87869d01)
+[STOCK]    Before       : 17
+[STOCK]    After        : 7
+[STOCK]    Expected     : 7
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[API] Advancing invoices "b72ea206-4b69-4ee6-b752-282952849d0b"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
