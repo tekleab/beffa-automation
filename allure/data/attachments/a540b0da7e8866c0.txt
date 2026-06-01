@@ -1,0 +1,21 @@
+[PERFORMANCE] API - Auth API Verification: 239.31ms
+[STEP 1] Creating item with exactly 1 unit of stock...
+[OK] Item created: ZERO-STOCK-1780292346110 (ID: 4a61fcd3-f3d3-4fc6-9068-0e1e2fc1cd63)
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 1...
+[SUCCESS] API Confirmed: Stock correctly reached 1.
+[STEP 2] Selling the only 1 unit to drain stock to zero...
+[API] Advancing invoices "6e0d5a0f-5411-4f30-9a49-ba303a26929c"...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 0...
+[SUCCESS] API Confirmed: Stock correctly reached 0.
+[OK] Stock is now 0.
+[ATTACK] Attempting to sell 1 more unit from zero stock...
+[PASS] Zero-stock sale correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 0, required: 1.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+

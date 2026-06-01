@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA CI/CD Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-color: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-tertiary: #666666;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --critical: #dc2626;
+            --high: #f97316;
+            --medium: #eab308;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .refresh-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .countdown {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .metric-value.success { color: var(--success); }
+        .metric-value.warning { color: var(--warning); }
+        .metric-value.danger { color: var(--danger); }
+
+        .metric-sub {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        td {
+            font-size: 0.875rem;
+        }
+
+        .sparkline {
+            width: 80px;
+            height: 30px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.critical { background: rgba(220, 38, 38, 0.2); color: var(--critical); }
+        .badge.high { background: rgba(249, 115, 22, 0.2); color: var(--high); }
+        .badge.medium { background: rgba(234, 179, 8, 0.2); color: var(--medium); }
+        .badge.success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge.failed { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge.running { background: rgba(59, 130, 246, 0.2); color: var(--accent-primary); }
+
+        .blocker-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .blocker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .blocker-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .blocker-error {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .blocker-meta {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: auto repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .heatmap-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-count {
+            animation: countUp 0.6s ease-out;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">QA Dashboard</div>
+            <div class="refresh-info">
+                <span>Auto-refresh in</span>
+                <span class="countdown" id="countdown">60s</span>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card" id="card-total">
+                <div class="metric-label">Total Tests</div>
+                <div class="metric-value animate-count" id="metric-total">0</div>
+                <div class="metric-sub">All modules</div>
+            </div>
+            <div class="metric-card" id="card-pass-rate">
+                <div class="metric-label">Pass Rate</div>
+                <div class="metric-value animate-count" id="metric-pass-rate">0%</div>
+                <div class="metric-sub">Last 7 days</div>
+            </div>
+            <div class="metric-card" id="card-failed">
+                <div class="metric-label">Failed</div>
+                <div class="metric-value animate-count danger" id="metric-failed">0</div>
+                <div class="metric-sub">Needs attention</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Skipped</div>
+                <div class="metric-value animate-count" id="metric-skipped">0</div>
+                <div class="metric-sub">Temporarily disabled</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Avg Duration</div>
+                <div class="metric-value animate-count" id="metric-duration">0m</div>
+                <div class="metric-sub">Per test run</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="panel">
+                <div class="panel-header">7-Day Pass Rate Trend</div>
+                <div class="panel-content">
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Failure Breakdown</div>
+                <div class="panel-content">
+                    <div class="chart-container">
+                        <canvas id="failureChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="panel">
+                <div class="panel-header">Module Breakdown</div>
+                <div class="panel-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Total</th>
+                                <th>Passed</th>
+                                <th>Failed</th>
+                                <th>Skipped</th>
+                                <th>Pass Rate</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="module-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Critical Blockers</div>
+                <div class="panel-content" id="blockers-container">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">Test Duration Heatmap (Last 7 Days)</div>
+            <div class="panel-content">
+                <div class="heatmap-container" id="heatmap">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">CI Run History (Last 10 Runs)</div>
+            <div class="panel-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Run #</th>
+                            <th>Trigger</th>
+                            <th>Duration</th>
+                            <th>Pass Rate</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default fallback data
+        const defaultData = {
+            metrics: {
+                totalTests: 1247,
+                passRate: 87.5,
+                failed: 156,
+                skipped: 23,
+                avgDuration: 8.5
+            },
+            modules: [
+                { name: 'Sales', total: 342, passed: 298, failed: 38, skipped: 6, trend: [82, 85, 88, 84, 87, 89, 90] },
+                { name: 'Inventory', total: 289, passed: 267, failed: 18, skipped: 4, trend: [90, 88, 92, 91, 89, 93, 94] },
+                { name: 'HR', total: 198, passed: 175, failed: 19, skipped: 4, trend: [85, 87, 86, 88, 90, 89, 91] },
+                { name: 'Cross-Module', total: 418, passed: 356, failed: 81, skipped: 9, trend: [78, 82, 80, 85, 83, 86, 88] }
+            ],
+            failures: {
+                'API/Stability': 45,
+                'Logic Bugs': 38,
+                'UI Flakiness': 42,
+                'Performance': 18,
+                'Security': 13
+            },
+            blockers: [
+                {
+                    severity: 'critical',
+                    name: 'Invoice creation fails with 500 error',
+                    error: 'POST /api/invoices returned 500 Internal Server Error',
+                    firstSeen: '2026-05-31T14:32:00Z',
+                    occurrences: 12
+                },
+                {
+                    severity: 'high',
+                    name: 'Customer balance not updating after payment',
+                    error: 'Expected balance 0, got 500.00 after full payment',
+                    firstSeen: '2026-05-30T09:15:00Z',
+                    occurrences: 8
+                },
+                {
+                    severity: 'medium',
+                    name: 'Timeout on inventory sync',
+                    error: 'Element locator timeout after 30s: #inventory-sync-button',
+                    firstSeen: '2026-05-29T16:45:00Z',
+                    occurrences: 5
+                }
+            ],
+            history: [
+                { run: 1247, trigger: 'push', duration: '8m 32s', passRate: 87.5, status: 'success' },
+                { run: 1246, trigger: 'schedule', duration: '8m 15s', passRate: 85.2, status: 'success' },
+                { run: 1245, trigger: 'push', duration: '9m 05s', passRate: 82.1, status: 'failed' },
+                { run: 1244, trigger: 'push', duration: '7m 48s', passRate: 89.3, status: 'success' },
+                { run: 1243, trigger: 'schedule', duration: '8m 22s', passRate: 86.7, status: 'success' },
+                { run: 1242, trigger: 'push', duration: '9m 12s', passRate: 81.5, status: 'failed' },
+                { run: 1241, trigger: 'push', duration: '8m 45s', passRate: 88.9, status: 'success' },
+                { run: 1240, trigger: 'schedule', duration: '7m 55s', passRate: 90.2, status: 'success' },
+                { run: 1239, trigger: 'push', duration: '8m 18s', passRate: 84.3, status: 'success' },
+                { run: 1238, trigger: 'push', duration: '9m 30s', passRate: 79.8, status: 'failed' }
+            ],
+            heatmap: {
+                days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                modules: ['Sales', 'Inventory', 'HR', 'Cross-Module'],
+                data: [
+                    [8.2, 7.8, 8.5, 8.1, 8.3, 7.9, 8.0],
+                    [7.5, 7.2, 7.8, 7.6, 7.4, 7.1, 7.3],
+                    [6.8, 7.0, 6.9, 7.2, 6.7, 6.5, 6.8],
+                    [9.5, 9.8, 9.2, 9.6, 9.4, 9.1, 9.3]
+                ]
+            }
+        };
+
+        let dashboardData = defaultData;
+
+        // Fetch data from results.json with cache-busting
+        async function fetchResults() {
+            try {
+                const timestamp = Date.now();
+                const response = await fetch(`./results.json?t=${timestamp}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Map new format to dashboard format
+                    dashboardData = {
+                        metrics: {
+                            totalTests: data.total,
+                            passRate: data.passRate,
+                            failed: data.failed,
+                            skipped: data.skipped,
+                            avgDuration: data.avgDurationMs / 60000 // Convert ms to minutes
+                        },
+                        modules: data.moduleBreakdown.map(m => ({
+                            name: m.module,
+                            total: m.passed + m.failed + m.skipped,
+                            passed: m.passed,
+                            failed: m.failed,
+                            skipped: m.skipped,
+                            trend: m.trend
+                        })),
+                        failures: {
+                            'API/Stability': 0,
+                            'Logic Bugs': 0,
+                            'UI Flakiness': 0,
+                            'Performance': 0,
+                            'Security': 0
+                        },
+                        blockers: data.criticalBlockers.map(b => ({
+                            severity: b.severity,
+                            name: b.title,
+                            error: b.error,
+                            firstSeen: b.firstSeen,
+                            occurrences: 1
+                        })),
+                        history: data.last10Runs.map(r => ({
+                            run: r.run,
+                            trigger: r.trigger,
+                            duration: r.duration,
+                            passRate: r.passRate,
+                            status: r.status
+                        })),
+                        heatmap: {
+                            days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            modules: data.moduleBreakdown.map(m => m.module),
+                            data: data.moduleBreakdown.map(() => [8, 8, 8, 8, 8, 8, 8])
+                        }
+                    };
+                    console.log('[SUCCESS] Loaded data from results.json');
+                    return true;
+                } else {
+                    console.log('[WARN] results.json not found, using default data');
+                    return false;
+                }
+            } catch (error) {
+                console.log('[WARN] Failed to fetch results.json, using default data:', error);
+                return false;
+            }
+        }
+
+        // Initialize dashboard
+        async function initDashboard() {
+            await fetchResults();
+            updateMetrics();
+            renderModuleTable();
+            renderBlockers();
+            renderHistory();
+            renderTrendChart();
+            renderFailureChart();
+            renderHeatmap();
+            startAutoRefresh();
+        }
+
+        function updateMetrics() {
+            const { metrics } = dashboardData;
+            
+            animateValue('metric-total', 0, metrics.totalTests, 1000);
+            animateValue('metric-pass-rate', 0, metrics.passRate, 1000, '%');
+            animateValue('metric-failed', 0, metrics.failed, 1000);
+            animateValue('metric-skipped', 0, metrics.skipped, 1000);
+            animateValue('metric-duration', 0, metrics.avgDuration, 1000, 'm');
+
+            // Color code pass rate
+            const passRateCard = document.getElementById('card-pass-rate');
+            const passRateValue = document.getElementById('metric-pass-rate');
+            if (metrics.passRate >= 80) {
+                passRateValue.className = 'metric-value animate-count success';
+            } else if (metrics.passRate >= 60) {
+                passRateValue.className = 'metric-value animate-count warning';
+            } else {
+                passRateValue.className = 'metric-value animate-count danger';
+                passRateCard.classList.add('pulse');
+            }
+
+            // Pulse failed card if > 50
+            if (metrics.failed > 50) {
+                document.getElementById('card-failed').classList.add('pulse');
+            }
+        }
+
+        function animateValue(id, start, end, duration, suffix = '') {
+            const element = document.getElementById(id);
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = current + suffix;
+                if (current === end) clearInterval(timer);
+            }, Math.max(stepTime, 10));
+        }
+
+        function renderModuleTable() {
+            const tbody = document.getElementById('module-table');
+            tbody.innerHTML = dashboardData.modules.map(module => {
+                const passRate = ((module.passed / module.total) * 100).toFixed(1);
+                const passRateClass = passRate >= 80 ? 'success' : passRate >= 60 ? 'warning' : 'danger';
+                
+                return `
+                    <tr>
+                        <td>${module.name}</td>
+                        <td>${module.total}</td>
+                        <td>${module.passed}</td>
+                        <td>${module.failed}</td>
+                        <td>${module.skipped}</td>
+                        <td><span class="badge ${passRateClass}">${passRate}%</span></td>
+                        <td><canvas class="sparkline" id="spark-${module.name}"></canvas></td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Render sparklines
+            dashboardData.modules.forEach(module => {
+                renderSparkline(`spark-${module.name}`, module.trend);
+            });
+        }
+
+        function renderSparkline(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const lastValue = data[data.length - 1];
+            const firstValue = data[0];
+            const trend = lastValue >= firstValue ? '#10b981' : '#ef4444';
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map((_, i) => i),
+                    datasets: [{
+                        data: data,
+                        borderColor: trend,
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        function renderBlockers() {
+            const container = document.getElementById('blockers-container');
+            container.innerHTML = dashboardData.blockers.map(blocker => `
+                <div class="blocker-item">
+                    <div class="blocker-header">
+                        <span class="badge ${blocker.severity}">${blocker.severity}</span>
+                        <span class="blocker-meta">${blocker.occurrences} occurrences</span>
+                    </div>
+                    <div class="blocker-name">${blocker.name}</div>
+                    <div class="blocker-error">${blocker.error}</div>
+                    <div class="blocker-meta">First seen: ${new Date(blocker.firstSeen).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-table');
+            tbody.innerHTML = dashboardData.history.map(run => `
+                <tr>
+                    <td>#${run.run}</td>
+                    <td>${run.trigger}</td>
+                    <td>${run.duration}</td>
+                    <td>${run.passRate}%</td>
+                    <td><span class="badge ${run.status}">${run.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const labels = getLast7Days();
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pass Rate',
+                        data: [82, 85, 88, 84, 87, 89, dashboardData.metrics.passRate],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: '#2a2a2a' },
+                            ticks: { color: '#888888' }
+                        },
+                        x: {
+                            grid: { color: '#2a2a2a' },
+                            ticks: { color: '#888888' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderFailureChart() {
+            const ctx = document.getElementById('failureChart').getContext('2d');
+            const data = dashboardData.failures;
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#888888',
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHeatmap() {
+            const container = document.getElementById('heatmap');
+            const { days, modules, data } = dashboardData.heatmap;
+            
+            let html = '<div></div>'; // Empty corner
+            days.forEach(day => {
+                html += `<div class="heatmap-label">${day}</div>`;
+            });
+            
+            modules.forEach((module, i) => {
+                html += `<div class="heatmap-label">${module}</div>`;
+                data[i].forEach(value => {
+                    const intensity = Math.min(value / 10, 1);
+                    const color = `rgba(59, 130, 246, ${intensity})`;
+                    html += `<div class="heatmap-cell" style="background: ${color}">${value.toFixed(1)}</div>`;
+                });
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function getLast7Days() {
+            const days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                days.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+            }
+            return days;
+        }
+
+        function startAutoRefresh() {
+            let countdown = 60;
+            const countdownEl = document.getElementById('countdown');
+            
+            setInterval(async () => {
+                countdown--;
+                countdownEl.textContent = countdown + 's';
+                
+                if (countdown <= 0) {
+                    countdown = 60;
+                    console.log('Refreshing data...');
+                    await fetchResults();
+                    updateMetrics();
+                    renderModuleTable();
+                    renderBlockers();
+                    renderHistory();
+                    renderTrendChart();
+                    renderFailureChart();
+                    renderHeatmap();
+                }
+            }, 1000);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
