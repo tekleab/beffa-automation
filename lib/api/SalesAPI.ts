@@ -137,16 +137,19 @@ export class SalesAPI extends BasePage {
     let locationId = data.locationId;
     let warehouseId = data.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
       if (locResp.ok()) {
         const locData = await locResp.json();
-        const firstLoc = (locData.items || locData.data || [])[0];
-        if (firstLoc) {
-          locationId = locationId || firstLoc.id;
-          warehouseId = warehouseId || firstLoc.warehouse_id || firstLoc.warehouse?.id;
+        const locs = locData.items || locData.data || [];
+        // Prefer a location that has a warehouse already attached
+        const bestLoc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
+        if (bestLoc) {
+          locationId = locationId || bestLoc.id;
+          warehouseId = warehouseId || bestLoc.warehouse_id || bestLoc.warehouse?.id || '';
         }
       }
     }
+    if (!warehouseId) throw new Error(`[SO] warehouseId is empty — cannot create Sales Order. Ensure locations have an associated warehouse.`);
 
     const quantity = data.quantity || 1;
     const unitPrice = data.unitPrice || 10993.05;

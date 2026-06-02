@@ -407,13 +407,42 @@ export class InventoryAPI extends BasePage {
 
     const stock = bestLoc?.quantity || 0;
 
+    // Resolve warehouseId from multiple possible fields on the location object
+    const resolvedWarehouseId =
+      bestLoc?.warehouse_id ||
+      bestLoc?.location?.warehouse_id ||
+      bestLoc?.location?.warehouse?.id ||
+      bestLoc?.warehouse?.id ||
+      target.default_warehouse_id ||
+      '';
+
+    if (!resolvedWarehouseId) {
+      // Last resort: fetch from /locations API
+      const locId = bestLoc?.location_id;
+      if (locId) {
+        let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+        if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+        if (!apiBase.endsWith('/api')) apiBase += '/api';
+        const token = await this._getAuthToken();
+        const y = process.env.BEFFA_YEAR || '2018', p = process.env.BEFFA_PERIOD || 'yearly', c = process.env.BEFFA_CALENDAR || 'ec';
+        const locResp = await this.page.request.get(`${apiBase}/location/${locId}?year=${y}&period=${p}&calendar=${c}`, {
+          headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        });
+        if (locResp.ok()) {
+          const locJson = await locResp.json();
+          const wid = locJson.warehouse_id || locJson.warehouse?.id || '';
+          return { itemName: target.name, itemId: target.id, currentStock: stock, unitCost: target.unit_cost || 0, locationId: locId, warehouseId: wid };
+        }
+      }
+    }
+
     return {
       itemName: target.name,
       itemId: target.id,
       currentStock: stock,
       unitCost: target.unit_cost || 0,
       locationId: bestLoc?.location_id,
-      warehouseId: bestLoc?.location?.warehouse_id || bestLoc?.warehouse_id
+      warehouseId: resolvedWarehouseId
     };
   }
 
