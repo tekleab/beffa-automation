@@ -1,29 +1,37 @@
 {
-  "total": 108,
-  "passed": 59,
-  "failed": 42,
-  "skipped": 7,
-  "passRate": 54.6,
-  "avgDurationMs": 23691,
-  "lastUpdated": "2026-06-02T20:09:50.663Z",
+  "total": 15,
+  "passed": 5,
+  "failed": 6,
+  "skipped": 4,
+  "passRate": 33.3,
+  "avgDurationMs": 54108,
+  "lastUpdated": "2026-06-02T20:45:14.167Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 59,
-      "failed": 42,
-      "skipped": 7,
+      "passed": 5,
+      "failed": 6,
+      "skipped": 4,
       "trend": [
-        57,
         50,
         33.3,
         80,
         73.3,
         66.7,
-        58.4
+        58.4,
+        45.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "440",
+      "commit": "0a18dbf",
+      "trigger": "push (smoke)",
+      "duration": "13m 31s",
+      "passRate": 33.3,
+      "status": "failed"
+    },
     {
       "run": "439",
       "commit": "6e2d15b",
@@ -95,76 +103,44 @@
       "duration": "8m 8s",
       "passRate": 73.3,
       "status": "failed"
-    },
-    {
-      "run": "430",
-      "commit": "b82505d",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "5m 37s",
-      "passRate": 46.2,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6\n\n  64 |             try {\n  65 |                 await app.advanceDocumentAPI(body.id, 'invoices');\n> 66 |                 throw ",
-      "firstSeen": "2026-06-02T19:56:10.220Z"
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
+      "firstSeen": "2026-06-02T20:40:23.689Z"
     },
     {
       "severity": "critical",
-      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: 100, Expected: 500\n\n  167 |\n  168 |             if (Number(finalInv.unreceived_amount) !== IN",
-      "firstSeen": "2026-06-02T19:56:10.131Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
-      "error": "Error: [CRITICAL_RACE_CONDITION_BUG] Both concurrent receipts approved. AR over-credited: -900\n\n  83 |             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);\n  84 |             if (ap",
-      "firstSeen": "2026-06-02T19:56:36.807Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Invoice must reject second receipt after full payment",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-02T19:56:46.699Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-02T19:57:19.124Z"
+      "firstSeen": "2026-06-02T20:40:23.781Z"
     },
     {
       "severity": "medium",
-      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
-      "error": "Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance\n  Invoice      : INV/2026/06/02/000137 (ID: e27b653f-a4e0-4f9a-a4eb-04cc38ccfdf8)\n  AR Account   : a9331f21-418e-4",
-      "firstSeen": "2026-06-02T19:57:21.128Z"
+      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
+      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/purchase-order/3fdb3a6e-737c-4644-95f3-688f190277bc?year=2018&period=yearly&calen",
+      "firstSeen": "2026-06-02T20:41:02.983Z"
     },
     {
       "severity": "critical",
-      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
-      "firstSeen": "2026-06-02T19:58:02.239Z"
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-02T20:41:09.043Z"
     },
     {
-      "severity": "critical",
-      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
-      "firstSeen": "2026-06-02T19:58:21.004Z"
+      "severity": "medium",
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/payables/vendors/af918131-0989-4e3d-900c-86a51723e383/detail\", waiting until \"networkid",
+      "firstSeen": "2026-06-02T20:41:20.889Z"
     },
     {
-      "severity": "critical",
-      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-02T19:58:22.283Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-02T19:59:30.655Z"
+      "severity": "medium",
+      "title": "Guardrail: Employee creation must reject payload missing required fields",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
+      "firstSeen": "2026-06-02T20:41:54.713Z"
     }
   ]
 }
