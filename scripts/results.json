@@ -1,13 +1,37 @@
 {
-  "total": 0,
-  "passed": 0,
-  "failed": 0,
+  "total": 15,
+  "passed": 8,
+  "failed": 7,
   "skipped": 0,
-  "passRate": 0,
-  "avgDurationMs": 0,
-  "lastUpdated": "2026-06-02T07:04:06.085Z",
-  "moduleBreakdown": [],
+  "passRate": 53.3,
+  "avgDurationMs": 52516,
+  "lastUpdated": "2026-06-02T07:14:43.521Z",
+  "moduleBreakdown": [
+    {
+      "module": "Other",
+      "passed": 8,
+      "failed": 7,
+      "skipped": 0,
+      "trend": [
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        53.3
+      ]
+    }
+  ],
   "last10Runs": [
+    {
+      "run": "415",
+      "commit": "34ecd3d",
+      "trigger": "push (smoke)",
+      "duration": "13m 7s",
+      "passRate": 53.3,
+      "status": "failed"
+    },
     {
       "run": "414",
       "commit": "3418457",
@@ -79,15 +103,50 @@
       "duration": "0m 0s",
       "passRate": 0,
       "status": "unknown"
-    },
-    {
-      "run": "403",
-      "commit": "a512290",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "trigger": "push",
-      "status": "failed"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.selectOption: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_type_id')\u001b[22m\n\n\n  27 |         await page.goto('/receivables/customers/new');\n  28 |    ",
+      "firstSeen": "2026-06-02T07:07:38.519Z"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/06/02/001571 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
+      "firstSeen": "2026-06-02T07:07:38.511Z"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m100\u001b[39m\n\nExpected precision:    1\nExpec",
+      "firstSeen": "2026-06-02T07:07:38.520Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table').first().locator('tbody tr').filter({ hasText: 'System Customer' }).first() to be visible\u001b[22m\n\n\n",
+      "firstSeen": "2026-06-02T07:07:38.501Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
+      "firstSeen": "2026-06-02T07:09:55.960Z"
+    },
+    {
+      "severity": "critical",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-02T07:10:24.465Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/02/000866').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
+      "firstSeen": "2026-06-02T07:10:33.229Z"
+    }
+  ]
 }
