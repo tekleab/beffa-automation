@@ -13,7 +13,7 @@ import { AppManager } from '../../pages/AppManager';
  * 6. Orphan bill — cancel PO after bill approved
  */
 
-test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @security @regression', () => {
+test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @security @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;

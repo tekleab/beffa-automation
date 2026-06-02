@@ -4,7 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * SALES MULTI-ITEM INVOICE COGS AUDIT
  */
-test.describe('Sales Multi-Item Invoice COGS Audit @sales @inventory @logic @regression', () => {
+test.describe('Sales Multi-Item Invoice COGS Audit @sales @inventory @logic @regression @full', () => {
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

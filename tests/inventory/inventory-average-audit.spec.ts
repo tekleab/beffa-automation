@@ -8,7 +8,7 @@ import { AppManager } from'../../pages/AppManager';
  * across the entire document lifecycle (Purchases -> Sales -> Adjustments).
  */
 
-test.describe('Weighted Average Costing Forensic Audit @inventory @security @costing @regression', () => {
+test.describe('Weighted Average Costing Forensic Audit @inventory @security @costing @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test('Audit: 7-Stage Average Cost Validation & COGS Accuracy', async ({ page }) => {

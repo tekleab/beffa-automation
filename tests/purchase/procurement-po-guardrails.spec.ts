@@ -8,7 +8,7 @@ import { AppManager } from '../../pages/AppManager';
  * 1. Verify system rejects Billing for more units than the approved Purchase Order.
  */
 
-test.describe('Procurement PO Guardrails @purchase @logic @regression', () => {
+test.describe('Procurement PO Guardrails @purchase @logic @regression @full', () => {
     test.describe.configure({ mode: 'serial' });
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

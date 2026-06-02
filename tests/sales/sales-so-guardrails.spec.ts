@@ -8,7 +8,7 @@ import { AppManager } from '../../pages/AppManager';
  * 1. Verify system rejects Invoicing for more units than the approved Sales Order.
  */
 
-test.describe('Sales SO Guardrails @sales @logic @regression', () => {
+test.describe('Sales SO Guardrails @sales @logic @regression @full', () => {
     test.describe.configure({ mode: 'serial' });
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

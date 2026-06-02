@@ -9,7 +9,7 @@ import { AppManager } from'../../pages/AppManager';
  * 2. Verify stock reduction in Source matches stock increase in Destination.
  */
 
-test.describe('Inventory Logic & Transfer Audits @inventory @logic @regression', () => {
+test.describe('Inventory Logic & Transfer Audits @inventory @logic @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test('Audit: Warehouse Transfer must maintain stock balance across locations', async ({ page }) => {

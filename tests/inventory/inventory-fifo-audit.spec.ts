@@ -8,7 +8,7 @@ import { AppManager } from'../../pages/AppManager';
  * the entire document lifecycle (Purchases -> Sales -> Adjustments).
  */
 
-test.describe('FIFO Costing Forensic Audit @inventory @security @costing @regression', () => {
+test.describe('FIFO Costing Forensic Audit @inventory @security @costing @regression @full', () => {
     test.describe.configure({ mode:'serial' });
 
     test('Audit: 7-Stage FIFO Layer Validation & COGS Accuracy', async ({ page }) => {

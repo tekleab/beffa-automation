@@ -10,7 +10,7 @@ import { AppManager } from '../../pages/AppManager';
  * 3. Payment split array mismatch — bill_payments sum != payment total
  */
 
-test.describe('Procurement Payment Attack Vectors @purchase @security @logic @regression', () => {
+test.describe('Procurement Payment Attack Vectors @purchase @security @logic @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;

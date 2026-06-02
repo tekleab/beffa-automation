@@ -16,7 +16,7 @@ import { AppManager } from '../../pages/AppManager';
  * - Calendar: EC (Ethiopian Calendar)
  */
 
-test.describe('Procurement Period Control Edge Cases @purchase @security @temporal @regression', () => {
+test.describe('Procurement Period Control Edge Cases @purchase @security @temporal @regression @full', () => {
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

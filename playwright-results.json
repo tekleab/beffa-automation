@@ -1,0 +1,361 @@
+{
+  "config": {
+    "configFile": "/home/teklish/beffa-automation/playwright.config.ts",
+    "rootDir": "/home/teklish/beffa-automation/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/home/teklish/beffa-automation/global-setup.ts",
+    "globalTeardown": "/home/teklish/beffa-automation/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Forensic-Sales",
+        "name": "Forensic-Sales",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/sales\\/.*(audit|logic|concurrency|security|isolation).*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Forensic-Purchase",
+        "name": "Forensic-Purchase",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/purchase\\/.*(procurement|audit|logic|concurrency|security|isolation).*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Forensic-Inventory",
+        "name": "Forensic-Inventory",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/inventory\\/.*(integrity|audit|logic|concurrency|security|temporal).*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Sales-Workflows",
+        "name": "Sales-Workflows",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [
+          "/.*(audit|logic|concurrency|security|isolation).*/"
+        ],
+        "testMatch": [
+          "/sales\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Purchase-Workflows",
+        "name": "Purchase-Workflows",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [
+          "/.*(procurement|audit|logic|concurrency|security|isolation).*/"
+        ],
+        "testMatch": [
+          "/purchase\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Inventory",
+        "name": "Inventory",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [
+          "/.*(integrity|audit|logic|concurrency|security|temporal).*/"
+        ],
+        "testMatch": [
+          "/inventory\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "HR",
+        "name": "HR",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/hr\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "/home/teklish/beffa-automation/reporters/integrated-dashboard.ts",
+        null
+      ],
+      [
+        "/home/teklish/beffa-automation/reporters/summary-reporter.ts",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-results.json"
+        }
+      ],
+      [
+        "/home/teklish/beffa-automation/node_modules/allure-playwright/dist/cjs/index.js",
+        {
+          "outputFolder": "allure-results",
+          "detail": true,
+          "suiteTitle": true,
+          "categories": [
+            {
+              "name": "Business Logic Errors",
+              "messageRegex": ".*uuid.*|.*expect.*",
+              "statusDetailsRegex": ".*"
+            },
+            {
+              "name": "UI / Selector Flakiness",
+              "messageRegex": ".*timeout.*|.*waiting for.*",
+              "statusDetailsRegex": ".*"
+            }
+          ],
+          "environmentInfo": {
+            "OS": "linux",
+            "Node": "v20.19.0",
+            "Company": "BM Tech",
+            "FiscalYear": "2018",
+            "Project": "BEFFA ERP High-Integrity Suite",
+            "Engine": "Integrated-Allure-Reporter"
+          }
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "inventory/inventory-logic-audits.spec.ts",
+      "file": "inventory/inventory-logic-audits.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Inventory Logic & Transfer Audits @inventory @logic @regression",
+          "file": "inventory/inventory-logic-audits.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Audit: Warehouse Transfer must maintain stock balance across locations",
+              "ok": false,
+              "tags": [
+                "inventory",
+                "logic",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|484.00"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Item Discovery (50 Records)|5884.76"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Forensic-Inventory",
+                  "projectName": "Forensic-Inventory",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 84435,
+                      "error": {
+                        "message": "Error: [TRANSFER] IN adjustment failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"location_id\": [\n\t\t\t\"Item doesn't exist in given location.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating inventory adjustment\"\n}\n",
+                        "stack": "Error: [TRANSFER] IN adjustment failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"location_id\": [\n\t\t\t\"Item doesn't exist in given location.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating inventory adjustment\"\n}\n\n    at InventoryAPI.executeTransferAPI (/home/teklish/beffa-automation/lib/api/InventoryAPI.ts:621:29)\n    at /home/teklish/beffa-automation/tests/inventory/inventory-logic-audits.spec.ts:33:30",
+                        "location": {
+                          "file": "/home/teklish/beffa-automation/lib/api/InventoryAPI.ts",
+                          "column": 29,
+                          "line": 621
+                        },
+                        "snippet": "   at ../lib/api/InventoryAPI.ts:621\n\n  619 |     };\n  620 |     const inResp = await this.safePost(`${apiBase}/inventory-adjustments?${params}`, { data: inPayload, headers, label: 'Transfer IN' });\n> 621 |     if (!inResp.ok()) throw new Error(`[TRANSFER] IN adjustment failed: ${inResp.status()} - ${await inResp.text()}`);\n      |                             ^\n  622 |     const inJson = await inResp.json();\n  623 |     console.log(`[TRANSFER] IN created: ${inJson.ref} (ID: ${inJson.id})`);\n  624 |     await this.advanceDocumentAPI(inJson.id, 'inventory-adjustments');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/lib/api/InventoryAPI.ts",
+                            "column": 29,
+                            "line": 621
+                          },
+                          "message": "Error: [TRANSFER] IN adjustment failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"location_id\": [\n\t\t\t\"Item doesn't exist in given location.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating inventory adjustment\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:621\n\n  619 |     };\n  620 |     const inResp = await this.safePost(`${apiBase}/inventory-adjustments?${params}`, { data: inPayload, headers, label: 'Transfer IN' });\n> 621 |     if (!inResp.ok()) throw new Error(`[TRANSFER] IN adjustment failed: ${inResp.status()} - ${await inResp.text()}`);\n      |                             ^\n  622 |     const inJson = await inResp.json();\n  623 |     console.log(`[TRANSFER] IN created: ${inJson.ref} (ID: ${inJson.id})`);\n  624 |     await this.advanceDocumentAPI(inJson.id, 'inventory-adjustments');\n    at InventoryAPI.executeTransferAPI (/home/teklish/beffa-automation/lib/api/InventoryAPI.ts:621:29)\n    at /home/teklish/beffa-automation/tests/inventory/inventory-logic-audits.spec.ts:33:30"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 484.00ms\n"
+                        },
+                        {
+                          "text": "[STEP 1] Discovering transfer source and destination...\n"
+                        },
+                        {
+                          "text": "[ACTION] Discovering random item via API (Year 2018) [MinStock: 5]...\n"
+                        },
+                        {
+                          "text": "[PERFORMANCE] API - Item Discovery (50 Records): 5884.76ms\n"
+                        },
+                        {
+                          "text": "[STEP 2] Executing Warehouse Transfer of 5 units from location 26089757-500b-4d8f-b49a-4bcb67c544e2...\n"
+                        },
+                        {
+                          "text": "[TRANSFER] OUT: 26089757-500b-4d8f-b49a-4bcb67c544e2 → IN: dc64aeec-f9e0-4014-b5d1-ff4d6dca9d58 | Qty: 5\n"
+                        },
+                        {
+                          "text": "[TRANSFER] OUT created: ADJ/2026/06/02/000129 (ID: 5eb66718-944e-4ed2-85f1-c15967af86bc)\n"
+                        },
+                        {
+                          "text": "[API] Advancing inventory-adjustments \"5eb66718-944e-4ed2-85f1-c15967af86bc\"...\n"
+                        },
+                        {
+                          "text": "[WARN] Transfer failed or not supported in this environment: [TRANSFER] IN adjustment failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"location_id\": [\n\t\t\t\"Item doesn't exist in given location.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating inventory adjustment\"\n}\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-02T06:39:05.738Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|484.00"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Item Discovery (50 Records)|5884.76"
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/teklish/beffa-automation/test-results/inventory-inventory-logic--a2554-ck-balance-across-locations-Forensic-Inventory/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/inventory-inventory-logic--a2554-ck-balance-across-locations-Forensic-Inventory/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/inventory-inventory-logic--a2554-ck-balance-across-locations-Forensic-Inventory/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/teklish/beffa-automation/test-results/inventory-inventory-logic--a2554-ck-balance-across-locations-Forensic-Inventory/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/teklish/beffa-automation/lib/api/InventoryAPI.ts",
+                        "column": 29,
+                        "line": 621
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1557b144236b850ab045-db6ef1b752c5fda9ef03",
+              "file": "inventory/inventory-logic-audits.spec.ts",
+              "line": 15,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-06-02T06:39:00.820Z",
+    "duration": 98355.853,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

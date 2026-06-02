@@ -10,7 +10,7 @@ import { Logger } from '../../lib/utils/Logger';
  * 2. After full payment, customer profile must show zero outstanding balance.
  */
 
-test.describe('Sales Customer Balance UI Audits @sales @smoke', () => {
+test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
     test.setTimeout(300000);
 
     test('UI Audit: Approved invoice reflects outstanding balance in customer profile', async ({ page }) => {

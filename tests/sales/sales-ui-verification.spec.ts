@@ -12,7 +12,7 @@ import { SalesPage } from '../../pages/SalesPage';
  * 4. Capture screenshots at key verification points
  */
 
-test.describe('Sales Order UI Verification @sales @ui @regression', () => {
+test.describe('Sales Order UI Verification @sales @ui @regression @full', () => {
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

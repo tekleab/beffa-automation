@@ -9,7 +9,7 @@ import { AppManager } from'../../pages/AppManager';
  * 2. Verify thread-safe locking on the item stock row.
  */
 
-test.describe('Inventory Concurrency & Race Condition Audits @inventory @concurrency @security @regression', () => {
+test.describe('Inventory Concurrency & Race Condition Audits @inventory @concurrency @security @regression @full', () => {
 
     test('Guardrail: System must handle concurrent stock adjustments atomically', async ({ page }) => {
         const app = new AppManager(page);

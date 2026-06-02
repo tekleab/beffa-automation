@@ -9,7 +9,7 @@ import { AppManager } from '../../pages/AppManager';
  * 2. Credit note (invoice void) must reduce AR balance back to pre-sale state.
  */
 
-test.describe('Sales GL & Ledger Audits @sales @logic @regression', () => {
+test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => {
     test.setTimeout(300000);
 
     test('Audit: Full cycle GL — AR debited on invoice, cleared on receipt', async ({ page }) => {

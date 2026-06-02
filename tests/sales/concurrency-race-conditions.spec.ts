@@ -4,7 +4,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * CATEGORY 2: Concurrency & Race Conditions
  */
-test.describe('Concurrency & Race Condition Audits @sales @concurrency @security @regression', () => {
+test.describe('Concurrency & Race Condition Audits @sales @concurrency @security @regression @full', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(500000);
 

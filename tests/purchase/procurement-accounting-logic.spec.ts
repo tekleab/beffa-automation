@@ -11,7 +11,7 @@ import { AppManager } from '../../pages/AppManager';
  * (test 4 — Bill reversal after payment, which also validates stock rollback).
  */
 
-test.describe('Procurement Ledger & Payment Audits @purchase @logic @regression', () => {
+test.describe('Procurement Ledger & Payment Audits @purchase @logic @regression @full', () => {
     test.describe.configure({ mode: 'serial' });
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
