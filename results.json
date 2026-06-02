@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 8,
-  "failed": 7,
+  "passed": 9,
+  "failed": 6,
   "skipped": 0,
-  "passRate": 53.3,
-  "avgDurationMs": 52516,
-  "lastUpdated": "2026-06-02T07:14:43.521Z",
+  "passRate": 60,
+  "avgDurationMs": 39673,
+  "lastUpdated": "2026-06-02T08:09:01.410Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 8,
-      "failed": 7,
+      "passed": 9,
+      "failed": 6,
       "skipped": 0,
       "trend": [
-        82,
         84,
         86,
         88,
         90,
         92,
-        53.3
+        53.3,
+        60
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "416",
+      "commit": "076049d",
+      "trigger": "push (smoke)",
+      "duration": "9m 55s",
+      "passRate": 60,
+      "status": "failed"
+    },
     {
       "run": "415",
       "commit": "34ecd3d",
@@ -95,58 +103,44 @@
       "duration": "0m 0s",
       "passRate": 0,
       "status": "unknown"
-    },
-    {
-      "run": "404",
-      "commit": "1a3efb0",
-      "trigger": "push (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.selectOption: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_type_id')\u001b[22m\n\n\n  27 |         await page.goto('/receivables/customers/new');\n  28 |    ",
-      "firstSeen": "2026-06-02T07:07:38.519Z"
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Edit\")') to be visible\u001b[22m\n\n\n  49 |         // Edit\n  50 |         console.log(`[STEP]",
+      "firstSeen": "2026-06-02T08:02:37.285Z"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/06/02/001571 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
-      "firstSeen": "2026-06-02T07:07:38.511Z"
+      "error": "Error: Invoice INV/2026/06/02/001579 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
+      "firstSeen": "2026-06-02T08:02:37.294Z"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m100\u001b[39m\n\nExpected precision:    1\nExpec",
-      "firstSeen": "2026-06-02T07:07:38.520Z"
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"message\": \"Transactions are not allowed outside the open period. Jan 1, 0001 - Jan 1, 0001.\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:280",
+      "firstSeen": "2026-06-02T08:02:37.341Z"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table').first().locator('tbody tr').filter({ hasText: 'System Customer' }).first() to be visible\u001b[22m\n\n\n",
-      "firstSeen": "2026-06-02T07:07:38.501Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
-      "firstSeen": "2026-06-02T07:09:55.960Z"
+      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://157.180.20.112:8001/api/receipts/cadd6c62-2f49-45f3-9831-3a4a3eb9272b/advance?year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b",
+      "firstSeen": "2026-06-02T08:02:37.360Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T07:10:24.465Z"
+      "firstSeen": "2026-06-02T08:04:27.741Z"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/02/000866').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
-      "firstSeen": "2026-06-02T07:10:33.229Z"
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/02/000870').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
+      "firstSeen": "2026-06-02T08:04:55.475Z"
     }
   ]
 }
