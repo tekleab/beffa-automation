@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 12,
-  "failed": 3,
+  "passed": 11,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 80,
-  "avgDurationMs": 30737,
-  "lastUpdated": "2026-06-02T11:31:11.525Z",
+  "passRate": 73.3,
+  "avgDurationMs": 35590,
+  "lastUpdated": "2026-06-02T11:48:52.086Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 12,
-      "failed": 3,
+      "passed": 11,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        44.4,
         53.8,
         41.7,
         55.6,
         73.3,
         73.3,
-        80
+        80,
+        73.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "428",
+      "commit": "ed1b3e5",
+      "trigger": "push (smoke)",
+      "duration": "8m 53s",
+      "passRate": 73.3,
+      "status": "failed"
+    },
     {
       "run": "427",
       "commit": "2c580ac",
@@ -95,34 +103,32 @@
       "duration": "9m 55s",
       "passRate": 60,
       "status": "failed"
-    },
-    {
-      "run": "415",
-      "commit": "34ecd3d",
-      "trigger": "push (smoke)",
-      "duration": "13m 7s",
-      "passRate": 53.3,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1334.21\u001b[39m\n\nExpected precision:    1\nE",
-      "firstSeen": "2026-06-02T11:28:17.746Z"
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/06/02/000029 not found in customer profile UI. Customer: 223a2864-674f-42e7-b799-22730e12c57a\n\n  64 |             const rowCount = await page.locator('table tbody tr').count();",
+      "firstSeen": "2026-06-02T11:45:27.914Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
+      "firstSeen": "2026-06-02T11:45:59.168Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T11:28:54.015Z"
+      "firstSeen": "2026-06-02T11:46:06.180Z"
     },
     {
       "severity": "critical",
       "title": "UI: Org Chart page must render the department hierarchy",
       "error": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.react-flow, .react-flow__renderer, [class*=\"react-flow\"]').first() to be visible\u001b[22m\n\n\n  185 |\n  186 |",
-      "firstSeen": "2026-06-02T11:30:29.093Z"
+      "firstSeen": "2026-06-02T11:48:06.887Z"
     }
   ]
 }
