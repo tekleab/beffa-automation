@@ -524,18 +524,20 @@
             background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: var(--radius-card);
-            padding: 6px 10px;
+            padding: 8px 12px;
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 8px;
-            min-height: 44px;
+            gap: 12px;
+            min-height: 52px;
         }
 
         .risk-compact-info {
             flex: 1;
             min-width: 0;
-            padding-top: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .risk-compact-title {
@@ -544,11 +546,26 @@
             overflow: hidden;
             text-overflow: ellipsis;
             color: var(--text-primary);
+            line-height: 1.3;
         }
 
         .risk-compact-meta {
             font-size: 9px;
             color: var(--text-secondary);
+            line-height: 1.2;
+        }
+        
+        .risk-compact-badge {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .risk-compact-time {
+            flex-shrink: 0;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 2px;
         }
 
         /* ── VIEW 2: MODULE HEALTH TABLE ── */
@@ -1159,6 +1176,13 @@
                 <a class="nav-item" onclick="switchView('heatmap')">
                     <i class="ti ti-clock"></i> Duration Heatmap
                 </a>
+                
+                <!-- Logout Button -->
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                    <a class="nav-item logout-item" onclick="logout()" style="color: var(--red); border-left-color: var(--red);">
+                        <i class="ti ti-logout"></i> Logout
+                    </a>
+                </div>
             </nav>
         </div>
 
@@ -1423,6 +1447,60 @@
 
         // Run auth check immediately
         checkAuth();
+        
+        // ── LOGOUT FUNCTIONALITY ──
+        function logout() {
+            // Clear session storage
+            sessionStorage.removeItem('bh_auth');
+            
+            // Clear any other stored data
+            localStorage.removeItem('bh_theme');
+            
+            // Show logout confirmation with animation
+            const logoutToast = document.createElement('div');
+            logoutToast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--surface2);
+                border: 1px solid var(--border-hover);
+                border-radius: 8px;
+                padding: 12px 16px;
+                color: var(--text-primary);
+                font-size: 12px;
+                font-weight: 600;
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                animation: slideInRight 0.3s ease-out;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            
+            logoutToast.innerHTML = `
+                <i class="ti ti-check" style="color: var(--teal);"></i>
+                Successfully logged out
+            `;
+            
+            document.body.appendChild(logoutToast);
+            
+            // Hide dashboard and show login
+            setTimeout(() => {
+                document.getElementById('dashboard-root').classList.remove('visible');
+                document.getElementById('login-overlay').classList.remove('hidden');
+                
+                // Clear login form
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+                
+                // Remove toast
+                logoutToast.remove();
+                
+                // Reset theme to default
+                document.body.className = '';
+                initTheme();
+            }, 1500);
+        }
         // ── THEME PALETTE TOGGLE ──
         const themes = [
             { name: 'default', label: 'Cyberpunk Emerald', color: '#10b981' },
@@ -1952,12 +2030,12 @@
                         const impact = getBusinessImpact(b.error);
                         return `
                             <div class="risk-compact-card">
-                                <span class="badge ${sev}">${sev}</span>
+                                <span class="badge ${sev} risk-compact-badge">${sev}</span>
                                 <div class="risk-compact-info">
                                     <div class="risk-compact-title">${b.title}</div>
                                     <div class="risk-compact-meta">${impact}</div>
                                 </div>
-                                <span class="risk-time-open">${timeSince(b.firstSeen)}</span>
+                                <span class="risk-compact-time">${timeSince(b.firstSeen)}</span>
                             </div>
                         `;
                     }).join('');
