@@ -1,0 +1,55 @@
+[PERFORMANCE] API - Auth API Verification: 310.23ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 845.95ms
+[OK] Discovered: "Spare part hinge" via API | Stock: 4
+[API] Advancing sales-orders "a7277916-30a6-45d6-8d83-51ff0579c3e1"...
+[OK] Sales Order SO/2026/06/02/000016 approved via API
+[API] Advancing invoices "08c8000f-11f9-4bbb-b172-e535b8badd38"...
+[OK] Invoice INV/2026/06/02/000080 approved via API
+[INFO] Document Setup Complete: INV/2026/06/02/000080 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-02T14:55:31.618Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "08c8000f-11f9-4bbb-b172-e535b8badd38"
+    }
+  ]
+}
+[RETRY] Receipt creation attempt 1 failed (Invoice-Receipt API Creation Failed after 3 attempts. Last e), retrying in 5s...
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-02T14:56:30.618Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "08c8000f-11f9-4bbb-b172-e535b8badd38"
+    }
+  ]
+}
+[RETRY] Receipt creation attempt 2 failed (Invoice-Receipt API Creation Failed after 3 attempts. Last e), retrying in 5s...
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-02T14:57:29.514Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "08c8000f-11f9-4bbb-b172-e535b8badd38"
+    }
+  ]
+}
