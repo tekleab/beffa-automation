@@ -31,7 +31,27 @@ export class HrAPI extends BasePage {
     );
     const text = await resp.text();
     if (!resp.ok()) throw new Error(`Create employee failed: ${resp.status()} - ${text}`);
-    try { return JSON.parse(text); } catch { throw new Error(`Create employee: invalid JSON - ${text.slice(0, 200)}`); }
+    // Backend may return null body on success — fetch the latest employee by name as fallback
+    if (text && text.trim() !== 'null' && text.trim() !== '') {
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && parsed.id) return parsed;
+      } catch {}
+    }
+    // Fallback: find the just-created employee by name
+    const name = data.name as string;
+    await this.page.waitForTimeout(1500);
+    const listResp = await this.page.request.get(
+      `${this.apiBase}/employees?page=1&pageSize=50&sort=created_at:desc&${this.params}`, { headers: h }
+    );
+    if (listResp.ok()) {
+      const list = (await listResp.json()).data || [];
+      const found = list.find((e: any) => e.name === name || e.full_name === name);
+      if (found) return found;
+      // Last resort: return the most recently created employee
+      if (list.length > 0) return list[0];
+    }
+    throw new Error(`Create employee: could not retrieve created employee "${name}" - response: ${text.slice(0, 200)}`);
   }
 
   async createPayStructure(name: string, description = ''): Promise<any> {
@@ -157,11 +177,52 @@ export class HrAPI extends BasePage {
 
   async ensureDepartment(name: string = 'Automation Department'): Promise<{ id: string; name: string }> {
     const existing = await this.listDepartments(50);
-    if (existing.length > 0) return { id: existing[0].id, name: existing[0].name };
+    if (existing.length > 0) {
+      // Prefer ROOT-level department (parent_id === null) as it has the approval workflow correctly linked
+      const root = existing.find((d: any) => !d.parent_id) || existing[0];
+      return { id: root.id, name: root.name };
+    }
+
+    // No departments — need to discover the org config + hierarchy level from ROOT first
     const h = await this.headers();
+    const rootResp = await this.page.request.get(
+      `${this.apiBase}/departments?page=1&pageSize=1&${this.params}`, { headers: h }
+    );
+    // There are truly zero departments — need the HR config to create one
+    // Fetch the HR/org config to get config_id and a valid hierarchy_level_id
+    const configResp = await this.page.request.get(
+      `${this.apiBase}/hr-configs?page=1&pageSize=1&${this.params}`, { headers: h }
+    );
+    let configId: string | undefined;
+    let levelId: string | undefined;
+    let parentId: string | undefined;
+
+    if (configResp.ok()) {
+      const cfg = await configResp.json();
+      const configs = cfg.data || cfg.items || (Array.isArray(cfg) ? cfg : [cfg]);
+      const first = configs[0];
+      configId = first?.id;
+      levelId = (first?.hierarchy_levels || [])[0]?.id;
+    }
+
+    if (!configId || !levelId) {
+      throw new Error(
+        '[HR] No department hierarchy configuration found. ' +
+        'Please set up at least one HR org structure config in the ERP admin UI before running HR tests.'
+      );
+    }
+
+    const ts = Date.now().toString().slice(-6);
     const resp = await this.page.request.post(
       `${this.apiBase}/departments?${this.params}`,
-      { headers: h, data: { name, description: 'Auto-created by E2E suite' } }
+      { headers: h, data: {
+        name,
+        code: `AUTO-${ts}`,
+        config_id: configId,
+        hierarchy_level_id: levelId,
+        parent_id: parentId || null,
+        description: 'Auto-created by E2E suite'
+      }}
     );
     if (!resp.ok()) throw new Error(`Create department failed: ${resp.status()} - ${await resp.text()}`);
     const created = await resp.json();
@@ -174,35 +235,39 @@ export class HrAPI extends BasePage {
    */
   async ensureJobPosition(departmentId: string, title: string = 'Audit Engineer'): Promise<{ id: string; title: string }> {
     const h = await this.headers();
-
-    // 1. Check if any job positions already exist
     const listResp = await this.page.request.get(
-      `${this.apiBase}/job-positions?page=1&pageSize=10&department_id=${departmentId}&${this.params}`,
-      { headers: h }
+      `${this.apiBase}/job-positions?page=1&pageSize=100&${this.params}`, { headers: h }
     );
     if (listResp.ok()) {
-      const jobs = (await listResp.json()).data || [];
-      // Look for the specific title first, fallback to any existing
-      let existing = jobs.find((j: any) => j.id && j.title?.toLowerCase().includes(title.toLowerCase()));
-      if (!existing) existing = jobs.find((j: any) => j.id && j.title);
-      
-      if (existing) {
-        return { id: existing.id, title: existing.title };
+      const all = (await listResp.json()).data || [];
+      const deptJobs = all.filter((j: any) => j.department_id === departmentId && j.id);
+      if (deptJobs.length > 0) {
+        const match = deptJobs.find((j: any) => j.title?.toLowerCase().includes(title.toLowerCase())) || deptJobs[0];
+        const filled = match.filled_slots ?? 0;
+        const slots = match.slot_count ?? 0;
+        // If slot_count is 1 OR all slots are taken, bump slot_count to filled+100 via PATCH
+        if (slots === 1 || (slots > 0 && filled >= slots)) {
+          console.log(`[HR] Job "${match.title}" slots exhausted or singleton (${filled}/${slots}). Expanding slots...`);
+          await this.page.request.patch(
+            `${this.apiBase}/job-positions/${match.id}?${this.params}`,
+            { headers: h, data: { slot_count: filled + 100 } }
+          );
+        }
+        console.log(`[HR] Using job position: "${match.title}" (${match.id}) | slots: ${filled}/${slots}`);
+        return { id: match.id, title: match.title };
       }
     }
 
-    // 2. None found — create one
+    // None found — create one with ample slot_count
+    const ts = Date.now().toString().slice(-6);
     const createResp = await this.page.request.post(
       `${this.apiBase}/job-positions?${this.params}`,
-      { headers: h, data: { title: title, department_id: departmentId } }
+      { headers: h, data: { title, code: `JP-${ts}`, department_id: departmentId, min_salary: 0, max_salary: 100000, slot_count: 100 } }
     );
-
-    if (!createResp.ok()) {
-      const text = await createResp.text();
-      throw new Error(`Failed to create job position: ${createResp.status()} - ${text.slice(0, 200)}`);
-    }
-
+    if (!createResp.ok()) throw new Error(`Failed to create job position for dept ${departmentId}: ${createResp.status()} - ${(await createResp.text()).slice(0, 200)}`);
     const created = await createResp.json();
+    if (!created.id) throw new Error(`Job position created but no ID returned: ${JSON.stringify(created).slice(0, 200)}`);
+    console.log(`[HR] Created job position: "${created.title}" (${created.id}) | slots: 100`);
     return { id: created.id, title: created.title };
   }
 

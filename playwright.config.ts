@@ -21,7 +21,7 @@ export default defineConfig({
   expect: { timeout: 30000 },
 
   fullyParallel: true,
-  workers: process.env.CI ? 4 : 2,
+  workers: process.env.CI ? 4 : (process.env.TEST_TYPE === 'full' ? 4 : 2),
   // 1 retry in CI absorbs transient ERP network hiccups; 0 locally for speed
   retries: 0,
 

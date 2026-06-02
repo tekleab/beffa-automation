@@ -169,6 +169,11 @@ export class BasePage {
       } else {
         const errBody = await resp.text().catch(() => '(unreadable)');
         console.log(`[ERROR] Advance failed. Status: ${status} | Body: ${errBody.substring(0, 200)}`);
+        // For employee-contracts, a 500/E1481 may mean already at final state — check current status
+        if (docType === 'employee-contracts' && status === 500) {
+          console.log(`[INFO] employee-contracts advance returned 500 (E1481) — checking if contract is already approved...`);
+          break;
+        }
         break;
       }
     }

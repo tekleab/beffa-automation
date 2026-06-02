@@ -138,6 +138,16 @@ jobs:
           GREP_ARGS="--grep @regression --grep-invert @smoke"
         elif [ "$TEST_TYPE" = "full" ]; then
           GREP_ARGS="--grep @full"
+          # For @full tests, we run ALL projects with 4 workers
+          echo "=========================================================="
+          echo "🚀 FULL SUITE: Running ALL Projects with 4 Workers..."
+          echo "=========================================================="
+          npx playwright test \
+            --workers=4 \
+            $GREP_ARGS \
+            --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          # Skip the separate parts for full - everything runs together
+          exit $FINAL_EXIT_CODE
         elif [ "$TEST_TYPE" = "e2e" ]; then
           GREP_ARGS="--grep @e2e"
         else
@@ -160,20 +170,22 @@ jobs:
         FINAL_EXIT_CODE=0
 
         # ── PART 1: Standard UI Workflows (parallel) ────────────────────────
-        echo "=========================================================="
-        echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
-        echo "=========================================================="
-        npx playwright test \
-          --project=Sales-Workflows \
-          --project=Purchase-Workflows \
-          --project=Cross-Module \
-          --project=HR \
-          --workers=4 \
-          $GREP_ARGS \
-          --pass-with-no-tests || FINAL_EXIT_CODE=$?
+        if [ "$TEST_TYPE" != "full" ]; then
+          echo "=========================================================="
+          echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
+          echo "=========================================================="
+          npx playwright test \
+            --project=Sales-Workflows \
+            --project=Purchase-Workflows \
+            --project=Cross-Module \
+            --project=HR \
+            --workers=4 \
+            $GREP_ARGS \
+            --pass-with-no-tests || FINAL_EXIT_CODE=$?
+        fi
 
         # ── PART 2: Forensic Audits (sequential — runs for regression + full) ──────
-        if [ "$TEST_TYPE" = "regression" ] || [ "$TEST_TYPE" = "full" ]; then
+        if [ "$TEST_TYPE" = "regression" ]; then
           echo "=========================================================="
           echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
           echo "=========================================================="
@@ -186,7 +198,7 @@ jobs:
 
           echo "-> Forensic Inventory..."
           npx playwright test --project=Forensic-Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
-        else
+        elif [ "$TEST_TYPE" != "full" ]; then
           echo "=========================================================="
           echo "⏭️  Skipping Forensic Audits for $TEST_TYPE run."
           echo "=========================================================="

@@ -9,7 +9,7 @@
     "test": "node scripts/select-company.mjs",
     "test:smoke": "node scripts/select-company.mjs --grep @smoke",
     "test:regression": "node scripts/select-company.mjs --grep @regression",
-    "test:full": "node scripts/select-company.mjs --grep @full",
+    "test:full": "TEST_TYPE=full node scripts/select-company.mjs --grep @full",
     "test:sales": "npx playwright test --project=Forensic-Sales --project=Sales-Workflows",
     "test:purchase": "npx playwright test --project=Forensic-Purchase --project=Purchase-Workflows",
     "test:inventory": "npx playwright test --project=Forensic-Inventory",

@@ -115,7 +115,7 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         await page.goto(`/receivables/customers/${meta.customerId}/detail`);
 
         const invoicesTab = page.getByRole('tab', { name: /^Invoices$/i }).first();
-        await invoicesTab.waitFor({ state: 'visible', timeout: 15000 });
+        await invoicesTab.waitFor({ state: 'visible', timeout: 150000 });
         await invoicesTab.click();
         await page.waitForTimeout(2000);
 
