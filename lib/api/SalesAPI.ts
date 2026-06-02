@@ -504,12 +504,15 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const response = await this.page.request.get(`${apiBase}/customers?search=${customerId}`, {
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const qs = `year=${year}&period=${period}&calendar=${calendar}`;
+    const response = await this.page.request.get(`${apiBase}/customer/${customerId}?${qs}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
-    if (!response.ok()) return 'System Customer';
+    if (!response.ok()) return '';
     const json = await response.json();
-    const name = json.items?.[0]?.name || 'System Customer';
-    return name;
+    return json.name || json.customer_name || '';
   }
 }

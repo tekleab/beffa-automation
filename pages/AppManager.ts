@@ -52,11 +52,11 @@ export class AppManager {
 
     // --- Customer Module Selectors ---
     this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
-    this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
-    this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
-    this.customerTypeSelect = page.getByLabel('Customer Type *');
-    this.customerPhoneInput = page.locator('#phone');
-    this.createCustomerBtn = page.locator('button:has-text("Create")');
+    this.customerNameInput = page.locator('#customer_name-input-id');
+    this.customerTinInput = page.locator('#customer_tin-input-id');
+    this.customerTypeSelect = page.locator('#type-select-id');
+    this.customerPhoneInput = page.locator('input[name="phone.p1"]');
+    this.createCustomerBtn = page.locator('button:has-text("Create Customer")');
     this.editCustomerBtn = page.locator('button:has-text("Edit")');
     this.removeCustomerBtn = page.locator('button:has-text("Remove")');
 

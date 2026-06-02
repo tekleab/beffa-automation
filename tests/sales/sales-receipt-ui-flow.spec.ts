@@ -42,30 +42,33 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         await app.advanceDocumentAPI(invResult.id!, 'invoices');
         console.log(`[OK] Invoice ${invResult.ref} approved via API`);
 
-        // Read customer name from SO result or API — more reliable than scraping the DOM
-        const meta = await app.api.sales.discoverMetadataAPI();
+        // Read customer name from API
         let CUSTOMER_NAME = await app.getCustomerNameAPI(soResult.customerId);
-        
-        // Fallback: use the customer ID from SO result
-        if (!CUSTOMER_NAME) {
-            CUSTOMER_NAME = meta.customerId;
-        }
+        if (!CUSTOMER_NAME) throw new Error(`[SETUP_BUG] Could not resolve customer name for id: ${soResult.customerId}`);
         
         const INVOICE_ID = invResult.ref;
         console.log(`[INFO] Document Setup Complete: ${INVOICE_ID} for ${CUSTOMER_NAME}`);
 
-        // Phase 2: Create Receipt via API (Bypass UI for linkage reliability)
+        // Phase 2: Create Receipt via API with retry for server 504s
         console.log('[STEP] Phase 2: Creating linked receipt via API');
         const invoiceData = await app.getInvoiceAPI(invResult.id);
-        const invTotal = invoiceData.total_amount || invoiceData.net_total || 1000; // Fallback if meta missing
+        const invTotal = invoiceData.total_amount || invoiceData.net_total || 1000;
 
-        const rcptResult = await app.createInvoiceReceiptAPI({
-            invoiceId: invResult.id,
-            customerId: soResult.customerId,
-            amount: invTotal
-        });
-        
-        if (!rcptResult.success) throw new Error("Receipt API Creation Failed");
+        let rcptResult: any;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                rcptResult = await app.createInvoiceReceiptAPI({
+                    invoiceId: invResult.id,
+                    customerId: soResult.customerId,
+                    amount: invTotal
+                });
+                break;
+            } catch (e: any) {
+                if (attempt === 3) throw e;
+                console.log(`[RETRY] Receipt creation attempt ${attempt} failed (${e.message.substring(0, 60)}), retrying in 5s...`);
+                await page.waitForTimeout(5000);
+            }
+        }
         const capturedReceiptNumber = rcptResult.ref;
         const rcptId = rcptResult.id;
         console.log(`[OK] Receipt created via API: ${capturedReceiptNumber}`);

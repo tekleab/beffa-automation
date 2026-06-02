@@ -109,6 +109,10 @@ export default defineConfig({
       testMatch: /cross-module\/.*\.spec\.ts/,
     },
     {
+      name: 'Utils',
+      testMatch: /e2e\/.*\.spec\.ts/,
+    },
+    {
       name: 'HR',
       testMatch: /hr\/.*\.spec\.ts/,
     },
