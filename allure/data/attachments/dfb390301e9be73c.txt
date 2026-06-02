@@ -1,0 +1,28 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 514.64ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 2
+[SUCCESS] "Purchase Order Date" set to Day 2 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2747.08ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2025.94ms
+[INFO] Vendor: KAMARIYA PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2081.62ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2078.93ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1954.79ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1916.06ms
+[PERFORMANCE] UI - Random Selection: Location: 1961.29ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1866.54ms
+[PERFORMANCE] UI - Random Selection: Tax: 2064.53ms
+[OK] Line item added (Price: 1304)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/02/000445 | Vendor: KAMARIYA PLC
+[API] Advancing purchase-orders "e6fb5064-67c7-477c-8348-866e5b7362c4"...
+[OK] PO PO/2026/06/02/000445 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/02/000445 via API
+[API] Advancing bills "5ca142a2-4515-4b62-8dfb-59ca50dd665d"...
+[OK] Linked Bill BILL/2026/06/02/000812 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/02/000812 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/02/000812 is physically present in KAMARIYA PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/02/000445 -> Bill BILL/2026/06/02/000812
