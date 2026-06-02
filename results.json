@@ -1,16 +1,16 @@
 {
   "total": 15,
-  "passed": 0,
-  "failed": 9,
+  "passed": 4,
+  "failed": 5,
   "skipped": 6,
-  "passRate": 0,
-  "avgDurationMs": 41699,
-  "lastUpdated": "2026-06-02T08:45:17.052Z",
+  "passRate": 26.7,
+  "avgDurationMs": 40996,
+  "lastUpdated": "2026-06-02T08:55:33.178Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 0,
-      "failed": 9,
+      "passed": 4,
+      "failed": 5,
       "skipped": 6,
       "trend": [
         88,
@@ -19,17 +19,17 @@
         53.3,
         60,
         0,
-        0
+        44.4
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "419",
-      "commit": "cb980fe",
+      "run": "420",
+      "commit": "1d85920",
       "trigger": "push (smoke)",
-      "duration": "10m 25s",
-      "passRate": 0,
+      "duration": "10m 14s",
+      "passRate": 26.7,
       "status": "failed"
     },
     {
@@ -108,57 +108,33 @@
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:38:01.004Z"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:38:01.084Z"
-    },
-    {
-      "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:38:01.039Z"
+      "error": "Error: Invoice-Receipt API Creation Failed: 504 - {\n\t\"code\": 504,\n\t\"message\": \"Unable to create receipt: timeout: context deadline exceeded\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers",
+      "firstSeen": "2026-06-02T08:46:27.139Z"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:38:01.047Z"
+      "error": "Error: Invoice-Receipt API Creation Failed: 504 - {\n\t\"code\": 504,\n\t\"message\": \"Unable to create receipt: timeout: context deadline exceeded\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers",
+      "firstSeen": "2026-06-02T08:46:27.163Z"
     },
     {
-      "severity": "medium",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:40:26.139Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:40:26.718Z"
-    },
-    {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:40:27.092Z"
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-02T08:47:41.961Z"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:40:27.313Z"
+      "error": "TimeoutError: page.goto: Timeout 150000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/payables/vendors/c60b509a-52c0-4cb7-bc0f-0fa93395ba99/detail\", waiting until \"networkid",
+      "firstSeen": "2026-06-02T08:47:56.722Z"
     },
     {
       "severity": "medium",
       "title": "API: Employee must be created with all required fields",
       "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:42:48.320Z"
+      "firstSeen": "2026-06-02T08:48:33.068Z"
     }
   ]
 }
