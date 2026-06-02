@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 5,
+  "passed": 11,
   "failed": 4,
-  "skipped": 6,
-  "passRate": 33.3,
-  "avgDurationMs": 22608,
-  "lastUpdated": "2026-06-02T10:59:48.021Z",
+  "skipped": 0,
+  "passRate": 73.3,
+  "avgDurationMs": 31802,
+  "lastUpdated": "2026-06-02T11:07:01.078Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 5,
+      "passed": 11,
       "failed": 4,
-      "skipped": 6,
+      "skipped": 0,
       "trend": [
-        53.3,
         60,
         0,
         44.4,
         53.8,
         41.7,
-        55.6
+        55.6,
+        73.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "424",
+      "commit": "72a89b9",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "7m 57s",
+      "passRate": 73.3,
+      "status": "failed"
+    },
     {
       "run": "423",
       "commit": "638cc58",
@@ -95,40 +103,32 @@
       "duration": "3m 31s",
       "passRate": 28.6,
       "status": "failed"
-    },
-    {
-      "run": "412",
-      "commit": "e1aedc3",
-      "trigger": "push (smoke)",
-      "duration": "6m 29s",
-      "passRate": 15.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m7095.13\u001b[39m\n\nExpected precision:    1\nE",
-      "firstSeen": "2026-06-02T10:56:47.401Z"
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m535.1300000000001\u001b[39m\n\nExpected precisi",
+      "firstSeen": "2026-06-02T11:03:34.298Z"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
       "error": "Error: SO API Failed\n\n  23 |             warehouseId: itemResult.warehouseId\n  24 |         });\n> 25 |         if (!soResult.success) throw new Error(\"SO API Failed\");\n     |                          ",
-      "firstSeen": "2026-06-02T10:56:47.490Z"
+      "firstSeen": "2026-06-02T11:03:34.116Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T10:57:36.534Z"
+      "firstSeen": "2026-06-02T11:04:30.474Z"
     },
     {
-      "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[1mMatcher error\u001b[22m: \u001b[31mreceived\u001b[39m value must not be null nor undefined\n\nReceived has valu",
-      "firstSeen": "2026-06-02T10:57:49.773Z"
+      "severity": "critical",
+      "title": "UI: Org Chart page must render the department hierarchy",
+      "error": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.react-flow, .react-flow__renderer, [class*=\"react-flow\"]').first() to be visible\u001b[22m\n\n\n  185 |\n  186 |",
+      "firstSeen": "2026-06-02T11:06:06.452Z"
     }
   ]
 }
