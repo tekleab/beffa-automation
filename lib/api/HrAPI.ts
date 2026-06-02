@@ -155,6 +155,19 @@ export class HrAPI extends BasePage {
     return (await resp.json()).data || [];
   }
 
+  async ensureDepartment(name: string = 'Automation Department'): Promise<{ id: string; name: string }> {
+    const existing = await this.listDepartments(50);
+    if (existing.length > 0) return { id: existing[0].id, name: existing[0].name };
+    const h = await this.headers();
+    const resp = await this.page.request.post(
+      `${this.apiBase}/departments?${this.params}`,
+      { headers: h, data: { name, description: 'Auto-created by E2E suite' } }
+    );
+    if (!resp.ok()) throw new Error(`Create department failed: ${resp.status()} - ${await resp.text()}`);
+    const created = await resp.json();
+    return { id: created.id, name: created.name };
+  }
+
   /**
    * Ensures a job position exists in the given department.
    * If none are found, creates one via API so subsequent tests always have a valid jobPositionId.
@@ -205,10 +218,11 @@ export class HrAPI extends BasePage {
     const glAccount = accounts[0];
     if (!glAccount) throw new Error('HR Metadata: No GL accounts found');
 
+    // Always guarantee a department exists — create one if none configured
     const depts = await this.listDepartments(20);
     const preferred = depts.find((d: any) => /finance.*purchase|purchase.*finance/i.test(d.name));
-    const ordered = preferred ? [preferred, ...depts.filter((d: any) => d !== preferred)] : depts;
-    const targetDept = ordered[0];
+    const rawTarget = preferred || depts[0];
+    const targetDept = rawTarget ?? await this.ensureDepartment();
 
     // Always guarantee a job position exists — create one if the org chart has none
     const job = await this.ensureJobPosition(targetDept.id);
