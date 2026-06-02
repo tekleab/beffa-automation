@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 218.55ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1169.52ms
+[ATTACK] Attempting to invoice 10106 units of "metal chairs" (available: 107)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 107, required: 10106.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+
