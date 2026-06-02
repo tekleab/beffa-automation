@@ -80,8 +80,19 @@ export class AuthManager extends BasePage {
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
-      // 5. Navigate to Home
+      // 5. Navigate to Home and verify we are authenticated
       await this.page.goto('/', { waitUntil: 'load' });
+      
+      // If redirected back to login, the token injection failed — fall back to UI login
+      if (this.page.url().includes('/users/login')) {
+        console.log('[WARN] Token injection rejected by app, falling back to UI login...');
+        await this.emailInput.waitFor({ state: 'visible', timeout: 30000 });
+        await this.emailInput.fill(cleanEmail);
+        await this.passwordInput.fill(cleanPass);
+        await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
+        await this.loginBtn.click();
+        await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
+      }
 
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
@@ -91,6 +102,7 @@ export class AuthManager extends BasePage {
       await this.passwordInput.fill(cleanPass);
       await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
       await this.loginBtn.click();
+      await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
     }
 
     await this.companyBtn.waitFor({ state: 'visible', timeout: 60000 });
