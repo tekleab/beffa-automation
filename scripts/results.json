@@ -1,29 +1,37 @@
 {
-  "total": 13,
-  "passed": 6,
-  "failed": 7,
+  "total": 15,
+  "passed": 11,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 46.2,
-  "avgDurationMs": 25931,
-  "lastUpdated": "2026-06-02T12:46:13.429Z",
+  "passRate": 73.3,
+  "avgDurationMs": 32551,
+  "lastUpdated": "2026-06-02T14:45:25.686Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 6,
-      "failed": 7,
+      "passed": 11,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        41.7,
         55.6,
         73.3,
         73.3,
         80,
         66.7,
-        46.2
+        46.2,
+        73.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "431",
+      "commit": "5908ee5",
+      "trigger": "push (smoke)",
+      "duration": "8m 8s",
+      "passRate": 73.3,
+      "status": "failed"
+    },
     {
       "run": "430",
       "commit": "b82505d",
@@ -95,58 +103,32 @@
       "duration": "10m 14s",
       "passRate": 26.7,
       "status": "failed"
-    },
-    {
-      "run": "418",
-      "commit": "125e71e",
-      "trigger": "push (smoke)",
-      "duration": "10m 26s",
-      "passRate": 0,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Audit: 7-Stage Average Cost Validation & COGS Accuracy",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T12:42:59.333Z"
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/06/02/000066 not found in customer profile UI. Customer: 223a2864-674f-42e7-b799-22730e12c57a\n\n  64 |             const rowCount = await page.locator('table tbody tr').count();",
+      "firstSeen": "2026-06-02T14:41:59.002Z"
     },
     {
       "severity": "critical",
-      "title": "Guardrail: System must handle concurrent stock adjustments atomically",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Stock Race Condition: Concurrent adjustments caused lost updates. Expected 51, found 0.\n\n  50 |\n  51 |         if (finalStock !== expectedStock) {\n> 52 |             throw ",
-      "firstSeen": "2026-06-02T12:42:59.328Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: 7-Stage FIFO Layer Validation & COGS Accuracy",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T12:43:20.119Z"
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:485\n\n  483 |       headers\n  484 |     });\n> 485 |     if (!respo",
+      "firstSeen": "2026-06-02T14:41:58.970Z"
     },
     {
       "severity": "critical",
-      "title": "Guardrail: System must reject negative stock adjustments",
-      "error": "Error: [CRITICAL_LOGIC_BUG] System accepted and fully approved negative stock adjustment (Ref: ADJ/2026/06/02/000003 | ID: d241ff18-563d-4bba-a4b4-970252625aed)! Inventory can go negative.\n\n  50 |    ",
-      "firstSeen": "2026-06-02T12:44:06.692Z"
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:485\n\n  483 |       headers\n  484 |     });\n> 485 |     if (!respo",
+      "firstSeen": "2026-06-02T14:41:58.977Z"
     },
     {
-      "severity": "medium",
-      "title": "Guardrail: Deactivated item must be rejected for new stock adjustments",
-      "error": "Error: [VULNERABILITY] System accepted a stock adjustment on a deactivated item (Ref: ADJ/2026/06/02/000004).\n\n  44 |             if (!adj.success) { console.log(`[PASS] Adjustment correctly rejected ",
-      "firstSeen": "2026-06-02T12:44:25.410Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Warehouse Transfer must maintain stock balance across locations",
-      "error": "Error: [TRANSFER] Could not find a second location for destination. Only one location exists.\n\n   at ../lib/api/InventoryAPI.ts:630\n\n  628 |         const locs = locData.items || locData.data || [];\n ",
-      "firstSeen": "2026-06-02T12:45:48.788Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
-      "error": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustment from 2022. This allows fraudulent stock balancing.\n\n  31 |             } as any);\n  32 |         ",
-      "firstSeen": "2026-06-02T12:45:54.723Z"
+      "severity": "critical",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-02T14:42:43.723Z"
     }
   ]
 }
