@@ -20,8 +20,8 @@ export default defineConfig({
   timeout: 600000,
   expect: { timeout: 30000 },
 
-  fullyParallel: false,
-  workers: 1,
+  fullyParallel: true,
+  workers: process.env.CI ? 4 : 2,
   // 1 retry in CI absorbs transient ERP network hiccups; 0 locally for speed
   retries: process.env.CI ? 1 : 0,
 
@@ -70,8 +70,8 @@ export default defineConfig({
     },
 
     trace: 'retain-on-failure',
-    screenshot: 'on',
-    video: 'on',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
 
     actionTimeout: 60000,
     navigationTimeout: 150000,
@@ -79,34 +79,34 @@ export default defineConfig({
 
   projects: [
     {
+      // All deep forensic/logic/security sales tests
       name: 'Forensic-Sales',
-      testMatch: /sales\/.*(audit|logic|concurrency|security|isolation).*\.spec\.ts/,
+      testMatch: /sales\/.*(audit|logic|concurrency|security|isolation|integrity|boundaries|guardrails|cogs|partial|tax|credit|period).*\.spec\.ts/,
     },
     {
+      // All deep forensic/logic/security purchase tests
       name: 'Forensic-Purchase',
-      testMatch: /purchase\/.*(procurement|audit|logic|concurrency|security|isolation).*\.spec\.ts/,
+      testMatch: /purchase\/.*(procurement|audit|logic|concurrency|security|isolation|integrity|boundaries|guardrails|partial|stress|period|accounting|payment).*\.spec\.ts/,
     },
     {
+      // All inventory tests (no overlap — inventory files are already specific)
       name: 'Forensic-Inventory',
-      testMatch: /inventory\/.*(integrity|audit|logic|concurrency|security|temporal).*\.spec\.ts/,
-    },
-    {
-      name: 'Sales-Workflows',
-      testMatch: /sales\/.*\.spec\.ts/,
-      testIgnore: [/.*(audit|logic|concurrency|security|isolation).*/],
-      use: {
-        channel: 'chrome',
-      },
-    },
-    {
-      name: 'Purchase-Workflows',
-      testMatch: /purchase\/.*\.spec\.ts/,
-      testIgnore: [/.*(procurement|audit|logic|concurrency|security|isolation).*/],
-    },
-    {
-      name: 'Inventory',
       testMatch: /inventory\/.*\.spec\.ts/,
-      testIgnore: [/.*(integrity|audit|logic|concurrency|security|temporal).*/],
+    },
+    {
+      // Only UI/workflow sales tests not covered by Forensic-Sales
+      name: 'Sales-Workflows',
+      testMatch: /sales\/(customer|sales-receipt-ui-flow|sales-ui-verification|sales-customer-balance-ui)\.spec\.ts/,
+      use: { channel: 'chrome' },
+    },
+    {
+      // Only UI/workflow purchase tests not covered by Forensic-Purchase
+      name: 'Purchase-Workflows',
+      testMatch: /purchase\/(vendor|purchase-bill-ui-flow|purchase-to-sale-flow)\.spec\.ts/,
+    },
+    {
+      name: 'Cross-Module',
+      testMatch: /cross-module\/.*\.spec\.ts/,
     },
     {
       name: 'HR',

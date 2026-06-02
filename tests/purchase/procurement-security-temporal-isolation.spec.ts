@@ -3,6 +3,7 @@ import { AppManager } from '../../pages/AppManager';
 
 /**
  * CATEGORY 4: Security & Temporal Isolation for Procurement
+ * Merged from: procurement-temporal-isolation.spec.ts + procurement-security-temporal-isolation.spec.ts
  */
 test.describe('Procurement Security & Temporal Isolation Audits @purchase @security @regression', () => {
     test.describe.configure({ mode: 'serial' });
@@ -74,6 +75,32 @@ test.describe('Procurement Security & Temporal Isolation Audits @purchase @secur
         }
     });
 
+    test('Guardrail: System must strictly segregate bills by Vendor (IDOR read-access)', async ({ page }) => {
+        const app = new AppManager(page);
+        const { apiBase, headers, qs } = await app.buildApiContext();
+
+        const vendorA = await app.api.purchase.discoverRandomVendorAPI();
+        const vendorB = await app.api.purchase.discoverRandomVendorAPI();
+
+        if (vendorB.id === vendorA.id) {
+            console.log(`[SKIP] Only one vendor exists — cannot test cross-vendor isolation.`);
+            return;
+        }
+
+        const billA = await app.api.purchase.createBillAPI({ itemData: sharedItem, vendorId: vendorA.id });
+
+        console.log(`[ATTACK] Fetching Vendor A's bill via Vendor B's ledger...`);
+        const leakResp = await page.request.get(`${apiBase}/vendor/${vendorB.id}/bills?${qs}`, { headers });
+        const billsInB = (await leakResp.json()).data || (await leakResp.json()).items || [];
+        const foundLeak = billsInB.find((b: any) => b.id === billA.id);
+
+        if (foundLeak) {
+            throw new Error(`[SECURITY_VULNERABILITY] IDOR: Vendor A's Bill was visible in Vendor B's ledger!`);
+        }
+        console.log(`[PASS] Cross-Vendor isolation verified.`);
+    });
+
+    // [KNOWN BUG] API accepts back-dated historical bills allowing temporal manipulation.
     test('Guardrail: System must explicitly reject historical back-dated bills', async ({ page }) => {
         const app = new AppManager(page);
         const meta = sharedMeta;
@@ -96,12 +123,12 @@ test.describe('Procurement Security & Temporal Isolation Audits @purchase @secur
                 await app.advanceDocumentAPI(rogueBill.id, 'bills');
                 const finalStatus = await app.api.purchase.getBillAPI(rogueBill.id);
                 if (finalStatus.status?.toLowerCase().includes('approved') || finalStatus.status?.toLowerCase().includes('authorized')) {
-                    throw new Error(`[CRITICAL_LOGIC_BUG] ERP fully approved a bill from 5 years in the past (${rogueDate})! Immutability is broken.`);
+                    throw new Error(`[CRITICAL_LOGIC_BUG] ERP fully approved a bill from the past (${rogueDate})! Immutability is broken.`);
                 }
                 console.log(`[PASS] Bill advanced but stopped short of full approval.`);
             } catch (authErr: any) {
                 if (authErr.message.includes('CRITICAL_LOGIC_BUG')) throw authErr;
-                console.log(`[PASS] Backend safely intercepted rogue date during advancement: ${authErr.message}`);
+                console.log(`[PASS] Backend safely intercepted rogue date: ${authErr.message}`);
             }
         } catch (error: any) {
             if (error.message.includes('CRITICAL_LOGIC_BUG')) throw error;
