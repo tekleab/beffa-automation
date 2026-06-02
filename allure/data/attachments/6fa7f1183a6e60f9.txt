@@ -1,0 +1,32 @@
+[PERFORMANCE] API - Auth API Verification: 374.16ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 674.98ms
+[STEP 1] Creating invoice, approving, and paying in full via API...
+[API] Advancing invoices "43543a83-1cae-4902-81ec-8ba3559f872e"...
+[OK] Invoice INV/2026/06/02/000123 net_due: 2538.4075510204084
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 2538.4075510204084
+[DEBUG] Receipt payload: {
+  "amount": 2538.41,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-02T17:42:33.928Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 2538.41,
+      "invoice_id": "43543a83-1cae-4902-81ec-8ba3559f872e"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/02/000025
+[API] Advancing receipts "f84669ec-3a0c-4a6a-8171-e458c20a62d0"...
+[OK] Invoice INV/2026/06/02/000123 fully paid via receipt RCPT/2026/06/02/000025.
+[STEP 2] Verifying invoice balance is zero via API...
+[AUDIT] Invoice INV/2026/06/02/000123 remaining balance: -0.002448979591463285 (Expected: 0)
+[STEP 3] Navigating to customer profile to verify paid status in UI...
+[STEP 4] Asserting receipt RCPT/2026/06/02/000025 is visible in customer profile...
+[DEBUG] Looking for receipt refs: RCPT/2026/06/02/000025
+[SUCCESS] Found receipt with reference: RCPT/2026/06/02/000025
+[PASS] Receipt RCPT/2026/06/02/000025 confirmed in customer profile. Balance cleared to zero.
