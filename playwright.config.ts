@@ -32,6 +32,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
+    ['./reporters/module-counter-reporter.ts'], // Enhanced module tracking for full test runs
     ['./reporters/integrated-dashboard.ts'],
     ['./reporters/summary-reporter.ts'],
     ['html', { open: 'never' }],

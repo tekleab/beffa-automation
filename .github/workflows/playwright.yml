@@ -287,6 +287,23 @@ jobs:
 
         echo "[INFO] Generating results.json for QA Dashboard..."
         node scripts/generate-results.js || true
+        
+        # Generate module statistics report for full test runs
+        if [ "$TEST_TYPE" = "full" ]; then
+          echo "[INFO] Generating module statistics for full test run..."
+          node scripts/analyze-modules.js || true
+          node scripts/analyze-modules.js --markdown || true
+          
+          # Copy module reports to deploy if they exist
+          if [ -f "test-results/module-statistics.json" ]; then
+            cp test-results/module-statistics.json deploy/
+            echo "[SUCCESS] Module statistics copied to deploy directory"
+          fi
+          if [ -f "test-results/module-report.md" ]; then
+            cp test-results/module-report.md deploy/
+            echo "[SUCCESS] Module markdown report copied to deploy directory"
+          fi
+        fi
 
         echo "[INFO] Copying QA Dashboard to deploy directory..."
         cp scripts/qa-dashboard.html deploy/qa-dashboard.html
@@ -307,6 +324,11 @@ jobs:
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
         echo "QA Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/qa-dashboard.html" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY
+        
+        # Add module report links for full test runs
+        if [ "$TEST_TYPE" = "full" ] && [ -f "deploy/module-report.md" ]; then
+          echo "Module Statistics: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/module-report.md" >> $GITHUB_STEP_SUMMARY
+        fi
 
     - name: Commit and push results.json
       if: always()

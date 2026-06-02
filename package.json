@@ -17,7 +17,9 @@
     "clean": "rm -rf test-results/ allure-results/ recordings/ artifacts/ coverage/",
     "allure:generate": "npx allure generate allure-results --clean -o allure-report && npx ts-node scripts/latency-tracker.ts",
     "latency:track": "npx ts-node scripts/latency-tracker.ts",
-    "report:allure": "npm run allure:generate && npx allure open allure-report"
+    "report:allure": "npm run allure:generate && npx allure open allure-report",
+    "analyze:modules": "node scripts/analyze-modules.js",
+    "report:modules:md": "node scripts/analyze-modules.js --markdown"
   },
   "keywords": [],
   "author": "Tekleab",
