@@ -10,18 +10,14 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 1
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Forensic-Sales",
         "name": "Forensic-Sales",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -35,9 +31,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Forensic-Purchase",
         "name": "Forensic-Purchase",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -51,9 +45,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Forensic-Inventory",
         "name": "Forensic-Inventory",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -67,9 +59,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Sales-Workflows",
         "name": "Sales-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -83,9 +73,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Purchase-Workflows",
         "name": "Purchase-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -99,9 +87,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Cross-Module",
         "name": "Cross-Module",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -115,9 +101,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "HR",
         "name": "HR",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -195,197 +179,27 @@
     "workers": 2,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "hr/hr-lifecycle.spec.ts",
-      "file": "hr/hr-lifecycle.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @full",
-          "file": "hr/hr-lifecycle.spec.ts",
-          "line": 13,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Full lifecycle: Employee creation through payroll run approval",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 300000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|416.06"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 81977,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 416.06ms\n"
-                        },
-                        {
-                          "text": "[STEP 1] Creating employee via API...\n"
-                        },
-                        {
-                          "text": "[PASS] Employee: EMP/2026/06/02/000073 | id: 34005c01-5b59-4788-937f-493e9ab5a213\n"
-                        },
-                        {
-                          "text": "[STEP 2] Creating pay component...\n"
-                        },
-                        {
-                          "text": "[HR] Using job position: \"Audit Engineer\" (a2330250-8eb1-4fac-a875-35d13e4f392d) | slots: 1/101\n"
-                        },
-                        {
-                          "text": "[HR] Using job position: \"QA\" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) | slots: 22/101\n"
-                        },
-                        {
-                          "text": "[INFO] Using dept: ROOT (684d35b3-b79d-4bd2-b155-2651ff995998) | job: QA (d6c9bc96-0676-45a4-a6a9-eb527dd26745)\n"
-                        },
-                        {
-                          "text": "[PASS] Pay component: 88dd4e4c-e6d8-485d-bd63-9d03f967bc4c\n"
-                        },
-                        {
-                          "text": "[STEP 3] Creating pay structure...\n"
-                        },
-                        {
-                          "text": "[PASS] Pay structure: a65a5466-a879-4be6-ac4b-f46c2404096c | components: 1\n"
-                        },
-                        {
-                          "text": "[STEP 4] Assigning pay structure...\n"
-                        },
-                        {
-                          "text": "[PASS] Pay structure assigned\n"
-                        },
-                        {
-                          "text": "[STEP 5] Creating contract via API...\n"
-                        },
-                        {
-                          "text": "[HR] Using job position: \"QA\" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) | slots: 22/101\n"
-                        },
-                        {
-                          "text": "[INFO] Validated job position: \"QA\" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) ∈ dept 684d35b3-b79d-4bd2-b155-2651ff995998\n"
-                        },
-                        {
-                          "text": "[PASS] Contract created: 7b89d4a3-1275-4c6f-81ac-172a70ac29ca\n"
-                        },
-                        {
-                          "text": "[INFO] department_id: 684d35b3-b79d-4bd2-b155-2651ff995998 | job_position_id: d6c9bc96-0676-45a4-a6a9-eb527dd26745\n"
-                        },
-                        {
-                          "text": "[INFO] status: draft | contract_status: active\n"
-                        },
-                        {
-                          "text": "[STEP 6] Approving contract via advanceDocumentAPI...\n"
-                        },
-                        {
-                          "text": "[API] Advancing employee-contracts \"7b89d4a3-1275-4c6f-81ac-172a70ac29ca\"...\n"
-                        },
-                        {
-                          "text": "[INFO] Contract status after advance: approved\n"
-                        },
-                        {
-                          "text": "[PASS] Contract approved — status: approved\n"
-                        },
-                        {
-                          "text": "[STEP 7] Verifying employee is active...\n"
-                        },
-                        {
-                          "text": "[PASS] Employee is active\n"
-                        },
-                        {
-                          "text": "[STEP 8] Creating payroll run...\n"
-                        },
-                        {
-                          "text": "[PASS] Payroll run: a3ca0149-ec35-4718-a1d6-ceb6f7348044 | status: draft\n"
-                        },
-                        {
-                          "text": "[STEP 9] Assigning employee to payroll run...\n"
-                        },
-                        {
-                          "text": "[PASS] Employee assigned to payroll run\n"
-                        },
-                        {
-                          "text": "[STEP 10] Approving payroll run via UI...\n"
-                        },
-                        {
-                          "text": "[OK] Checkbox clicked\n"
-                        },
-                        {
-                          "text": "[OK] Process Payroll clicked\n"
-                        },
-                        {
-                          "text": "[WORKFLOW] Navigating to Preview step\n"
-                        },
-                        {
-                          "text": "[OK] Clicked Preview step\n"
-                        },
-                        {
-                          "text": "[OK] Clicked final approve button\n"
-                        },
-                        {
-                          "text": "[OK] Clicked toolbar Approve button\n"
-                        },
-                        {
-                          "text": "[DEBUG] Intercepted requests: [\"PATCH http://168.119.175.142:8001/api/payroll-runs/a3ca0149-ec35-4718-a1d6-ceb6f7348044/process?year=2018&period=yearly&calendar=ec\",\"PATCH http://168.119.175.142:8001/api/payroll-runs/a3ca0149-ec35-4718-a1d6-ceb6f7348044/advance?year=2018&period=yearly&calendar=ec\"]\n"
-                        },
-                        {
-                          "text": "[POLL 1/15] Payroll run status: approved\n"
-                        },
-                        {
-                          "text": "[PASS] Payroll run approved\n"
-                        },
-                        {
-                          "text": "[PASS] Payrolls generated: 1\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-02T14:30:48.841Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|416.06"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "44dbd7af9de48ff607ab-f1d6c6b58c7cb8fe4782",
-              "file": "hr/hr-lifecycle.spec.ts",
-              "line": 16,
-              "column": 9
-            }
-          ]
-        }
-      ]
+      "message": "SyntaxError: /home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts: Unexpected token, expected \",\" (196:8)\n\n\u001b[0m \u001b[90m 194 |\u001b[39m     }\n \u001b[90m 195 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 196 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Invoice ${inv.ref} confirmed visible. Outstanding balance ${outstanding} verified.`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 197 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 198 |\u001b[39m\n \u001b[90m 199 |\u001b[39m     test(\u001b[32m'UI Audit: Customer profile shows zero balance after full payment'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m",
+      "stack": "SyntaxError: /home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts: Unexpected token, expected \",\" (196:8)\n\n\u001b[0m \u001b[90m 194 |\u001b[39m     }\n \u001b[90m 195 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 196 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Invoice ${inv.ref} confirmed visible. Outstanding balance ${outstanding} verified.`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 197 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 198 |\u001b[39m\n \u001b[90m 199 |\u001b[39m     test(\u001b[32m'UI Audit: Customer profile shows zero balance after full payment'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts",
+        "line": 196,
+        "column": 8
+      },
+      "snippet": "\u001b[90m   at \u001b[39msales/sales-customer-balance-ui.spec.ts:196\n\n\u001b[0m \u001b[90m 194 |\u001b[39m     }\n \u001b[90m 195 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 196 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Invoice ${inv.ref} confirmed visible. Outstanding balance ${outstanding} verified.`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 197 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 198 |\u001b[39m\n \u001b[90m 199 |\u001b[39m     test(\u001b[32m'UI Audit: Customer profile shows zero balance after full payment'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+    },
+    {
+      "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
+      "stack": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments."
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2026-06-02T14:30:46.040Z",
-    "duration": 92096.681,
-    "expected": 1,
+    "startTime": "2026-06-02T14:51:28.302Z",
+    "duration": 876.72,
+    "expected": 0,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

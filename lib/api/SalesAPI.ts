@@ -440,7 +440,10 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' };
+    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+
+    // Wait a moment before attempting receipt creation to ensure invoice is fully processed
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Discover Cash Account dynamically if not provided
     let cashAccountId = data.cashAccountId;
@@ -449,7 +452,12 @@ export class SalesAPI extends BasePage {
       if (acctResp.ok()) {
         const acctData = await acctResp.json();
         const allAccounts = acctData.items || acctData.data || [];
-        const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
+        const cashAcct = allAccounts.find((a: any) => 
+          a.account_type?.toLowerCase().includes('cash') || 
+          a.account_type?.toLowerCase().includes('bank') ||
+          a.name?.toLowerCase().includes('cash') ||
+          a.name?.toLowerCase().includes('petty')
+        ) || allAccounts[0];
         if (cashAcct) cashAccountId = cashAcct.id;
       }
     }
@@ -470,7 +478,7 @@ export class SalesAPI extends BasePage {
       cash_account_id: cashAccountId,
       customer_id: data.customerId, // MUST match the invoice customer
       date: data.receiptDate || new Date().toISOString(),
-      payment_method: 'cash',
+      payment_method: data.payment_method || 'cash',
       currency_id: currencyId,
       invoice_receipts: [{
         amount: data.amount,
@@ -478,13 +486,48 @@ export class SalesAPI extends BasePage {
       }]
     };
 
-    const response = await this.page.request.post(`${apiBase}/receipts?${params}`, {
-      data: payload,
-      headers
-    });
-    if (!response.ok()) throw new Error(`Invoice-Receipt API Creation Failed: ${response.status()} - ${await response.text()}`);
-    const json = await response.json();
-    return { success: true, ref: json.ref, id: json.id };
+    console.log(`[DEBUG] Receipt payload:`, JSON.stringify(payload, null, 2));
+
+    // Retry logic for transient 500 errors
+    let lastError = '';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const response = await this.page.request.post(`${apiBase}/receipts?${params}`, {
+          data: payload,
+          headers
+        });
+        
+        if (response.ok()) {
+          const json = await response.json();
+          console.log(`[SUCCESS] Receipt created on attempt ${attempt}:`, json.ref || json.id);
+          return { success: true, ref: json.ref || json.receipt_number || `RCT-${json.id}`, id: json.id };
+        }
+        
+        const errorText = await response.text();
+        lastError = `Attempt ${attempt}: HTTP ${response.status()} - ${errorText}`;
+        console.warn(`[WARN] Receipt creation failed on attempt ${attempt}: ${lastError}`);
+        
+        // If it's a 422 validation error, don't retry
+        if (response.status() === 422) {
+          throw new Error(`Validation Error (422): ${errorText}`);
+        }
+        
+        // Wait before retry
+        if (attempt < 3) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+        }
+        
+      } catch (error) {
+        lastError = `Attempt ${attempt}: ${error}`;
+        console.warn(`[WARN] Receipt creation error on attempt ${attempt}:`, error);
+        
+        if (attempt < 3) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+        }
+      }
+    }
+    
+    throw new Error(`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`);
   }
 
   async getInvoiceAPI(invoiceId: string): Promise<any> {

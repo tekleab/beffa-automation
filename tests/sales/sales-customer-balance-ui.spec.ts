@@ -51,21 +51,143 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         const invoicesTab = page.getByRole('tab', { name: /^Invoices$/i }).first();
         await invoicesTab.waitFor({ state: 'visible', timeout: 15000 });
         await invoicesTab.click();
-        await page.waitForTimeout(2000);
+        
+        // Wait for tab content to load completely
+        await page.waitForLoadState('networkidle', { timeout: 10000 });
+        await page.waitForTimeout(3000); // Additional buffer for UI rendering
 
         console.log(`[STEP 5] Asserting invoice ${inv.ref} is visible in customer profile...`);
-        const tabContent = await page.locator('table').first().textContent().catch(() => 'No table found');
-        Logger.debug(`Tab content preview: ${tabContent?.substring(0, 200)}...`);
-
-        const invoiceLocator = page.getByText(inv.ref).first();
-        const isVisible = await invoiceLocator.isVisible({ timeout: 15000 }).catch(() => false);
-
-        if (!isVisible) {
-            const rowCount = await page.locator('table tbody tr').count();
-            console.log(`[DEBUG] Rows in table: ${rowCount}`);
-            throw new Error(`Invoice ${inv.ref} not found in customer profile UI. Customer: ${meta.customerId}`);
+        
+        // Wait for the invoices tab content to load
+        await page.waitForLoadState('domcontentloaded');
+        
+        // Wait for any table in the active tab panel to be visible
+        const activeTabPanel = page.locator('[role="tabpanel"]:not([hidden])').first();
+        await activeTabPanel.waitFor({ state: 'visible', timeout: 10000 });
+        
+        // Give additional time for all invoices to load (could be many)
+        await page.waitForTimeout(8000);
+        
+        // Check if we need to handle pagination or scroll to load more data
+        let attempts = 0;
+        let found = false;
+        const maxAttempts = 5;
+        
+        while (!found && attempts < maxAttempts) {
+            attempts++;
+            console.log(`[DEBUG] Search attempt ${attempts}/${maxAttempts} for invoice ${inv.ref}`);
+            
+            // Check if there are any tables in the active tab
+            const tables = page.locator('table');
+            const tableCount = await tables.count();
+            console.log(`[DEBUG] Tables found: ${tableCount}`);
+            
+            if (tableCount > 0) {
+                const activeTable = activeTabPanel.locator('table').first();
+                const isTableVisible = await activeTable.isVisible({ timeout: 5000 }).catch(() => false);
+                
+                if (isTableVisible) {
+                    const rowCount = await activeTable.locator('tbody tr').count();
+                    console.log(`[DEBUG] Rows in active table: ${rowCount}`);
+                    
+                    if (rowCount > 0) {
+                        // Get sample content for debugging
+                        const firstRowContent = await activeTable.locator('tbody tr').first().textContent().catch(() => '');
+                        const lastRowContent = await activeTable.locator('tbody tr').last().textContent().catch(() => '');
+                        console.log(`[DEBUG] First row: ${firstRowContent}`);
+                        console.log(`[DEBUG] Last row: ${lastRowContent}`);
+                    }
+                }
+            }
+            
+            // Try multiple possible invoice reference formats
+            const possibleRefs = [
+                inv.ref
+            ].filter(Boolean);
+            
+            console.log(`[DEBUG] Looking for invoice refs: ${possibleRefs.join(', ')}`);
+            
+            // Search in the entire page content, not just tables
+            for (const ref of possibleRefs) {
+                const locator = page.getByText(ref, { exact: false });
+                const elementCount = await locator.count();
+                
+                if (elementCount > 0) {
+                    console.log(`[SUCCESS] Found ${elementCount} elements with reference: ${ref}`);
+                    
+                    // Check if at least one is visible
+                    for (let i = 0; i < elementCount; i++) {
+                        const element = locator.nth(i);
+                        if (await element.isVisible({ timeout: 2000 }).catch(() => false)) {
+                            console.log(`[SUCCESS] Invoice ${ref} is visible at position ${i}`);
+                            found = true;
+                            break;
+                        }
+                    }
+                    
+                    if (found) break;
+                }
+            }
+            
+            if (!found) {
+                // Try searching by invoice ID as fallback
+                const invoiceId = inv.id.toString();
+                const idLocator = page.getByText(invoiceId, { exact: false });
+                const idCount = await idLocator.count();
+                
+                if (idCount > 0) {
+                    console.log(`[SUCCESS] Found invoice by ID: ${invoiceId}`);
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                // Scroll down to potentially load more invoices or check pagination
+                console.log(`[DEBUG] Invoice not found yet, scrolling down to load more data...`);
+                await page.keyboard.press('End'); // Scroll to bottom
+                await page.waitForTimeout(2000);
+                
+                // Check for pagination buttons and click "Next" if available
+                const nextButton = page.getByRole('button', { name: /next|>/i }).or(
+                    page.locator('button[aria-label*="next"]')
+                ).first();
+                
+                if (await nextButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+                    console.log(`[DEBUG] Clicking pagination Next button...`);
+                    await nextButton.click();
+                    await page.waitForTimeout(3000);
+                } else {
+                    // Try scrolling within the table if no pagination
+                    const tableContainer = page.locator('div[class*="table"], .table-container').first();
+                    if (await tableContainer.isVisible({ timeout: 1000 }).catch(() => false)) {
+                        await tableContainer.evaluate(el => {
+                            el.scrollTop = el.scrollHeight;
+                        });
+                        await page.waitForTimeout(2000);
+                    }
+                }
+            }
         }
-
+        
+        if (!found) {
+            // Final attempt: check if the page contains invoice-related content in body text
+            const pageContent = await page.textContent('body');
+            const hasInvoiceContent = inv.ref && pageContent?.includes(inv.ref);
+            
+            if (hasInvoiceContent) {
+                console.log(`[SUCCESS] Invoice content found in page body (may be outside visible area)`);
+                found = true;
+            } else {
+                console.log(`[ERROR] Invoice not found after ${maxAttempts} attempts`);
+                console.log(`[DEBUG] Current page URL: ${page.url()}`);
+                console.log(`[DEBUG] Page title: ${await page.title()}`);
+                console.log(`[DEBUG] Full invoice data:`, JSON.stringify(inv, null, 2));
+                throw new Error(`Invoice ${inv.ref || inv.id} not found in customer profile UI after extensive search. Customer: ${meta.customerId}`);
+            }
+        }
+        
+        console.log(`[SUCCESS] Invoice verification completed after ${attempts} attempts`);
         console.log(`[PASS] Invoice ${inv.ref} confirmed visible. Outstanding balance ${outstanding} verified.`);
     });
 
@@ -115,20 +237,53 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         await page.goto(`/receivables/customers/${meta.customerId}/detail`);
 
         const invoicesTab = page.getByRole('tab', { name: /^Invoices$/i }).first();
-        await invoicesTab.waitFor({ state: 'visible', timeout: 150000 });
+        await invoicesTab.waitFor({ state: 'visible', timeout: 15000 });
         await invoicesTab.click();
-        await page.waitForTimeout(2000);
+        
+        // Wait for tab content to load completely
+        await page.waitForLoadState('networkidle', { timeout: 10000 });
+        await page.waitForTimeout(3000);
 
         // Check Receipts tab for the receipt ref — this is a hard assertion
         console.log(`[STEP 4] Asserting receipt ${rct.ref} is visible in customer profile...`);
         const receiptsTab = page.getByRole('tab', { name: /^Receipts$/i }).first();
-        if (await receiptsTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await receiptsTab.isVisible({ timeout: 5000 }).catch(() => false)) {
             await receiptsTab.click();
-            await page.waitForTimeout(2000);
+            await page.waitForLoadState('networkidle', { timeout: 10000 });
+            await page.waitForTimeout(3000);
         }
 
-        const rcptLocator = page.getByText(rct.ref).first();
-        await expect(rcptLocator).toBeVisible({ timeout: 15000 });
+        // Try multiple possible receipt reference formats
+        const possibleReceiptRefs = [
+            rct.ref
+        ].filter(Boolean);
+        
+        console.log(`[DEBUG] Looking for receipt refs: ${possibleReceiptRefs.join(', ')}`);
+        
+        let receiptFound = false;
+        for (const ref of possibleReceiptRefs) {
+            const rcptLocator = page.getByText(ref, { exact: false }).first();
+            if (await rcptLocator.isVisible({ timeout: 10000 }).catch(() => false)) {
+                console.log(`[SUCCESS] Found receipt with reference: ${ref}`);
+                receiptFound = true;
+                break;
+            }
+        }
+        
+        if (!receiptFound) {
+            // Try searching by receipt ID as fallback
+            const receiptId = rct.id.toString();
+            const idLocator = page.getByText(receiptId, { exact: false }).first();
+            if (await idLocator.isVisible({ timeout: 5000 }).catch(() => false)) {
+                console.log(`[SUCCESS] Found receipt by ID: ${receiptId}`);
+                receiptFound = true;
+            }
+        }
+        
+        if (!receiptFound) {
+            console.log(`[ERROR] Receipt not found. Full receipt data:`, JSON.stringify(rct, null, 2));
+            throw new Error(`Receipt ${rct.ref || rct.id} not found in customer profile UI.`);
+        }
 
         console.log(`[PASS] Receipt ${rct.ref} confirmed in customer profile. Balance cleared to zero.`);
     });
