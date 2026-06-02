@@ -168,7 +168,7 @@ export class SalesAPI extends BasePage {
         general_ledger_account_id: data.glAccountId || meta.arAccountId,
         warehouse_id: warehouseId,
         location_id: locationId,
-        tax_id: data.taxId || meta.taxId,
+        ...(( data.taxId || meta.taxId) && { tax_id: data.taxId || meta.taxId }),
         description: data.description || 'E2E Speed Track'
       }],
       status: 'draft'
