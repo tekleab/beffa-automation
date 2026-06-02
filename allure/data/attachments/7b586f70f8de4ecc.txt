@@ -1,0 +1,48 @@
+[WARN] API Login failed (apiRequestContext.post: socket hang up
+Call log:
+  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.7727.15 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+). Falling back to UI Login...
+[STEP 1] Creating employee via API...
+[PASS] Employee: EMP/2026/06/02/000088 | id: ee36884e-aeff-4456-90d5-5b84f2d3fa8a
+[STEP 2] Creating pay component...
+[HR] Using job position: "Audit Engineer" (a2330250-8eb1-4fac-a875-35d13e4f392d) | slots: 7/101
+[HR] Job "QA" slots exhausted or singleton (101/101). Expanding slots...
+[HR] Using job position: "QA" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) | slots: 101/101
+[INFO] Using dept: ROOT (684d35b3-b79d-4bd2-b155-2651ff995998) | job: QA (d6c9bc96-0676-45a4-a6a9-eb527dd26745)
+[PASS] Pay component: 88e7b74c-7fab-4388-bca6-aa19644e68c0
+[STEP 3] Creating pay structure...
+[PASS] Pay structure: b1c586e8-2933-4c93-9698-0159017038e5 | components: 1
+[STEP 4] Assigning pay structure...
+[PASS] Pay structure assigned
+[STEP 5] Creating contract via API...
+[HR] Using job position: "QA" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) | slots: 101/201
+[INFO] Validated job position: "QA" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) ∈ dept 684d35b3-b79d-4bd2-b155-2651ff995998
+[PASS] Contract created: 578c292e-b474-4f2a-9f25-e5285049bb25
+[INFO] department_id: 684d35b3-b79d-4bd2-b155-2651ff995998 | job_position_id: d6c9bc96-0676-45a4-a6a9-eb527dd26745
+[INFO] status: draft | contract_status: active
+[STEP 6] Approving contract via advanceDocumentAPI...
+[API] Advancing employee-contracts "578c292e-b474-4f2a-9f25-e5285049bb25"...
+[INFO] Contract status after advance: approved
+[PASS] Contract approved — status: approved
+[STEP 7] Verifying employee is active...
+[PASS] Employee is active
+[STEP 8] Creating payroll run...
+[PASS] Payroll run: 818096ab-4351-4271-90ed-c285165e584e | status: draft
+[STEP 9] Assigning employee to payroll run...
+[PASS] Employee assigned to payroll run
+[STEP 10] Approving payroll run via UI...
+[OK] Checkbox clicked
+[OK] Process Payroll clicked
+[WORKFLOW] Navigating to Preview step
+[OK] Clicked Preview step
+[OK] Clicked final approve button
+[OK] Clicked toolbar Approve button
+[DEBUG] Intercepted requests: ["PATCH http://168.119.175.142:8001/api/payroll-runs/818096ab-4351-4271-90ed-c285165e584e/process?year=2018&period=yearly&calendar=ec","PATCH http://168.119.175.142:8001/api/payroll-runs/818096ab-4351-4271-90ed-c285165e584e/advance?year=2018&period=yearly&calendar=ec"]
+[POLL 1/15] Payroll run status: approved
+[PASS] Payroll run approved
+[PASS] Payrolls generated: 1
