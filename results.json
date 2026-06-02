@@ -1,29 +1,21 @@
 {
-  "total": 7,
-  "passed": 2,
-  "failed": 5,
+  "total": 0,
+  "passed": 0,
+  "failed": 0,
   "skipped": 0,
-  "passRate": 28.6,
-  "avgDurationMs": 30187,
-  "lastUpdated": "2026-06-02T06:51:47.391Z",
-  "moduleBreakdown": [
-    {
-      "module": "Other",
-      "passed": 2,
-      "failed": 5,
-      "skipped": 0,
-      "trend": [
-        88,
-        90,
-        92,
-        69.2,
-        14.3,
-        28.6,
-        28.6
-      ]
-    }
-  ],
+  "passRate": 0,
+  "avgDurationMs": 0,
+  "lastUpdated": "2026-06-02T07:04:06.085Z",
+  "moduleBreakdown": [],
   "last10Runs": [
+    {
+      "run": "414",
+      "commit": "3418457",
+      "trigger": "push (smoke)",
+      "duration": "0m 0s",
+      "passRate": 0,
+      "status": "unknown"
+    },
     {
       "run": "413",
       "commit": "3bfff8f",
@@ -95,46 +87,7 @@
       "passRate": 0,
       "trigger": "push",
       "status": "failed"
-    },
-    {
-      "run": "402",
-      "commit": "53e2b4c",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "trigger": "push",
-      "status": "failed"
     }
   ],
-  "criticalBlockers": [
-    {
-      "severity": "medium",
-      "title": "Audit: 7-Stage Average Cost Validation & COGS Accuracy",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m30\u001b[39m\nReceived: \u001b[31m10\u001b[39m\n\n  59 |         // Math: ((10 * 100)",
-      "firstSeen": "2026-06-02T06:44:45.826Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must handle concurrent stock adjustments atomically",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Stock Race Condition: Concurrent adjustments caused lost updates. Expected 41, found 0.\n\n  50 |\n  51 |         if (finalStock !== expectedStock) {\n> 52 |             throw ",
-      "firstSeen": "2026-06-02T06:47:24.383Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: 7-Stage FIFO Layer Validation & COGS Accuracy",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m30\u001b[39m\nReceived: \u001b[31m10\u001b[39m\n\n  57 |         const stage2 = await",
-      "firstSeen": "2026-06-02T06:48:03.118Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Warehouse Transfer must maintain stock balance across locations",
-      "error": "Error: [TRANSFER] OUT adjustment failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:605\n\n  603 |     };\n  604 |     const outResp =",
-      "firstSeen": "2026-06-02T06:50:57.923Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
-      "error": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustment from 2022. This allows fraudulent stock balancing.\n\n  31 |             } as any);\n  32 |         ",
-      "firstSeen": "2026-06-02T06:51:18.201Z"
-    }
-  ]
+  "criticalBlockers": []
 }
