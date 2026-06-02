@@ -54,7 +54,7 @@ export class AppManager {
     this.mainPhoneInput = page.getByRole('textbox', { name: /Main Phone/i });
     this.customerNameInput = page.getByRole('textbox', { name: 'Customer Name *' });
     this.customerTinInput = page.getByRole('textbox', { name: 'Customer TIN *' });
-    this.customerTypeSelect = page.locator('#customer_type_id');
+    this.customerTypeSelect = page.getByLabel('Customer Type *');
     this.customerPhoneInput = page.locator('#phone');
     this.createCustomerBtn = page.locator('button:has-text("Create")');
     this.editCustomerBtn = page.locator('button:has-text("Edit")');
