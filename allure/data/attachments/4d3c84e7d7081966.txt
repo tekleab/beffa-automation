@@ -1,0 +1,18 @@
+[PERFORMANCE] API - Auth API Verification: 396.27ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 983.02ms
+[OK] Discovered: "Inlet solenoid valve" via API | Stock: 3
+[API] Advancing sales-orders "f9848b18-4ea6-4073-afba-602fc0e66054"...
+[OK] Sales Order SO/2026/06/02/000004 approved via API
+[API] Advancing invoices "7c3ba0b8-53a7-4f31-8da4-d4035e7f0ae2"...
+[OK] Invoice INV/2026/06/02/000034 approved via API
+[INFO] Document Setup Complete: INV/2026/06/02/000034 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[OK] Receipt created via API: RCPT/2026/06/02/000014
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "09d5f6cf-7889-4c46-8275-60cf31435479"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/02/000014 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/02/000014 verified in profile
