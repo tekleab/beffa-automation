@@ -443,7 +443,23 @@ export class SalesAPI extends BasePage {
     const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     // Wait a moment before attempting receipt creation to ensure invoice is fully processed
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000)); // Increased from 2000 to 3000
+
+    // Verify invoice exists and is in approved state before creating receipt
+    try {
+      const invoiceCheck = await this.page.request.get(`${apiBase}/invoice/${data.invoiceId}?${params}`, { headers });
+      if (invoiceCheck.ok()) {
+        const invoiceData = await invoiceCheck.json();
+        console.log(`[DEBUG] Invoice status before receipt: ${invoiceData.status}`);
+        console.log(`[DEBUG] Invoice unreceived_amount: ${invoiceData.unreceived_amount}`);
+        
+        if (invoiceData.status !== 'approved') {
+          throw new Error(`Invoice must be approved before creating receipt. Current status: ${invoiceData.status}`);
+        }
+      }
+    } catch (error) {
+      console.warn(`[WARN] Could not verify invoice status: ${error}`);
+    }
 
     // Discover Cash Account dynamically if not provided
     let cashAccountId = data.cashAccountId;
@@ -474,19 +490,36 @@ export class SalesAPI extends BasePage {
     }
 
     const payload = {
-      amount: data.amount,
+      amount: Math.round(data.amount * 100) / 100, // Round to 2 decimal places
       cash_account_id: cashAccountId,
       customer_id: data.customerId, // MUST match the invoice customer
       date: data.receiptDate || new Date().toISOString(),
       payment_method: data.payment_method || 'cash',
       currency_id: currencyId,
       invoice_receipts: [{
-        amount: data.amount,
+        amount: Math.round(data.amount * 100) / 100, // Round to 2 decimal places
         invoice_id: data.invoiceId // The target invoice UUID
       }]
     };
 
     console.log(`[DEBUG] Receipt payload:`, JSON.stringify(payload, null, 2));
+
+    // Validate required fields before making the API call
+    if (!cashAccountId) {
+      throw new Error(`Cash account not found. Cannot create receipt without cash account.`);
+    }
+    if (!currencyId) {
+      throw new Error(`Currency not found. Cannot create receipt without currency.`);
+    }
+    if (!data.customerId) {
+      throw new Error(`Customer ID is required for receipt creation.`);
+    }
+    if (!data.invoiceId) {
+      throw new Error(`Invoice ID is required for receipt creation.`);
+    }
+    if (!data.amount || data.amount <= 0) {
+      throw new Error(`Valid amount is required for receipt creation. Received: ${data.amount}`);
+    }
 
     // Retry logic for transient 500 errors
     let lastError = '';
