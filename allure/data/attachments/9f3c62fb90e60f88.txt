@@ -1,0 +1,17 @@
+[PERFORMANCE] API - Auth API Verification: 530.72ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1597.62ms
+[OK] Discovered: "UI-CREATE-1780201816406" via API | Stock: 11
+[API] Advancing sales-orders "15dcd888-b238-4f37-be09-474f5a627c72"...
+[OK] Sales Order SO/2026/06/02/000759 approved via API
+[API] Advancing invoices "f233b9af-cd62-40ec-abc2-8ae4755da34c"...
+[OK] Invoice INV/2026/06/02/001573 approved via API
+[INFO] Document Setup Complete: INV/2026/06/02/001573 for System Customer
+[STEP] Phase 2: Creating linked receipt via API
+[OK] Receipt created via API: RCPT/2026/06/02/000350
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "fe134ed7-cbfd-41ba-8450-9e9716fdcc6f"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/02/000350 in customer profile

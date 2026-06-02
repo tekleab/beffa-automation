@@ -1,0 +1,28 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 458.74ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 2
+[SUCCESS] "Purchase Order Date" set to Day 2 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2888.95ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2607.94ms
+[INFO] Vendor: BAMACO PLC
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2161.88ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2207.21ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1964.10ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2041.71ms
+[PERFORMANCE] UI - Random Selection: Location: 2003.16ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1959.74ms
+[PERFORMANCE] UI - Random Selection: Tax: 2506.28ms
+[OK] Line item added (Price: 2025)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/02/000466 | Vendor: BAMACO PLC
+[API] Advancing purchase-orders "2b07d71d-7453-4cf0-8283-4506e5d2b0c4"...
+[OK] PO PO/2026/06/02/000466 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/02/000466 via API
+[API] Advancing bills "65979411-7c8b-4cd3-9c31-45a08d47e2e7"...
+[OK] Linked Bill BILL/2026/06/02/000867 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/02/000867 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/02/000867 is physically present in BAMACO PLC's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/02/000466 -> Bill BILL/2026/06/02/000867
