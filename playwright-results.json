@@ -10,18 +10,14 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 1
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Forensic-Sales",
         "name": "Forensic-Sales",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -35,9 +31,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Forensic-Purchase",
         "name": "Forensic-Purchase",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -51,9 +45,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Forensic-Inventory",
         "name": "Forensic-Inventory",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -67,9 +59,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Sales-Workflows",
         "name": "Sales-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -83,9 +73,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Purchase-Workflows",
         "name": "Purchase-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -99,9 +87,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Cross-Module",
         "name": "Cross-Module",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -115,9 +101,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "Utils",
         "name": "Utils",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -131,9 +115,7 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "HR",
         "name": "HR",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -211,132 +193,25 @@
     "workers": 2,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "sales/customer.spec.ts",
-      "file": "sales/customer.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Customer Lifecycle — Validation & CRUD @sales @smoke @full",
-          "file": "sales/customer.spec.ts",
-          "line": 10,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Validate TIN, create customer, edit, remove",
-              "ok": false,
-              "tags": [
-                "sales",
-                "smoke",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 480000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|415.16"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Sales-Workflows",
-                  "projectName": "Sales-Workflows",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 70995,
-                      "error": {
-                        "message": "Error: locator.fill: Error: strict mode violation: locator('#customer_phone-input-id') resolved to 2 elements:\n    1) <input type=\"text\" name=\"phone.p1\" id=\"customer_phone-input-id\" class=\"chakra-input css-1cjy4zv\"/> aka getByRole('textbox', { name: 'Main Phone * Alternate Phone' })\n    2) <input type=\"text\" name=\"phone.p2\" id=\"customer_phone-input-id\" class=\"chakra-input css-1cjy4zv\"/> aka locator('input[name=\"phone.p2\"]')\n\nCall log:\n\u001b[2m  - waiting for locator('#customer_phone-input-id')\u001b[22m\n",
-                        "stack": "Error: locator.fill: Error: strict mode violation: locator('#customer_phone-input-id') resolved to 2 elements:\n    1) <input type=\"text\" name=\"phone.p1\" id=\"customer_phone-input-id\" class=\"chakra-input css-1cjy4zv\"/> aka getByRole('textbox', { name: 'Main Phone * Alternate Phone' })\n    2) <input type=\"text\" name=\"phone.p2\" id=\"customer_phone-input-id\" class=\"chakra-input css-1cjy4zv\"/> aka locator('input[name=\"phone.p2\"]')\n\nCall log:\n\u001b[2m  - waiting for locator('#customer_phone-input-id')\u001b[22m\n\n    at /home/teklish/beffa-automation/tests/sales/customer.spec.ts:31:38",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/sales/customer.spec.ts",
-                          "column": 38,
-                          "line": 31
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 29 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcustomerTypeSelect\u001b[33m.\u001b[39mselectOption(\u001b[32m'individual'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 30 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcustomerTinInput\u001b[33m.\u001b[39mfill(\u001b[32m\"123\"\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 31 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcustomerPhoneInput\u001b[33m.\u001b[39mfill(\u001b[32m\"0911223344\"\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 32 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mfillEthiopianAddress(randomRegion\u001b[33m.\u001b[39mregion\u001b[33m,\u001b[39m randomZone\u001b[33m.\u001b[39mname\u001b[33m,\u001b[39m randomWoreda)\u001b[33m;\u001b[39m\n \u001b[90m 33 |\u001b[39m\n \u001b[90m 34 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcreateCustomerBtn\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/sales/customer.spec.ts",
-                            "column": 38,
-                            "line": 31
-                          },
-                          "message": "Error: locator.fill: Error: strict mode violation: locator('#customer_phone-input-id') resolved to 2 elements:\n    1) <input type=\"text\" name=\"phone.p1\" id=\"customer_phone-input-id\" class=\"chakra-input css-1cjy4zv\"/> aka getByRole('textbox', { name: 'Main Phone * Alternate Phone' })\n    2) <input type=\"text\" name=\"phone.p2\" id=\"customer_phone-input-id\" class=\"chakra-input css-1cjy4zv\"/> aka locator('input[name=\"phone.p2\"]')\n\nCall log:\n\u001b[2m  - waiting for locator('#customer_phone-input-id')\u001b[22m\n\n\n\u001b[0m \u001b[90m 29 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcustomerTypeSelect\u001b[33m.\u001b[39mselectOption(\u001b[32m'individual'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 30 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcustomerTinInput\u001b[33m.\u001b[39mfill(\u001b[32m\"123\"\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 31 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcustomerPhoneInput\u001b[33m.\u001b[39mfill(\u001b[32m\"0911223344\"\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 32 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mfillEthiopianAddress(randomRegion\u001b[33m.\u001b[39mregion\u001b[33m,\u001b[39m randomZone\u001b[33m.\u001b[39mname\u001b[33m,\u001b[39m randomWoreda)\u001b[33m;\u001b[39m\n \u001b[90m 33 |\u001b[39m\n \u001b[90m 34 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mcreateCustomerBtn\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/customer.spec.ts:31:38\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 415.16ms\n"
-                        },
-                        {
-                          "text": "[STEP] Phase 1: TIN validation check\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-02T07:39:40.190Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|415.16"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-customer-Customer-Li-483fc-create-customer-edit-remove-Sales-Workflows/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-customer-Customer-Li-483fc-create-customer-edit-remove-Sales-Workflows/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-customer-Customer-Li-483fc-create-customer-edit-remove-Sales-Workflows/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-customer-Customer-Li-483fc-create-customer-edit-remove-Sales-Workflows/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/sales/customer.spec.ts",
-                        "column": 38,
-                        "line": 31
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "3c0ca65627c2042ef7b0-771dac044a0d8bdc40a7",
-              "file": "sales/customer.spec.ts",
-              "line": 13,
-              "column": 9
-            }
-          ]
-        }
-      ]
+      "message": "Error: [SETUP] ❌ ABORT: ERP server is UNREACHABLE.\n        → Frontend: http://168.119.175.142:4173 (status: 0)\n        → API:      http://168.119.175.142:8001  (status: 0)\n        → Check BASE_URL / API_URL secrets and server availability before running tests.",
+      "stack": "Error: [SETUP] ❌ ABORT: ERP server is UNREACHABLE.\n        → Frontend: http://168.119.175.142:4173 (status: 0)\n        → API:      http://168.119.175.142:8001  (status: 0)\n        → Check BASE_URL / API_URL secrets and server availability before running tests.\n    at globalSetup (/home/teklish/beffa-automation/global-setup.ts:50:15)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/global-setup.ts",
+        "column": 15,
+        "line": 50
+      },
+      "snippet": "\u001b[90m   at \u001b[39m../global-setup.ts:50\n\n\u001b[0m \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mif\u001b[39m (frontendStatus \u001b[33m===\u001b[39m \u001b[35m0\u001b[39m \u001b[33m&&\u001b[39m apiStatus \u001b[33m===\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 50 |\u001b[39m         \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 51 |\u001b[39m             \u001b[32m`[SETUP] ❌ ABORT: ERP server is UNREACHABLE.\\n`\u001b[39m \u001b[33m+\u001b[39m\n \u001b[90m 52 |\u001b[39m             \u001b[32m`        → Frontend: ${rawBase} (status: ${frontendStatus})\\n`\u001b[39m \u001b[33m+\u001b[39m\n \u001b[90m 53 |\u001b[39m             \u001b[32m`        → API:      ${rawApi}  (status: ${apiStatus})\\n`\u001b[39m \u001b[33m+\u001b[39m\u001b[0m"
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2026-06-02T07:39:37.460Z",
-    "duration": 82187.056,
+    "startTime": "2026-06-02T08:53:40.024Z",
+    "duration": 25942.209,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

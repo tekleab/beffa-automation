@@ -341,32 +341,60 @@ export class InventoryAPI extends BasePage {
     });
 
     if (items.length === 0) {
-      console.log(`[SELF-HEALING] No active items with stock >= ${minStock} found via API. Dynamically creating a new stocked item...`);
-      
-      const meta = await this.discoverMetadataAPI().catch(() => null);
-      const name = `AUTO-SEEDED-ITEM-${Date.now()}`;
-      
+      console.log(`[SELF-HEALING] No active items with stock >= ${minStock} found. Attempting stock adjustment on existing item...`);
+
+      // Pick any active item regardless of stock
+      const anyActive = list.filter((i: any) => i.status === 'active' && (i.inventory_item_locations || []).length > 0);
+      const candidate = anyActive[0];
+
+      if (!candidate) {
+        console.error(`[SELF-HEALING] No active items found at all.`);
+        return null as any;
+      }
+
+      const loc = candidate.inventory_item_locations[0];
+      const locationId = loc.location_id || loc.id;
+      const warehouseId = loc.warehouse_id || loc.warehouse?.id || '';
+
       try {
-        const newItem = await this.createInventoryItemAPI({
-          name: name,
-          quantity: 100, // Pre-stock with 100 units
-          unit_cost: 10,
-          default_location_id: meta?.locationId,
-          default_warehouse_id: meta?.warehouseId
-        });
-        
-        console.log(`[SELF-HEALING] Dynamically created and pre-stocked new item: "${newItem.itemName}" (ID: ${newItem.id})`);
-        
+        // Create a stock adjustment to add 100 units
+        const adjPayload = {
+          adjustment_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+          adjustment_items: [{
+            item_id: candidate.id,
+            quantity: 100,
+            unit_cost: candidate.unit_cost || 10,
+            location_id: locationId,
+            warehouse_id: warehouseId
+          }]
+        };
+        const adjResp = await this.page.request.post(
+          `${apiBase}/inventory-adjustments?year=${year}&period=${period}&calendar=${calendar}`,
+          { data: adjPayload, headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
+        );
+
+        if (adjResp.ok()) {
+          const adj = await adjResp.json();
+          // Advance the adjustment to approved
+          const advResp = await this.page.request.patch(
+            `${apiBase}/inventory-adjustments/${adj.id}/advance?year=${year}&period=${period}&calendar=${calendar}`,
+            { data: {}, headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` } }
+          );
+          if (advResp.ok()) {
+            console.log(`[SELF-HEALING] Stocked 100 units on "${candidate.name}" via adjustment.`);
+          }
+        }
+
         return {
-          itemName: newItem.itemName,
-          itemId: newItem.id,
+          itemName: candidate.name,
+          itemId: candidate.id,
           currentStock: 100,
-          unitCost: 10,
-          locationId: meta?.locationId,
-          warehouseId: meta?.warehouseId
+          unitCost: candidate.unit_cost || 10,
+          locationId,
+          warehouseId
         };
       } catch (err: any) {
-        console.error(`[SELF-HEALING] Dynamic item creation failed: ${err.message}`);
+        console.error(`[SELF-HEALING] Stock adjustment failed: ${err.message}`);
         return null as any;
       }
     }

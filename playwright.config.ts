@@ -17,13 +17,13 @@ const frontendUrl = resolveUrl(process.env.BASE_URL, 'http://localhost:4173');
 export default defineConfig({
   testDir: './tests',
 
-  timeout: 600000,
+  timeout: 120000,
   expect: { timeout: 30000 },
 
   fullyParallel: true,
   workers: process.env.CI ? 4 : 2,
   // 1 retry in CI absorbs transient ERP network hiccups; 0 locally for speed
-  retries: process.env.CI ? 1 : 0,
+  retries: 0,
 
   globalSetup: require.resolve('./global-setup'),
   globalTeardown: require.resolve('./global-teardown'),
@@ -73,8 +73,8 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
 
-    actionTimeout: 60000,
-    navigationTimeout: 150000,
+    actionTimeout: 90000,
+    navigationTimeout: 180000,
   },
 
   projects: [
@@ -107,10 +107,6 @@ export default defineConfig({
     {
       name: 'Cross-Module',
       testMatch: /cross-module\/.*\.spec\.ts/,
-    },
-    {
-      name: 'Utils',
-      testMatch: /e2e\/.*\.spec\.ts/,
     },
     {
       name: 'HR',

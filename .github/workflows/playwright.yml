@@ -179,13 +179,13 @@ jobs:
           echo "=========================================================="
 
           echo "-> Forensic Sales..."
-          npx playwright test --project=Forensic-Sales --workers=1 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Forensic-Sales --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
           echo "-> Forensic Purchase..."
-          npx playwright test --project=Forensic-Purchase --workers=1 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Forensic-Purchase --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
           echo "-> Forensic Inventory..."
-          npx playwright test --project=Forensic-Inventory --workers=1 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Forensic-Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
         else
           echo "=========================================================="
           echo "⏭️  Skipping Forensic Audits for $TEST_TYPE run."
