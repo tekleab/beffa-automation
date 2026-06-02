@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 12,
-  "failed": 3,
-  "skipped": 0,
-  "passRate": 80,
-  "avgDurationMs": 30737,
-  "lastUpdated": "2026-06-02T11:31:11.525Z",
+  "passed": 8,
+  "failed": 4,
+  "skipped": 3,
+  "passRate": 53.3,
+  "avgDurationMs": 24245,
+  "lastUpdated": "2026-06-02T11:51:28.544Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 12,
-      "failed": 3,
-      "skipped": 0,
+      "passed": 8,
+      "failed": 4,
+      "skipped": 3,
       "trend": [
-        44.4,
         53.8,
         41.7,
         55.6,
         73.3,
         73.3,
-        80
+        80,
+        66.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "429",
+      "commit": "92d0d58",
+      "trigger": "push (smoke)",
+      "duration": "6m 3s",
+      "passRate": 53.3,
+      "status": "failed"
+    },
     {
       "run": "427",
       "commit": "2c580ac",
@@ -95,34 +103,32 @@
       "duration": "9m 55s",
       "passRate": 60,
       "status": "failed"
-    },
-    {
-      "run": "415",
-      "commit": "34ecd3d",
-      "trigger": "push (smoke)",
-      "duration": "13m 7s",
-      "passRate": 53.3,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/06/02/000032 not found in customer profile UI. Customer: 223a2864-674f-42e7-b799-22730e12c57a\n\n  64 |             const rowCount = await page.locator('table tbody tr').count();",
+      "firstSeen": "2026-06-02T11:49:37.963Z"
+    },
+    {
+      "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1334.21\u001b[39m\n\nExpected precision:    1\nE",
-      "firstSeen": "2026-06-02T11:28:17.746Z"
+      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:485\n\n  483 |       headers\n  484 |     });\n> 485 |     if (!respo",
+      "firstSeen": "2026-06-02T11:49:37.941Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T11:28:54.015Z"
+      "firstSeen": "2026-06-02T11:50:11.288Z"
     },
     {
-      "severity": "critical",
-      "title": "UI: Org Chart page must render the department hierarchy",
-      "error": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.react-flow, .react-flow__renderer, [class*=\"react-flow\"]').first() to be visible\u001b[22m\n\n\n  185 |\n  186 |",
-      "firstSeen": "2026-06-02T11:30:29.093Z"
+      "severity": "medium",
+      "title": "Guardrail: Duplicate employee email must be rejected by the system",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[1mMatcher error\u001b[22m: \u001b[31mreceived\u001b[39m value must not be null nor undefined\n\nReceived has valu",
+      "firstSeen": "2026-06-02T11:50:56.754Z"
     }
   ]
 }
