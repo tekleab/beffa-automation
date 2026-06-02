@@ -1,29 +1,37 @@
 {
-  "total": 15,
-  "passed": 4,
-  "failed": 5,
-  "skipped": 6,
-  "passRate": 26.7,
-  "avgDurationMs": 40996,
-  "lastUpdated": "2026-06-02T08:55:33.178Z",
+  "total": 13,
+  "passed": 7,
+  "failed": 6,
+  "skipped": 0,
+  "passRate": 53.8,
+  "avgDurationMs": 24912,
+  "lastUpdated": "2026-06-02T09:57:48.959Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 4,
-      "failed": 5,
-      "skipped": 6,
+      "passed": 7,
+      "failed": 6,
+      "skipped": 0,
       "trend": [
-        88,
         90,
         92,
         53.3,
         60,
         0,
-        44.4
+        44.4,
+        53.8
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "421",
+      "commit": "5024b89",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "5m 23s",
+      "passRate": 53.8,
+      "status": "failed"
+    },
     {
       "run": "420",
       "commit": "1d85920",
@@ -95,46 +103,44 @@
       "duration": "7m 59s",
       "passRate": 69.2,
       "status": "failed"
-    },
-    {
-      "run": "407",
-      "commit": "e476807",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed: 504 - {\n\t\"code\": 504,\n\t\"message\": \"Unable to create receipt: timeout: context deadline exceeded\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers",
-      "firstSeen": "2026-06-02T08:46:27.139Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: Invoice-Receipt API Creation Failed: 504 - {\n\t\"code\": 504,\n\t\"message\": \"Unable to create receipt: timeout: context deadline exceeded\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers",
-      "firstSeen": "2026-06-02T08:46:27.163Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T08:47:41.961Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: page.goto: Timeout 150000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/payables/vendors/c60b509a-52c0-4cb7-bc0f-0fa93395ba99/detail\", waiting until \"networkid",
-      "firstSeen": "2026-06-02T08:47:56.722Z"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
+      "title": "Audit: 7-Stage Average Cost Validation & COGS Accuracy",
       "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T08:48:33.068Z"
+      "firstSeen": "2026-06-02T09:48:46.120Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: 7-Stage FIFO Layer Validation & COGS Accuracy",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
+      "firstSeen": "2026-06-02T09:51:13.894Z"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject negative stock adjustments",
+      "error": "Error: [CRITICAL_LOGIC_BUG] System accepted and fully approved negative stock adjustment (Ref: ADJ/2026/06/02/000132 | ID: d6780b2c-c1cb-4a29-a35f-6a8d24bf32c6)! Inventory can go negative.\n\n  50 |    ",
+      "firstSeen": "2026-06-02T09:53:24.804Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Deactivated item must be rejected for new stock adjustments",
+      "error": "Error: [VULNERABILITY] System accepted a stock adjustment on a deactivated item (Ref: ADJ/2026/06/02/000134).\n\n  44 |             if (!adj.success) { console.log(`[PASS] Adjustment correctly rejected ",
+      "firstSeen": "2026-06-02T09:53:57.456Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Warehouse Transfer must maintain stock balance across locations",
+      "error": "Error: [TRANSFER] IN adjustment failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"location_id\": [\n\t\t\t\"Item doesn't exist in given location.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating inventory ",
+      "firstSeen": "2026-06-02T09:56:56.746Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
+      "error": "Error: [SECURITY_VULNERABILITY] Historical Manipulation: System approved a back-dated stock adjustment from 2022. This allows fraudulent stock balancing.\n\n  31 |             } as any);\n  32 |         ",
+      "firstSeen": "2026-06-02T09:57:22.366Z"
     }
   ]
 }

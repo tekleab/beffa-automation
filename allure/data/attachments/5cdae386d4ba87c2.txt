@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 146.49ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 876.11ms
+[ATTACK] Attempting to invoice 10017 units of "spa shelves PAX 150x58x236 white complete set for assembling" (available: 18)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 18, required: 10017.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+
