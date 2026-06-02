@@ -1,0 +1,27 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 369.88ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 2
+[SUCCESS] "Purchase Order Date" set to Day 2 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2462.69ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1938.29ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2025.03ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2083.26ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1931.98ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1901.78ms
+[PERFORMANCE] UI - Random Selection: Location: 1893.80ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1820.44ms
+[OK] Line item added (Price: 2031)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/02/000020 | Vendor: MOENCO S.C
+[API] Advancing purchase-orders "5ced519a-693f-4257-9cb2-cb7ac9fc666e"...
+[OK] PO PO/2026/06/02/000020 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/02/000020 via API
+[API] Advancing bills "de1f68bf-fe1b-49d3-8076-19686a7b7016"...
+[OK] Linked Bill BILL/2026/06/02/000053 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/02/000053 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/02/000053 is physically present in MOENCO S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/02/000020 -> Bill BILL/2026/06/02/000053
