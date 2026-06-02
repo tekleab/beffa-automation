@@ -10,7 +10,7 @@ import { AppManager } from '../../pages/AppManager';
  * - Payroll flow: Draft → Review → Approval → Approved (4 steps)
  * - GET /employee/:id → 404; use /employees/:id (plural)
  */
-test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression @full', () => {
+test.describe('HR: Full Employee-to-Payroll Lifecycle @hr @smoke @regression', () => {
     test.setTimeout(300000);
 
     test('Full lifecycle: Employee creation through payroll run approval', async ({ page }) => {

@@ -22,6 +22,7 @@
             --text-muted: #555570;
             
             --purple: #7c6ef7;
+            --purple-rgb: 124, 110, 247;
             --teal: #1d9e75;
             --amber: #ba7517;
             --red: #e24b4a;
@@ -29,6 +30,39 @@
             --radius-card: 6px;
             --radius-badge: 4px;
             --radius-pill: 100px;
+        }
+
+        body.theme-emerald {
+            --purple: #10b981;
+            --purple-rgb: 16, 185, 129;
+            --bg-primary: #022c22;
+            --bg-sidebar: #064e3b;
+            --surface: #064e3b;
+            --surface2: #065f46;
+            --border: #047857;
+            --border-hover: #059669;
+        }
+
+        body.theme-steel {
+            --purple: #38bdf8;
+            --purple-rgb: 56, 189, 248;
+            --bg-primary: #0f172a;
+            --bg-sidebar: #1e293b;
+            --surface: #1e293b;
+            --surface2: #334155;
+            --border: #475569;
+            --border-hover: #64748b;
+        }
+
+        body.theme-slate {
+            --purple: #f59e0b;
+            --purple-rgb: 245, 158, 11;
+            --bg-primary: #18181b;
+            --bg-sidebar: #27272a;
+            --surface: #27272a;
+            --surface2: #3f3f46;
+            --border: #52525b;
+            --border-hover: #71717a;
         }
 
         * {
@@ -885,7 +919,7 @@
             border-radius: 14px;
             padding: 44px 40px 36px;
             width: 360px;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(124,110,247,0.08);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(var(--purple-rgb), 0.08);
             display: flex;
             flex-direction: column;
             gap: 0;
@@ -898,7 +932,7 @@
             position: absolute;
             top: -60px; left: -60px;
             width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(124,110,247,0.12), transparent 70%);
+            background: radial-gradient(circle, rgba(var(--purple-rgb), 0.12), transparent 70%);
             pointer-events: none;
         }
 
@@ -911,20 +945,20 @@
 
         .login-brand-icon {
             width: 40px; height: 40px;
-            background: linear-gradient(135deg, #7c6ef7, #5b52d4);
+            background: linear-gradient(135deg, var(--purple), #5b52d4);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
             color: #fff;
-            box-shadow: 0 4px 16px rgba(124,110,247,0.4);
+            box-shadow: 0 4px 16px rgba(var(--purple-rgb), 0.4);
         }
 
         .login-brand-text h1 {
             font-size: 20px;
             font-weight: 800;
-            color: #7c6ef7;
+            color: var(--purple);
             line-height: 1;
         }
 
@@ -980,8 +1014,8 @@
         }
 
         .login-field input:focus {
-            border-color: #7c6ef7;
-            box-shadow: 0 0 0 3px rgba(124,110,247,0.15);
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(var(--purple-rgb), 0.15);
         }
 
         .login-error {
@@ -1000,7 +1034,7 @@
         .login-btn {
             width: 100%;
             padding: 11px;
-            background: linear-gradient(135deg, #7c6ef7, #5b52d4);
+            background: linear-gradient(135deg, var(--purple), #5b52d4);
             border: none;
             border-radius: 8px;
             color: #fff;
@@ -1105,8 +1139,13 @@
         </div>
 
         <div class="sidebar-footer">
-            <div class="refresh-countdown">
-                <i class="ti ti-refresh"></i> Refreshing in <span id="countdown-val">60</span>s
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <div class="refresh-countdown" style="margin-bottom: 0;">
+                    <i class="ti ti-refresh"></i> Refreshing in <span id="countdown-val">60</span>s
+                </div>
+                <button id="theme-toggle-btn" onclick="toggleTheme()" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; padding: 6px; border-radius: 6px; transition: background 0.2s, color 0.2s;" onmouseover="this.style.color='var(--purple)'; this.style.background='rgba(var(--purple-rgb), 0.1)'" onmouseout="this.style.color='var(--text-secondary)'; this.style.background='transparent'" title="Toggle Theme/Color Palette">
+                    <i class="ti ti-palette" id="theme-toggle-icon"></i>
+                </button>
             </div>
             <div class="timestamp" id="last-updated">Last updated: --:--:--</div>
         </div>
@@ -1357,6 +1396,31 @@
 
         // Run auth check immediately
         checkAuth();
+        // ── THEME PALETTE TOGGLE ──
+        const themes = ['default', 'emerald', 'steel', 'slate'];
+        function initTheme() {
+            const saved = localStorage.getItem('bh_theme') || 'default';
+            if (saved !== 'default') {
+                document.body.classList.add('theme-' + saved);
+            }
+        }
+        function toggleTheme() {
+            let current = localStorage.getItem('bh_theme') || 'default';
+            let nextIndex = (themes.indexOf(current) + 1) % themes.length;
+            let nextTheme = themes[nextIndex];
+            
+            themes.forEach(t => document.body.classList.remove('theme-' + t));
+            if (nextTheme !== 'default') {
+                document.body.classList.add('theme-' + nextTheme);
+            }
+            
+            localStorage.setItem('bh_theme', nextTheme);
+            
+            if (rawData) {
+                renderCurrentView(rawData);
+            }
+        }
+
         // ── GLOBAL STATE ──
         let currentView = 'overview';
         let rawData = null;
@@ -1393,6 +1457,7 @@
 
         // ── INIT & SWITCHING ──
         document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
             initSidebar();
             fetchAndRender();
             startCountdown();
@@ -1644,6 +1709,9 @@
                 combinedTrends = [0, 0, 0, 0, 0, 0, 0];
             }
 
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--purple').trim() || '#7c6ef7';
+            const primaryRgb = getComputedStyle(document.body).getPropertyValue('--purple-rgb').trim() || '124, 110, 247';
+
             safeCreateChart('trendChart', {
                 type: 'line',
                 data: {
@@ -1651,13 +1719,13 @@
                     datasets: [{
                         label: 'Health Score',
                         data: combinedTrends,
-                        borderColor: '#7c6ef7',
-                        backgroundColor: 'rgba(124, 110, 247, 0.05)',
+                        borderColor: primaryColor,
+                        backgroundColor: `rgba(${primaryRgb}, 0.05)`,
                         borderWidth: 2,
                         tension: 0.35,
                         fill: true,
                         pointRadius: 3,
-                        pointBackgroundColor: '#7c6ef7'
+                        pointBackgroundColor: primaryColor
                     }]
                 },
                 options: {
@@ -1698,7 +1766,7 @@
 
             const categoryLabels = Object.keys(groupedBlockers);
             const categoryData = Object.values(groupedBlockers);
-            const chartColors = ['#e24b4a', '#f97316', '#ba7517', '#7c6ef7', '#8888aa', '#1d9e75'];
+            const chartColors = ['#e24b4a', '#f97316', '#ba7517', primaryColor, '#8888aa', '#1d9e75'];
 
             safeCreateChart('overviewDonutChart', {
                 type: 'doughnut',
@@ -2093,7 +2161,8 @@
 
             const categoryLabels = Object.keys(categoryCounts);
             const categoryValues = Object.values(categoryCounts);
-            const chartColors = ['#e24b4a', '#fbbf24', '#7c6ef7', '#1d9e75', '#8888aa', '#f97316'];
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--purple').trim() || '#7c6ef7';
+            const chartColors = ['#e24b4a', '#fbbf24', primaryColor, '#1d9e75', '#8888aa', '#f97316'];
 
             // Donut failures (Fully Dynamic Labels)
             safeCreateChart('analysisDonutChart', {

@@ -138,7 +138,7 @@ jobs:
         elif [ "$TEST_TYPE" = "regression" ]; then
           GREP_ARGS="--grep @regression --grep-invert @smoke"
         elif [ "$TEST_TYPE" = "full" ]; then
-          GREP_ARGS="--grep (@smoke|@regression)"
+          GREP_ARGS="--grep @smoke|@regression"
         elif [ "$TEST_TYPE" = "e2e" ]; then
           GREP_ARGS="--grep @e2e"
         else
