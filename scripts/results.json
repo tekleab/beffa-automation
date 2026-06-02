@@ -1,29 +1,37 @@
 {
   "total": 13,
-  "passed": 1,
-  "failed": 6,
+  "passed": 2,
+  "failed": 5,
   "skipped": 6,
-  "passRate": 7.7,
-  "avgDurationMs": 45327,
-  "lastUpdated": "2026-06-01T11:37:49.403Z",
+  "passRate": 15.4,
+  "avgDurationMs": 29931,
+  "lastUpdated": "2026-06-02T05:58:42.884Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 1,
-      "failed": 6,
+      "passed": 2,
+      "failed": 5,
       "skipped": 6,
       "trend": [
-        84,
         86,
         88,
         90,
         92,
         69.2,
-        14.3
+        14.3,
+        28.6
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "412",
+      "commit": "e1aedc3",
+      "trigger": "push (smoke)",
+      "duration": "6m 29s",
+      "passRate": 15.4,
+      "status": "failed"
+    },
     {
       "run": "410",
       "commit": "f33761a",
@@ -95,14 +103,6 @@
       "passRate": 0,
       "trigger": "push",
       "status": "failed"
-    },
-    {
-      "run": "400",
-      "commit": "f3ebf0c",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "trigger": "push",
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,37 +110,31 @@
       "severity": "medium",
       "title": "Validate TIN, create customer, edit, remove",
       "error": "TimeoutError: locator.selectOption: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_type_id')\u001b[22m\n\n\n  27 |         await page.goto('/receivables/customers/new');\n  28 |    ",
-      "firstSeen": "2026-06-01T11:29:51.214Z"
+      "firstSeen": "2026-06-02T05:54:40.045Z"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/06/01/001487 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
-      "firstSeen": "2026-06-01T11:29:51.171Z"
+      "error": "Error: Invoice INV/2026/06/02/001539 not found in customer profile. Expected to see invoice after API approval.\n\n  65 |             console.log(`[DEBUG] Number of rows in table: ${anyInvoice}`);\n  66 ",
+      "firstSeen": "2026-06-02T05:54:40.043Z"
     },
     {
       "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers\n  481 |     });\n> 482 |     if (!respo",
-      "firstSeen": "2026-06-01T11:32:03.720Z"
+      "firstSeen": "2026-06-02T05:57:04.296Z"
     },
     {
       "severity": "critical",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: Currency Discovery HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Error fetching currencies\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 ",
-      "firstSeen": "2026-06-01T11:29:51.181Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/06/01/000753 never appeared in \"Manenderas\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:418\n\n  416 |     }\n  417 |\n> 418 |     throw new Error(`[ERR",
-      "firstSeen": "2026-06-01T11:29:51.166Z"
+      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:482\n\n  480 |       headers\n  481 |     });\n> 482 |     if (!respo",
+      "firstSeen": "2026-06-02T05:54:40.082Z"
     },
     {
       "severity": "medium",
       "title": "API: Employee must be created with all required fields",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[1mMatcher error\u001b[22m: \u001b[31mreceived\u001b[39m value must not be null nor undefined\n\nReceived has valu",
-      "firstSeen": "2026-06-01T11:31:39.273Z"
+      "firstSeen": "2026-06-02T05:56:41.430Z"
     }
   ]
 }
