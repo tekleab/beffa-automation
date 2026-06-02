@@ -138,7 +138,7 @@ jobs:
         elif [ "$TEST_TYPE" = "regression" ]; then
           GREP_ARGS="--grep @regression --grep-invert @smoke"
         elif [ "$TEST_TYPE" = "full" ]; then
-          GREP_ARGS="--grep @smoke|@regression"
+          GREP_ARGS="--grep @full"
         elif [ "$TEST_TYPE" = "e2e" ]; then
           GREP_ARGS="--grep @e2e"
         else
@@ -165,9 +165,9 @@ jobs:
         echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
         echo "=========================================================="
         npx playwright test \
-          --project=Inventory \
           --project=Sales-Workflows \
           --project=Purchase-Workflows \
+          --project=Cross-Module \
           --project=HR \
           --workers=4 \
           $GREP_ARGS \
