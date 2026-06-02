@@ -1,0 +1,27 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 285.48ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 2
+[SUCCESS] "Purchase Order Date" set to Day 2 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3056.33ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2164.86ms
+[INFO] Vendor: Zelalem H/Giorgis
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2199.71ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2183.08ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2018.30ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2181.37ms
+[PERFORMANCE] UI - Random Selection: Location: 2072.69ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2039.90ms
+[OK] Line item added (Price: 9245)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/02/000001 | Vendor: Zelalem H/Giorgis
+[API] Advancing purchase-orders "2107ba35-c41e-4283-8ad3-81d2dae4ff32"...
+[OK] PO PO/2026/06/02/000001 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/02/000001 via API
+[API] Advancing bills "cab0141b-eada-4de7-a034-75d97c5fee3c"...
+[OK] Linked Bill BILL/2026/06/02/000002 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/02/000002 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/02/000002 is physically present in Zelalem H/Giorgis's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/02/000001 -> Bill BILL/2026/06/02/000002

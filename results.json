@@ -1,29 +1,37 @@
 {
   "total": 15,
   "passed": 5,
-  "failed": 7,
-  "skipped": 3,
+  "failed": 4,
+  "skipped": 6,
   "passRate": 33.3,
-  "avgDurationMs": 13590,
-  "lastUpdated": "2026-06-02T10:54:41.246Z",
+  "avgDurationMs": 22608,
+  "lastUpdated": "2026-06-02T10:59:48.021Z",
   "moduleBreakdown": [
     {
       "module": "Other",
       "passed": 5,
-      "failed": 7,
-      "skipped": 3,
+      "failed": 4,
+      "skipped": 6,
       "trend": [
-        92,
         53.3,
         60,
         0,
         44.4,
         53.8,
-        41.7
+        41.7,
+        55.6
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "423",
+      "commit": "638cc58",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "5m 39s",
+      "passRate": 33.3,
+      "status": "failed"
+    },
     {
       "run": "422",
       "commit": "fb79d29",
@@ -95,58 +103,32 @@
       "duration": "6m 29s",
       "passRate": 15.4,
       "status": "failed"
-    },
-    {
-      "run": "410",
-      "commit": "f33761a",
-      "trigger": "push (smoke)",
-      "duration": "9m 49s",
-      "passRate": 7.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Metadata Discovery Failed: Missing Account or Customer records.\n\n   at ../lib/api/SalesAPI.ts:109\n\n  107 |       allAccounts[0];\n  108 |\n> 109 |     if (!arAccount || !customer) throw new Error",
-      "firstSeen": "2026-06-02T10:52:15.333Z"
-    },
-    {
-      "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Metadata Discovery Failed: Missing Account or Customer records.\n\n   at ../lib/api/SalesAPI.ts:109\n\n  107 |       allAccounts[0];\n  108 |\n> 109 |     if (!arAccount || !customer) throw new Error",
-      "firstSeen": "2026-06-02T10:52:15.470Z"
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m7095.13\u001b[39m\n\nExpected precision:    1\nE",
+      "firstSeen": "2026-06-02T10:56:47.401Z"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "TypeError: Cannot read properties of null (reading 'itemName')\n\n   at ../pages/AppManager.ts:128\n\n  126 |   async captureRandomItemDetails() {\n  127 |     const target = await this.api.inventory.captu",
-      "firstSeen": "2026-06-02T10:52:15.639Z"
+      "error": "Error: SO API Failed\n\n  23 |             warehouseId: itemResult.warehouseId\n  24 |         });\n> 25 |         if (!soResult.success) throw new Error(\"SO API Failed\");\n     |                          ",
+      "firstSeen": "2026-06-02T10:56:47.490Z"
     },
     {
-      "severity": "medium",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] Failed selection for Vendor\n\n   at ../lib/BasePage.ts:503\n\n  501 |       }\n  502 |     }\n> 503 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n     ",
-      "firstSeen": "2026-06-02T10:52:47.404Z"
-    },
-    {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: Metadata Discovery Failed: Missing Account or Customer records.\n\n   at ../lib/api/SalesAPI.ts:109\n\n  107 |       allAccounts[0];\n  108 |\n> 109 |     if (!arAccount || !customer) throw new Error",
-      "firstSeen": "2026-06-02T10:52:48.246Z"
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-02T10:57:36.534Z"
     },
     {
       "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill Discovery Failed: No vendors found in current company.\n\n   at ../lib/api/PurchaseAPI.ts:243\n\n  241 |       const vendorData = await safeJson(vendorResp, 'Vendor Discovery');\n  242 |       ",
-      "firstSeen": "2026-06-02T10:52:54.957Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: Duplicate employee email must be rejected by the system",
+      "title": "API: Employee must be created with all required fields",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveProperty\u001b[2m(\u001b[22m\u001b[32mpath\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[1mMatcher error\u001b[22m: \u001b[31mreceived\u001b[39m value must not be null nor undefined\n\nReceived has valu",
-      "firstSeen": "2026-06-02T10:53:29.355Z"
+      "firstSeen": "2026-06-02T10:57:49.773Z"
     }
   ]
 }
