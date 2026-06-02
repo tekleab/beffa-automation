@@ -1,0 +1,28 @@
+[PERFORMANCE] API - Auth API Verification: 404.20ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 777.67ms
+[STEP 1] Creating invoice, approving, and paying in full via API...
+[API] Advancing invoices "261b9313-1848-480d-968f-474fd300a7d8"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] Advance had no successful steps for invoices 261b9313-1848-480d-968f-474fd300a7d8.
+[OK] Invoice INV/2026/06/02/000157 net_due: 210065.29
+[DEBUG] Invoice status before receipt: draft
+[DEBUG] Invoice unreceived_amount: 210065.29
+[DEBUG] Receipt payload: {
+  "amount": 210065.29,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-02T20:40:53.935Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 210065.29,
+      "invoice_id": "261b9313-1848-480d-968f-474fd300a7d8"
+    }
+  ]
+}

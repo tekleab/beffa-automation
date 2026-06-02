@@ -308,10 +308,11 @@
         .view-container {
             height: calc(100vh - 40px);
             overflow: hidden;
-            padding: 24px 32px;
+            padding: 32px;
             display: none;
             flex-direction: column;
             gap: 24px;
+            font-family: "Inter", "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .view-container.active {
@@ -350,6 +351,7 @@
             box-shadow:
                 0 4px 12px rgba(0, 0, 0, 0.15),
                 0 12px 32px rgba(0, 0, 0, 0.25);
+            font-family: "Inter", "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .card:hover {
@@ -357,6 +359,19 @@
             box-shadow:
                 0 8px 20px rgba(0, 0, 0, 0.25),
                 0 16px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
 
         .badge {
@@ -383,11 +398,11 @@
         /* Progress Bar */
         .progress-bar-container {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: var(--bg-tertiary);
             border-radius: 999px;
             overflow: hidden;
-            margin: 8px 0;
+            margin: 12px 0;
         }
 
         .progress-fill {
@@ -403,9 +418,21 @@
         /* ── VIEW 1: OVERVIEW ── */
         .overview-grid-a {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 24px;
             flex-shrink: 0;
+        }
+
+        @media (max-width: 1400px) {
+            .overview-grid-a {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .overview-grid-a {
+                grid-template-columns: 1fr;
+            }
         }
 
         .module-card {
@@ -420,7 +447,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .module-name {
@@ -440,16 +467,36 @@
         .module-status.blocked { color: var(--error); }
 
         .module-rate {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             line-height: 1;
-            margin: 4px 0;
+            margin: 8px 0;
+        }
+
+        .module-sparkline {
+            height: 40px;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .module-sparkline-bar {
+            flex: 1;
+            background: var(--accent-primary);
+            border-radius: 2px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .module-sparkline-bar:hover {
+            opacity: 1;
         }
 
         .module-footer {
             font-size: 12px;
             color: var(--text-muted);
-            margin-top: 6px;
+            margin-top: 12px;
         }
 
         .overview-grid-b {
@@ -1698,6 +1745,8 @@
             initSidebar();
             fetchAndRender();
             startCountdown();
+            startLivePulse();
+            startTimestampUpdates();
         });
 
         function initSidebar() {
@@ -1801,6 +1850,28 @@
                 const pad = (n) => String(n).padStart(2, '0');
                 el.textContent = `Last updated: ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
             }
+        }
+
+        // ── LIVE FEEL: PULSING STATUS BADGE ──
+        function startLivePulse() {
+            const liveIndicator = document.querySelector('.live-indicator');
+            if (!liveIndicator) return;
+
+            setInterval(() => {
+                const pulseDot = liveIndicator.querySelector('.pulse-dot');
+                if (pulseDot) {
+                    pulseDot.style.animation = 'none';
+                    pulseDot.offsetHeight; // Trigger reflow
+                    pulseDot.style.animation = 'pulse-green 1.6s infinite';
+                }
+            }, 5000);
+        }
+
+        // ── LIVE FEEL: TIMESTAMP UPDATES ──
+        function startTimestampUpdates() {
+            setInterval(() => {
+                updateLastUpdated();
+            }, 1000);
         }
 
         // ── TRANSLATIONS & RISK ASSIGNMENT ──
@@ -1923,6 +1994,12 @@
                                 <div class="module-rate" style="color: ${borderLeftColor}">${passRate.toFixed(1)}%</div>
                                 <div class="progress-bar-container">
                                     <div class="progress-fill" style="width: ${passRate}%; background: ${borderLeftColor}"></div>
+                                </div>
+                                <div class="module-sparkline">
+                                    ${m.trend.map((val, i) => {
+                                        const height = Math.max(4, (val / 100) * 40);
+                                        return `<div class="module-sparkline-bar" style="height: ${height}px; background: ${borderLeftColor}"></div>`;
+                                    }).join('')}
                                 </div>
                                 <div class="module-footer">
                                     Verified: ${m.passed} / At Risk: ${m.failed}
@@ -2380,6 +2457,24 @@
 
         // ── VIEW 5: FAILURE & ANALYSIS ──
         function renderFailureAnalysis(data) {
+            // Check if we have any data to display
+            const hasData = data.criticalBlockers.length > 0 || data.failed > 0 || data.moduleBreakdown.length > 0;
+
+            if (!hasData) {
+                // Show empty state message
+                const analysisGrid = document.querySelector('.failure-analysis-grid');
+                if (analysisGrid) {
+                    analysisGrid.innerHTML = `
+                        <div class="card" style="grid-column: 1 / -1; padding: 40px; text-align:center; color: var(--text-secondary);">
+                            <i class="ti ti-chart-donut" style="font-size: 32px; color: var(--success); margin-bottom: 16px;"></i>
+                            <div style="font-weight:700; font-size:16px; color: var(--text-primary); margin-bottom: 8px;">No failure data available</div>
+                            <div>Run tests to populate failure analysis charts and metrics</div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
             // Group and map categories dynamically from live blockers list
             const categoryCounts = {};
             data.criticalBlockers.forEach(b => {
