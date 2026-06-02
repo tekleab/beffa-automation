@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 11,
-  "failed": 4,
+  "passed": 12,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 73.3,
-  "avgDurationMs": 25545,
-  "lastUpdated": "2026-06-02T11:25:04.051Z",
+  "passRate": 80,
+  "avgDurationMs": 30737,
+  "lastUpdated": "2026-06-02T11:31:11.525Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 11,
-      "failed": 4,
+      "passed": 12,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        0,
         44.4,
         53.8,
         41.7,
         55.6,
         73.3,
-        73.3
+        73.3,
+        80
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "427",
+      "commit": "2c580ac",
+      "trigger": "push (smoke)",
+      "duration": "7m 41s",
+      "passRate": 80,
+      "status": "success"
+    },
     {
       "run": "426",
       "commit": "943b569",
@@ -95,40 +103,26 @@
       "duration": "13m 7s",
       "passRate": 53.3,
       "status": "failed"
-    },
-    {
-      "run": "414",
-      "commit": "3418457",
-      "trigger": "push (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:485\n\n  483 |       headers\n  484 |     });\n> 485 |     if (!respo",
-      "firstSeen": "2026-06-02T11:22:12.915Z"
-    },
-    {
       "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: SO API Failed\n\n  23 |             warehouseId: itemResult.warehouseId\n  24 |         });\n> 25 |         if (!soResult.success) throw new Error(\"SO API Failed\");\n     |                          ",
-      "firstSeen": "2026-06-02T11:22:12.884Z"
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1334.21\u001b[39m\n\nExpected precision:    1\nE",
+      "firstSeen": "2026-06-02T11:28:17.746Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T11:22:49.727Z"
+      "firstSeen": "2026-06-02T11:28:54.015Z"
     },
     {
       "severity": "critical",
       "title": "UI: Org Chart page must render the department hierarchy",
       "error": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.react-flow, .react-flow__renderer, [class*=\"react-flow\"]').first() to be visible\u001b[22m\n\n\n  185 |\n  186 |",
-      "firstSeen": "2026-06-02T11:24:18.815Z"
+      "firstSeen": "2026-06-02T11:30:29.093Z"
     }
   ]
 }
