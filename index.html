@@ -9,27 +9,44 @@
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         :root {
-            --bg-primary: #022c22;
-            --bg-sidebar: #064e3b;
-            --surface: #064e3b;
-            --surface2: #065f46;
-            --border: #047857;
-            --border-hover: #059669;
-            
-            --text-primary: #e8e8f0;
-            --text-secondary: #8888aa;
-            --text-muted: #555570;
-            
-            --purple: #10b981;
-            --purple-rgb: 16, 185, 129;
-            --teal: #1d9e75;
-            --amber: #ba7517;
-            --red: #e24b4a;
-            
-            --radius-card: 6px;
-            --radius-badge: 4px;
-            --radius-pill: 100px;
+            /* Premium SaaS Color Palette */
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #161616;
+            --bg-tertiary: #1c1c1c;
+            --bg-sidebar: #111111;
+            --border: #262626;
+            --border-hover: #3a3a3a;
+
+            /* Typography Colors */
+            --text-primary: #ededed;
+            --text-secondary: #a1a1a1;
+            --text-muted: #737373;
+
+            /* Semantic Colors */
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+
+            /* Brand Accents */
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #06b6d4;
+
+            /* Legacy variables for compatibility */
+            --purple: #3b82f6;
+            --purple-rgb: 59, 130, 246;
+            --teal: #22c55e;
+            --amber: #f59e0b;
+            --red: #ef4444;
+
+            /* Border Radius */
+            --radius-card: 16px;
+            --radius-badge: 8px;
+            --radius-pill: 999px;
         }
 
         body.theme-amethyst {
@@ -100,13 +117,14 @@
             overflow: hidden;
             background: var(--bg-primary);
             color: var(--text-primary);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 12px;
+            font-family: "Inter", "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 14px;
+            font-weight: 400;
         }
 
         /* ── Sidebar Layout ── */
         aside {
-            width: 220px;
+            width: 240px;
             flex-shrink: 0;
             height: 100vh;
             background: var(--bg-sidebar);
@@ -114,35 +132,35 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 16px 0;
+            padding: 24px 0;
             z-index: 10;
         }
 
         .sidebar-top {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
         }
 
         .brand {
-            padding: 0 20px;
+            padding: 0 24px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
         }
 
         .logo-text {
             font-size: 18px;
-            font-weight: 800;
-            color: var(--purple);
+            font-weight: 700;
+            color: var(--accent-primary);
             letter-spacing: -0.5px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .logo-sub {
-            font-size: 10px;
+            font-size: 12px;
             color: var(--text-secondary);
             font-weight: 500;
             text-transform: uppercase;
@@ -197,20 +215,20 @@
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            border-radius: var(--radius-card);
+            gap: 12px;
+            padding: 10px 20px;
+            border-radius: var(--radius-badge);
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.15s ease;
             border-left: 3px solid transparent;
         }
 
         .nav-item i {
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .nav-item:hover {
@@ -219,9 +237,9 @@
         }
 
         .nav-item.active {
-            background: #1a1a2e;
-            border-left-color: var(--purple);
-            color: #ffffff;
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: var(--accent-primary);
+            color: var(--text-primary);
         }
 
         .sidebar-footer {
@@ -258,42 +276,42 @@
 
         /* ── Status Banner ── */
         .status-banner {
-            height: 36px;
-            padding: 8px 20px;
+            height: 40px;
+            padding: 0 32px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            transition: all 0.5s ease;
+            transition: all 0.3s ease;
             flex-shrink: 0;
         }
 
         .status-banner.healthy {
-            background: rgba(29, 158, 117, 0.12);
-            border-bottom: 1px solid rgba(29, 158, 117, 0.3);
-            color: #4ade80;
+            background: rgba(34, 197, 94, 0.08);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            color: var(--success);
         }
 
         .status-banner.degraded {
-            background: rgba(186, 117, 23, 0.12);
-            border-bottom: 1px solid rgba(186, 117, 23, 0.3);
-            color: #fbbf24;
+            background: rgba(245, 158, 11, 0.08);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--warning);
         }
 
         .status-banner.blocked {
-            background: rgba(226, 75, 74, 0.12);
-            border-bottom: 1px solid rgba(226, 75, 74, 0.3);
-            color: #f87171;
+            background: rgba(239, 68, 68, 0.08);
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
         }
 
         /* ── View Container ── */
         .view-container {
-            height: calc(100vh - 36px);
+            height: calc(100vh - 40px);
             overflow: hidden;
-            padding: 12px 20px;
+            padding: 24px 32px;
             display: none;
             flex-direction: column;
-            gap: 12px;
+            gap: 24px;
         }
 
         .view-container.active {
@@ -314,24 +332,31 @@
         }
 
         .view-title {
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 600;
             color: var(--text-primary);
         }
 
         /* ── General Elements ── */
         .card {
-            background: var(--surface);
+            background: rgba(22, 22, 22, 0.85);
             border: 1px solid var(--border);
             border-radius: var(--radius-card);
-            padding: 12px;
+            padding: 24px;
             position: relative;
             overflow: hidden;
-            transition: border-color 0.2s;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            backdrop-filter: blur(12px);
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                0 12px 32px rgba(0, 0, 0, 0.25);
         }
 
         .card:hover {
-            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.25),
+                0 16px 40px rgba(0, 0, 0, 0.35);
         }
 
         .badge {
@@ -345,37 +370,41 @@
             line-height: 1;
         }
 
-        .badge.critical { background: rgba(226, 75, 74, 0.15); color: var(--red); border: 1px solid rgba(226, 75, 74, 0.25); }
-        .badge.high { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.25); }
-        .badge.medium { background: rgba(186, 117, 23, 0.15); color: var(--amber); border: 1px solid rgba(186, 117, 23, 0.25); }
-        .badge.low { background: rgba(136, 136, 170, 0.15); color: var(--text-secondary); border: 1px solid rgba(136, 136, 170, 0.25); }
-        .badge.other { background: rgba(136, 136, 170, 0.15); color: var(--text-secondary); border: 1px solid rgba(136, 136, 170, 0.25); }
+        .badge.critical { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.25); }
+        .badge.high { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.25); }
+        .badge.medium { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.25); }
+        .badge.low { background: rgba(59, 130, 246, 0.15); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.25); }
+        .badge.other { background: rgba(163, 163, 163, 0.15); color: var(--text-secondary); border: 1px solid rgba(163, 163, 163, 0.25); }
 
-        .badge.healthy { background: rgba(29, 158, 117, 0.15); color: #4ade80; border: 1px solid rgba(29, 158, 117, 0.25); }
-        .badge.degraded { background: rgba(186, 117, 23, 0.15); color: #fbbf24; border: 1px solid rgba(186, 117, 23, 0.25); }
-        .badge.blocked { background: rgba(226, 75, 74, 0.15); color: var(--red); border: 1px solid rgba(226, 75, 74, 0.25); }
+        .badge.healthy { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.25); }
+        .badge.degraded { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.25); }
+        .badge.blocked { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.25); }
 
         /* Progress Bar */
         .progress-bar-container {
             width: 100%;
-            height: 4px;
-            background: #1a1a2e;
-            border-radius: 100px;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 999px;
             overflow: hidden;
-            margin: 6px 0;
+            margin: 8px 0;
         }
 
         .progress-fill {
             height: 100%;
-            border-radius: 100px;
+            border-radius: 999px;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .progress-fill.healthy { background: var(--success); }
+        .progress-fill.warning { background: var(--warning); }
+        .progress-fill.critical { background: var(--error); }
 
         /* ── VIEW 1: OVERVIEW ── */
         .overview-grid-a {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
             flex-shrink: 0;
         }
 
@@ -383,50 +412,50 @@
             border-left: 3px solid transparent;
         }
 
-        .module-card.healthy { border-left-color: var(--teal); }
-        .module-card.degraded { border-left-color: var(--amber); }
-        .module-card.blocked { border-left-color: var(--red); }
+        .module-card.healthy { border-left-color: var(--success); }
+        .module-card.degraded { border-left-color: var(--warning); }
+        .module-card.blocked { border-left-color: var(--error); }
 
         .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
         .module-name {
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
         }
 
         .module-status {
-            font-size: 9px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        .module-status.healthy { color: #4ade80; }
-        .module-status.degraded { color: #fbbf24; }
-        .module-status.blocked { color: #f87171; }
+        .module-status.healthy { color: var(--success); }
+        .module-status.degraded { color: var(--warning); }
+        .module-status.blocked { color: var(--error); }
 
         .module-rate {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 28px;
+            font-weight: 700;
             line-height: 1;
-            margin: 2px 0;
+            margin: 4px 0;
         }
 
         .module-footer {
-            font-size: 10px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .overview-grid-b {
             display: grid;
             grid-template-columns: 3fr 2fr;
-            gap: 12px;
+            gap: 24px;
             flex: 1;
             min-height: 0;
         }
@@ -434,7 +463,7 @@
         .overview-grid-c {
             display: grid;
             grid-template-columns: 3fr 2fr;
-            gap: 12px;
+            gap: 24px;
             flex: 1;
             min-height: 0;
             overflow: hidden;
@@ -444,7 +473,7 @@
         .custom-legend {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             justify-content: center;
         }
 
@@ -452,10 +481,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 11px;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 4px;
+            font-size: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-badge);
         }
 
         .legend-left {
@@ -465,9 +494,9 @@
         }
 
         .legend-sq {
-            width: 8px;
-            height: 8px;
-            border-radius: 2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
         }
 
         .legend-val {
@@ -479,19 +508,25 @@
         .runs-stack {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             overflow-y: auto;
             max-height: 100%;
         }
 
         .run-summary-card {
-            background: var(--surface2);
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: var(--radius-card);
-            padding: 8px 12px;
+            border-radius: var(--radius-badge);
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .run-summary-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-1px);
         }
 
         .run-summary-left {
@@ -501,9 +536,9 @@
         }
 
         .run-summary-num {
-            font-weight: 800;
-            color: var(--purple);
-            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            font-size: 14px;
         }
 
         .run-summary-mid {
@@ -516,20 +551,26 @@
         .risks-stack {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             overflow-y: auto;
             max-height: 100%;
         }
 
         .risk-compact-card {
-            background: var(--surface2);
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: var(--radius-card);
-            padding: 8px 12px;
+            border-radius: var(--radius-badge);
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-height: 40px;
+            gap: 12px;
+            min-height: 48px;
+            transition: all 0.2s ease;
+        }
+
+        .risk-compact-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-1px);
         }
 
         .risk-compact-info {
@@ -542,7 +583,7 @@
 
         .risk-compact-title {
             font-weight: 600;
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.3;
             color: var(--text-primary);
             overflow: hidden;
@@ -551,7 +592,7 @@
         }
 
         .risk-compact-meta {
-            font-size: 9px;
+            font-size: 11px;
             color: var(--text-secondary);
             line-height: 1.2;
             overflow: hidden;
@@ -561,19 +602,19 @@
         
         .risk-compact-badge {
             flex-shrink: 0;
-            font-size: 6px;
-            padding: 2px 4px;
-            min-width: 28px;
+            font-size: 10px;
+            padding: 4px 8px;
+            min-width: 32px;
             text-align: center;
-            border-radius: 3px;
+            border-radius: var(--radius-badge);
         }
-        
+
         .risk-compact-time {
             flex-shrink: 0;
-            font-size: 8px;
+            font-size: 11px;
             color: var(--text-muted);
             text-align: right;
-            min-width: 50px;
+            min-width: 60px;
         }
 
         /* ── VIEW 2: MODULE HEALTH TABLE ── */
@@ -591,38 +632,38 @@
         }
 
         thead {
-            background: var(--surface2);
+            background: var(--bg-tertiary);
             position: sticky;
             top: 0;
             z-index: 5;
         }
 
         th {
-            padding: 10px 14px;
-            font-size: 10px;
+            padding: 12px 16px;
+            font-size: 11px;
             text-transform: uppercase;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-secondary);
             border-bottom: 1px solid var(--border);
             letter-spacing: 0.5px;
         }
 
         td {
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
-            font-size: 11px;
+            font-size: 13px;
             vertical-align: middle;
         }
 
         tr.table-row {
-            height: 44px;
-            background: var(--surface);
+            height: 48px;
+            background: var(--bg-secondary);
             cursor: pointer;
             transition: background 0.15s;
         }
 
         tr.table-row:nth-child(4n+3) {
-            background: var(--surface2);
+            background: var(--bg-tertiary);
         }
 
         tr.table-row:hover {
@@ -1348,21 +1389,27 @@
                 <span class="view-title">Root-Cause & Defect Analysis</span>
             </div>
             <div class="failure-analysis-grid">
-                <div class="card" style="display: flex; flex-direction: row; align-items: center; gap: 20px; padding: 16px; position: relative;">
-                    <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; position: absolute; top: 16px; left: 16px;">
+        <!-- VIEW 5: FAILURE ANALYSIS -->
+        <div id="view-failure-analysis" class="view-container">
+            <div class="view-header">
+                <span class="view-title">Root-Cause & Defect Analysis</span>
+            </div>
+            <div class="failure-analysis-grid">
+                <div class="card" style="padding: 16px; position: relative;">
+                    <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; position: absolute; top: 16px; left: 16px; z-index: 1;">
                         Failure Categories Distribution
                     </div>
-                    <div style="display: flex; justify-content: center; align-items: center; flex: 1;">
-                        <div class="donut-analysis-box" style="width: 160px; height: 160px; position: relative;">
-                            <canvas id="analysisDonutChart" width="160" height="160"></canvas>
-                            <div class="donut-center-text">
+                    <div style="display: flex; flex-direction: row; align-items: center; gap: 20px; height: calc(100% - 40px); margin-top: 30px;">
+                        <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                            <canvas id="analysisDonutChart" style="width: 160px !important; height: 160px !important;"></canvas>
+                            <div class="donut-center-text" style="position: absolute; z-index: 2;">
                                 <span class="donut-center-label">Failures</span>
                                 <span class="donut-center-val" id="analysis-total-failures">0</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="custom-legend" id="analysis-legend" style="flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center;">
-                        <!-- Legendary Failure Details -->
+                        <div class="custom-legend" id="analysis-legend" style="flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+                            <!-- Legendary Failure Details -->
+                        </div>
                     </div>
                 </div>
 
@@ -2368,8 +2415,14 @@
                 options: {
                     responsive: false,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: 0
+                    },
                     cutout: '76%',
-                    plugins: { legend: { display: false } }
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    }
                 }
             });
 

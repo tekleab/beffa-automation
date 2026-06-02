@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 11,
-  "failed": 4,
+  "passed": 10,
+  "failed": 5,
   "skipped": 0,
-  "passRate": 73.3,
-  "avgDurationMs": 51862,
-  "lastUpdated": "2026-06-02T17:46:59.131Z",
+  "passRate": 66.7,
+  "avgDurationMs": 44634,
+  "lastUpdated": "2026-06-02T19:43:14.388Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 11,
-      "failed": 4,
+      "passed": 10,
+      "failed": 5,
       "skipped": 0,
       "trend": [
-        73.3,
         73.3,
         57,
         50,
         33.3,
         80,
-        73.3
+        73.3,
+        66.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "438",
+      "commit": "ccfd976",
+      "trigger": "push (smoke)",
+      "duration": "11m 9s",
+      "passRate": 66.7,
+      "status": "failed"
+    },
     {
       "run": "437",
       "commit": "7b13866",
@@ -95,40 +103,38 @@
       "duration": "6m 3s",
       "passRate": 53.3,
       "status": "failed"
-    },
-    {
-      "run": "427",
-      "commit": "2c580ac",
-      "trigger": "push (smoke)",
-      "duration": "7m 41s",
-      "passRate": 80,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-02T17:42:03.597Z"
+      "error": "Error: Tax Discovery HTTP 400: {\n\t\"data\": null,\n\t\"error\": \"conn busy\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 |       const text = a",
+      "firstSeen": "2026-06-02T19:37:55.702Z"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
+      "firstSeen": "2026-06-02T19:37:55.681Z"
+    },
+    {
+      "severity": "medium",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: SO API Failed\n\n  23 |             warehouseId: itemResult.warehouseId\n  24 |         });\n> 25 |         if (!soResult.success) throw new Error(\"SO API Failed\");\n     |                          ",
+      "firstSeen": "2026-06-02T19:37:55.666Z"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] Failed selection for Warehouse\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n  ",
-      "firstSeen": "2026-06-02T17:42:44.346Z"
+      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - us",
+      "firstSeen": "2026-06-02T19:38:23.898Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T17:42:52.664Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
-      "firstSeen": "2026-06-02T17:42:54.938Z"
+      "firstSeen": "2026-06-02T19:38:38.776Z"
     }
   ]
 }
