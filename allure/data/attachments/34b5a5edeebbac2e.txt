@@ -1,0 +1,16 @@
+[PERFORMANCE] API - Auth API Verification: 260.80ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 601.82ms
+[PERFORMANCE] API - Auth API Verification: 177.72ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "b8195dda-e5ab-417a-87ea-488aaa7357fc"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[BILL] BILL/2026/06/02/000076 (b8195dda-e5ab-417a-87ea-488aaa7357fc)
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+[INFO] Mismatch payment created: PAY/2026/06/02/000017 (f043d964-8234-4ff5-90f4-adb4c837c0bd)
+[API] Advancing payments "f043d964-8234-4ff5-90f4-adb4c837c0bd"...
+[RESULT] Bill balance after mismatch payment: 2000

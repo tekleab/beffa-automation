@@ -1,0 +1,31 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 360.45ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 2
+[SUCCESS] "Purchase Order Date" set to Day 2 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2523.76ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 1923.33ms
+[INFO] Vendor: MOENCO S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2003.74ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2525.00ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1903.23ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2020.40ms
+[PERFORMANCE] UI - Random Selection: Location: 2076.22ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1919.06ms
+[OK] Line item added (Price: 2663)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/02/000033 | Vendor: MOENCO S.C
+[API] Advancing purchase-orders "6d6017fe-68a0-4947-8dff-9088475710ed"...
+[OK] PO PO/2026/06/02/000033 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/02/000033 via API
+[API] Advancing bills "5f1eab5a-11d1-4e9f-8b91-8f0468356877"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for bills 5f1eab5a-11d1-4e9f-8b91-8f0468356877.
+[OK] Linked Bill BILL/2026/06/02/000094 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/02/000094 in vendor profile via API

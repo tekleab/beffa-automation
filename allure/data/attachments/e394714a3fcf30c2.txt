@@ -1,0 +1,26 @@
+[PERFORMANCE] API - Auth API Verification: 364.42ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 662.82ms
+[PERFORMANCE] API - Auth API Verification: 152.44ms
+[SEED] Low stock (1). Seeding 10 units via Bill...
+[API] Advancing bills "6956de3b-4f6b-4183-bb56-74bca9d2762d"...
+[API] Advancing invoices "e3a43d20-672e-4280-a2db-b9460abb4b23"...
+[DEBUG] Receipt payload: {
+  "amount": 500,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-02T15:01:33.114Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 500,
+      "invoice_id": "e3a43d20-672e-4280-a2db-b9460abb4b23"
+    }
+  ]
+}
+[PASS/BUG] Transaction failed or was blocked: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+

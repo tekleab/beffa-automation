@@ -1,0 +1,34 @@
+[PERFORMANCE] API - Auth API Verification: 272.24ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 812.87ms
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  Item ID     : d6d8ddf6-c9b9-49d7-b0d2-0d944ddd7a1f (Wooden bucket Classic NM)
+[ITEM]  Stock       : 40
+[PLAN]  PO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-receive: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving PO for 10 units...
+[API] Advancing purchase-orders "e247a05e-0bfc-4269-b0ce-a8258f88ae00"...
+[OK] PO PO/2026/06/02/000030 approved (ID: e247a05e-0bfc-4269-b0ce-a8258f88ae00)
+[STEP 2] Receiving Batch 1: 4 units...
+[API] Advancing bills "b84a8a8c-f7a3-4a87-9ab8-3b8d452e583e"...
+[OK] Batch 1 bill BILL/2026/06/02/000081 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+[API] Advancing bills "823248fa-393d-4b13-a266-f78dcecd179b"...
+[OK] Batch 2 bill BILL/2026/06/02/000082 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO Ref       : PO/2026/06/02/000030 (ID: e247a05e-0bfc-4269-b0ce-a8258f88ae00)
+[DOCUMENT] Bill 1       : BILL/2026/06/02/000081 (ID: b84a8a8c-f7a3-4a87-9ab8-3b8d452e583e) — 4 units
+[DOCUMENT] Bill 2       : BILL/2026/06/02/000082 (ID: 823248fa-393d-4b13-a266-f78dcecd179b) — 6 units
+[ITEM]     Item         : Wooden bucket Classic NM (d6d8ddf6-c9b9-49d7-b0d2-0d944ddd7a1f)
+[STOCK]    Before       : 40
+[STOCK]    After        : 40
+[STOCK]    Expected     : 50
+================================================
+
