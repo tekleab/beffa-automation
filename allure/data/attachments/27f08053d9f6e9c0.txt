@@ -1,0 +1,35 @@
+[PERFORMANCE] API - Auth API Verification: 394.08ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1175.70ms
+[OK] Discovered: "Steam room special 4D Elysee complete set" via API | Stock: 24
+[API] Advancing sales-orders "fe328439-4e8e-436c-8bd5-c1e9692a1524"...
+[OK] Sales Order SO/2026/06/03/000043 approved via API
+[API] Advancing invoices "57188e50-9675-48fa-9a10-31852c803395"...
+[OK] Invoice INV/2026/06/03/000178 approved via API
+[INFO] Document Setup Complete: INV/2026/06/03/000178 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 117636.56
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-03T07:01:41.571Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "57188e50-9675-48fa-9a10-31852c803395"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/03/000044
+[OK] Receipt created via API: RCPT/2026/06/03/000044
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "ca9b9949-c97a-4b71-b040-13505b48e5d2"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/03/000044 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/03/000044 verified in profile
