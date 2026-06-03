@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 5,
+  "passed": 3,
   "failed": 6,
-  "skipped": 4,
-  "passRate": 33.3,
-  "avgDurationMs": 54108,
-  "lastUpdated": "2026-06-02T20:45:14.167Z",
+  "skipped": 6,
+  "passRate": 20,
+  "avgDurationMs": 30027,
+  "lastUpdated": "2026-06-03T06:05:39.238Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 5,
+      "passed": 3,
       "failed": 6,
-      "skipped": 4,
+      "skipped": 6,
       "trend": [
-        50,
         33.3,
         80,
         73.3,
         66.7,
         58.4,
-        45.5
+        45.5,
+        33.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "441",
+      "commit": "5fb1895",
+      "trigger": "push (smoke)",
+      "duration": "7m 30s",
+      "passRate": 20,
+      "status": "failed"
+    },
     {
       "run": "440",
       "commit": "0a18dbf",
@@ -95,14 +103,6 @@
       "duration": "10m 30s",
       "passRate": 73.3,
       "status": "failed"
-    },
-    {
-      "run": "431",
-      "commit": "5908ee5",
-      "trigger": "push (smoke)",
-      "duration": "8m 8s",
-      "passRate": 73.3,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,37 +110,37 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-02T20:40:23.689Z"
+      "firstSeen": "2026-06-03T06:02:43.038Z"
     },
     {
-      "severity": "critical",
+      "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-02T20:40:23.781Z"
+      "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
+      "firstSeen": "2026-06-03T06:02:42.967Z"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/purchase-order/3fdb3a6e-737c-4644-95f3-688f190277bc?year=2018&period=yearly&calen",
-      "firstSeen": "2026-06-02T20:41:02.983Z"
+      "error": "Error: [ERROR] Failed selection for Accounts Payable\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName",
+      "firstSeen": "2026-06-03T06:03:15.753Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-02T20:41:09.043Z"
+      "firstSeen": "2026-06-03T06:03:29.038Z"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/payables/vendors/af918131-0989-4e3d-900c-86a51723e383/detail\", waiting until \"networkid",
-      "firstSeen": "2026-06-02T20:41:20.889Z"
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
+      "firstSeen": "2026-06-03T06:03:32.838Z"
     },
     {
       "severity": "medium",
-      "title": "Guardrail: Employee creation must reject payload missing required fields",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-02T20:41:54.713Z"
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"\u001b[7min\u001b[27mactive\"\u001b[39m\nReceived: \u001b[31m\"active\"\u001b[39m\n\n  37 |      ",
+      "firstSeen": "2026-06-03T06:03:51.044Z"
     }
   ]
 }
