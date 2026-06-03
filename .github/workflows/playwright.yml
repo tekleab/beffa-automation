@@ -220,7 +220,7 @@ jobs:
 
     - name: Get Allure history
       uses: actions/checkout@v4
-      if: false
+      if: always()
       continue-on-error: true
       with:
         ref: gh-pages
@@ -268,7 +268,13 @@ jobs:
     - name: Generate Allure Report
       if: always()
       run: |
-        # Use local allure-commandline to ensure version compatibility with allure-playwright
+        # Restore history from previous deploy so trend/retry/category charts populate
+        if [ -d "gh-pages/allure/history" ]; then
+          echo "[INFO] Restoring Allure history from gh-pages..."
+          cp -r gh-pages/allure/history allure-results/history
+        else
+          echo "[INFO] No prior Allure history found — first run or history missing."
+        fi
         ls allure-results/ | head -20 || echo "[WARN] allure-results is empty"
         npx allure generate allure-results --clean -o temp-report
         if [ ! -f "temp-report/index.html" ]; then
