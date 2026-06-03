@@ -1,17 +1,17 @@
 {
   "total": 15,
-  "passed": 4,
+  "passed": 3,
   "failed": 6,
-  "skipped": 5,
-  "passRate": 26.7,
-  "avgDurationMs": 38272,
-  "lastUpdated": "2026-06-03T06:46:22.233Z",
+  "skipped": 6,
+  "passRate": 20,
+  "avgDurationMs": 46636,
+  "lastUpdated": "2026-06-03T06:51:11.105Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 4,
+      "passed": 3,
       "failed": 6,
-      "skipped": 5,
+      "skipped": 6,
       "trend": [
         73.3,
         66.7,
@@ -19,17 +19,17 @@
         45.5,
         33.3,
         30,
-        40
+        33.3
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "443",
-      "commit": "9900da3",
+      "run": "444",
+      "commit": "89b66bf",
       "trigger": "push (smoke)",
-      "duration": "9m 34s",
-      "passRate": 26.7,
+      "duration": "11m 39s",
+      "passRate": 20,
       "status": "failed"
     },
     {
@@ -110,37 +110,37 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-03T06:43:02.359Z"
+      "firstSeen": "2026-06-03T06:47:07.675Z"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
-      "firstSeen": "2026-06-03T06:43:02.391Z"
+      "firstSeen": "2026-06-03T06:47:07.726Z"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('p, span, div, h1, h2, h3, h4, h5').filter({ hasText: /^PO\\/\\d{4}\\// }).first()\u001b[22m\n\n\n  84 |         awa",
-      "firstSeen": "2026-06-03T06:43:32.665Z"
+      "error": "Error: [ERROR] Failed selection for Location\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n   ",
+      "firstSeen": "2026-06-03T06:47:46.850Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-03T06:43:42.968Z"
+      "firstSeen": "2026-06-03T06:47:58.746Z"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/03/000139').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
-      "firstSeen": "2026-06-03T06:43:48.727Z"
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
+      "firstSeen": "2026-06-03T06:48:01.790Z"
     },
     {
       "severity": "medium",
-      "title": "API: Employee roster must be non-empty with valid structure",
+      "title": "API: Employee must be created with all required fields",
       "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
-      "firstSeen": "2026-06-03T06:44:16.852Z"
+      "firstSeen": "2026-06-03T06:48:21.383Z"
     }
   ]
 }
