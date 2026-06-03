@@ -260,17 +260,17 @@ jobs:
     - name: Install Allure CLI
       if: always()
       run: |
-        # Pinned version — prevents surprise breaking upgrades from @latest
-        npm install -g allure-commandline@2.27.0
+        # Use local allure-commandline from node_modules to match allure-playwright version
+        npm install -g allure-commandline@2.32.0
         export PATH=$(npm bin -g):$PATH
         allure --version
 
     - name: Generate Allure Report
       if: always()
       run: |
-        # Do not sync history - each run should show only its own results
-        npx allure-commandline generate allure-results --clean -o temp-report
-        # Verify Allure report was generated successfully
+        # Use local allure-commandline to ensure version compatibility with allure-playwright
+        ls allure-results/ | head -20 || echo "[WARN] allure-results is empty"
+        npx allure generate allure-results --clean -o temp-report
         if [ ! -f "temp-report/index.html" ]; then
           echo "ERROR: Allure report index.html not found"
           exit 1
