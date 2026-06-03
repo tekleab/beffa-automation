@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 3,
-  "failed": 6,
+  "passed": 4,
+  "failed": 5,
   "skipped": 6,
-  "passRate": 20,
-  "avgDurationMs": 27434,
-  "lastUpdated": "2026-06-03T08:16:51.528Z",
+  "passRate": 26.7,
+  "avgDurationMs": 35448,
+  "lastUpdated": "2026-06-03T09:21:22.242Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 3,
-      "failed": 6,
+      "passed": 4,
+      "failed": 5,
       "skipped": 6,
       "trend": [
-        58.4,
         45.5,
         33.3,
         30,
         33.3,
         66.7,
-        33.3
+        33.3,
+        44.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "447",
+      "commit": "035dd31",
+      "trigger": "push (smoke)",
+      "duration": "8m 51s",
+      "passRate": 26.7,
+      "status": "failed"
+    },
     {
       "run": "446",
       "commit": "3577e70",
@@ -95,14 +103,6 @@
       "duration": "12m 57s",
       "passRate": 73.3,
       "status": "failed"
-    },
-    {
-      "run": "436",
-      "commit": "7f7a25c",
-      "trigger": "push (smoke)",
-      "duration": "6m 59s",
-      "passRate": 80,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
@@ -110,37 +110,31 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-03T08:13:36.644Z"
-    },
-    {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Currency Discovery HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Error fetching currencies\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 ",
-      "firstSeen": "2026-06-03T08:13:36.703Z"
+      "firstSeen": "2026-06-03T09:16:54.304Z"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] Failed selection for Warehouse\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n  ",
-      "firstSeen": "2026-06-03T08:13:58.933Z"
+      "error": "Error: [ERROR] Failed selection for Vendor\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n     ",
+      "firstSeen": "2026-06-03T09:17:26.756Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-03T08:14:20.372Z"
+      "firstSeen": "2026-06-03T09:17:39.751Z"
     },
     {
       "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
-      "firstSeen": "2026-06-03T08:14:26.394Z"
+      "firstSeen": "2026-06-03T09:17:44.961Z"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "API: Employee must be created with all required fields",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"\u001b[7min\u001b[27mactive\"\u001b[39m\nReceived: \u001b[31m\"active\"\u001b[39m\n\n  37 |      ",
-      "firstSeen": "2026-06-03T08:14:44.666Z"
+      "error": "Error: Create employee failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/HrAPI.ts:33\n\n  31 |     );\n  32 |     const text = await resp.text();\n> 33 |     if (!resp",
+      "firstSeen": "2026-06-03T09:18:01.161Z"
     }
   ]
 }
