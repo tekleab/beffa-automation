@@ -1,29 +1,37 @@
 {
   "total": 15,
-  "passed": 10,
-  "failed": 5,
-  "skipped": 0,
-  "passRate": 66.7,
-  "avgDurationMs": 33243,
-  "lastUpdated": "2026-06-03T07:04:16.354Z",
+  "passed": 3,
+  "failed": 6,
+  "skipped": 6,
+  "passRate": 20,
+  "avgDurationMs": 27434,
+  "lastUpdated": "2026-06-03T08:16:51.528Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 10,
-      "failed": 5,
-      "skipped": 0,
+      "passed": 3,
+      "failed": 6,
+      "skipped": 6,
       "trend": [
-        66.7,
         58.4,
         45.5,
         33.3,
         30,
         33.3,
-        66.7
+        66.7,
+        33.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "446",
+      "commit": "3577e70",
+      "trigger": "push (smoke)",
+      "duration": "6m 51s",
+      "passRate": 20,
+      "status": "failed"
+    },
     {
       "run": "445",
       "commit": "2f5a48b",
@@ -95,14 +103,6 @@
       "duration": "6m 59s",
       "passRate": 80,
       "status": "success"
-    },
-    {
-      "run": "435",
-      "commit": "726c37c",
-      "trigger": "push (smoke)",
-      "duration": "11m 18s",
-      "passRate": 20,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,31 +110,37 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-03T07:01:15.998Z"
+      "firstSeen": "2026-06-03T08:13:36.644Z"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
-      "firstSeen": "2026-06-03T07:01:16.007Z"
+      "error": "Error: Currency Discovery HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Error fetching currencies\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 ",
+      "firstSeen": "2026-06-03T08:13:36.703Z"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] Failed selection for Purchase Type\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`)",
-      "firstSeen": "2026-06-03T07:01:47.375Z"
+      "error": "Error: [ERROR] Failed selection for Warehouse\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n  ",
+      "firstSeen": "2026-06-03T08:13:58.933Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-03T07:02:03.194Z"
+      "firstSeen": "2026-06-03T08:14:20.372Z"
     },
     {
       "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
-      "firstSeen": "2026-06-03T07:02:03.094Z"
+      "firstSeen": "2026-06-03T08:14:26.394Z"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"\u001b[7min\u001b[27mactive\"\u001b[39m\nReceived: \u001b[31m\"active\"\u001b[39m\n\n  37 |      ",
+      "firstSeen": "2026-06-03T08:14:44.666Z"
     }
   ]
 }
