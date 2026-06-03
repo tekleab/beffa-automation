@@ -1,29 +1,37 @@
 {
   "total": 15,
   "passed": 3,
-  "failed": 6,
-  "skipped": 6,
+  "failed": 7,
+  "skipped": 5,
   "passRate": 20,
-  "avgDurationMs": 30027,
-  "lastUpdated": "2026-06-03T06:05:39.238Z",
+  "avgDurationMs": 46657,
+  "lastUpdated": "2026-06-03T06:38:29.804Z",
   "moduleBreakdown": [
     {
       "module": "Other",
       "passed": 3,
-      "failed": 6,
-      "skipped": 6,
+      "failed": 7,
+      "skipped": 5,
       "trend": [
-        33.3,
         80,
         73.3,
         66.7,
         58.4,
         45.5,
-        33.3
+        33.3,
+        30
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "442",
+      "commit": "f41de2e",
+      "trigger": "push (smoke)",
+      "duration": "11m 39s",
+      "passRate": 20,
+      "status": "failed"
+    },
     {
       "run": "441",
       "commit": "5fb1895",
@@ -95,52 +103,50 @@
       "duration": "49m 1s",
       "passRate": 52.8,
       "status": "failed"
-    },
-    {
-      "run": "432",
-      "commit": "0466054",
-      "trigger": "push (smoke)",
-      "duration": "10m 30s",
-      "passRate": 73.3,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Edit\")') to be visible\u001b[22m\n\n\n  49 |         // Edit\n  50 |         console.log(`[STEP]",
+      "firstSeen": "2026-06-03T06:34:43.564Z"
+    },
+    {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-03T06:02:43.038Z"
+      "firstSeen": "2026-06-03T06:34:43.538Z"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
-      "firstSeen": "2026-06-03T06:02:42.967Z"
+      "firstSeen": "2026-06-03T06:34:43.632Z"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] Failed selection for Accounts Payable\n\n   at ../lib/BasePage.ts:508\n\n  506 |       }\n  507 |     }\n> 508 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName",
-      "firstSeen": "2026-06-03T06:03:15.753Z"
+      "error": "TimeoutError: page.waitForURL: Timeout 120000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/u",
+      "firstSeen": "2026-06-03T06:35:31.170Z"
     },
     {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-03T06:03:29.038Z"
+      "firstSeen": "2026-06-03T06:35:37.204Z"
     },
     {
       "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
-      "firstSeen": "2026-06-03T06:03:32.838Z"
+      "firstSeen": "2026-06-03T06:35:45.977Z"
     },
     {
       "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"\u001b[7min\u001b[27mactive\"\u001b[39m\nReceived: \u001b[31m\"active\"\u001b[39m\n\n  37 |      ",
-      "firstSeen": "2026-06-03T06:03:51.044Z"
+      "title": "API: Employee roster must be non-empty with valid structure",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/AuthManager.ts:108\n\n  106 | ",
+      "firstSeen": "2026-06-03T06:36:14.457Z"
     }
   ]
 }
