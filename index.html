@@ -450,8 +450,9 @@
         .overview-grid-a {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
+            gap: 16px;
             flex-shrink: 0;
+            width: 100%;
         }
 
         @media (max-width: 1400px) {
@@ -1835,7 +1836,7 @@
                 const elapsed = time - start;
                 const progress = Math.min(elapsed / duration, 1);
                 const eased = 1 - Math.pow(1 - progress, 3);
-                element.textContent = (targetValue * eased).toFixed(1) + suffix;
+                element.textContent = suffix ? (targetValue * eased).toFixed(1) + suffix : Math.round(targetValue * eased);
                 if (progress < 1) requestAnimationFrame(update);
             }
             requestAnimationFrame(update);
@@ -2024,7 +2025,7 @@
 
         function detectCategory(errorText) {
             const rule = categoryRules.find(r => r.pattern.test(errorText));
-            return rule ? rule.category : 'Other';
+            return rule ? rule.category : 'Logic Bugs';
         }
 
         function timeSince(dateString) {
