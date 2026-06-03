@@ -1,0 +1,35 @@
+[PERFORMANCE] API - Auth API Verification: 455.67ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1342.00ms
+[OK] Discovered: "Switch gottak" via API | Stock: 23
+[API] Advancing sales-orders "ad9fb73f-9031-4600-8b69-66a84c2a7cb8"...
+[OK] Sales Order SO/2026/06/03/000045 approved via API
+[API] Advancing invoices "8a445a28-5245-4bda-b34e-deef474cdc6a"...
+[OK] Invoice INV/2026/06/03/000185 approved via API
+[INFO] Document Setup Complete: INV/2026/06/03/000185 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 3972.28
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-03T09:17:21.672Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "8a445a28-5245-4bda-b34e-deef474cdc6a"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/03/000047
+[OK] Receipt created via API: RCPT/2026/06/03/000047
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "ea1408f8-396f-4b83-a51b-8e8479ee9f36"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/03/000047 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/03/000047 verified in profile
