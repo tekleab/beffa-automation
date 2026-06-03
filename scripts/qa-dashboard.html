@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -237,9 +238,15 @@
         }
 
         .nav-item.active {
-            background: rgba(59, 130, 246, 0.15);
-            border-left-color: var(--accent-primary);
-            color: var(--text-primary);
+            background: linear-gradient(90deg, rgba(124,110,247,0.15), transparent);
+            border-left: 3px solid var(--purple);
+            color: #fff;
+            box-shadow: inset 0 0 20px rgba(124,110,247,0.05);
+        }
+
+        .nav-item.active i {
+            color: var(--purple);
+            filter: drop-shadow(0 0 4px rgba(124,110,247,0.6));
         }
 
         .sidebar-footer {
@@ -287,8 +294,10 @@
         }
 
         .status-banner.healthy {
-            background: rgba(34, 197, 94, 0.08);
-            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            background: linear-gradient(90deg, rgba(29,158,117,0.2), rgba(29,158,117,0.1), rgba(29,158,117,0.2));
+            background-size: 200% 100%;
+            animation: bannerPulse 4s ease infinite;
+            border-bottom: 1px solid rgba(29,158,117,0.3);
             color: var(--success);
         }
 
@@ -299,9 +308,16 @@
         }
 
         .status-banner.blocked {
-            background: rgba(239, 68, 68, 0.08);
-            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+            background: linear-gradient(90deg, rgba(226,75,74,0.2), rgba(226,75,74,0.1), rgba(226,75,74,0.2));
+            background-size: 200% 100%;
+            animation: bannerPulse 4s ease infinite;
+            border-bottom: 1px solid rgba(226,75,74,0.3);
             color: #fca5a5;
+        }
+
+        @keyframes bannerPulse {
+            0%, 100% { background-position: 0% 50%; }
+            50%       { background-position: 100% 50%; }
         }
 
         /* ── View Container ── */
@@ -340,25 +356,40 @@
 
         /* ── General Elements ── */
         .card {
-            background: rgba(22, 22, 22, 0.85);
+            background: linear-gradient(145deg, var(--surface, rgba(22,22,22,0.85)), var(--surface2, rgba(28,28,28,0.85)));
             border: 1px solid var(--border);
             border-radius: var(--radius-card);
             padding: 24px;
             position: relative;
             overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            backdrop-filter: blur(12px);
-            box-shadow:
-                0 4px 12px rgba(0, 0, 0, 0.15),
-                0 12px 32px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
             font-family: "Inter", "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        .card:hover {
+        .card, .metric-card, .blocker-card, .run-card {
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            cursor: default;
+        }
+
+        .card:hover, .metric-card:hover, .blocker-card:hover {
             transform: translateY(-2px);
-            box-shadow:
-                0 8px 20px rgba(0, 0, 0, 0.25),
-                0 16px 40px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            border-radius: 1px;
         }
 
         .card-title {
@@ -515,6 +546,88 @@
             min-height: 0;
             overflow: hidden;
         }
+
+        /* ── Donut container ── */
+        .donut-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            flex-shrink: 0;
+        }
+
+        .donut-wrapper {
+            width: 160px;
+            height: 160px;
+            min-width: 160px;
+            min-height: 160px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .donut-wrapper canvas {
+            width: 160px !important;
+            height: 160px !important;
+        }
+
+        .donut-center-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .donut-center-label .risks-count {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .donut-center-label .risks-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .failure-breakdown-panel {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            padding: 16px;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            min-width: 120px;
+            flex: 1;
+        }
+
+        /* ── Severity icons ── */
+        .severity-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .severity-icon.critical { background: rgba(226,75,74,0.15); }
+        .severity-icon.high     { background: rgba(186,117,23,0.15); }
+        .severity-icon.medium   { background: rgba(124,110,247,0.15); }
+        .severity-icon.low      { background: rgba(29,158,117,0.15); }
 
         /* Risk donut custom legend */
         .custom-legend {
@@ -802,15 +915,14 @@
             gap: 8px;
         }
 
-        .risk-full-card.critical { border-left-color: var(--red); animation: border-pulse-red 3s infinite; }
+        .risk-full-card.critical { border-left-color: var(--red); animation: criticalPulse 3s ease-in-out infinite; }
         .risk-full-card.high { border-left-color: #f97316; }
         .risk-full-card.medium { border-left-color: var(--amber); }
         .risk-full-card.low { border-left-color: var(--text-muted); }
 
-        @keyframes border-pulse-red {
-            0% { border-left-color: var(--red); }
-            50% { border-left-color: rgba(226, 75, 74, 0.3); }
-            100% { border-left-color: var(--red); }
+        @keyframes criticalPulse {
+            0%, 100% { border-left-color: #e24b4a; }
+            50%       { border-left-color: rgba(226,75,74,0.3); }
         }
 
         .risk-card-row1 {
@@ -919,13 +1031,6 @@
             display: flex;
             flex-direction: column;
             line-height: 1.1;
-        }
-
-        .donut-center-label {
-            font-size: 10px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-transform: uppercase;
         }
 
         .donut-center-val {
@@ -1446,15 +1551,17 @@
                     <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; position: absolute; top: 16px; left: 16px; z-index: 1;">
                         Failure Categories Distribution
                     </div>
-                    <div style="display: flex; flex-direction: row; align-items: center; gap: 20px; height: calc(100% - 40px); margin-top: 30px;">
-                        <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-                            <canvas id="analysisDonutChart" style="width: 160px !important; height: 160px !important;"></canvas>
-                            <div class="donut-center-text" style="position: absolute; z-index: 2;">
-                                <span class="donut-center-label">Failures</span>
-                                <span class="donut-center-val" id="analysis-total-failures">0</span>
+                    <div class="failure-breakdown-panel" style="margin-top: 30px;">
+                        <div class="donut-container">
+                            <div class="donut-wrapper">
+                                <canvas id="analysisDonutChart"></canvas>
+                            </div>
+                            <div class="donut-center-label">
+                                <div class="risks-count" id="donut-center-count">0</div>
+                                <div class="risks-label">RISKS</div>
                             </div>
                         </div>
-                        <div class="custom-legend" id="analysis-legend" style="flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+                        <div class="donut-legend" id="analysis-legend">
                             <!-- Legendary Failure Details -->
                         </div>
                     </div>
@@ -1549,6 +1656,13 @@
 
         // Run auth check immediately
         checkAuth();
+
+        // Safe annotation plugin registration
+        try {
+            if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+        } catch(e) {
+            console.warn('Annotation plugin not loaded', e);
+        }
         
         // ── LOGOUT FUNCTIONALITY ──
         function logout() {
@@ -1704,6 +1818,28 @@
             }
         `;
         document.head.appendChild(themeAnimations);
+
+        // ── SEVERITY ICONS ──
+        const severityIcon = {
+            critical: '⛔',
+            high:     '⚠️',
+            medium:   '◆',
+            low:      '○'
+        };
+
+        // ── ANIMATED COUNTER ──
+        function animateCounter(element, targetValue, suffix = '%', duration = 800) {
+            if (!element) return;
+            const start = performance.now();
+            function update(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                element.textContent = (targetValue * eased).toFixed(1) + suffix;
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
 
         // ── GLOBAL STATE ──
         let currentView = 'overview';
@@ -2047,7 +2183,41 @@
                     maintainAspectRatio: false,
                     animation: { duration: 600, easing: 'easeInOutQuart' },
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        annotation: {
+                            annotations: {
+                                healthyLine: {
+                                    type: 'line',
+                                    yMin: 80, yMax: 80,
+                                    borderColor: 'rgba(29,158,117,0.5)',
+                                    borderWidth: 1,
+                                    borderDash: [6, 4],
+                                    label: {
+                                        display: true,
+                                        content: 'Healthy (80%)',
+                                        position: 'end',
+                                        color: 'rgba(29,158,117,0.8)',
+                                        font: { size: 10 },
+                                        backgroundColor: 'transparent'
+                                    }
+                                },
+                                degradedLine: {
+                                    type: 'line',
+                                    yMin: 60, yMax: 60,
+                                    borderColor: 'rgba(186,117,23,0.4)',
+                                    borderWidth: 1,
+                                    borderDash: [4, 4],
+                                    label: {
+                                        display: true,
+                                        content: 'Degraded (60%)',
+                                        position: 'end',
+                                        color: 'rgba(186,117,23,0.7)',
+                                        font: { size: 10 },
+                                        backgroundColor: 'transparent'
+                                    }
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: {
@@ -2076,7 +2246,7 @@
 
             const activeBlockersTotal = Object.values(groupedBlockers).reduce((a, b) => a + b, 0);
             const riskValEl = document.getElementById('overview-risk-count');
-            if (riskValEl) riskValEl.textContent = activeBlockersTotal;
+            if (riskValEl) animateCounter(riskValEl, activeBlockersTotal, '', 600);
 
             const categoryLabels = Object.keys(groupedBlockers);
             const categoryData = Object.values(groupedBlockers);
@@ -2160,9 +2330,10 @@
                     risksStack.innerHTML = top3.map(b => {
                         const sev = getRiskSeverity(b.title);
                         const impact = getBusinessImpact(b.error);
+                        const icon = severityIcon[sev] || '○';
                         return `
                             <div class="risk-compact-card">
-                                <span class="badge ${sev} risk-compact-badge">${sev.charAt(0).toUpperCase()}</span>
+                                <span class="severity-icon ${sev}">${icon}</span>
                                 <div class="risk-compact-info">
                                     <div class="risk-compact-title">${b.title}</div>
                                     <div class="risk-compact-meta">${impact}</div>
@@ -2331,7 +2502,7 @@
                         <div class="risk-full-card ${sev}">
                             <div class="risk-card-row1">
                                 <div class="risk-card-title-group">
-                                    <span class="badge ${sev}">${sev}</span>
+                                    <span class="severity-icon ${sev}">${severityIcon[sev] || '○'}</span>
                                     <span class="risk-card-title">${b.title}</span>
                                 </div>
                                 <span class="risk-time-open">${timeSince(b.firstSeen)}</span>
@@ -2489,37 +2660,48 @@
 
             const totalFailures = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
             const failuresTotalEl = document.getElementById('analysis-total-failures');
-            if (failuresTotalEl) failuresTotalEl.textContent = totalFailures;
+            if (failuresTotalEl) animateCounter(failuresTotalEl, totalFailures, '', 600);
+            const donutCenterCount = document.getElementById('donut-center-count');
+            if (donutCenterCount) donutCenterCount.textContent = totalFailures;
 
             const categoryLabels = Object.keys(categoryCounts);
             const categoryValues = Object.values(categoryCounts);
             const primaryColor = getComputedStyle(document.body).getPropertyValue('--purple').trim() || '#7c6ef7';
             const chartColors = ['#e24b4a', '#fbbf24', primaryColor, '#1d9e75', '#8888aa', '#f97316'];
 
+            // Phantom segment guard when only 1 category
+            const donutLabels = categoryLabels.length > 0 ? [...categoryLabels] : ['No Failures'];
+            const donutValues = categoryValues.length > 0 ? [...categoryValues] : [1];
+            const donutColors = categoryValues.length > 0 ? chartColors.slice(0, categoryLabels.length) : ['#1d9e75'];
+            if (donutLabels.length === 1 && donutLabels[0] !== 'No Failures') {
+                donutLabels.push('');
+                donutValues.push(0.0001);
+                donutColors.push('transparent');
+            }
+
             // Donut failures (Fully Dynamic Labels)
             safeCreateChart('analysisDonutChart', {
                 type: 'doughnut',
                 data: {
-                    labels: categoryLabels.length > 0 ? categoryLabels : ['No Failures'],
+                    labels: donutLabels,
                     datasets: [{
-                        data: categoryValues.length > 0 ? categoryValues : [1],
-                        backgroundColor: categoryValues.length > 0 ? chartColors.slice(0, categoryLabels.length) : ['#1d9e75'],
+                        data: donutValues,
+                        backgroundColor: donutColors,
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: false,
                     maintainAspectRatio: false,
-                    layout: {
-                        padding: 0
-                    },
-                    cutout: '76%',
+                    cutout: '68%',
+                    layout: { padding: 4 },
                     plugins: { 
                         legend: { display: false },
                         tooltip: { enabled: true }
                     }
                 }
             });
+            document.getElementById('donut-center-count').textContent = totalFailures;
 
             // Legend counts and percentages
             const legendContainer = document.getElementById('analysis-legend');
