@@ -2663,7 +2663,7 @@
             const failuresTotalEl = document.getElementById('analysis-total-failures');
             if (failuresTotalEl) animateCounter(failuresTotalEl, totalFailures, '', 600);
             const donutCenterCount = document.getElementById('donut-center-count');
-            if (donutCenterCount) donutCenterCount.textContent = totalFailures;
+            if (donutCenterCount) animateCounter(donutCenterCount, totalFailures, '', 600);
 
             const categoryLabels = Object.keys(categoryCounts);
             const categoryValues = Object.values(categoryCounts);
@@ -2676,8 +2676,8 @@
             const donutColors = categoryValues.length > 0 ? chartColors.slice(0, categoryLabels.length) : ['#1d9e75'];
             if (donutLabels.length === 1 && donutLabels[0] !== 'No Failures') {
                 donutLabels.push('');
-                donutValues.push(0.0001);
-                donutColors.push('transparent');
+                donutValues.push(0.5);
+                donutColors.push('rgba(30,30,30,0.01)');
             }
 
             // Donut failures (Fully Dynamic Labels)
@@ -2702,9 +2702,6 @@
                     }
                 }
             });
-            document.getElementById('donut-center-count').textContent = totalFailures;
-
-            // Legend counts and percentages
             const legendContainer = document.getElementById('analysis-legend');
             if (legendContainer) {
                 if (categoryLabels.length === 0) {

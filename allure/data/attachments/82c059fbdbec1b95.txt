@@ -1,0 +1,35 @@
+[PERFORMANCE] API - Auth API Verification: 406.11ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1053.31ms
+[OK] Discovered: "Spa paint 9L white colour" via API | Stock: 39
+[API] Advancing sales-orders "66624cfc-18bb-4246-a2cb-c6733f1df6b1"...
+[OK] Sales Order SO/2026/06/03/000041 approved via API
+[API] Advancing invoices "d1318c15-6cf8-4486-a36a-84d708d4620b"...
+[OK] Invoice INV/2026/06/03/000170 approved via API
+[INFO] Document Setup Complete: INV/2026/06/03/000170 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 969.73
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-03T06:43:24.768Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "d1318c15-6cf8-4486-a36a-84d708d4620b"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/03/000040
+[OK] Receipt created via API: RCPT/2026/06/03/000040
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "6178b8af-e6a6-4f60-8606-5b262d6a9f28"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/03/000040 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/03/000040 verified in profile
