@@ -1,29 +1,37 @@
 {
   "total": 11,
-  "passed": 8,
+  "passed": 2,
   "failed": 3,
-  "skipped": 0,
-  "passRate": 72.7,
-  "avgDurationMs": 54565,
-  "lastUpdated": "2026-06-04T10:40:41.524Z",
+  "skipped": 6,
+  "passRate": 18.2,
+  "avgDurationMs": 26766,
+  "lastUpdated": "2026-06-04T10:54:17.860Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 8,
+      "passed": 2,
       "failed": 3,
-      "skipped": 0,
+      "skipped": 6,
       "trend": [
-        44.4,
         50,
         60.9,
         72.7,
         81.8,
         62.5,
-        72.7
+        72.7,
+        40
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "458",
+      "commit": "6ff0239",
+      "trigger": "push (smoke)",
+      "duration": "4m 54s",
+      "passRate": 18.2,
+      "status": "failed"
+    },
     {
       "run": "456",
       "commit": "035486b",
@@ -95,37 +103,32 @@
       "duration": "8m 18s",
       "passRate": 66.7,
       "status": "failed"
-    },
-    {
-      "run": "444",
-      "commit": "89b66bf",
-      "trigger": "push (smoke)",
-      "duration": "11m 39s",
-      "passRate": 20,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /remove|delete/i }).first() to be visible\u001b[22m\n\n\n  73 |         console.log('[STEP] P",
-      "firstSeen": "2026-06-04T10:36:07.946Z",
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure-report/#suites/vendor/Validate%20TIN%2C%20create%20vendor%2C%20edit%2C%20remove"
-    },
-    {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-04T10:36:07.959Z",
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure-report/#suites/cross-module-ui-flows/Sales%20UI%3A%20Partial%20payment%20updates%20invoice%20Amount%20Due%20correctly"
+      "firstSeen": "2026-06-04T10:52:03.789Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#testresult/96a40fa2289c0795"
     },
     {
-      "severity": "critical",
+      "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
-      "firstSeen": "2026-06-04T10:36:08.001Z",
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure-report/#suites/cross-module-ui-flows/Purchase%20UI%3A%20Approved%20bill%20reflects%20outstanding%20balance%20in%20vendor%20profile"
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/04/000239').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
+      "firstSeen": "2026-06-04T10:52:03.791Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#testresult/7f4e84d7126c8e9d"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"\u001b[7min\u001b[27mactive\"\u001b[39m\nReceived: \u001b[31m\"active\"\u001b[39m\n\n  37 |      ",
+      "firstSeen": "2026-06-04T10:52:47.464Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#testresult/c3960da3b92f4360"
     }
   ]
 }
