@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 293.63ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 961.63ms
+[ATTACK] Attempting to invoice 10014 units of "Micro oven" (available: 15)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 15, required: 10014.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+

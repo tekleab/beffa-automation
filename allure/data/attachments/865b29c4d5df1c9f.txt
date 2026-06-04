@@ -1,0 +1,68 @@
+[PERFORMANCE] API - Auth API Verification: 143.34ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 595.28ms
+
+========== PRE-TRANSACTION SNAPSHOT ==========
+[ACCOUNT] AR Account    : a9331f21-418e-45e2-850b-8240bc8b80ff
+[ACCOUNT] Cash Account  : 0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b
+[ACCOUNT] Sales Account : 8ceb9744-4483-4c44-8e55-5210c29511ee
+[ITEM]    Item ID        : e045cefa-9461-429a-9f35-7dfba3237a1a (spare part panecea)
+[ITEM]    Location ID    : 5cb3fd0a-fa48-450e-85b7-492a3608e68c
+[ITEM]    Warehouse ID   : e84bd63f-9be7-43ea-aa63-10b717e02f79
+[ITEM]    Stock          : 6
+[CUSTOMER] Customer ID  : 223a2864-674f-42e7-b799-22730e12c57a
+==============================================
+
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1945282.59
+[GL_AUDIT] Account: Cash - Main Office | Balance: -741829.40
+[BALANCE] AR Before     : 1945282.59
+[BALANCE] Cash Before   : -741829.40
+
+[STEP 2] Creating & approving standalone invoice...
+[API] Advancing invoices "d20e5a02-2428-4fc1-a609-34bbebbc098c"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1945382.59
+
+========== POST-INVOICE SNAPSHOT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/04/000244
+[DOCUMENT] Invoice ID   : d20e5a02-2428-4fc1-a609-34bbebbc098c
+[DOCUMENT] Amount       : 500
+[BALANCE] AR After Inv  : 1945382.59
+[BALANCE] AR Delta      : 100.00 (Expected: +500)
+============================================
+
+[STEP 3] Creating & approving full receipt...
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 100
+[DEBUG] Receipt payload: {
+  "amount": 500,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T10:06:35.817Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 500,
+      "invoice_id": "d20e5a02-2428-4fc1-a609-34bbebbc098c"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/04/000062
+[API] Advancing receipts "41de504b-addf-4766-9fad-16998b9f45e8"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1939882.59
+[GL_AUDIT] Account: Cash - Main Office | Balance: -741329.40
+
+========== POST-RECEIPT SNAPSHOT ==========
+[DOCUMENT] Receipt Ref  : RCPT/2026/06/04/000062
+[DOCUMENT] Receipt ID   : 41de504b-addf-4766-9fad-16998b9f45e8
+[DOCUMENT] Linked Inv   : INV/2026/06/04/000244 (d20e5a02-2428-4fc1-a609-34bbebbc098c)
+[ACCOUNT] AR Account    : a9331f21-418e-45e2-850b-8240bc8b80ff
+[ACCOUNT] Cash Account  : 0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b
+[BALANCE] AR Before     : 1945282.59
+[BALANCE] AR After Inv  : 1945382.59
+[BALANCE] AR After Rct  : 1939882.59 (Expected: ~1945282.59)
+[BALANCE] Cash Before   : -741829.40
+[BALANCE] Cash After    : -741329.40 (Expected change: +500)
+[BALANCE] AR Drift      : 5400.00 (Must be 0.00)
+============================================
+

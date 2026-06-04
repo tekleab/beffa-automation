@@ -1,0 +1,42 @@
+[PERFORMANCE] API - Auth API Verification: 352.14ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 709.43ms
+[PERFORMANCE] API - Auth API Verification: 177.86ms
+[API] Advancing invoices "ccd6cbba-e9b6-4acf-879c-4c7d58a099c3"...
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 100
+[DEBUG] Receipt payload: {
+  "amount": 300,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T10:06:08.613Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 300,
+      "invoice_id": "ccd6cbba-e9b6-4acf-879c-4c7d58a099c3"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/04/000060
+[API] Advancing receipts "b5f2104e-9ed0-4d39-b00f-76c127a02002"...
+[ATTACK] Attempting second receipt on fully paid invoice...
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: -200
+[DEBUG] Receipt payload: {
+  "amount": 300,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T10:06:16.824Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 300,
+      "invoice_id": "ccd6cbba-e9b6-4acf-879c-4c7d58a099c3"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/04/000061
+[API] Advancing receipts "51b2a40f-0f31-49a4-b3a5-eb29ed550663"...
