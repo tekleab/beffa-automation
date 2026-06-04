@@ -67,12 +67,15 @@ if (fs.existsSync(resultsPath)) {
                          (r.error && r.error.message) || '';
           const key = `${spec.title}-${errMsg.substring(0, 50)}`;
           if (!blockersMap[key]) {
+            const baseAllureUrl = 'https://tekleab.github.io/beffa-automation/allure-report/#suites';
+            const suiteName = (filePath.replace(/\\/g, '/').split('/').pop() || '').replace(/\.spec\.ts$/, '');
             blockersMap[key] = {
               severity: errMsg.includes('500') || errMsg.includes('CRITICAL') ? 'critical'
                       : st === 'timedOut' ? 'high' : 'medium',
               title: spec.title,
               error: errMsg.substring(0, 200),
-              firstSeen: r.startTime || new Date().toISOString()
+              firstSeen: r.startTime || new Date().toISOString(),
+              allureUrl: `${baseAllureUrl}/${encodeURIComponent(suiteName)}/${encodeURIComponent(spec.title)}`
             };
           }
         }
