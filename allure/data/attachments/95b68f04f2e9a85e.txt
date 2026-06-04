@@ -1,0 +1,19 @@
+[PERFORMANCE] API - Auth API Verification: 357.27ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 798.98ms
+[PERFORMANCE] API - Auth API Verification: 200.88ms
+[STEP 1] Creating & approving Bill for 3000...
+[API] Advancing bills "361436d3-16da-46c1-ac8a-ead1f13508e3"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for bills 361436d3-16da-46c1-ac8a-ead1f13508e3.
+[BILL] BILL/2026/06/04/000197 (361436d3-16da-46c1-ac8a-ead1f13508e3) | Amount: 3000
+[ATTACK] Overpayment of 6000 against bill BILL/2026/06/04/000197 (total: 3000)...
+[ACTION] Creating Bill Payment for 361436d3-16da-46c1-ac8a-ead1f13508e3 via API (CashAcct: 0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b)...
+[SUCCESS] Payment created: PAY/2026/06/04/000056 (ID: 75595839-77ff-4557-8b97-4e7f85744ad1)
+[API] Advancing payments "75595839-77ff-4557-8b97-4e7f85744ad1"...
+[PAYMENT] PAY/2026/06/04/000056 (75595839-77ff-4557-8b97-4e7f85744ad1) | Amount: 6000
+[RESULT] Bill BILL/2026/06/04/000197 balance after overpayment: -3000 (expected: >= 0)

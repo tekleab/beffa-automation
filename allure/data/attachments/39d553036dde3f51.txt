@@ -1,0 +1,28 @@
+[PERFORMANCE] API - Auth API Verification: 166.62ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 679.71ms
+
+========== PRE-TRANSACTION SNAPSHOT ==========
+[ACCOUNT] AR Account    : a9331f21-418e-45e2-850b-8240bc8b80ff
+[ACCOUNT] Sales Account : 8ceb9744-4483-4c44-8e55-5210c29511ee
+[ITEM]    Item ID        : e34c9cba-701a-481d-a7a8-c8c90932dec9 (pump koral prime pump 2,5hk)
+[ITEM]    Location ID    : 5cb3fd0a-fa48-450e-85b7-492a3608e68c
+[ITEM]    Warehouse ID   : e84bd63f-9be7-43ea-aa63-10b717e02f79
+[CUSTOMER] Customer ID  : 223a2864-674f-42e7-b799-22730e12c57a
+==============================================
+
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1936550.67
+[BALANCE] AR Before     : 1936550.67
+
+[STEP 2] Creating & approving invoice...
+[API] Advancing invoices "0edd2254-1f20-41ae-9f4c-acdc3680920f"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1936150.67
+
+========== POST-INVOICE SNAPSHOT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/04/000222
+[DOCUMENT] Invoice ID   : 0edd2254-1f20-41ae-9f4c-acdc3680920f
+[DOCUMENT] Amount       : 800
+[BALANCE] AR After Inv  : 1936150.67
+[BALANCE] AR Delta      : -400.00 (Expected: +800)
+============================================
+
