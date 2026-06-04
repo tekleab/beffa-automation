@@ -1,17 +1,17 @@
 {
   "total": 11,
-  "passed": 8,
-  "failed": 3,
-  "skipped": 0,
-  "passRate": 72.7,
-  "avgDurationMs": 55195,
-  "lastUpdated": "2026-06-04T11:16:10.449Z",
+  "passed": 4,
+  "failed": 5,
+  "skipped": 2,
+  "passRate": 36.4,
+  "avgDurationMs": 55568,
+  "lastUpdated": "2026-06-04T11:22:13.016Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 8,
-      "failed": 3,
-      "skipped": 0,
+      "passed": 4,
+      "failed": 5,
+      "skipped": 2,
       "trend": [
         72.7,
         81.8,
@@ -19,17 +19,17 @@
         72.7,
         40,
         40,
-        72.7
+        44.4
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "460",
-      "commit": "90bcd1f",
+      "run": "461",
+      "commit": "25e3056",
       "trigger": "push (smoke)",
-      "duration": "10m 7s",
-      "passRate": 72.7,
+      "duration": "10m 11s",
+      "passRate": 36.4,
       "status": "failed"
     },
     {
@@ -108,25 +108,41 @@
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /remove|delete/i }).first() to be visible\u001b[22m\n\n\n  73 |         console.log('[STEP] P",
-      "firstSeen": "2026-06-04T11:12:05.120Z",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id')\u001b[22m\n\n\n  26 |         console.log('[STEP] Phase 1: TIN validation check');\n  27 |",
+      "firstSeen": "2026-06-04T11:17:12.155Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' })\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.175.142:4173/users/login?",
+      "firstSeen": "2026-06-04T11:17:12.125Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-04T11:12:05.181Z",
+      "error": "Error: Item Discovery HTTP 404: 404 page not found\n\n\n   at ../lib/api/InventoryAPI.ts:327\n\n  325 |     const safeJson = async (resp: any, label: string) => {\n  326 |       const text = await resp.text",
+      "firstSeen": "2026-06-04T11:17:12.208Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  110 |         console.log(`[STEP",
-      "firstSeen": "2026-06-04T11:12:05.201Z",
+      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - us",
+      "firstSeen": "2026-06-04T11:17:12.161Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Org chart must return company context and department segments",
+      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/organization-chart?year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent:",
+      "firstSeen": "2026-06-04T11:19:50.866Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
