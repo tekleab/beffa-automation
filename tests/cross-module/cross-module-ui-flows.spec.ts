@@ -105,7 +105,23 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
 
         console.log(`[STEP 3] Navigating to vendor profile UI...`);
         await page.goto(`/payables/vendors/${vendorId}/detail`, { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 90000 }).catch(() => {});
+
+        // Detect session expiry redirect — re-login if kicked to /users/login
+        if (page.url().includes('/users/login')) {
+            console.log('[AUTH] Session expired — re-authenticating...');
+            await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+            await page.goto(`/payables/vendors/${vendorId}/detail`, { waitUntil: 'domcontentloaded' });
+        }
+
+        // Shorter networkidle with fallback to domcontentloaded to avoid 90s hang on redirect
+        await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() =>
+            page.waitForLoadState('domcontentloaded', { timeout: 10000 }).catch(() => {})
+        );
+
+        // Abort if still on login page after re-auth attempt
+        if (page.url().includes('/users/login')) {
+            throw new Error('[CRITICAL] Session could not be restored. Vendor profile unreachable.');
+        }
 
         console.log(`[STEP 4] Navigating to Bills tab...`);
         const billsTab = page.getByRole('tab', { name: /Bills|Transactions/i }).first();
