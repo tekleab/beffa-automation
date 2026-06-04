@@ -34,27 +34,12 @@ function collectSpecs(suites, inheritedFile) {
   return out;
 }
 
-// ── Allure UID cross-reference (if allure-report/data/suites.json exists) ──
+// ── Allure base URL ──
 const allureBase = 'https://tekleab.github.io/beffa-automation/allure';
-const allureSuitesPath = path.join(__dirname, '..', 'allure-report', 'data', 'suites.json');
-const allureUidMap = {}; // title -> uid
-if (fs.existsSync(allureSuitesPath)) {
-  try {
-    const suitesData = JSON.parse(fs.readFileSync(allureSuitesPath, 'utf-8'));
-    function indexAllureNodes(node) {
-      const uid = node.uid;
-      const name = node.name;
-      if (uid && name && node.status) allureUidMap[name] = uid;
-      (node.children || []).forEach(indexAllureNodes);
-    }
-    (suitesData.children || []).forEach(indexAllureNodes);
-    console.log(`[INFO] Allure UID map loaded: ${Object.keys(allureUidMap).length} entries`);
-  } catch (e) { console.log('[WARN] Could not parse allure suites.json:', e.message); }
-}
 
 function getAllureUrl(title) {
-  const uid = allureUidMap[title];
-  return uid ? `${allureBase}/#testresult/${uid}` : `${allureBase}/#suites`;
+  // #testresult UIDs are ephemeral; link to Behaviors view which is stable
+  return `${allureBase}/#behaviors`;
 }
 
 if (fs.existsSync(resultsPath)) {

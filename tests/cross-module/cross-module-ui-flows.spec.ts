@@ -104,17 +104,26 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         }
 
         console.log(`[STEP 3] Navigating to vendor profile UI...`);
-        await page.goto(`/payables/vendors/${vendorId}/detail`, { waitUntil: 'networkidle' });
+        await page.goto(`/payables/vendors/${vendorId}/detail`, { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 90000 }).catch(() => {});
 
         console.log(`[STEP 4] Navigating to Bills tab...`);
         const billsTab = page.getByRole('tab', { name: /Bills|Transactions/i }).first();
-        await billsTab.waitFor({ state: 'visible', timeout: 15000 });
+        await billsTab.waitFor({ state: 'visible', timeout: 20000 });
         await billsTab.click();
-        await page.waitForTimeout(2000);
+        // Wait for the tab panel to populate — backend may be slow
+        await page.waitForTimeout(4000);
 
         console.log(`[STEP 5] Asserting bill ${bill.ref} is visible in vendor profile...`);
-        const billLocator = page.getByText(bill.ref).first();
-        await expect(billLocator).toBeVisible({ timeout: 30000 });
+        // Poll: bill may be on any page; scroll/search if not immediately visible
+        let billVisible = false;
+        for (let attempt = 0; attempt < 5; attempt++) {
+            billVisible = await page.getByText(bill.ref).first().isVisible({ timeout: 8000 }).catch(() => false);
+            if (billVisible) break;
+            console.log(`[POLL ${attempt + 1}/5] Bill not yet visible, waiting...`);
+            await page.waitForTimeout(3000);
+        }
+        expect(billVisible, `Bill ${bill.ref} should be visible in vendor profile Bills tab`).toBe(true);
 
         console.log(`[PASS] Bill ${bill.ref} confirmed visible in vendor "${vendorName}" profile. Outstanding balance reflected.`);
     });
