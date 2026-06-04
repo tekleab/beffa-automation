@@ -5,6 +5,7 @@ import { SalesAPI } from '../lib/api/SalesAPI';
 import { PurchaseAPI } from '../lib/api/PurchaseAPI';
 import { InventoryAPI } from '../lib/api/InventoryAPI';
 import { HrAPI } from '../lib/api/HrAPI';
+import { ProjectAPI } from '../lib/api/ProjectAPI';
 import { SharedUI } from './components/SharedUI';
 import { SalesPage } from './SalesPage';
 import { PurchasePage } from './PurchasePage';
@@ -33,6 +34,7 @@ export class AppManager {
     purchase: PurchaseAPI;
     inventory: InventoryAPI;
     hr: HrAPI;
+    project: ProjectAPI;
     general: AppManager;
   };
   ui: {
@@ -75,6 +77,7 @@ export class AppManager {
       purchase: new PurchaseAPI(page),
       inventory: new InventoryAPI(page),
       hr: new HrAPI(page),
+      project: new ProjectAPI(page),
       general: this
     };
     this.ui = {
@@ -89,6 +92,7 @@ export class AppManager {
     this.api.purchase._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.inventory._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.hr._getAuthToken = this.auth._getAuthToken.bind(this.auth);
+    this.api.project._getAuthToken = this.auth._getAuthToken.bind(this.auth);
 
     this.ui.shared.smartSearch = this.base.smartSearch.bind(this.base);
     // this.ui.shared.smartApprove = this.base.smartApprove.bind(this.base);

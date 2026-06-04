@@ -102,6 +102,10 @@ export default defineConfig({
       testMatch: '**/purchase/*.spec.ts',
     },
     {
+      name: 'Project-Management',
+      testMatch: '**/project/**/*.spec.ts',
+    },
+    {
       name: 'Cross-Module',
       testMatch: '**/cross-module/*.spec.ts',
     },
