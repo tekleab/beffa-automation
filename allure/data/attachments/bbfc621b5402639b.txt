@@ -1,0 +1,42 @@
+[PERFORMANCE] API - Auth API Verification: 503.64ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 0]...
+[PERFORMANCE] API - Item Discovery (50 Records): 768.02ms
+[PERFORMANCE] API - Auth API Verification: 202.26ms
+[API] Advancing invoices "3fb2b09d-6981-432d-95c9-5766b905ec4b"...
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 100
+[DEBUG] Receipt payload: {
+  "amount": 40,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T08:15:31.070Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 40,
+      "invoice_id": "3fb2b09d-6981-432d-95c9-5766b905ec4b"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/04/000049
+[API] Advancing receipts "0acaabeb-d7f0-4abb-b7c9-77ff1f249ee6"...
+[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 60
+[DEBUG] Receipt payload: {
+  "amount": 80,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T08:15:37.397Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 80,
+      "invoice_id": "3fb2b09d-6981-432d-95c9-5766b905ec4b"
+    }
+  ]
+}
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/04/000050
+[API] Advancing receipts "b3296cd0-2079-49eb-adc7-3719a32d7eff"...

@@ -1,0 +1,45 @@
+[PERFORMANCE] API - Auth API Verification: 443.25ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1219.87ms
+[OK] Discovered: "floor filler" via API | Stock: 7
+[API] Advancing sales-orders "354eea66-6eef-4bc7-94e5-591c1be2052c"...
+[OK] Sales Order SO/2026/06/04/000054 approved via API
+[API] Advancing invoices "584eeba6-003a-4885-807d-1187f036097f"...
+[OK] Invoice INV/2026/06/04/000212 approved via API
+[INFO] Document Setup Complete: INV/2026/06/04/000212 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 54853.97
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T08:24:20.277Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "584eeba6-003a-4885-807d-1187f036097f"
+    }
+  ]
+}
+[RETRY] Receipt creation attempt 1 failed (Invoice-Receipt API Creation Failed after 3 attempts. Last e), retrying in 5s...
+[DEBUG] Invoice status before receipt: approved
+[DEBUG] Invoice unreceived_amount: 54853.97
+[DEBUG] Receipt payload: {
+  "amount": 1000,
+  "cash_account_id": "0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b",
+  "customer_id": "223a2864-674f-42e7-b799-22730e12c57a",
+  "date": "2026-06-04T08:25:21.134Z",
+  "payment_method": "cash",
+  "currency_id": "e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb",
+  "invoice_receipts": [
+    {
+      "amount": 1000,
+      "invoice_id": "584eeba6-003a-4885-807d-1187f036097f"
+    }
+  ]
+}
+[RETRY] Receipt creation attempt 2 failed (Invoice-Receipt API Creation Failed after 3 attempts. Last e), retrying in 5s...

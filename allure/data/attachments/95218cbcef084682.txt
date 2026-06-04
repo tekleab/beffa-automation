@@ -1,0 +1,40 @@
+[PERFORMANCE] API - Auth API Verification: 382.95ms
+[STEP 1] Creating employee via API...
+[PASS] Employee: EMP/2026/06/02/000001 | id: 31fe6f15-d40e-4c33-94c7-021fa1722d50
+[STEP 2] Creating pay component...
+[HR] Using job position: "Audit Engineer" (a2330250-8eb1-4fac-a875-35d13e4f392d) | slots: 18/101
+[HR] Job "QA" slots exhausted or singleton (201/201). Expanding slots...
+[HR] Using job position: "QA" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) | slots: 201/201
+[INFO] Using dept: ROOT (684d35b3-b79d-4bd2-b155-2651ff995998) | job: QA (d6c9bc96-0676-45a4-a6a9-eb527dd26745)
+[PASS] Pay component: 6fe9183c-d8a3-48f7-ac53-7e5c2e8d46e2
+[STEP 3] Creating pay structure...
+[PASS] Pay structure: bd9aa589-f640-49a8-ae0f-489ca7cd4dde | components: 1
+[STEP 4] Assigning pay structure...
+[PASS] Pay structure assigned
+[STEP 5] Creating contract via API...
+[HR] Using job position: "QA" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) | slots: 201/301
+[INFO] Validated job position: "QA" (d6c9bc96-0676-45a4-a6a9-eb527dd26745) ∈ dept 684d35b3-b79d-4bd2-b155-2651ff995998
+[PASS] Contract created: 2a833ced-1799-4162-8b6f-052d476009f4
+[INFO] department_id: 684d35b3-b79d-4bd2-b155-2651ff995998 | job_position_id: d6c9bc96-0676-45a4-a6a9-eb527dd26745
+[INFO] status: draft | contract_status: active
+[STEP 6] Approving contract via advanceDocumentAPI...
+[API] Advancing employee-contracts "2a833ced-1799-4162-8b6f-052d476009f4"...
+[INFO] Contract status after advance: approved
+[PASS] Contract approved — status: approved
+[STEP 7] Verifying employee is active...
+[PASS] Employee is active
+[STEP 8] Creating payroll run...
+[PASS] Payroll run: e1bcc607-47a1-4690-b123-2d07af4f5935 | status: draft
+[STEP 9] Assigning employee to payroll run...
+[PASS] Employee assigned to payroll run
+[STEP 10] Approving payroll run via UI...
+[OK] Checkbox clicked
+[OK] Process Payroll clicked
+[WORKFLOW] Navigating to Preview step
+[OK] Clicked Preview step
+[OK] Clicked final approve button
+[OK] Clicked toolbar Approve button
+[DEBUG] Intercepted requests: ["PATCH http://168.119.175.142:8001/api/payroll-runs/e1bcc607-47a1-4690-b123-2d07af4f5935/process?year=2018&period=yearly&calendar=ec","PATCH http://168.119.175.142:8001/api/payroll-runs/e1bcc607-47a1-4690-b123-2d07af4f5935/advance?year=2018&period=yearly&calendar=ec"]
+[POLL 1/15] Payroll run status: approved
+[PASS] Payroll run approved
+[PASS] Payrolls generated: 2

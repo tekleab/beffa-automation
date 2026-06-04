@@ -1,0 +1,34 @@
+[PERFORMANCE] API - Auth API Verification: 205.38ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1108.56ms
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  Item ID     : 834ccb11-7112-40f2-a2d5-7c04a734eb6c (Saw Blade 350)
+[ITEM]  Stock       : 80
+[PLAN]  PO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-receive: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving PO for 10 units...
+[API] Advancing purchase-orders "fdefb918-3389-4737-ac07-4315c9f2422f"...
+[OK] PO PO/2026/06/04/000058 approved (ID: fdefb918-3389-4737-ac07-4315c9f2422f)
+[STEP 2] Receiving Batch 1: 4 units...
+[API] Advancing bills "e5f08ba8-5d9e-4a18-a1c0-d41da50f6abd"...
+[OK] Batch 1 bill BILL/2026/06/04/000164 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+[API] Advancing bills "c9fb4796-6bdb-47e0-8221-4c43c3b43277"...
+[OK] Batch 2 bill BILL/2026/06/04/000165 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO Ref       : PO/2026/06/04/000058 (ID: fdefb918-3389-4737-ac07-4315c9f2422f)
+[DOCUMENT] Bill 1       : BILL/2026/06/04/000164 (ID: e5f08ba8-5d9e-4a18-a1c0-d41da50f6abd) — 4 units
+[DOCUMENT] Bill 2       : BILL/2026/06/04/000165 (ID: c9fb4796-6bdb-47e0-8221-4c43c3b43277) — 6 units
+[ITEM]     Item         : Saw Blade 350 (834ccb11-7112-40f2-a2d5-7c04a734eb6c)
+[STOCK]    Before       : 80
+[STOCK]    After        : 80
+[STOCK]    Expected     : 90
+================================================
+
