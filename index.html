@@ -913,6 +913,19 @@
             color: var(--text-muted);
             white-space: nowrap;
         }
+        .risk-occurrences-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: var(--radius-pill);
+            font-size: 9px;
+            font-weight: 700;
+            background: rgba(var(--purple-rgb), 0.12);
+            color: var(--purple);
+            border: 1px solid rgba(var(--purple-rgb), 0.25);
+            white-space: nowrap;
+        }
 
         /* ── VIEW 2: MODULE HEALTH TABLE ── */
         .table-container {
@@ -1960,6 +1973,10 @@
             const icon = severityIcon[sev] || '○';
             const url = blocker.allureUrl || 'https://tekleab.github.io/beffa-automation/allure/#suites';
             const hasUrl = url && url !== '#';
+            const occ = blocker.occurrences || 1;
+            const occBadge = occ > 1
+                ? `<span class="risk-occurrences-badge">×${occ}</span>`
+                : '';
             return `
                 <div class="risk-row" data-severity="${sev}" data-allure-url="${url}">
                     <div class="severity-icon ${sev}">${icon}</div>
@@ -1968,6 +1985,7 @@
                         <div class="risk-row-error">${blocker.error}</div>
                     </div>
                     <div class="risk-row-meta">
+                        ${occBadge}
                         <span class="risk-open-time">${timeSince(blocker.firstSeen)}</span>
                         <a class="risk-allure-link"
                            href="${url}"
@@ -2745,11 +2763,12 @@
                 cardsContainer.innerHTML = data.criticalBlockers.map((b, idx) => {
                     const sev = getRiskSeverity(b.title);
                     const impact = getBusinessImpact(b.error);
-                    
+                    const occ = b.occurrences || 1;
+
                     // Deriving module dynamically from keywords/paths
                     let modBadge = 'ERP-Core';
-                    const mMatch = data.moduleBreakdown.find(m => 
-                        b.title.toLowerCase().includes(m.module.toLowerCase()) || 
+                    const mMatch = data.moduleBreakdown.find(m =>
+                        b.title.toLowerCase().includes(m.module.toLowerCase()) ||
                         b.error.toLowerCase().includes(m.module.toLowerCase())
                     );
                     if (mMatch) modBadge = mMatch.module;
@@ -2760,6 +2779,7 @@
                                 <div class="risk-card-title-group">
                                     <span class="severity-icon ${sev}">${severityIcon[sev] || '○'}</span>
                                     <span class="risk-card-title">${b.title}</span>
+                                    ${occ > 1 ? `<span class="risk-occurrences-badge">×${occ} occurrences</span>` : ''}
                                 </div>
                                 <span class="risk-time-open">${timeSince(b.firstSeen)}</span>
                             </div>
