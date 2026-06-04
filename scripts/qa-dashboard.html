@@ -447,6 +447,65 @@
         .progress-fill.critical { background: var(--error); }
 
         /* ── VIEW 1: OVERVIEW ── */
+        .overview-top {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            align-content: start;
+        }
+
+        .kpi-card {
+            background: var(--surface2, rgba(28,28,28,0.9));
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: center;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+        .kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 4px; }
+        .kpi-value { font-size: 20px; font-weight: 700; line-height: 1; }
+        .kpi-value.green   { color: var(--teal); }
+        .kpi-value.red     { color: var(--red); }
+        .kpi-value.neutral { color: var(--text-primary); }
+        .kpi-value.amber   { color: var(--amber); }
+
+        .sev-legend { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+        .sev-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 3px 0; color: var(--text-secondary); }
+        .sev-row .sev-val { font-weight: 700; color: var(--text-primary); }
+
+        .run-history-row {
+            display: grid;
+            grid-template-columns: 20px 50px 1fr 80px 60px 70px 80px;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border-radius: var(--radius-badge);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+
+        .run-history-row:hover { background: rgba(255,255,255,0.03); transform: translateY(-1px); }
+        .run-status-icon { font-size: 13px; text-align: center; }
+        .run-status-icon.healthy  { color: var(--teal); }
+        .run-status-icon.degraded { color: var(--amber); }
+        .run-status-icon.blocked  { color: var(--red); }
+        .run-status-icon.unknown  { color: var(--text-muted); }
+        .run-timestamp { font-size: 10px; color: var(--text-muted); text-align: right; }
+
+        .score-delta { font-size: 11px; margin-top: 4px; }
+        .score-trend { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
         .overview-grid-a {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1413,16 +1472,18 @@
 
         <!-- VIEW 1: OVERVIEW -->
         <div id="view-overview" class="view-container active">
-            <!-- Grid A: Module Summary Cards -->
-            <div class="overview-grid-a" id="overview-modules">
-                <!-- Dynamically generated module cards -->
+            <!-- Top: Module card (left) + KPI row (right) -->
+            <div class="overview-top">
+                <div class="overview-grid-a" id="overview-modules" style="grid-template-columns:1fr;"></div>
+                <div class="kpi-row" id="overview-kpi-row"></div>
             </div>
 
             <!-- Grid B: Trends & Risk Donut -->
             <div class="overview-grid-b">
                 <div class="card" style="display: flex; flex-direction: column;">
-                    <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">
+                    <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; display:flex; align-items:center;">
                         7-Day Business Flow Verification Trend
+                        <span id="trend-delta" style="font-size:11px; margin-left:12px;"></span>
                     </div>
                     <div style="flex: 1; position: relative;">
                         <canvas id="trendChart"></canvas>
@@ -1441,8 +1502,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="custom-legend" id="overview-legend">
-                        <!-- Custom squares legend -->
+                    <div id="overview-legend-wrap" style="display:flex; flex-direction:column; justify-content:center;">
+                        <div class="custom-legend" id="overview-legend"></div>
+                        <div class="sev-legend" id="overview-sev-legend"></div>
                     </div>
                 </div>
             </div>
@@ -1453,18 +1515,17 @@
                     <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">
                         Recent Verification Summary (Last 3 runs)
                     </div>
-                    <div class="runs-stack" id="overview-runs-stack">
-                        <!-- Last 3 CI runs -->
-                    </div>
+                    <div class="runs-stack" id="overview-runs-stack"></div>
                 </div>
 
                 <div class="card" style="display: flex; flex-direction: column;">
-                    <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">
-                        Top Active Risks
+                    <div style="font-weight: 700; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">
+                        Health Score
                     </div>
-                    <div class="risks-stack" id="overview-risks-stack">
-                        <!-- Top 3 active risk cards -->
-                    </div>
+                    <div id="score-delta" class="score-delta"></div>
+                    <div id="score-trend" class="score-trend"></div>
+                    <div style="margin-top:10px; font-weight:700; font-size:11px; color:var(--text-secondary); text-transform:uppercase; margin-bottom:8px;">Top Active Risks</div>
+                    <div class="risks-stack" id="overview-risks-stack"></div>
                 </div>
             </div>
         </div>
@@ -2092,68 +2153,114 @@
 
         // ── VIEW 1: OVERVIEW RENDERING ──
         function renderOverview(data) {
-            // A. Module Cards grid
+            // ── KPI ROW ──
+            const kpiRow = document.getElementById('overview-kpi-row');
+            if (kpiRow) {
+                const avgMins = (Math.max(0, data.avgDurationMs) / 60000).toFixed(1);
+                const critCount = Math.max(0, data.criticalBlockers.filter(b => getRiskSeverity(b.title) === 'critical').length);
+                kpiRow.innerHTML = [
+                    { label: 'Total Flows', value: Math.max(0, data.total), cls: 'neutral' },
+                    { label: 'Passed',      value: Math.max(0, data.passed), cls: 'green' },
+                    { label: 'Failed',      value: Math.max(0, data.failed), cls: 'red' },
+                    { label: 'Critical',    value: critCount,                cls: critCount > 0 ? 'red' : 'green' },
+                    { label: 'Avg Duration', value: avgMins + 'm',           cls: 'neutral', raw: true },
+                ].map(k => `
+                    <div class="kpi-card">
+                        <div class="kpi-label">${k.label}</div>
+                        <div class="kpi-value ${k.cls}">${k.raw ? k.value : k.value}</div>
+                    </div>
+                `).join('');
+            }
+
+            // ── HEALTH SCORE DELTA (enhancement 5) ──
+            const scoreDeltaEl = document.getElementById('score-delta');
+            const scoreTrendEl = document.getElementById('score-trend');
+            if (scoreDeltaEl && data.last10Runs.length >= 2) {
+                const currentScore = Math.max(0, data.passRate);
+                const previousScore = Math.max(0, data.last10Runs[1]?.passRate || 0);
+                const delta = currentScore - previousScore;
+                scoreDeltaEl.textContent = (delta >= 0 ? '\u2191 +' : '\u2193 ') + delta.toFixed(1) + '% from last run';
+                scoreDeltaEl.style.color = delta >= 0 ? 'var(--teal)' : 'var(--red)';
+            } else if (scoreDeltaEl) {
+                scoreDeltaEl.textContent = '';
+            }
+            if (scoreTrendEl && data.last10Runs.length >= 3) {
+                const last3 = data.last10Runs.slice(0, 3).map(r => r.passRate);
+                const trend = last3[0] > last3[1] && last3[1] > last3[2] ? '\u2191 Recovering'
+                            : last3[0] < last3[1] && last3[1] < last3[2] ? '\u2193 Declining'
+                            : '\u2192 Stable';
+                scoreTrendEl.textContent = 'Trend: ' + trend;
+            } else if (scoreTrendEl) {
+                scoreTrendEl.textContent = '';
+            }
+            // A. Module Cards grid - show only first module
             const modulesContainer = document.getElementById('overview-modules');
             if (modulesContainer) {
                 if (data.moduleBreakdown.length === 0) {
                     modulesContainer.innerHTML = `
-                        <div class="card" style="grid-column: 1 / -1; padding: 20px; text-align:center; color: var(--text-secondary);">
+                        <div class="card" style="padding: 20px; text-align:center; color: var(--text-secondary);">
                             No module data yet — run tests to populate
                         </div>
                     `;
                 } else {
-                    modulesContainer.innerHTML = data.moduleBreakdown.map((m, idx) => {
-                        const total = m.passed + m.failed + m.skipped;
-                        const passRate = total > 0 ? ((m.passed / total) * 100) : 0;
-                        
-                        let statusClass = 'healthy';
-                        let statusLabel = '✓ HEALTHY';
-                        if (passRate < 50) {
-                            statusClass = 'blocked';
-                            statusLabel = '✗ BLOCKED';
-                        } else if (passRate < 80) {
-                            statusClass = 'degraded';
-                            statusLabel = '⚠ DEGRADED';
-                        }
-                        
-                        const borderLeftColor = statusClass === 'healthy' ? 'var(--teal)' : statusClass === 'degraded' ? 'var(--amber)' : 'var(--red)';
-
-                        return `
-                            <div class="card module-card ${statusClass}" style="border-left-color: ${borderLeftColor}; animation-delay: ${idx * 100}ms;">
-                                <div class="module-header">
-                                    <span class="module-name">${m.module}</span>
-                                    <span class="module-status ${statusClass}">${statusLabel}</span>
-                                </div>
-                                <div class="module-rate" style="color: ${borderLeftColor}">${passRate.toFixed(1)}%</div>
-                                <div class="progress-bar-container">
-                                    <div class="progress-fill" style="width: ${passRate}%; background: ${borderLeftColor}"></div>
-                                </div>
-                                <div class="module-sparkline">
-                                    ${m.trend.map((val, i) => {
-                                        const height = Math.max(4, (val / 100) * 40);
-                                        return `<div class="module-sparkline-bar" style="height: ${height}px; background: ${borderLeftColor}"></div>`;
-                                    }).join('')}
-                                </div>
-                                <div class="module-footer">
-                                    Verified: ${m.passed} / At Risk: ${m.failed}
-                                </div>
+                    const m = data.moduleBreakdown[0];
+                    const total = m.passed + m.failed + m.skipped;
+                    const passRate = total > 0 ? ((m.passed / total) * 100) : 0;
+                    let statusClass = 'healthy', statusLabel = '✓ HEALTHY';
+                    if (passRate < 50) { statusClass = 'blocked'; statusLabel = '✗ BLOCKED'; }
+                    else if (passRate < 80) { statusClass = 'degraded'; statusLabel = '⚠ DEGRADED'; }
+                    const borderLeftColor = statusClass === 'healthy' ? 'var(--teal)' : statusClass === 'degraded' ? 'var(--amber)' : 'var(--red)';
+                    modulesContainer.innerHTML = `
+                        <div class="card module-card ${statusClass}" style="border-left-color: ${borderLeftColor};">
+                            <div class="module-header">
+                                <span class="module-name">${m.module}</span>
+                                <span class="module-status ${statusClass}">${statusLabel}</span>
                             </div>
-                        `;
-                    }).join('');
+                            <div class="module-rate" style="color: ${borderLeftColor}">${passRate.toFixed(1)}%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-fill" style="width: ${passRate}%; background: ${borderLeftColor}"></div>
+                            </div>
+                            <div class="module-sparkline">
+                                ${m.trend.map((val, i) => {
+                                    const height = Math.max(4, (val / 100) * 40);
+                                    return `<div class="module-sparkline-bar" style="height: ${height}px; background: ${borderLeftColor}"></div>`;
+                                }).join('')}
+                            </div>
+                            <div class="module-footer">
+                                Verified: ${m.passed} / At Risk: ${m.failed}
+                            </div>
+                        </div>
+                    `;
                 }
             }
 
-            // B. 7-Day Trend Chart
+            // ── 7-Day Trend Chart with delta + rich tooltip ──
             const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             let combinedTrends = [];
+            let trendPassCounts = [];
+            let trendFailCounts = [];
             if (data.moduleBreakdown.length > 0) {
                 const daysCount = data.moduleBreakdown[0].trend.length;
                 combinedTrends = Array.from({ length: daysCount }, (_, i) => {
                     const dayRates = data.moduleBreakdown.map(m => m.trend[i] || 0);
                     return dayRates.reduce((a, b) => a + b, 0) / dayRates.length;
                 });
+                trendPassCounts = Array.from({ length: daysCount }, (_, i) =>
+                    data.moduleBreakdown.reduce((sum, m) => sum + (m.passed || 0), 0));
+                trendFailCounts = Array.from({ length: daysCount }, (_, i) =>
+                    data.moduleBreakdown.reduce((sum, m) => sum + (m.failed || 0), 0));
             } else {
                 combinedTrends = [0, 0, 0, 0, 0, 0, 0];
+            }
+
+            // Week-over-week delta
+            const trendDeltaEl = document.getElementById('trend-delta');
+            if (trendDeltaEl && combinedTrends.length >= 2) {
+                const firstVal = combinedTrends[0];
+                const lastVal = combinedTrends[combinedTrends.length - 1];
+                const delta = lastVal - firstVal;
+                trendDeltaEl.textContent = (delta >= 0 ? '\u2191 +' : '\u2193 ') + delta.toFixed(1) + '% vs 7 days ago';
+                trendDeltaEl.style.color = delta >= 0 ? 'var(--teal)' : 'var(--red)';
             }
 
             const primaryColor = getComputedStyle(document.body).getPropertyValue('--purple').trim() || '#7c6ef7';
@@ -2181,6 +2288,16 @@
                     animation: { duration: 600, easing: 'easeInOutQuart' },
                     plugins: {
                         legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: ctx => ctx[0].label,
+                                label: ctx => [
+                                    `Health: ${ctx.parsed.y.toFixed(1)}%`,
+                                    `Passed: ${trendPassCounts[ctx.dataIndex] || 'N/A'}`,
+                                    `Failed: ${trendFailCounts[ctx.dataIndex] || 'N/A'}`
+                                ]
+                            }
+                        },
                         annotation: {
                             annotations: {
                                 healthyLine: {
@@ -2297,31 +2414,57 @@
                 }
             }
 
+            // Severity breakdown legend
+            const sevLegend = document.getElementById('overview-sev-legend');
+            if (sevLegend) {
+                const blockers = data.criticalBlockers;
+                const sevCounts = {
+                    critical: Math.max(0, blockers.filter(b => getRiskSeverity(b.title) === 'critical').length),
+                    high:     Math.max(0, blockers.filter(b => getRiskSeverity(b.title) === 'high').length),
+                    medium:   Math.max(0, blockers.filter(b => getRiskSeverity(b.title) === 'medium').length),
+                    low:      Math.max(0, blockers.filter(b => getRiskSeverity(b.title) === 'low').length),
+                };
+                sevLegend.innerHTML = [
+                    { icon: '⛔', label: 'Critical', key: 'critical' },
+                    { icon: '⚠️', label: 'High',     key: 'high' },
+                    { icon: '◆',  label: 'Medium',  key: 'medium' },
+                    { icon: '○',  label: 'Low',     key: 'low' },
+                ].map(s => `
+                    <div class="sev-row">
+                        <span>${s.icon} ${s.label}</span>
+                        <span class="sev-val">${sevCounts[s.key]}</span>
+                    </div>
+                `).join('');
+            }
+
             // C. Recent CI summaries (3 runs as cards)
             const runsStack = document.getElementById('overview-runs-stack');
             if (runsStack) {
                 if (data.last10Runs.length === 0) {
                     runsStack.innerHTML = `<div style="color: var(--text-muted); font-size:11px; padding: 20px 0; text-align:center;">No verification runs recorded yet</div>`;
                 } else {
+                    const statusIcon = { healthy: '✓', degraded: '⚠', blocked: '✕', unknown: '○' };
                     const last3 = data.last10Runs.slice(0, 3);
                     runsStack.innerHTML = last3.map(r => {
-                        const statusClass = (r.status === 'success' || r.status === 'healthy') ? 'healthy' : (r.status === 'degraded' ? 'degraded' : 'blocked');
-                        const badgeText = (r.status === 'success' || r.status === 'healthy') ? 'Healthy' : (r.status === 'degraded' ? 'Degraded' : 'Blocked');
+                        const sc = (r.status === 'success' || r.status === 'healthy') ? 'healthy' : (r.status === 'degraded' ? 'degraded' : 'blocked');
+                        const icon = statusIcon[sc] || statusIcon.unknown;
+                        const badgeText = sc === 'healthy' ? 'Healthy' : sc === 'degraded' ? 'Degraded' : 'Blocked';
+                        // Format timestamp: 'Jun 4, 14:32'
+                        let ts = '';
+                        try {
+                            const d = new Date(r.timestamp || data.lastUpdated);
+                            ts = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', '
+                               + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+                        } catch(e) { ts = '—'; }
                         return `
-                            <div class="run-summary-card">
-                                <div class="run-summary-left">
-                                    <span class="run-summary-num">#${r.run}</span>
-                                    <span class="badge ${r.trigger.includes('smoke') ? 'low' : 'purple'}">${r.trigger}</span>
-                                </div>
-                                <div class="run-summary-mid">
-                                    <div class="progress-bar-container">
-                                        <div class="progress-fill" style="width: ${r.passRate}%; background: var(--purple)"></div>
-                                    </div>
-                                </div>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="font-weight:600;">${r.passRate.toFixed(1)}%</span>
-                                    <span class="badge ${statusClass}">${badgeText}</span>
-                                </div>
+                            <div class="run-history-row">
+                                <span class="run-status-icon ${sc}">${icon}</span>
+                                <span style="font-weight:700; color:var(--accent-primary);">#${r.run}</span>
+                                <span style="color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.trigger}</span>
+                                <span style="color:var(--text-muted);">${r.duration || '—'}</span>
+                                <span style="font-weight:600;">${r.passRate.toFixed(1)}%</span>
+                                <span class="badge ${sc}">${badgeText}</span>
+                                <span class="run-timestamp">${ts}</span>
                             </div>
                         `;
                     }).join('');
