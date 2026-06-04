@@ -44,8 +44,11 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         await page.goto(`/receivables/invoices/${inv.id}/detail`, { waitUntil: 'networkidle' });
 
         console.log(`[STEP 3] Creating partial receipt of ${PARTIAL_AMOUNT} via UI...`);
-        const addReceiptBtn = page.getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first();
-        await addReceiptBtn.waitFor({ state: 'visible', timeout: 15000 });
+        // Broaden button selector — ERP uses various labels for receipt creation
+        const addReceiptBtn = page.getByRole('button', {
+            name: /Add Receipt|Create Receipt|Receive Payment|Add Payment|New Receipt/i
+        }).first();
+        await addReceiptBtn.waitFor({ state: 'visible', timeout: 30000 });
         await addReceiptBtn.click();
 
         const modal = page.getByRole('dialog').last();
@@ -124,11 +127,12 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         }
 
         console.log(`[STEP 4] Navigating to Bills tab...`);
-        const billsTab = page.getByRole('tab', { name: /Bills|Transactions/i }).first();
+        const billsTab = page.getByRole('tab', { name: /^Bills$/i }).first();
         await billsTab.waitFor({ state: 'visible', timeout: 20000 });
         await billsTab.click();
-        // Wait for the tab panel to populate — backend may be slow
-        await page.waitForTimeout(4000);
+        // Confirm tab is selected before asserting content
+        await expect(billsTab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
+        await page.waitForTimeout(3000);
 
         console.log(`[STEP 5] Asserting bill ${bill.ref} is visible in vendor profile...`);
         // Poll: bill may be on any page; scroll/search if not immediately visible
