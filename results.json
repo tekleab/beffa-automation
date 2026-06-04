@@ -1,17 +1,17 @@
 {
   "total": 11,
-  "passed": 2,
+  "passed": 8,
   "failed": 3,
-  "skipped": 6,
-  "passRate": 18.2,
-  "avgDurationMs": 27547,
-  "lastUpdated": "2026-06-04T08:58:37.534Z",
+  "skipped": 0,
+  "passRate": 72.7,
+  "avgDurationMs": 54835,
+  "lastUpdated": "2026-06-04T09:03:40.873Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 2,
+      "passed": 8,
       "failed": 3,
-      "skipped": 6,
+      "skipped": 0,
       "trend": [
         33.3,
         66.7,
@@ -19,17 +19,17 @@
         44.4,
         50,
         60.9,
-        40
+        72.7
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "451",
-      "commit": "de1d20a",
+      "run": "452",
+      "commit": "9713636",
       "trigger": "push (smoke)",
-      "duration": "5m 3s",
-      "passRate": 18.2,
+      "duration": "10m 3s",
+      "passRate": 72.7,
       "status": "failed"
     },
     {
@@ -107,22 +107,22 @@
   ],
   "criticalBlockers": [
     {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /remove|delete/i }).first() to be visible\u001b[22m\n\n\n  73 |         console.log('[STEP] P",
+      "firstSeen": "2026-06-04T08:59:35.182Z"
+    },
+    {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-04T08:56:03.160Z"
+      "firstSeen": "2026-06-04T08:59:35.180Z"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/04/000206').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
-      "firstSeen": "2026-06-04T08:56:03.149Z"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/auth.ts:108\n\n  106 |     }\n ",
-      "firstSeen": "2026-06-04T08:56:35.382Z"
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
+      "firstSeen": "2026-06-04T08:59:35.176Z"
     }
   ]
 }
