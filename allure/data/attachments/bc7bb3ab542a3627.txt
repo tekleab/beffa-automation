@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 183.89ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1119.54ms
+[ATTACK] Attempting to invoice 10049 units of "Steam light A" (available: 50)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 50, required: 10049.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+

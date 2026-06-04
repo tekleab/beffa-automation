@@ -1,0 +1,19 @@
+[PERFORMANCE] API - Auth API Verification: 186.52ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 539.61ms
+[PERFORMANCE] API - Auth API Verification: 184.07ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "ddc53990-9117-4e3a-8d0a-92fb92973db4"...
+[BILL] BILL/2026/06/04/000334 (ddc53990-9117-4e3a-8d0a-92fb92973db4)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for ddc53990-9117-4e3a-8d0a-92fb92973db4 via API (CashAcct: 0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b)...
+[PASS] Negative payment correctly blocked: Bill-Payment API Failed: 422 - {
+	"code": 422,
+	"details": {
+		"bill_payments.0.amount": [
+			"amount must be positive"
+		]
+	},
+	"message": "Validation error when creating payment"
+}
+
