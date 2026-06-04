@@ -1,29 +1,37 @@
 {
-  "total": 98,
-  "passed": 53,
-  "failed": 34,
-  "skipped": 11,
-  "passRate": 54.1,
-  "avgDurationMs": 19913,
-  "lastUpdated": "2026-06-04T08:48:44.397Z",
+  "total": 11,
+  "passed": 2,
+  "failed": 3,
+  "skipped": 6,
+  "passRate": 18.2,
+  "avgDurationMs": 27547,
+  "lastUpdated": "2026-06-04T08:58:37.534Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 53,
-      "failed": 34,
-      "skipped": 11,
+      "passed": 2,
+      "failed": 3,
+      "skipped": 6,
       "trend": [
-        30,
         33.3,
         66.7,
         33.3,
         44.4,
         50,
-        60.9
+        60.9,
+        40
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "451",
+      "commit": "de1d20a",
+      "trigger": "push (smoke)",
+      "duration": "5m 3s",
+      "passRate": 18.2,
+      "status": "failed"
+    },
     {
       "run": "450",
       "commit": "2073ab0",
@@ -95,76 +103,26 @@
       "duration": "13m 31s",
       "passRate": 33.3,
       "status": "failed"
-    },
-    {
-      "run": "439",
-      "commit": "6e2d15b",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "42m 38s",
-      "passRate": 54.6,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Forensic Audit: Invoice Void & Stock Restoration",
-      "error": "Error: [ZOMBIE_STOCK_BUG] Stock Recovery Failed after Invoice Void.\n\n  89 |             console.log(`[IMPACT]: Inventory Leakage - Warehouse mismatch occurred after Void.`);\n  90 |             console",
-      "firstSeen": "2026-06-04T08:37:38.336Z"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: [VULNERABILITY] GL Drift — Full Cycle AR Reconciliation Failed\n  Invoice      : INV/2026/06/04/000221 (ID: b3c9883b-1530-4ccd-b0fe-50fa97d6ddab)\n  Receipt      : RCPT/2026/06/04/000056 (ID: 754",
-      "firstSeen": "2026-06-04T08:38:18.673Z"
+      "severity": "critical",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-04T08:56:03.160Z"
     },
     {
       "severity": "medium",
-      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m1936550.6727431957\u001b[39m\nReceived:   \u001b[31m1936150.6727431957\u001b[39m\n\n  149 |   ",
-      "firstSeen": "2026-06-04T08:38:29.058Z"
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/04/000206').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
+      "firstSeen": "2026-06-04T08:56:03.149Z"
     },
     {
-      "severity": "critical",
-      "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m401\u001b[39m\nReceived array: \u001b[31m[400, 422, 500]\u001b[39m\n\n  70 |         ",
-      "firstSeen": "2026-06-04T08:38:47.350Z"
-    },
-    {
-      "severity": "critical",
-      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
-      "firstSeen": "2026-06-04T08:38:51.394Z"
-    },
-    {
-      "severity": "critical",
-      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
-      "firstSeen": "2026-06-04T08:39:13.976Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!\n\n  300 |\n  301 |         if (inv.success) {\n> 302 |             throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-",
-      "firstSeen": "2026-06-04T08:39:35.645Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must handle concurrent duplicate Bill payments atomically",
-      "error": "Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for \"BM Tech\" is invalid or expired.\n\n   at ../lib/base-page.ts:164\n\n  162 |         break;\n  163 |       } else if (status === 401) {\n> 1",
-      "firstSeen": "2026-06-04T08:40:06.297Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must block billing beyond 100% of PO quantity",
-      "error": "Error: [CRITICAL_LOGIC_BUG] System approved a bill for 1 unit beyond the fully-exhausted PO PO/2026/06/04/000064. Over-receiving liability created.\n\n  105 |             try {\n  106 |                 a",
-      "firstSeen": "2026-06-04T08:40:27.378Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Concurrent identical PO submissions must not create duplicate liability",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Duplicate PO race succeeded — both POs approved and billed. Total AP liability doubled to 20000. No deduplication guard exists.\n\n  147 |\n  148 |             console.log(`[S",
-      "firstSeen": "2026-06-04T08:40:13.734Z"
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/auth.ts:108\n\n  106 |     }\n ",
+      "firstSeen": "2026-06-04T08:56:35.382Z"
     }
   ]
 }
