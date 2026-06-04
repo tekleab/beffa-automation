@@ -837,6 +837,83 @@
             min-width: 60px;
         }
 
+        /* ── Risk Row: hover-reveal Allure link ── */
+        .risk-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+            transition: background 0.15s ease, border-color 0.15s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .risk-row:hover {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(4px);
+            border-left-color: var(--purple);
+        }
+        .risk-allure-link {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.18s ease, visibility 0.18s ease, color 0.18s ease;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: transparent;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .risk-row:hover .risk-allure-link {
+            opacity: 1;
+            visibility: visible;
+            color: var(--purple);
+            background: rgba(var(--purple-rgb), 0.1);
+        }
+        .risk-allure-link:hover {
+            background: rgba(var(--purple-rgb), 0.2) !important;
+            color: #fff !important;
+            box-shadow: 0 0 8px rgba(var(--purple-rgb), 0.3);
+        }
+        .risk-row[data-severity='critical']:hover { border-left-color: var(--red); }
+        .risk-row[data-severity='high']:hover     { border-left-color: var(--amber); }
+        .risk-row[data-severity='medium']:hover   { border-left-color: var(--purple); }
+        .risk-row-content { flex: 1; min-width: 0; }
+        .risk-row-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+        .risk-row-error {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: monospace;
+        }
+        .risk-row-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .risk-open-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
         /* ── VIEW 2: MODULE HEALTH TABLE ── */
         .table-container {
             flex: 1;
@@ -1877,6 +1954,42 @@
         `;
         document.head.appendChild(themeAnimations);
 
+        // ── RISK ROW RENDERER ──
+        function renderRiskRow(blocker) {
+            const sev = getRiskSeverity(blocker.title);
+            const icon = severityIcon[sev] || '○';
+            const url = blocker.allureUrl || '#';
+            const hasUrl = url && url !== '#';
+            return `
+                <div class="risk-row" data-severity="${sev}" data-allure-url="${url}">
+                    <div class="severity-icon ${sev}">${icon}</div>
+                    <div class="risk-row-content">
+                        <div class="risk-row-title">${blocker.title}</div>
+                        <div class="risk-row-error">${blocker.error}</div>
+                    </div>
+                    <div class="risk-row-meta">
+                        <span class="risk-open-time">${timeSince(blocker.firstSeen)}</span>
+                        <a class="risk-allure-link"
+                           href="${url}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           title="Open in Allure Report"
+                           onclick="event.stopPropagation()"
+                           style="${hasUrl ? '' : 'display:none'}"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
         // ── SEVERITY ICONS ──
         const severityIcon = {
             critical: '⛔',
@@ -2478,21 +2591,13 @@
                     risksStack.innerHTML = `<div style="color: var(--text-muted); font-size:11px; padding: 20px 0; text-align:center;">No active risks — all business flows healthy</div>`;
                 } else {
                     const top3 = data.criticalBlockers.slice(0, 3);
-                    risksStack.innerHTML = top3.map(b => {
-                        const sev = getRiskSeverity(b.title);
-                        const impact = getBusinessImpact(b.error);
-                        const icon = severityIcon[sev] || '○';
-                        return `
-                            <div class="risk-compact-card">
-                                <span class="severity-icon ${sev}">${icon}</span>
-                                <div class="risk-compact-info">
-                                    <div class="risk-compact-title">${b.title}</div>
-                                    <div class="risk-compact-meta">${impact}</div>
-                                </div>
-                                <span class="risk-compact-time">${timeSince(b.firstSeen)}</span>
-                            </div>
-                        `;
-                    }).join('');
+                    risksStack.innerHTML = top3.map(b => renderRiskRow(b)).join('');
+                    risksStack.querySelectorAll('.risk-row').forEach(row => {
+                        row.addEventListener('click', () => {
+                            const url = row.dataset.allureUrl;
+                            if (url && url !== '#') window.open(url, '_blank', 'noopener,noreferrer');
+                        });
+                    });
                 }
             }
         }
