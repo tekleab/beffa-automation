@@ -96,9 +96,11 @@ if (fs.existsSync(resultsPath)) {
               title: spec.title,
               error: errMsg.substring(0, 200),
               firstSeen: r.startTime || new Date().toISOString(),
+              occurrences: 0,
               allureUrl: getAllureUrl(spec.title)
             };
           }
+          blockersMap[key].occurrences++;
         }
       }
     }
