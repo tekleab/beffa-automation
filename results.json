@@ -1,17 +1,17 @@
 {
-  "total": 108,
-  "passed": 59,
-  "failed": 43,
-  "skipped": 6,
-  "passRate": 54.6,
-  "avgDurationMs": 25908,
-  "lastUpdated": "2026-06-04T08:30:17.088Z",
+  "total": 11,
+  "passed": 3,
+  "failed": 3,
+  "skipped": 5,
+  "passRate": 27.3,
+  "avgDurationMs": 38244,
+  "lastUpdated": "2026-06-04T08:35:01.607Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 59,
-      "failed": 43,
-      "skipped": 6,
+      "passed": 3,
+      "failed": 3,
+      "skipped": 5,
       "trend": [
         33.3,
         30,
@@ -19,17 +19,17 @@
         66.7,
         33.3,
         44.4,
-        57.8
+        50
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "448",
-      "commit": "812896a",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "46m 38s",
-      "passRate": 54.6,
+      "run": "449",
+      "commit": "4913ed9",
+      "trigger": "push (smoke)",
+      "duration": "7m 0s",
+      "passRate": 27.3,
       "status": "failed"
     },
     {
@@ -108,63 +108,21 @@
   "criticalBlockers": [
     {
       "severity": "critical",
-      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6\n\n  64 |             try {\n  65 |                 await app.advanceDocumentAPI(body.id, 'invoices');\n> 66 |                 throw ",
-      "firstSeen": "2026-06-04T08:14:59.732Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Double-Dip Success: Invoice INV/2026/06/04/000188 is over-paid (Balance: -20)\n\n  134 |             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);\n  135 |      ",
-      "firstSeen": "2026-06-04T08:14:59.500Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: 4057.8325581395347, Expected: 500\n\n  167 |\n  168 |             if (Number(finalInv.unreceived",
-      "firstSeen": "2026-06-04T08:14:59.493Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
-      "error": "Error: [CRITICAL_RACE_CONDITION_BUG] Both concurrent receipts approved. AR over-credited: -900\n\n  83 |             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);\n  84 |             if (ap",
-      "firstSeen": "2026-06-04T08:15:30.595Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Invoice must reject second receipt after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-04T08:15:42.626Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-04T08:16:24.630Z"
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
+      "firstSeen": "2026-06-04T08:31:29.377Z"
     },
     {
       "severity": "medium",
-      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
-      "error": "Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance\n  Invoice      : INV/2026/06/04/000196 (ID: 31c6d783-9822-4bea-802a-5fd89c4a1857)\n  AR Account   : a9331f21-418e-4",
-      "firstSeen": "2026-06-04T08:16:24.850Z"
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('BILL/2026/06/04/000178').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not",
+      "firstSeen": "2026-06-04T08:31:29.378Z"
     },
     {
-      "severity": "critical",
-      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
-      "firstSeen": "2026-06-04T08:17:05.109Z"
-    },
-    {
-      "severity": "critical",
-      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
-      "firstSeen": "2026-06-04T08:17:27.437Z"
-    },
-    {
-      "severity": "critical",
-      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
-      "firstSeen": "2026-06-04T08:17:40.385Z"
+      "severity": "medium",
+      "title": "API: Employee roster must be non-empty with valid structure",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/auth.ts:108\n\n  106 |     }\n ",
+      "firstSeen": "2026-06-04T08:32:11.593Z"
     }
   ]
 }
