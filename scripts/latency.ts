@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { calculateAverages, syncHistory, LatencyPoint } from '../lib/utils/performance';
+import { calculateAverages, syncHistory, LatencyPoint } from '../lib/utils/perf';
 
 /**
  * Tactical Latency Tracker V2.0 (TS Refactor)

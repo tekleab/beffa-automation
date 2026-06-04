@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const files = [
-  '../lib/BasePage.ts',
+  '../lib/base-page.ts',
   '../lib/api/InventoryAPI.ts',
   '../lib/api/SalesAPI.ts',
   '../lib/api/PurchaseAPI.ts'

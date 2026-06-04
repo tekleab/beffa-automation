@@ -32,9 +32,9 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
-    ['./reporters/module-counter-reporter.ts'], // Enhanced module tracking for full test runs
-    ['./reporters/integrated-dashboard.ts'],
-    ['./reporters/summary-reporter.ts'],
+    ['./reporters/module-counter.ts'], // Enhanced module tracking for full test runs
+    ['./reporters/dashboard.ts'],
+    ['./reporters/summary.ts'],
     ['html', { open: 'never' }],
     ['json', { outputFile: 'playwright-results.json' }],
     [

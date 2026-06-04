@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { BasePage } from '../base-page';
 
 export class HrAPI extends BasePage {
   _getAuthToken!: () => Promise<string | null>;

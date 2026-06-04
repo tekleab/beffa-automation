@@ -119,8 +119,8 @@ jobs:
       if: github.event_name != 'workflow_dispatch'
       continue-on-error: true
       run: |
-        chmod +x scripts/fetch_company.sh
-        ./scripts/fetch_company.sh
+        chmod +x scripts/fetch-company.sh
+        ./scripts/fetch-company.sh
 
     - name: Run Playwright tests
       if: always()
@@ -282,23 +282,23 @@ jobs:
           exit 1
         fi
         echo "Allure report generated successfully"
-        npx ts-node scripts/latency-tracker.ts || true
+        npx ts-node scripts/latency.ts || true
 
     - name: Finalize & Deploy Preparation
       if: always()
       run: |
         mkdir -p deploy
         echo "[INFO] Generating Integrated Dashboard from Playwright results..."
-        npx ts-node scripts/generate-dashboard-from-results.ts || true
+        npx ts-node scripts/dashboard-builder.ts || true
 
         echo "[INFO] Generating results.json for QA Dashboard..."
-        node scripts/generate-results.js || true
+        node scripts/results.js || true
         
         # Generate module statistics report for full test runs
         if [ "$TEST_TYPE" = "full" ]; then
           echo "[INFO] Generating module statistics for full test run..."
-          node scripts/analyze-modules.js || true
-          node scripts/analyze-modules.js --markdown || true
+          node scripts/modules.js || true
+          node scripts/modules.js --markdown || true
           
           # Copy module reports to deploy if they exist
           if [ -f "test-results/module-statistics.json" ]; then

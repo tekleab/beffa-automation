@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
-import { AuthManager } from '../lib/AuthManager';
-import { BasePage } from '../lib/BasePage';
+import { AuthManager } from '../lib/auth';
+import { BasePage } from '../lib/base-page';
 import { SalesAPI } from '../lib/api/SalesAPI';
 import { PurchaseAPI } from '../lib/api/PurchaseAPI';
 import { InventoryAPI } from '../lib/api/InventoryAPI';
