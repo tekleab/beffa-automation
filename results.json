@@ -1,29 +1,37 @@
 {
   "total": 11,
-  "passed": 8,
-  "failed": 3,
+  "passed": 9,
+  "failed": 2,
   "skipped": 0,
-  "passRate": 72.7,
-  "avgDurationMs": 53909,
-  "lastUpdated": "2026-06-04T11:55:32.724Z",
+  "passRate": 81.8,
+  "avgDurationMs": 49279,
+  "lastUpdated": "2026-06-04T12:04:35.690Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 8,
-      "failed": 3,
+      "passed": 9,
+      "failed": 2,
       "skipped": 0,
       "trend": [
-        62.5,
         72.7,
         40,
         40,
         44.4,
         57.1,
-        72.7
+        72.7,
+        81.8
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "464",
+      "commit": "3a19bf1",
+      "trigger": "push (smoke)",
+      "duration": "9m 2s",
+      "passRate": 81.8,
+      "status": "success"
+    },
     {
       "run": "463",
       "commit": "2d514e4",
@@ -95,38 +103,22 @@
       "duration": "10m 3s",
       "passRate": 72.7,
       "status": "failed"
-    },
-    {
-      "run": "450",
-      "commit": "2073ab0",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "32m 31s",
-      "passRate": 54.1,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Remove\")') to be visible\u001b[22m\n\n\n  63 |         // Remove\n  64 |         console.log('[S",
-      "firstSeen": "2026-06-04T11:50:21.942Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-04T11:50:21.942Z",
+      "firstSeen": "2026-06-04T12:00:47.092Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\u001b[2m    - waiting for\" http://168.11",
-      "firstSeen": "2026-06-04T11:50:21.966Z",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  110 |         console.log(`[STEP",
+      "firstSeen": "2026-06-04T12:00:47.100Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
