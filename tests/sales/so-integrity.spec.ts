@@ -44,12 +44,14 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         // Re-fetch context AFTER advance to get a fresh token
         const { apiBase, headers, qs } = await app.buildApiContext();
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-        const acctJson = await acctResp.json();
+        const acctJson = acctResp.ok() ? await acctResp.json() : {};
         const allAccounts = acctJson.items || acctJson.data || [];
         const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
+        if (!cashAcct) throw new Error('[SETUP] No cash/bank GL account found — cannot build receipt payload.');
         const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
-        const currData = await currResp.json();
+        const currData = currResp.ok() ? await currResp.json() : {};
         const currency = currData.items?.[0] || currData.data?.[0];
+        if (!currency) throw new Error('[SETUP] No currency found — cannot build receipt payload.');
 
         const buildReceiptPayload = (amount: number) => ({
             amount,
