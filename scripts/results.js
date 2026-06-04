@@ -34,6 +34,29 @@ function collectSpecs(suites, inheritedFile) {
   return out;
 }
 
+// ── Allure UID cross-reference (if allure-report/data/suites.json exists) ──
+const allureBase = 'https://tekleab.github.io/beffa-automation/allure';
+const allureSuitesPath = path.join(__dirname, '..', 'allure-report', 'data', 'suites.json');
+const allureUidMap = {}; // title -> uid
+if (fs.existsSync(allureSuitesPath)) {
+  try {
+    const suitesData = JSON.parse(fs.readFileSync(allureSuitesPath, 'utf-8'));
+    function indexAllureNodes(node) {
+      const uid = node.uid;
+      const name = node.name;
+      if (uid && name && node.status) allureUidMap[name] = uid;
+      (node.children || []).forEach(indexAllureNodes);
+    }
+    (suitesData.children || []).forEach(indexAllureNodes);
+    console.log(`[INFO] Allure UID map loaded: ${Object.keys(allureUidMap).length} entries`);
+  } catch (e) { console.log('[WARN] Could not parse allure suites.json:', e.message); }
+}
+
+function getAllureUrl(title) {
+  const uid = allureUidMap[title];
+  return uid ? `${allureBase}/#testresult/${uid}` : `${allureBase}/#suites`;
+}
+
 if (fs.existsSync(resultsPath)) {
   try {
     const pw = JSON.parse(fs.readFileSync(resultsPath, 'utf-8'));
@@ -67,15 +90,13 @@ if (fs.existsSync(resultsPath)) {
                          (r.error && r.error.message) || '';
           const key = `${spec.title}-${errMsg.substring(0, 50)}`;
           if (!blockersMap[key]) {
-            const baseAllureUrl = 'https://tekleab.github.io/beffa-automation/allure-report/#suites';
-            const suiteName = (filePath.replace(/\\/g, '/').split('/').pop() || '').replace(/\.spec\.ts$/, '');
             blockersMap[key] = {
               severity: errMsg.includes('500') || errMsg.includes('CRITICAL') ? 'critical'
                       : st === 'timedOut' ? 'high' : 'medium',
               title: spec.title,
               error: errMsg.substring(0, 200),
               firstSeen: r.startTime || new Date().toISOString(),
-              allureUrl: `${baseAllureUrl}/${encodeURIComponent(suiteName)}/${encodeURIComponent(spec.title)}`
+              allureUrl: getAllureUrl(spec.title)
             };
           }
         }
