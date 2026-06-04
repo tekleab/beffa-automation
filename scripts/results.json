@@ -1,29 +1,37 @@
 {
   "total": 11,
-  "passed": 2,
-  "failed": 3,
-  "skipped": 6,
-  "passRate": 18.2,
-  "avgDurationMs": 21247,
-  "lastUpdated": "2026-06-04T11:10:19.347Z",
+  "passed": 4,
+  "failed": 5,
+  "skipped": 2,
+  "passRate": 36.4,
+  "avgDurationMs": 55568,
+  "lastUpdated": "2026-06-04T11:22:13.016Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 2,
-      "failed": 3,
-      "skipped": 6,
+      "passed": 4,
+      "failed": 5,
+      "skipped": 2,
       "trend": [
-        60.9,
         72.7,
         81.8,
         62.5,
         72.7,
         40,
-        40
+        40,
+        44.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "461",
+      "commit": "25e3056",
+      "trigger": "push (smoke)",
+      "duration": "10m 11s",
+      "passRate": 36.4,
+      "status": "failed"
+    },
     {
       "run": "459",
       "commit": "223b3be",
@@ -95,38 +103,46 @@
       "duration": "8m 51s",
       "passRate": 26.7,
       "status": "failed"
-    },
-    {
-      "run": "446",
-      "commit": "3577e70",
-      "trigger": "push (smoke)",
-      "duration": "6m 51s",
-      "passRate": 20,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
+      "severity": "medium",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id')\u001b[22m\n\n\n  26 |         console.log('[STEP] Phase 1: TIN validation check');\n  27 |",
+      "firstSeen": "2026-06-04T11:17:12.155Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' })\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.175.142:4173/users/login?",
+      "firstSeen": "2026-06-04T11:17:12.125Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-04T11:08:09.450Z",
+      "error": "Error: Item Discovery HTTP 404: 404 page not found\n\n\n   at ../lib/api/InventoryAPI.ts:327\n\n  325 |     const safeJson = async (resp: any, label: string) => {\n  326 |       const text = await resp.text",
+      "firstSeen": "2026-06-04T11:17:12.208Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill BILL/2026/06/04/000240 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
-      "firstSeen": "2026-06-04T11:08:09.412Z",
+      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - us",
+      "firstSeen": "2026-06-04T11:17:12.161Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"\u001b[7min\u001b[27mactive\"\u001b[39m\nReceived: \u001b[31m\"active\"\u001b[39m\n\n  37 |      ",
-      "firstSeen": "2026-06-04T11:08:54.871Z",
+      "title": "API: Org chart must return company context and department segments",
+      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/organization-chart?year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent:",
+      "firstSeen": "2026-06-04T11:19:50.866Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
