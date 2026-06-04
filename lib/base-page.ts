@@ -205,21 +205,78 @@ export class BasePage {
     };
   }
 
-  async safePost(url: string, options: { data: any, headers: any, label: string }): Promise<any> {
+  /**
+   * Race an API call against a timeout — prevents indefinite hangs under backend load.
+   */
+  private withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => reject(new Error(`[TIMEOUT] ${label} exceeded ${ms}ms — backend may be deadlocked`)), ms)
+      )
+    ]);
+  }
+
+  /**
+   * Resilient POST with Promise.race timeout + exponential backoff for 500/503.
+   * Gracefully swallows "target closed" errors so a crashed page doesn't kill the suite.
+   */
+  async safePost(url: string, options: { data: any, headers: any, label: string }, timeoutMs = 30000): Promise<any> {
     let lastError: any = null;
+
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const response = await this.page.request.post(url, { data: options.data, headers: options.headers });
-      if (response.ok()) return response;
-      const status = response.status();
-      const text = await response.text();
-      lastError = { status, text };
-      if (status >= 500) {
-        await this.page.waitForTimeout(attempt * 1500);
-        continue;
+      try {
+        const response = await this.withTimeout(
+          this.page.request.post(url, { data: options.data, headers: options.headers }),
+          timeoutMs,
+          options.label
+        );
+
+        if (response.ok()) return response;
+
+        const status = response.status();
+        const text = await response.text();
+        lastError = { status, text };
+
+        // Exponential backoff only for transient server errors
+        if (status === 500 || status === 503) {
+          const backoff = attempt * attempt * 1000; // 1s, 4s, 9s
+          Logger.warn(`${options.label} → ${status}. Retry ${attempt}/3 in ${backoff}ms...`);
+          await this.page.waitForTimeout(backoff);
+          continue;
+        }
+
+        return response; // 4xx — return as-is, no retry
+
+      } catch (err: any) {
+        // Gracefully handle page/context closed — don't crash the suite
+        if (
+          err.message?.includes('Target page, context or browser has been closed') ||
+          err.message?.includes('page has been closed') ||
+          err.message?.includes('context was destroyed')
+        ) {
+          Logger.warn(`${options.label} → Page closed mid-request (attempt ${attempt}). Skipping.`);
+          return { ok: () => false, status: () => 0, text: async () => 'page-closed', json: async () => ({}) };
+        }
+
+        // Timeout hit — no point retrying a deadlocked backend immediately
+        if (err.message?.includes('[TIMEOUT]')) {
+          Logger.warn(err.message);
+          lastError = { status: 408, text: err.message };
+          break;
+        }
+
+        lastError = { status: 0, text: err.message };
+        await this.page.waitForTimeout(attempt * 1000);
       }
-      return response;
     }
-    return { ok: () => false, status: () => lastError.status, text: async () => lastError.text, json: async () => { try { return JSON.parse(lastError.text); } catch { return {}; } } };
+
+    return {
+      ok: () => false,
+      status: () => lastError?.status ?? 0,
+      text: async () => lastError?.text ?? '',
+      json: async () => { try { return JSON.parse(lastError?.text ?? '{}'); } catch { return {}; } }
+    };
   }
 
 

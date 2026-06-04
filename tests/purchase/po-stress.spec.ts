@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
+import { Logger } from '../../lib/utils/Logger';
 
 /**
  * PROCUREMENT STRESS & FINANCIAL EDGE CASES
@@ -57,10 +58,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         const balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? 0);
         console.log(`[RESULT] Bill ${bill.ref} balance after overpayment: ${balance} (expected: >= 0)`);
 
-        if (balance < 0) {
-            throw new Error(`[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Overpayment of ${overpayAmount} on ${billAmount} bill created negative balance=${balance}. Vendor credit injection possible.`);
-        }
-        console.log(`[PASS] Balance capped at 0 — overpayment handled correctly.`);
+        expect.soft(balance, `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Overpayment of ${overpayAmount} on ${billAmount} bill created negative balance=${balance}. Vendor credit injection possible.`).toBeGreaterThanOrEqual(0);
+        if (balance < 0) Logger.fail(`Bill ${bill.ref} overpayment bug confirmed: balance=${balance}`);
+        else console.log(`[PASS] Balance capped at 0 — overpayment handled correctly.`);
     });
 
     // ── 2. DOUBLE-BILLING SAME PO ─────────────────────────────────────────────
@@ -83,10 +83,11 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         try {
             const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId);
             await app.advanceDocumentAPI(bill2.billId, 'bills');
-            throw new Error(`[CRITICAL_LOGIC_BUG] Double-billing allowed! PO ${po.poNumber} billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate liability created.`);
+            expect.soft(false, `[CRITICAL_LOGIC_BUG] Double-billing allowed! PO ${po.poNumber} billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate liability created.`).toBe(true);
+            Logger.fail(`Double-billing bug confirmed on PO ${po.poNumber}`);
         } catch (err: any) {
-            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) throw err;
-            console.log(`[PASS] Double-billing correctly blocked: ${err.message}`);
+            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) Logger.fail(err.message);
+            else console.log(`[PASS] Double-billing correctly blocked: ${err.message}`);
         }
     });
 
@@ -117,10 +118,11 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
             const ghost = await app.api.purchase.createBillPaymentAPI({ amount: billAmount, billId: bill.id, vendorId: meta.vendorId });
             await app.advanceDocumentAPI(ghost.id, 'payments');
             console.log(`[GHOST PAYMENT] ${ghost.ref} (${ghost.id})`);
-            throw new Error(`[CRITICAL_LOGIC_BUG] Ghost payment ${ghost.ref} accepted on fully-paid bill ${bill.ref}! Vendor credit manipulation possible.`);
+            expect.soft(false, `[CRITICAL_LOGIC_BUG] Ghost payment ${ghost.ref} accepted on fully-paid bill ${bill.ref}! Vendor credit manipulation possible.`).toBe(true);
+            Logger.fail(`Ghost payment bug confirmed on bill ${bill.ref}`);
         } catch (err: any) {
-            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) throw err;
-            console.log(`[PASS] Ghost payment correctly blocked: ${err.message}`);
+            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) Logger.fail(err.message);
+            else console.log(`[PASS] Ghost payment correctly blocked: ${err.message}`);
         }
     });
 
@@ -168,9 +170,8 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         const stockAfterReversal = await app.api.inventory.pollStockAPI(item.itemId, stockBefore, item.locationId);
         console.log(`[AUDIT] Stock after reversal: ${stockAfterReversal} (expected: ${stockBefore})`);
 
-        if (stockAfterReversal !== stockBefore) {
-            throw new Error(`[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Stock not rolled back after reversal. Expected ${stockBefore}, got ${stockAfterReversal}`);
-        }
+        expect.soft(stockAfterReversal, `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Stock not rolled back after reversal. Expected ${stockBefore}, got ${stockAfterReversal}`).toBe(stockBefore);
+        if (stockAfterReversal !== stockBefore) Logger.fail(`Stock rollback bug: expected ${stockBefore}, got ${stockAfterReversal}`);
         expect(stockAfterReversal).toBe(stockBefore);
         console.log(`[PASS] Bill ${bill.ref}: payment voided → bill reversed → stock and ledger correctly rolled back.`);
     });
@@ -201,9 +202,11 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
             const balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? -1);
             console.log(`[AUDIT] Bill ${bill.ref} balance after payment ${i + 1}: ${balance} (expected: ${expectedBalance})`);
 
-            if (Math.abs(balance - expectedBalance) > 0.01) {
-                throw new Error(`[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Balance drift after partial payment ${i + 1}. Expected ${expectedBalance}, got ${balance}`);
-            }
+            expect.soft(
+                Math.abs(balance - expectedBalance),
+                `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Balance drift after partial payment ${i + 1}. Expected ${expectedBalance}, got ${balance}`
+            ).toBeLessThanOrEqual(0.01);
+            if (Math.abs(balance - expectedBalance) > 0.01) Logger.fail(`Balance drift: expected ${expectedBalance}, got ${balance}`);
         }
 
         const finalBill = await app.api.purchase.getBillAPI(bill.id);
@@ -246,9 +249,8 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         const billStatus = billData.status?.toLowerCase();
         console.log(`[AUDIT] Bill ${bill.billNumber} status after PO cancel: ${billStatus}`);
 
-        if (billStatus !== 'approved') {
-            throw new Error(`[CRITICAL_LOGIC_BUG] Bill ${bill.billNumber}: Cancelling source PO ${po.poNumber} corrupted bill status to "${billStatus}"`);
-        }
+        expect.soft(billStatus, `[CRITICAL_LOGIC_BUG] Bill ${bill.billNumber}: Cancelling source PO ${po.poNumber} corrupted bill status to "${billStatus}"`).toBe('approved');
+        if (billStatus !== 'approved') Logger.fail(`Bill status corruption: expected approved, got ${billStatus}`);
         expect(billStatus).toBe('approved');
         console.log(`[PASS] Bill ${bill.billNumber} integrity maintained after PO ${po.poNumber} cancel attempt.`);
     });
