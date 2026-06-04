@@ -1,0 +1,679 @@
+{
+  "timestamp": "2026-06-04T12:28:00.340Z",
+  "testType": "full",
+  "totalDuration": 718365,
+  "summary": {
+    "totalTests": 100,
+    "totalPassed": 61,
+    "totalFailed": 35,
+    "totalSkipped": 4,
+    "overallStatus": "failed"
+  },
+  "modules": [
+    {
+      "module": "Sales",
+      "total": 27,
+      "passed": 18,
+      "failed": 9,
+      "skipped": 0,
+      "passRate": 67,
+      "avgDuration": 19944,
+      "totalDuration": 538499,
+      "status": "critical",
+      "tests": [
+        {
+          "title": "Forensic Audit: Invoice Void & Stock Restoration",
+          "status": "failed",
+          "duration": 16433,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
+          "status": "passed",
+          "duration": 16609,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Audit: Multi-item invoice correctly deducts stock for each line item",
+          "status": "passed",
+          "duration": 20653,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: Approved SO must be immutable — quantity change rejected",
+          "status": "passed",
+          "duration": 10258,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+          "status": "passed",
+          "duration": 10429,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: Invoice must reject second receipt after full payment",
+          "status": "passed",
+          "duration": 28599,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: Invoice with past due date must be rejected or flagged",
+          "status": "passed",
+          "duration": 8197,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
+          "status": "passed",
+          "duration": 11233,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
+          "status": "failed",
+          "duration": 26346,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+          "status": "failed",
+          "duration": 30029,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+          "status": "passed",
+          "duration": 26338,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 10346,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Invoice: Reject future-dated Invoice from next fiscal year (2019)",
+          "status": "passed",
+          "duration": 9805,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Audit: Partial SO release correctly tracks remaining unreleased quantity",
+          "status": "passed",
+          "duration": 17450,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+          "status": "passed",
+          "duration": 10889,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Edge Case: Reject invalid date (Feb 30, 2018)",
+          "status": "passed",
+          "duration": 8698,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+          "status": "failed",
+          "duration": 11012,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+          "status": "failed",
+          "duration": 7797,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must prevent receipts against a voided invoice",
+          "status": "passed",
+          "duration": 27895,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Invoice: Reject back-dated Invoice from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 9554,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must strictly segregate invoices and receipts by Customer",
+          "status": "passed",
+          "duration": 6845,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked",
+          "status": "passed",
+          "duration": 14634,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Guardrail: System must explicitly reject historical back-dated invoices",
+          "status": "passed",
+          "duration": 10008,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Audit: Invoice with tax must credit tax account in journal entries",
+          "status": "passed",
+          "duration": 6702,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 69393,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+          "status": "failed",
+          "duration": 66260,
+          "project": "Forensic-Sales"
+        },
+        {
+          "title": "Validate TIN, create customer, edit, remove",
+          "status": "passed",
+          "duration": 46087,
+          "project": "Sales-Workflows"
+        }
+      ]
+    },
+    {
+      "module": "Purchase",
+      "total": 35,
+      "passed": 15,
+      "failed": 19,
+      "skipped": 1,
+      "passRate": 43,
+      "avgDuration": 11824,
+      "totalDuration": 413833,
+      "status": "critical",
+      "tests": [
+        {
+          "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+          "status": "passed",
+          "duration": 19425,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must handle concurrent duplicate Bill payments atomically",
+          "status": "failed",
+          "duration": 12669,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must enforce thread-safe serialization for stock additions",
+          "status": "skipped",
+          "duration": 0,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject approval of a future-dated Bill",
+          "status": "failed",
+          "duration": 10329,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject Bill creation with no Vendor",
+          "status": "passed",
+          "duration": 8266,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: Concurrent identical PO submissions must not create duplicate liability",
+          "status": "failed",
+          "duration": 16947,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must block billing beyond 100% of PO quantity",
+          "status": "failed",
+          "duration": 15048,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must enforce strict 1:1 reconciliation mapping between Purchase Order and Bill",
+          "status": "passed",
+          "duration": 11529,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject mutation of an approved Bill line item",
+          "status": "passed",
+          "duration": 10162,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject zero and negative Bill amounts",
+          "status": "passed",
+          "duration": 7756,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject Billing for more units than the approved PO",
+          "status": "passed",
+          "duration": 12677,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject bills with zero or negative quantities",
+          "status": "passed",
+          "duration": 7455,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must enforce mandatory GL account selection for standalone bills",
+          "status": "passed",
+          "duration": 8757,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject approval of a zero-amount payment",
+          "status": "passed",
+          "duration": 11466,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
+          "status": "failed",
+          "duration": 16821,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject a negative payment amount",
+          "status": "passed",
+          "duration": 12288,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject payment where split array does not match total",
+          "status": "failed",
+          "duration": 14835,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "PO: Reject back-dated Purchase Order from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 9829,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Bill: Reject back-dated Bill from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 11244,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Payment: Reject back-dated Payment from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 13703,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must strictly segregate bills and payments by Vendor",
+          "status": "passed",
+          "duration": 7456,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "PO: Reject future-dated Purchase Order from next fiscal year (2019)",
+          "status": "failed",
+          "duration": 9501,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must strictly segregate bills by Vendor (IDOR read-access)",
+          "status": "passed",
+          "duration": 8300,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Bill: Reject future-dated Bill from next fiscal year (2019)",
+          "status": "failed",
+          "duration": 12808,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must explicitly reject historical back-dated bills",
+          "status": "failed",
+          "duration": 11526,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Payment: Reject future-dated Payment from next fiscal year (2019)",
+          "status": "failed",
+          "duration": 13419,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject payment exceeding bill total",
+          "status": "failed",
+          "duration": 12767,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject payment against a fully-paid bill",
+          "status": "failed",
+          "duration": 14893,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "API: Approved bill must post a debit to Accounts Payable",
+          "status": "passed",
+          "duration": 11656,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Guardrail: System must prevent double-billing the same PO",
+          "status": "failed",
+          "duration": 15814,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Audit: Bill reversal after payment must roll back stock and restore balance",
+          "status": "failed",
+          "duration": 0,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Audit: Three partial payments must exactly zero out bill balance",
+          "status": "failed",
+          "duration": 16596,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "API: Vendor outstanding balance increases after bill approval",
+          "status": "failed",
+          "duration": 10559,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger",
+          "status": "passed",
+          "duration": 12002,
+          "project": "Forensic-Purchase"
+        },
+        {
+          "title": "Validate TIN, create vendor, edit, remove",
+          "status": "passed",
+          "duration": 25330,
+          "project": "Purchase-Workflows"
+        }
+      ]
+    },
+    {
+      "module": "Inventory",
+      "total": 13,
+      "passed": 9,
+      "failed": 4,
+      "skipped": 0,
+      "passRate": 69,
+      "avgDuration": 25012,
+      "totalDuration": 325152,
+      "status": "critical",
+      "tests": [
+        {
+          "title": "Guardrail: System must handle concurrent stock adjustments atomically",
+          "status": "passed",
+          "duration": 13802,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
+          "status": "passed",
+          "duration": 9196,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Guardrail: System must reject zero-quantity adjustments",
+          "status": "passed",
+          "duration": 7556,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Guardrail: Deactivated item must be rejected for new stock adjustments",
+          "status": "failed",
+          "duration": 10038,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Guardrail: System must block sales when item stock reaches exact zero",
+          "status": "passed",
+          "duration": 13363,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Audit: Warehouse Transfer must maintain stock balance across locations",
+          "status": "failed",
+          "duration": 7833,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Guardrail: System must reject duplicate item_id on creation",
+          "status": "passed",
+          "duration": 9263,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Audit: 7-Stage Average Cost Validation & COGS Accuracy",
+          "status": "failed",
+          "duration": 66959,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Audit: 7-Stage FIFO Layer Validation & COGS Accuracy",
+          "status": "failed",
+          "duration": 66393,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Guardrail: System must reject overselling beyond available stock",
+          "status": "passed",
+          "duration": 11938,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
+          "status": "passed",
+          "duration": 7971,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "View: Existing inventory item details render correctly in the UI",
+          "status": "passed",
+          "duration": 43779,
+          "project": "Forensic-Inventory"
+        },
+        {
+          "title": "Create: New inventory item is created and visible in the system",
+          "status": "passed",
+          "duration": 57061,
+          "project": "Forensic-Inventory"
+        }
+      ]
+    },
+    {
+      "module": "Cross-Module",
+      "total": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0,
+      "passRate": 0,
+      "avgDuration": 72750,
+      "totalDuration": 145499,
+      "status": "critical",
+      "tests": [
+        {
+          "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+          "status": "failed",
+          "duration": 49887,
+          "project": "Cross-Module"
+        },
+        {
+          "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+          "status": "failed",
+          "duration": 95612,
+          "project": "Cross-Module"
+        }
+      ]
+    },
+    {
+      "module": "HR",
+      "total": 23,
+      "passed": 19,
+      "failed": 1,
+      "skipped": 3,
+      "passRate": 83,
+      "avgDuration": 28231,
+      "totalDuration": 649311,
+      "status": "degraded",
+      "tests": [
+        {
+          "title": "API: Timesheet must be created and advanced through approval",
+          "status": "passed",
+          "duration": 9438,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Duplicate timesheet for same employee+date must be rejected",
+          "status": "passed",
+          "duration": 11460,
+          "project": "HR"
+        },
+        {
+          "title": "API: Employee must be created with all required fields",
+          "status": "passed",
+          "duration": 8827,
+          "project": "HR"
+        },
+        {
+          "title": "API: Employee roster must be non-empty with valid structure",
+          "status": "passed",
+          "duration": 9667,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Timesheets page must load and not show an error state",
+          "status": "passed",
+          "duration": 45934,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Employee creation must reject payload missing required fields",
+          "status": "passed",
+          "duration": 95642,
+          "project": "HR"
+        },
+        {
+          "title": "API: Leave applications endpoint must respond with valid pagination",
+          "status": "passed",
+          "duration": 89481,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Duplicate employee email must be rejected by the system",
+          "status": "failed",
+          "duration": 6955,
+          "project": "HR"
+        },
+        {
+          "title": "API: Org chart must return company context and department segments",
+          "status": "skipped",
+          "duration": 0,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Employees page must load and display employee records",
+          "status": "skipped",
+          "duration": 0,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Org Chart page must render the department hierarchy",
+          "status": "skipped",
+          "duration": 0,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Leave application must reject payload missing leave_type_id and reason",
+          "status": "passed",
+          "duration": 7779,
+          "project": "HR"
+        },
+        {
+          "title": "API: Pay structure must be created with valid name",
+          "status": "passed",
+          "duration": 7234,
+          "project": "HR"
+        },
+        {
+          "title": "API: Pay component must be created with correct GL account linkage",
+          "status": "passed",
+          "duration": 8263,
+          "project": "HR"
+        },
+        {
+          "title": "API: Pay components must have valid type and tax_rule fields",
+          "status": "passed",
+          "duration": 5605,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Attendances page must load and render the attendance module",
+          "status": "passed",
+          "duration": 98913,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Pay component must reject invalid type and tax_rule values",
+          "status": "passed",
+          "duration": 6473,
+          "project": "HR"
+        },
+        {
+          "title": "API: Payroll run must be created with correct initial draft status",
+          "status": "passed",
+          "duration": 5435,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Payroll run advance without active employees must not silently succeed",
+          "status": "passed",
+          "duration": 5439,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Leave Applications page must load and render the leave module",
+          "status": "passed",
+          "duration": 42220,
+          "project": "HR"
+        },
+        {
+          "title": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+          "status": "passed",
+          "duration": 107290,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Payroll Runs page must load and display run records or empty state",
+          "status": "passed",
+          "duration": 38719,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Pay Components settings page must render the components list",
+          "status": "passed",
+          "duration": 38537,
+          "project": "HR"
+        }
+      ]
+    }
+  ]
+}
