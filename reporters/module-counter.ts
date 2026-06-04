@@ -30,13 +30,8 @@ class ModuleCounterReporter implements Reporter {
   onBegin(config: FullConfig, suite: Suite): void {
     this.startTime = Date.now();
     
-    // Detect if this is a full test run (either by env var or by number of projects)
-    this.isFullTestRun = process.env.TEST_TYPE === 'full' || 
-                        config.projects.length >= 5; // Assuming full run has most/all projects
-
-    if (this.isFullTestRun) {
-      console.log('\n🔍 MODULE COUNTER: Full test run detected - tracking module statistics...\n');
-    }
+    // Only activate for explicit full test runs
+    this.isFullTestRun = process.env.TEST_TYPE === 'full';
 
     // Initialize module stats from test structure
     this.initializeModuleStats(suite);
