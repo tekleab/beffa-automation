@@ -7,7 +7,6 @@ import { AppManager } from '../../pages/AppManager';
  * Edge cases: missing required fields on creation
  */
 test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
-    test.describe.configure({ mode: 'serial' });
     test.setTimeout(300000);
 
     // -------------------------------------------------------------------------

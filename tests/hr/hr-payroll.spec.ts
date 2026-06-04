@@ -7,7 +7,6 @@ import { AppManager } from '../../pages/AppManager';
  * Edge cases: payroll-run advance without active employees (E1481 guardrail), invalid pay-component type
  */
 test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () => {
-    test.describe.configure({ mode: 'serial' });
     test.setTimeout(300000);
 
     let payStructureId: string;

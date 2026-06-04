@@ -7,12 +7,8 @@ import { AppManager } from '../../pages/AppManager';
  * Edge cases: missing required fields, duplicate email, org-chart integrity
  */
 test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
-    test.describe.configure({ mode: 'serial' });
     test.setTimeout(300000);
 
-    let createdEmpId: string;
-
-    // -------------------------------------------------------------------------
     // HAPPY PATH: Full employee creation with all required fields
     // -------------------------------------------------------------------------
     test('API: Employee must be created with all required fields', async ({ page }) => {
@@ -37,7 +33,6 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
         expect(emp).toHaveProperty('id');
         expect(emp).toHaveProperty('ref');
         expect(['active', 'inactive']).toContain(emp.status);
-        createdEmpId = emp.id;
         console.log(`[PASS] Employee created: ${emp.ref} | id: ${emp.id} | status: ${emp.status}`);
     });
 

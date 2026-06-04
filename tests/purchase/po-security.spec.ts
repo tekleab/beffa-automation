@@ -6,7 +6,6 @@ import { AppManager } from '../../pages/AppManager';
  * Merged from: procurement-temporal-isolation.spec.ts + procurement-security-temporal-isolation.spec.ts
  */
 test.describe('Procurement Security & Temporal Isolation Audits @purchase @security @regression @full', () => {
-    test.describe.configure({ mode: 'serial' });
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

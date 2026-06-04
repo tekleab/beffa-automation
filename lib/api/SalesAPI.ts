@@ -450,9 +450,6 @@ export class SalesAPI extends BasePage {
       const invoiceCheck = await this.page.request.get(`${apiBase}/invoice/${data.invoiceId}?${params}`, { headers });
       if (invoiceCheck.ok()) {
         const invoiceData = await invoiceCheck.json();
-        console.log(`[DEBUG] Invoice status before receipt: ${invoiceData.status}`);
-        console.log(`[DEBUG] Invoice unreceived_amount: ${invoiceData.unreceived_amount}`);
-        
         if (invoiceData.status !== 'approved') {
           throw new Error(`Invoice must be approved before creating receipt. Current status: ${invoiceData.status}`);
         }
@@ -502,7 +499,7 @@ export class SalesAPI extends BasePage {
       }]
     };
 
-    console.log(`[DEBUG] Receipt payload:`, JSON.stringify(payload, null, 2));
+    console.log(`[RECEIPT] amount=${payload.amount} | invoice=${data.invoiceId?.substring(0, 8)}...`);
 
     // Validate required fields before making the API call
     if (!cashAccountId) {

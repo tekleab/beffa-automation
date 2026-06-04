@@ -16,7 +16,27 @@ export class HrAPI extends BasePage {
   }
 
   private async headers() {
-    const token = await this._getAuthToken();
+    // Always re-login if token is missing or expired (< 60s remaining)
+    let token = await this._getAuthToken();
+    if (token) {
+      try {
+        const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+        if (expiresIn < 60) {
+          console.log(`[HR] Token expires in ${expiresIn}s — refreshing session...`);
+          token = null; // Force re-login below
+        }
+      } catch { token = null; }
+    }
+    if (!token) {
+      await this.page.evaluate((creds) => {
+        return fetch(`/api/users/login?year=2018&period=yearly&calendar=ec`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(creds) })
+          .then(r => r.json())
+          .then(d => { if (d.token) { localStorage.setItem('token', d.token); localStorage.setItem('auth-token', d.token); } });
+      }, { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS });
+      token = await this._getAuthToken();
+    }
     return {
       'Authorization': `Bearer ${token}`,
       'x-company': process.env.BEFFA_COMPANY as string,

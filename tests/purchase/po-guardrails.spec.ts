@@ -9,7 +9,6 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 test.describe('Procurement PO Guardrails @purchase @logic @regression @full', () => {
-    test.describe.configure({ mode: 'serial' });
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
