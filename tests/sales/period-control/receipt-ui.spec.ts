@@ -1,5 +1,5 @@
 import { test, expect } from'@playwright/test';
-import { AppManager } from'../../pages/AppManager';
+import { AppManager } from'../../../pages/AppManager';
 
 test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sales @smoke @full', () => {
 

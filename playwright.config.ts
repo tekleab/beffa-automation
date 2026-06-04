@@ -81,38 +81,33 @@ export default defineConfig({
 
   projects: [
     {
-      // All deep forensic/logic/security sales tests
       name: 'Forensic-Sales',
-      testMatch: /sales\/.*(audit|logic|concurrency|security|isolation|integrity|boundaries|guardrails|cogs|partial|tax|credit|period).*\.spec\.ts/,
+      testMatch: '**/sales/{guardrails,audit,period-control}/*.spec.ts',
     },
     {
-      // All deep forensic/logic/security purchase tests
       name: 'Forensic-Purchase',
-      testMatch: /purchase\/.*(procurement|audit|logic|concurrency|security|isolation|integrity|boundaries|guardrails|partial|stress|period|accounting|payment).*\.spec\.ts/,
+      testMatch: '**/purchase/{guardrails,audit,period-control}/*.spec.ts',
     },
     {
-      // All inventory tests (no overlap — inventory files are already specific)
       name: 'Forensic-Inventory',
-      testMatch: /inventory\/.*\.spec\.ts/,
+      testMatch: '**/inventory/**/*.spec.ts',
     },
     {
-      // Only UI/workflow sales tests not covered by Forensic-Sales
       name: 'Sales-Workflows',
-      testMatch: /sales\/(customer|sales-receipt-ui-flow|sales-ui-verification|sales-customer-balance-ui)\.spec\.ts/,
+      testMatch: '**/sales/*.spec.ts',
       use: { channel: 'chrome' },
     },
     {
-      // Only UI/workflow purchase tests not covered by Forensic-Purchase
       name: 'Purchase-Workflows',
-      testMatch: /purchase\/(vendor|purchase-bill-ui-flow|purchase-to-sale-flow)\.spec\.ts/,
+      testMatch: '**/purchase/*.spec.ts',
     },
     {
       name: 'Cross-Module',
-      testMatch: /cross-module\/.*\.spec\.ts/,
+      testMatch: '**/cross-module/*.spec.ts',
     },
     {
       name: 'HR',
-      testMatch: /hr\/.*\.spec\.ts/,
+      testMatch: '**/hr/*.spec.ts',
     },
   ],
 

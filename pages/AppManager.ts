@@ -164,6 +164,8 @@ export class AppManager {
   async extractIdFromUrl(...args: Parameters<BasePage['extractIdFromUrl']>) { return await this.base.extractIdFromUrl(...args); }
   async advanceDocumentAPI(...args: Parameters<BasePage['advanceDocumentAPI']>) { return await this.base.advanceDocumentAPI(...args); }
   async pollStockAPI(...args: Parameters<InventoryAPI['pollStockAPI']>) { return await this.api.inventory.pollStockAPI(...args); }
+  async createMoveOrderAPI(...args: Parameters<InventoryAPI['createMoveOrderAPI']>) { return await this.api.inventory.createMoveOrderAPI(...args); }
+  async ensureTransferDestinationAPI(...args: Parameters<InventoryAPI['ensureTransferDestinationAPI']>) { return await this.api.inventory.ensureTransferDestinationAPI(...args); }
   async getAccountBalancesAPI() { return await this.base.getAllAccountsAPI(); }
   async getAllAccountsAPI() { return await this.base.getAllAccountsAPI(); }
   async getMultiAccountBalancesAPI(...args: Parameters<BasePage['getMultiAccountBalancesAPI']>) { return await this.base.getMultiAccountBalancesAPI(...args); }

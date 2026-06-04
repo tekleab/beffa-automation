@@ -10,24 +10,20 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 2
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "Forensic-Sales",
         "name": "Forensic-Sales",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/sales\\/.*(audit|logic|concurrency|security|isolation|integrity|boundaries|guardrails|cogs|partial|tax|credit|period).*\\.spec\\.ts/"
+          "**/sales/{guardrails,audit,period-control}/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -35,15 +31,13 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "Forensic-Purchase",
         "name": "Forensic-Purchase",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/purchase\\/.*(procurement|audit|logic|concurrency|security|isolation|integrity|boundaries|guardrails|partial|stress|period|accounting|payment).*\\.spec\\.ts/"
+          "**/purchase/{guardrails,audit,period-control}/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -51,15 +45,13 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "Forensic-Inventory",
         "name": "Forensic-Inventory",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/inventory\\/.*\\.spec\\.ts/"
+          "**/inventory/**/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -67,15 +59,13 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "Sales-Workflows",
         "name": "Sales-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/sales\\/(customer|sales-receipt-ui-flow|sales-ui-verification|sales-customer-balance-ui)\\.spec\\.ts/"
+          "**/sales/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -83,15 +73,13 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "Purchase-Workflows",
         "name": "Purchase-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/purchase\\/(vendor|purchase-bill-ui-flow|purchase-to-sale-flow)\\.spec\\.ts/"
+          "**/purchase/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -99,15 +87,13 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "Cross-Module",
         "name": "Cross-Module",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/cross-module\\/.*\\.spec\\.ts/"
+          "**/cross-module/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -115,15 +101,13 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "HR",
         "name": "HR",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "/hr\\/.*\\.spec\\.ts/"
+          "**/hr/*.spec.ts"
         ],
         "timeout": 120000
       }
@@ -135,11 +119,15 @@
         null
       ],
       [
-        "/home/teklish/beffa-automation/reporters/integrated-dashboard.ts",
+        "/home/teklish/beffa-automation/reporters/module-counter.ts",
         null
       ],
       [
-        "/home/teklish/beffa-automation/reporters/summary-reporter.ts",
+        "/home/teklish/beffa-automation/reporters/dashboard.ts",
+        null
+      ],
+      [
+        "/home/teklish/beffa-automation/reporters/summary.ts",
         null
       ],
       [
@@ -195,291 +183,85 @@
     "workers": 2,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "sales/sales-customer-balance-ui.spec.ts",
-      "file": "sales/sales-customer-balance-ui.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Sales Customer Balance UI Audits @sales @smoke @full",
-          "file": "sales/sales-customer-balance-ui.spec.ts",
-          "line": 13,
-          "column": 6,
-          "specs": [
-            {
-              "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-              "ok": true,
-              "tags": [
-                "sales",
-                "smoke",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 300000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|548.43"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Item Discovery (50 Records)|1613.10"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Sales-Workflows",
-                  "projectName": "Sales-Workflows",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 52885,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 548.43ms\n"
-                        },
-                        {
-                          "text": "[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...\n"
-                        },
-                        {
-                          "text": "[PERFORMANCE] API - Item Discovery (50 Records): 1613.10ms\n"
-                        },
-                        {
-                          "text": "[STEP 1] Creating & approving invoice via API...\n"
-                        },
-                        {
-                          "text": "[API] Advancing invoices \"39b5f97f-7faa-4227-b50b-11e5f92c4a4c\"...\n"
-                        },
-                        {
-                          "text": "[OK] Invoice INV/2026/06/02/000083 approved.\n"
-                        },
-                        {
-                          "text": "[STEP 2] Asserting outstanding balance via API...\n"
-                        },
-                        {
-                          "text": "[AUDIT] Invoice INV/2026/06/02/000083 | net_due: 3503.02 | unreceived: 3503.02\n"
-                        },
-                        {
-                          "text": "[STEP 3] Navigating to customer profile...\n"
-                        },
-                        {
-                          "text": "[STEP 4] Opening Invoices tab...\n"
-                        },
-                        {
-                          "text": "[STEP 5] Asserting invoice INV/2026/06/02/000083 is visible in customer profile...\n"
-                        },
-                        {
-                          "text": "[DEBUG] Search attempt 1/5 for invoice INV/2026/06/02/000083\n"
-                        },
-                        {
-                          "text": "[DEBUG] Tables found: 7\n"
-                        },
-                        {
-                          "text": "[DEBUG] Rows in active table: 78\n"
-                        },
-                        {
-                          "text": "[DEBUG] First row: INV/2026/06/02/000001Base EthiopiaJun 02, 2026Approved7095.13\n"
-                        },
-                        {
-                          "text": "[DEBUG] Last row: INV/2026/06/02/000083Base EthiopiaJun 02, 2026Approved3503.02\n"
-                        },
-                        {
-                          "text": "[DEBUG] Looking for invoice refs: INV/2026/06/02/000083\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Found 1 elements with reference: INV/2026/06/02/000083\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Invoice INV/2026/06/02/000083 is visible at position 0\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Invoice verification completed after 1 attempts\n"
-                        },
-                        {
-                          "text": "[PASS] Invoice INV/2026/06/02/000083 confirmed visible. Outstanding balance 3503.02 verified.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-02T14:56:58.604Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|548.43"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Item Discovery (50 Records)|1613.10"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ad6137fb13d3130d0c7a-1228fc0ebe75db4869de",
-              "file": "sales/sales-customer-balance-ui.spec.ts",
-              "line": 16,
-              "column": 9
-            },
-            {
-              "title": "UI Audit: Customer profile shows zero balance after full payment",
-              "ok": false,
-              "tags": [
-                "sales",
-                "smoke",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 300000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|466.06"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Item Discovery (50 Records)|1205.84"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Sales-Workflows",
-                  "projectName": "Sales-Workflows",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 90391,
-                      "error": {
-                        "message": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n",
-                        "stack": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n    at SalesAPI.createInvoiceReceiptAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:563:11)\n    at /home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts:219:21",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
-                          "column": 11,
-                          "line": 563
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:563\n\n\u001b[0m \u001b[90m 561 |\u001b[39m     }\n \u001b[90m 562 |\u001b[39m     \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 563 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 564 |\u001b[39m   }\n \u001b[90m 565 |\u001b[39m\n \u001b[90m 566 |\u001b[39m   \u001b[36masync\u001b[39m getInvoiceAPI(invoiceId\u001b[33m:\u001b[39m string)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33many\u001b[39m\u001b[33m>\u001b[39m {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
-                            "column": 11,
-                            "line": 563
-                          },
-                          "message": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:563\n\n\u001b[0m \u001b[90m 561 |\u001b[39m     }\n \u001b[90m 562 |\u001b[39m     \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 563 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 564 |\u001b[39m   }\n \u001b[90m 565 |\u001b[39m\n \u001b[90m 566 |\u001b[39m   \u001b[36masync\u001b[39m getInvoiceAPI(invoiceId\u001b[33m:\u001b[39m string)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33many\u001b[39m\u001b[33m>\u001b[39m {\u001b[0m\n\u001b[2m    at SalesAPI.createInvoiceReceiptAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:563:11)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts:219:21\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 466.06ms\n"
-                        },
-                        {
-                          "text": "[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...\n"
-                        },
-                        {
-                          "text": "[PERFORMANCE] API - Item Discovery (50 Records): 1205.84ms\n"
-                        },
-                        {
-                          "text": "[STEP 1] Creating invoice, approving, and paying in full via API...\n"
-                        },
-                        {
-                          "text": "[API] Advancing invoices \"d8e34065-6ef0-4c75-928e-ada43c57ca84\"...\n"
-                        },
-                        {
-                          "text": "[OK] Invoice INV/2026/06/02/000082 net_due: 3645.4\n"
-                        },
-                        {
-                          "text": "[DEBUG] Invoice status before receipt: approved\n"
-                        },
-                        {
-                          "text": "[DEBUG] Invoice unreceived_amount: 3645.4\n"
-                        },
-                        {
-                          "text": "[DEBUG] Receipt payload: {\n  \"amount\": 3645.4,\n  \"cash_account_id\": \"0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b\",\n  \"customer_id\": \"223a2864-674f-42e7-b799-22730e12c57a\",\n  \"date\": \"2026-06-02T14:57:36.421Z\",\n  \"payment_method\": \"cash\",\n  \"currency_id\": \"e5f7c28e-0ad7-4a7b-ae73-b688d9a607fb\",\n  \"invoice_receipts\": [\n    {\n      \"amount\": 3645.4,\n      \"invoice_id\": \"d8e34065-6ef0-4c75-928e-ada43c57ca84\"\n    }\n  ]\n}\n"
-                        }
-                      ],
-                      "stderr": [
-                        {
-                          "text": "[WARN] Receipt creation failed on attempt 1: Attempt 1: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n"
-                        },
-                        {
-                          "text": "[WARN] Receipt creation failed on attempt 2: Attempt 2: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n"
-                        },
-                        {
-                          "text": "[WARN] Receipt creation failed on attempt 3: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-06-02T14:56:58.633Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|466.06"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Item Discovery (50 Records)|1205.84"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-sales-customer-balan-428ab--balance-after-full-payment-Sales-Workflows/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-sales-customer-balan-428ab--balance-after-full-payment-Sales-Workflows/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-sales-customer-balan-428ab--balance-after-full-payment-Sales-Workflows/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-sales-customer-balan-428ab--balance-after-full-payment-Sales-Workflows/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
-                        "column": 11,
-                        "line": 563
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "ad6137fb13d3130d0c7a-65903d33ed5cf3b0b2b0",
-              "file": "sales/sales-customer-balance-ui.spec.ts",
-              "line": 194,
-              "column": 9
-            }
-          ]
-        }
-      ]
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/audit/so-accounting.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * CATEGORY 3: Accounting Flow & Ledger Logic"
+    },
+    {
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/audit/so-cogs.spec.ts:2\n\n  1 | import { test } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES MULTI-ITEM INVOICE COGS AUDIT"
+    },
+    {
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/audit/so-gl-audit.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES GL & LEDGER AUDITS"
+    },
+    {
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/audit/so-tax-audit.spec.ts:2\n\n  1 | import { test } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES TAX GL AUDIT"
+    },
+    {
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/guardrails/so-concurrency.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * CATEGORY 2: Concurrency & Race Conditions"
+    },
+    {
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/guardrails/so-guardrails.spec.ts:2\n\n  1 | import { test } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES SO GUARDRAIL AUDITS"
+    },
+    {
+      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts:2:1)",
+      "location": {
+        "file": "/home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "   at sales/period-control/so-period-control.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES PERIOD CONTROL EDGE CASES"
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2026-06-02T14:56:54.943Z",
-    "duration": 103035.40100000001,
-    "expected": 1,
+    "startTime": "2026-06-04T13:23:59.673Z",
+    "duration": 304.85400000000027,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

@@ -587,6 +587,131 @@ export class InventoryAPI extends BasePage {
   async approveDepartmentRequestAPI(id: string) { console.warn('Stub: approveDepartmentRequestAPI'); }
   async reviewPropertyRequestAPI(id: string) { console.warn('Stub: reviewPropertyRequestAPI'); }
   async issueStoreRequestAPI(id: string) { console.warn('Stub: issueStoreRequestAPI'); }
+
+  async createMoveOrderAPI(data: {
+    itemId: string;
+    quantity: number;
+    fromLocationId: string;
+    fromWarehouseId: string;
+    toLocationId: string;
+    toWarehouseId: string;
+  }): Promise<{ id: string; ref?: string; status: string; fromLocationId: string; toLocationId: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+    if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const headers = {
+      'x-company': process.env.BEFFA_COMPANY as string,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'x-role': 'IT Administrator / User Manager'
+    };
+
+    const createResp = await this.safePost(`${apiBase}/move-orders?${params}`, {
+      data: {
+        inventory_item_id: data.itemId,
+        quantity: data.quantity,
+        from_warehouse_id: data.fromWarehouseId,
+        from_location_id: data.fromLocationId,
+        destination_warehouse_id: data.toWarehouseId,
+        destination_location_id: data.toLocationId
+      },
+      headers,
+      label: 'Create Move Order'
+    });
+    if (!createResp.ok()) throw new Error(`[MOVE ORDER] Create failed: ${createResp.status()} - ${await createResp.text()}`);
+    const order = await createResp.json();
+    console.log(`[MOVE ORDER] Created: ${order.id} (status: ${order.status})`);
+
+    await this.advanceDocumentAPI(order.id, 'move-orders');
+    return { id: order.id, ref: order.ref, status: 'approved', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
+  }
+
+  async ensureTransferDestinationAPI(fromLocationId: string): Promise<{ locationId: string; warehouseId: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+    if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const headers = {
+      'x-company': process.env.BEFFA_COMPANY as string,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'x-role': 'IT Administrator / User Manager'
+    };
+
+    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
+    if (locResp.ok()) {
+      const locData = await locResp.json();
+      const dest = (locData.items || locData.data || []).find((l: any) => l.id !== fromLocationId);
+      if (dest) return { locationId: dest.id, warehouseId: dest.warehouse_id || dest.warehouse?.id };
+    }
+
+    // No second location — create one
+    console.log('[SELF-HEALING] No second location found. Creating destination warehouse + location...');
+    const whResp = await this.page.request.get(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
+    let address = { region: 'Addis Ababa City Administration', zone: 'Bole Subcity', woreda: 'Woreda 2', kebele: '1' };
+    if (whResp.ok()) {
+      const existing = ((await whResp.json()).items || [])[0];
+      if (existing?.address) address = { ...address, ...existing.address };
+    }
+    const newWh = await (await this.safePost(`${apiBase}/warehouses?${params}`, {
+      data: { name: 'Transfer Destination Warehouse', status: 'Active', max_capacity: 500, address },
+      headers, label: 'Create Dest Warehouse'
+    })).json();
+    const newLoc = await (await this.safePost(`${apiBase}/locations?${params}`, {
+      data: { name: 'Transfer Destination Location', warehouse_id: newWh.id, type: 'Section', max_capacity: 500, ref: `xfer-dest-${Date.now().toString().slice(-5)}` },
+      headers, label: 'Create Dest Location'
+    })).json();
+    console.log(`[SELF-HEALING] Created: ${newWh.name} / ${newLoc.name}`);
+    return { locationId: newLoc.id, warehouseId: newWh.id };
+  }
+
+  async ensureTransferLocationAPI(
+    apiBase: string,
+    params: string,
+    headers: Record<string, string>
+  ): Promise<{ id: string; warehouse_id: string }> {
+    // 1. Fetch existing warehouse to reuse its address fields
+    const whResp = await this.page.request.get(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
+    let address = { region: 'Addis Ababa City Administration', zone: 'Bole Subcity', woreda: 'Woreda 2', kebele: '1' };
+    if (whResp.ok()) {
+      const whData = await whResp.json();
+      const existing = (whData.items || whData.data || [])[0];
+      if (existing?.address) address = { ...address, ...existing.address };
+    }
+
+    // 2. Create destination warehouse
+    const whCreateResp = await this.safePost(`${apiBase}/warehouses?${params}`, {
+      data: { name: 'Transfer Destination Warehouse', status: 'Active', max_capacity: 500, address },
+      headers,
+      label: 'Create Transfer Warehouse'
+    });
+    if (!whCreateResp.ok()) throw new Error(`[SELF-HEALING] Warehouse creation failed: ${await whCreateResp.text()}`);
+    const newWarehouse = await whCreateResp.json();
+    console.log(`[SELF-HEALING] Created warehouse: ${newWarehouse.name} (${newWarehouse.id})`);
+
+    // 3. Create location inside the new warehouse
+    const locCreateResp = await this.safePost(`${apiBase}/locations?${params}`, {
+      data: {
+        name: 'Transfer Destination Location',
+        warehouse_id: newWarehouse.id,
+        type: 'Section',
+        max_capacity: 500,
+        description: 'Auto-created for E2E transfer tests',
+        ref: `transfer-dest-${Date.now().toString().slice(-5)}`
+      },
+      headers,
+      label: 'Create Transfer Location'
+    });
+    if (!locCreateResp.ok()) throw new Error(`[SELF-HEALING] Location creation failed: ${await locCreateResp.text()}`);
+    const newLocation = await locCreateResp.json();
+    console.log(`[SELF-HEALING] Created location: ${newLocation.name} (${newLocation.id})`);
+
+    return { id: newLocation.id, warehouse_id: newWarehouse.id };
+  }
+
   async executeTransferAPI(data: {
     itemId: string;
     quantity: number;
@@ -594,7 +719,7 @@ export class InventoryAPI extends BasePage {
     fromWarehouseId: string;
     toLocationId?: string;   // auto-discovered if omitted
     toWarehouseId?: string;
-  }): Promise<{ outRef: string; inRef: string; fromLocationId: string; toLocationId: string }> {
+  }): Promise<{ outRef: string; inRef: string; fromLocationId: string; toLocationId: string; sourceItemId: string; destItemId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -618,7 +743,7 @@ export class InventoryAPI extends BasePage {
       adjAccountId = accounts.find((a: any) => a.account_type?.toLowerCase().includes('expense'))?.id || accounts[0]?.id;
     }
 
-    // 2. Discover destination location (different from source)
+    // 2. Discover destination location (different from source), self-healing if only one exists
     let toLocationId  = data.toLocationId;
     let toWarehouseId = data.toWarehouseId;
     if (!toLocationId) {
@@ -626,8 +751,11 @@ export class InventoryAPI extends BasePage {
       if (locResp.ok()) {
         const locData = await locResp.json();
         const locs = locData.items || locData.data || [];
-        const dest = locs.find((l: any) => l.id !== data.fromLocationId);
-        if (!dest) throw new Error('[TRANSFER] Could not find a second location for destination. Only one location exists.');
+        let dest = locs.find((l: any) => l.id !== data.fromLocationId);
+        if (!dest) {
+          console.log('[SELF-HEALING] Only one location found. Creating a second warehouse + location for transfer destination...');
+          dest = await this.ensureTransferLocationAPI(apiBase, params, headers);
+        }
         toLocationId  = dest.id;
         toWarehouseId = dest.warehouse_id || dest.warehouse?.id;
       }
@@ -636,11 +764,96 @@ export class InventoryAPI extends BasePage {
 
     console.log(`[TRANSFER] OUT: ${data.fromLocationId} → IN: ${toLocationId} | Qty: ${data.quantity}`);
 
+    // 3. Resolve the actual itemId to use — must be registered at BOTH locations.
+    //    If the source item is not registered at destination, create a dedicated transfer item
+    //    that has the destination as its default_location_id (only way to register it there).
+    let sourceItemId = data.itemId;
+    let destItemId   = data.itemId;
+
+    // Check if item is actually registered at destination by inspecting its location list directly
+    const srcItemResp = await this.page.request.get(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+    const srcItemData = srcItemResp.ok() ? await srcItemResp.json() : {};
+    const registeredAtDest = (srcItemData.inventory_item_locations || []).some((l: any) => l.location_id === toLocationId);
+
+    if (!registeredAtDest) {
+      console.log(`[TRANSFER] Item not registered at destination. Creating a dedicated transfer item pre-stocked at both locations...`);
+
+      // srcItemData already fetched above for the location check
+      const srcItem = srcItemData;
+
+      // Create item with destination as default → registers it at destination
+      const transferItemResp = await this.safePost(`${apiBase}/inventory-items?${params}`, {
+        data: {
+          name: `Transfer Test Item ${Date.now().toString().slice(-6)}`,
+          type: 'inventory',
+          category: srcItem.category || 'Raw Materials',
+          cost_method_code: srcItem.cost_method_code || 'FIFO',
+          item_class: srcItem.item_class || 'MER',
+          item_id: `ITM-XFER-${Date.now().toString().slice(-6)}`,
+          unit_of_measurement: srcItem.unit_of_measurement || 'Each (ea)',
+          part_number: `PN-XFER-${Date.now().toString().slice(-5)}`,
+          serial: 'Z',
+          status: 'active',
+          description: [{ content: '', type: 'item' }, { content: '', type: 'sales' }, { content: '', type: 'purchase' }],
+          min_stock: 0,
+          initial_stock: data.quantity + 10,
+          purchase_price: 0,
+          selling_price: 0,
+          unit_cost: srcItem.unit_cost || 100,
+          gl_sales_account_id: srcItem.gl_sales_account_id,
+          gl_cost_account_id: srcItem.gl_cost_account_id,
+          gl_inventory_account_id: srcItem.gl_inventory_account_id,
+          default_location_id: data.fromLocationId,
+          default_warehouse_id: data.fromWarehouseId,
+          quantity: data.quantity + 10
+        },
+        headers,
+        label: 'Create Transfer Item (source)'
+      });
+      if (!transferItemResp.ok()) throw new Error(`[TRANSFER] Transfer item creation failed: ${await transferItemResp.text()}`);
+      const transferItem = await transferItemResp.json();
+      sourceItemId = transferItem.id;
+      console.log(`[TRANSFER] Transfer item created at source: ${transferItem.name} (${transferItem.id})`);
+
+      // Create a second item with destination as default → registers it at destination
+      const destItemResp = await this.safePost(`${apiBase}/inventory-items?${params}`, {
+        data: {
+          name: `Transfer Dest Item ${Date.now().toString().slice(-6)}`,
+          type: 'inventory',
+          category: srcItem.category || 'Raw Materials',
+          cost_method_code: srcItem.cost_method_code || 'FIFO',
+          item_class: srcItem.item_class || 'MER',
+          item_id: `ITM-XFRD-${Date.now().toString().slice(-6)}`,
+          unit_of_measurement: srcItem.unit_of_measurement || 'Each (ea)',
+          part_number: `PN-XFRD-${Date.now().toString().slice(-5)}`,
+          serial: 'Z',
+          status: 'active',
+          description: [{ content: '', type: 'item' }, { content: '', type: 'sales' }, { content: '', type: 'purchase' }],
+          min_stock: 0,
+          initial_stock: 0,
+          purchase_price: 0,
+          selling_price: 0,
+          unit_cost: srcItem.unit_cost || 100,
+          gl_sales_account_id: srcItem.gl_sales_account_id,
+          gl_cost_account_id: srcItem.gl_cost_account_id,
+          gl_inventory_account_id: srcItem.gl_inventory_account_id,
+          default_location_id: toLocationId,
+          default_warehouse_id: toWarehouseId,
+          quantity: 0
+        },
+        headers,
+        label: 'Create Transfer Item (dest)'
+      });
+      if (!destItemResp.ok()) throw new Error(`[TRANSFER] Dest item creation failed: ${await destItemResp.text()}`);
+      const destItem = await destItemResp.json();
+      destItemId = destItem.id;
+      console.log(`[TRANSFER] Transfer item created at destination: ${destItem.name} (${destItem.id})`);
+    }
+
     const basePayload = {
       adjusted_by: 'quantity',
       adjusted_cost: 0,
       adjustment_account_id: adjAccountId,
-      inventory_item_id: data.itemId,
       date: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
       note: '',
       reason: 'Automated E2E Warehouse Transfer',
@@ -648,9 +861,10 @@ export class InventoryAPI extends BasePage {
       status: 'draft'
     };
 
-    // 3. OUT adjustment at source (write-down / negative)
+    // 4. OUT adjustment at source
     const outPayload = {
       ...basePayload,
+      inventory_item_id: sourceItemId,
       adjusted_quantity: -data.quantity,
       is_write_down: 'true',
       location_id: data.fromLocationId,
@@ -664,9 +878,10 @@ export class InventoryAPI extends BasePage {
     console.log(`[TRANSFER] OUT created: ${outJson.ref} (ID: ${outJson.id})`);
     await this.advanceDocumentAPI(outJson.id, 'inventory-adjustments');
 
-    // 4. IN adjustment at destination (add stock)
+    // 5. IN adjustment at destination
     const inPayload = {
       ...basePayload,
+      inventory_item_id: destItemId,
       adjusted_quantity: data.quantity,
       is_write_down: 'false',
       location_id: toLocationId,
@@ -684,7 +899,9 @@ export class InventoryAPI extends BasePage {
       outRef: outJson.ref,
       inRef:  inJson.ref,
       fromLocationId: data.fromLocationId,
-      toLocationId:   toLocationId!
+      toLocationId:   toLocationId!,
+      sourceItemId,
+      destItemId
     };
   }
 }
