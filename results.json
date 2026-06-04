@@ -1,29 +1,37 @@
 {
-  "total": 11,
-  "passed": 4,
-  "failed": 5,
-  "skipped": 2,
-  "passRate": 36.4,
-  "avgDurationMs": 55568,
-  "lastUpdated": "2026-06-04T11:22:13.016Z",
+  "total": 100,
+  "passed": 52,
+  "failed": 39,
+  "skipped": 9,
+  "passRate": 52,
+  "avgDurationMs": 27634,
+  "lastUpdated": "2026-06-04T11:40:21.113Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 4,
-      "failed": 5,
-      "skipped": 2,
+      "passed": 52,
+      "failed": 39,
+      "skipped": 9,
       "trend": [
-        72.7,
         81.8,
         62.5,
         72.7,
         40,
         40,
-        44.4
+        44.4,
+        57.1
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "462",
+      "commit": "8278c2c",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "46m 3s",
+      "passRate": 52,
+      "status": "failed"
+    },
     {
       "run": "461",
       "commit": "25e3056",
@@ -95,54 +103,86 @@
       "duration": "7m 0s",
       "passRate": 27.3,
       "status": "failed"
-    },
-    {
-      "run": "447",
-      "commit": "035dd31",
-      "trigger": "push (smoke)",
-      "duration": "8m 51s",
-      "passRate": 26.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id')\u001b[22m\n\n\n  26 |         console.log('[STEP] Phase 1: TIN validation check');\n  27 |",
-      "firstSeen": "2026-06-04T11:17:12.155Z",
+      "severity": "critical",
+      "title": "Guardrail: Invoice must reject second receipt after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
+      "firstSeen": "2026-06-04T11:23:40.084Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "error": "Error: [VULNERABILITY] GL Drift — Full Cycle AR Reconciliation Failed\n  Invoice      : INV/2026/06/04/000269 (ID: 649fe979-cf0d-49f1-85d7-310309ff2d90)\n  Receipt      : RCPT/2026/06/04/000064 (ID: 911",
+      "firstSeen": "2026-06-04T11:24:16.813Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
+      "error": "Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance\n  Invoice      : INV/2026/06/04/000270 (ID: bef541ce-4159-4984-9bcb-bb9713779d67)\n  AR Account   : a9331f21-418e-4",
+      "firstSeen": "2026-06-04T11:24:18.212Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Over-Invoicing! SO: 10, Invoiced: 50. Financial leakage / inventory integrity breach detected.\n\n  77 |\n  78 |             if (totalQty > 10) {\n> 79 |                 throw ",
+      "firstSeen": "2026-06-04T11:24:30.084Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
+      "firstSeen": "2026-06-04T11:24:48.358Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
+      "firstSeen": "2026-06-04T11:25:09.980Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Invoice: Reject back-dated Invoice from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice from previous fiscal year!\n\n  128 |             try {\n  129 |                 await app.advanceDocumentAPI(inv.id, 'invoices');\n",
+      "firstSeen": "2026-06-04T11:25:35.673Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Invoice: Reject future-dated Invoice from next fiscal year (2019)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved future-dated Invoice from next fiscal year!\n\n  159 |             try {\n  160 |                 await app.advanceDocumentAPI(inv.id, 'invoices');\n> ",
+      "firstSeen": "2026-06-04T11:24:54.501Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:563\n\n  561 |     }\n ",
+      "firstSeen": "2026-06-04T11:25:16.492Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' })\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.175.142:4173/users/login?",
-      "firstSeen": "2026-06-04T11:17:12.125Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: Item Discovery HTTP 404: 404 page not found\n\n\n   at ../lib/api/InventoryAPI.ts:327\n\n  325 |     const safeJson = async (resp: any, label: string) => {\n  326 |       const text = await resp.text",
-      "firstSeen": "2026-06-04T11:17:12.208Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - us",
-      "firstSeen": "2026-06-04T11:17:12.161Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Org chart must return company context and department segments",
-      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/organization-chart?year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent:",
-      "firstSeen": "2026-06-04T11:19:50.866Z",
+      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+      "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/auth.ts:108\n\n  106 |     }\n ",
+      "firstSeen": "2026-06-04T11:26:35.637Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
