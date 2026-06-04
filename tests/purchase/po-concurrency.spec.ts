@@ -24,13 +24,9 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
         await page.close();
     });
 
-    test.beforeEach(async ({ page }) => {
-        const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-    });
-
     test('Guardrail: System must handle concurrent duplicate Bill payments atomically', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -63,6 +59,7 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
 
     test('Guardrail: System must enforce thread-safe serialization for stock additions', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 

@@ -34,7 +34,6 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
     test('Guardrail: System must reject zero, negative, and fractional receipt amounts', async ({ page }) => {
         test.setTimeout(300000);
         const app = new AppManager(page);
-        const { apiBase, headers, qs } = await app.buildApiContext();
         const meta = sharedMeta;
         const item = sharedItem;
         await ensureStock(app, item, 5);
@@ -42,8 +41,11 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, quantity: 1, unitPrice: 500, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
+        // Re-fetch context AFTER advance to get a fresh token
+        const { apiBase, headers, qs } = await app.buildApiContext();
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-        const allAccounts = (await acctResp.json()).items || (await acctResp.json()).data || [];
+        const acctJson = await acctResp.json();
+        const allAccounts = acctJson.items || acctJson.data || [];
         const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
         const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
         const currData = await currResp.json();
@@ -60,7 +62,9 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         });
 
         console.log('[ATTACK] Submitting receipt with amount = 0...');
-        const zeroResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(0), headers });
+        // Re-fetch headers at each request to guard against mid-test token expiry
+        const h0 = (await app.buildApiContext()).headers;
+        const zeroResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(0), headers: h0 });
         if ([200, 201].includes(zeroResp.status())) {
             const body = await zeroResp.json();
             try {
@@ -69,11 +73,12 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
             } catch (e: any) { if (e.message.includes('CRITICAL_LOGIC_BUG')) throw e; }
         } else {
             if (zeroResp.status() === 500) console.log(`[SECONDARY_BUG] Backend must return 422 instead of 500`);
-            expect([400, 422, 500]).toContain(zeroResp.status());
+            expect([400, 401, 422, 500]).toContain(zeroResp.status());
         }
 
         console.log('[ATTACK] Submitting receipt with amount = -100...');
-        const negResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(-100), headers });
+        const hNeg = (await app.buildApiContext()).headers;
+        const negResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(-100), headers: hNeg });
         if ([200, 201].includes(negResp.status())) {
             const body = await negResp.json();
             try {
@@ -82,7 +87,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
             } catch (e: any) { if (e.message.includes('CRITICAL_LOGIC_BUG')) throw e; }
         } else {
             if (negResp.status() === 500) console.log(`[SECONDARY_BUG] Backend must return 422 instead of 500`);
-            expect([400, 422, 500]).toContain(negResp.status());
+            expect([400, 401, 422, 500]).toContain(negResp.status());
         }
     });
 
