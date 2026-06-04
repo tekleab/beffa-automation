@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { AppManager } from '../../../pages/AppManager';
 
 /**
  * CATEGORY 3: Accounting Flow & Ledger Logic

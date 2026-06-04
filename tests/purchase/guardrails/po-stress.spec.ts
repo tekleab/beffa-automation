@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
-import { Logger } from '../../lib/utils/Logger';
+import { AppManager } from '../../../pages/AppManager';
+import { Logger } from '../../../lib/utils/Logger';
 
 /**
  * PROCUREMENT STRESS & FINANCIAL EDGE CASES

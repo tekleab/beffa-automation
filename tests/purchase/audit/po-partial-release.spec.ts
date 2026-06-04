@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { AppManager } from '../../pages/AppManager';
+import { AppManager } from '../../../pages/AppManager';
 
 /**
  * PROCUREMENT PARTIAL PO RELEASE AUDIT
