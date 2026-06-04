@@ -1,29 +1,37 @@
 {
   "total": 11,
-  "passed": 8,
-  "failed": 3,
+  "passed": 9,
+  "failed": 2,
   "skipped": 0,
-  "passRate": 72.7,
-  "avgDurationMs": 54835,
-  "lastUpdated": "2026-06-04T09:03:40.873Z",
+  "passRate": 81.8,
+  "avgDurationMs": 56066,
+  "lastUpdated": "2026-06-04T09:41:34.169Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 8,
-      "failed": 3,
+      "passed": 9,
+      "failed": 2,
       "skipped": 0,
       "trend": [
-        33.3,
         66.7,
         33.3,
         44.4,
         50,
         60.9,
-        72.7
+        72.7,
+        81.8
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "454",
+      "commit": "66cf4da",
+      "trigger": "push (smoke)",
+      "duration": "10m 16s",
+      "passRate": 81.8,
+      "status": "success"
+    },
     {
       "run": "452",
       "commit": "9713636",
@@ -95,34 +103,20 @@
       "duration": "7m 30s",
       "passRate": 20,
       "status": "failed"
-    },
-    {
-      "run": "440",
-      "commit": "0a18dbf",
-      "trigger": "push (smoke)",
-      "duration": "13m 31s",
-      "passRate": 33.3,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /remove|delete/i }).first() to be visible\u001b[22m\n\n\n  73 |         console.log('[STEP] P",
-      "firstSeen": "2026-06-04T08:59:35.182Z"
-    },
-    {
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Receipt|Create Receipt|Receive Payment/i }).first() to be visible\u001b[22m\n\n\n  46 | ",
-      "firstSeen": "2026-06-04T08:59:35.180Z"
+      "firstSeen": "2026-06-04T09:36:59.257Z"
     },
     {
       "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills|Transactions/i }).first() to be visible\u001b[22m\n\n\n  109 |         console.log(`[STEP",
-      "firstSeen": "2026-06-04T08:59:35.176Z"
+      "firstSeen": "2026-06-04T09:36:59.322Z"
     }
   ]
 }
