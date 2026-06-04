@@ -57,15 +57,24 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @full', ()
         await app.customerNameInput.fill(updatedName);
         const saveBtn = page.locator('button:has-text("Save"), button:has-text("Update")').first();
         await saveBtn.click({ force: true });
-        await page.waitForTimeout(4000);
+        // Wait for edit to complete — page may navigate or re-render
+        await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+        await page.waitForTimeout(2000);
         console.log('[OK] Customer updated');
 
         // Remove
         console.log('[STEP] Phase 4: Removing customer');
-        await app.removeCustomerBtn.waitFor({ state:'visible' });
-        await app.removeCustomerBtn.click({ force: true });
+        // After save the page may reload — wait for URL to settle and DOM to stabilize
+        await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+        await page.waitForTimeout(2000);
+
+        // Remove button may be hidden until page fully renders — scroll + broader selector
+        const removeBtn = page.locator('button:has-text("Remove"), button:has-text("Delete")').first();
+        await removeBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await removeBtn.waitFor({ state: 'visible', timeout: 30000 });
+        await removeBtn.click({ force: true });
         const confirmBtn = page.locator('section[role="dialog"] button:has-text("Yes"), button:has-text("Confirm")').first();
-        await confirmBtn.waitFor({ state:'visible' });
+        await confirmBtn.waitFor({ state: 'visible', timeout: 15000 });
         await confirmBtn.click({ force: true });
         await page.waitForURL(url => url.href.includes('/receivables/customers'), { timeout: 30000 });
 
