@@ -4,8 +4,8 @@
   "failed": 5,
   "skipped": 0,
   "passRate": 64.3,
-  "avgDurationMs": 75652,
-  "lastUpdated": "2026-06-04T13:31:35.983Z",
+  "avgDurationMs": 62555,
+  "lastUpdated": "2026-06-04T13:37:22.297Z",
   "moduleBreakdown": [
     {
       "module": "Other",
@@ -13,17 +13,25 @@
       "failed": 5,
       "skipped": 0,
       "trend": [
-        57.1,
         72.7,
         81.8,
         63.5,
         90.9,
         67,
+        64.3,
         64.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "471",
+      "commit": "2bf5cf3",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "14m 35s",
+      "passRate": 64.3,
+      "status": "failed"
+    },
     {
       "run": "470",
       "commit": "9331145",
@@ -95,14 +103,6 @@
       "duration": "3m 53s",
       "passRate": 18.2,
       "status": "failed"
-    },
-    {
-      "run": "458",
-      "commit": "6ff0239",
-      "trigger": "push (smoke)",
-      "duration": "4m 54s",
-      "passRate": 18.2,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-04T13:26:22.809Z",
+      "firstSeen": "2026-06-04T13:33:04.883Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,15 +118,15 @@
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
-      "firstSeen": "2026-06-04T13:26:22.761Z",
+      "firstSeen": "2026-06-04T13:33:04.904Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/purchase-orders/7f9e7869-617f-4333-83df-5dea8f1e78ce/advance?year=2018&period=yearly&calendar=e",
-      "firstSeen": "2026-06-04T13:26:22.774Z",
+      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/purchase-orders/e4773bd0-51db-4035-a94f-b9869cf0c48e/advance?year=2018&period=yearly&calendar=e",
+      "firstSeen": "2026-06-04T13:33:04.779Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,15 +134,15 @@
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h3, [role=\"tablist\"]') to be visible\u001b[22m\n\n\n  134 |\n  135 |         // Wait for the vendor detail h",
-      "firstSeen": "2026-06-04T13:27:26.637Z",
+      "firstSeen": "2026-06-04T13:34:08.458Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Employee roster must be non-empty with valid structure",
+      "title": "Guardrail: Employee creation must reject payload missing required fields",
       "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button.chakra-menu__menu-button').first() to be visible\u001b[22m\n\n\n   at ../lib/auth.ts:108\n\n  106 |     }\n ",
-      "firstSeen": "2026-06-04T13:27:49.842Z",
+      "firstSeen": "2026-06-04T13:34:35.604Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
