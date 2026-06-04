@@ -1958,7 +1958,7 @@
         function renderRiskRow(blocker) {
             const sev = getRiskSeverity(blocker.title);
             const icon = severityIcon[sev] || '○';
-            const url = blocker.allureUrl || '#';
+            const url = blocker.allureUrl || 'https://tekleab.github.io/beffa-automation/allure/#suites';
             const hasUrl = url && url !== '#';
             return `
                 <div class="risk-row" data-severity="${sev}" data-allure-url="${url}">
