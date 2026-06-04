@@ -61,6 +61,7 @@ export default defineConfig({
 
   use: {
     baseURL: frontendUrl,
+    channel: 'chrome',
     viewport: process.env.CI ? { width: 1920, height: 1080 } : null,
 
     launchOptions: {
