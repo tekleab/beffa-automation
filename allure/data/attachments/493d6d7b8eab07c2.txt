@@ -1,0 +1,16 @@
+[PERFORMANCE] API - Auth API Verification: 306.30ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 2]...
+[PERFORMANCE] API - Item Discovery (50 Records): 605.95ms
+[PERFORMANCE] API - Auth API Verification: 159.06ms
+[TEST] Creating SO with valid date, Invoice with back date
+[API] Advancing sales-orders "b4cfc2b8-7ccf-444e-bbea-ee5ca2a0dde7"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for sales-orders b4cfc2b8-7ccf-444e-bbea-ee5ca2a0dde7.
+[API] Advancing invoices "a3a1d726-db87-40a5-aa0e-6aef55b3bc2b"...
+[PASS] Back-dated Invoice in chain blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2017-12-31 falls in a closed or missin

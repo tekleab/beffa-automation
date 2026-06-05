@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 326.46ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 933.40ms
+[ATTACK] Attempting to invoice 10001 units of "Door DWG Spruce No Handle" (available: 2)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 2, required: 10001.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+
