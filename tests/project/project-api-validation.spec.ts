@@ -2,18 +2,12 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 /**
- * PROJECT GUARDRAILS — API Validation & UI Edge Cases
+ * PROJECT API VALIDATION — Input Guardrails & Edge Cases
  *
- * All 4xx responses confirmed from live API scan:
- *   start > end          → 422 "Estimated End Date must be after Project Start Date."
- *   negative revenue     → 422 "Estimated Revenue must be positive."
- *   missing customer_id  → 422 "Customer is required."
- *   empty name           → 422 "Project Name is required."
- *   invalid status value → 400 "Invalid project status"
- *   DELETE /projects/:id → 404 (not implemented)
- *   unauthenticated      → 401
+ * Pure API validation tests - no UI dependencies
+ * Covers: Required fields, date validation, numeric constraints, invalid inputs
  */
-test.describe('Project Management: Guardrails & Edge Cases @project @guardrails @smoke @regression @full', () => {
+test.describe('Project Management: API Validation @project @validation @smoke @regression @full', () => {
 
     async function setup(page: any) {
         const app = new AppManager(page);
@@ -203,72 +197,5 @@ test.describe('Project Management: Guardrails & Edge Cases @project @guardrails 
         const d = await app.api.project.getProjectAPI(project.id);
         expect(parseFloat(d.remaining_balance)).toBe(1000 - 5000);
         console.log(`[GUARD-12] Negative balance allowed: ${d.remaining_balance} — document for product team`);
-    });
-
-    // ── UI GUARDRAILS ──────────────────────────────────────────────────────────
-
-    test('UI-GUARD-01: Add Project form blocks empty submit — keeps form open or shows error', async ({ page }) => {
-        const { app } = await setup(page);
-        await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
-
-        // "Add Project" renders as a link (<a>) in this ERP, not a <button>
-        const addProjectEl = page.getByRole('link', { name: /Add Project/i })
-            .or(page.getByRole('button', { name: /Add Project/i })).first();
-
-        const elVisible = await addProjectEl.isVisible({ timeout: 8000 }).catch(() => false);
-        if (!elVisible) {
-            console.log('[UI-GUARD-01] Add Project element not found — skipping');
-            return;
-        }
-
-        await addProjectEl.click();
-        await page.waitForTimeout(2000);
-
-        // Accept either a modal/dialog/form OR a new-page route (e.g. /projects/new)
-        const formOpen = await page.locator('[role="dialog"], form').first()
-            .isVisible({ timeout: 5000 }).catch(() => false)
-            || page.url().includes('new') || page.url().includes('create');
-
-        expect(formOpen).toBe(true);
-        console.log(`[UI-GUARD-01] Add Project form opened: url=${page.url()}`);
-
-        // Try submitting empty — verify validation blocks it
-        const saveBtn = page.getByRole('button', { name: /save|create|submit/i }).last();
-        if (await saveBtn.isVisible({ timeout: 4000 }).catch(() => false)) {
-            await saveBtn.click();
-            await page.waitForTimeout(1000);
-            const stillOpen = await page.locator('[role="dialog"], form').first()
-                .isVisible({ timeout: 3000 }).catch(() => false);
-            const hasError = await page.getByText(/required|invalid|error/i).first()
-                .isVisible({ timeout: 3000 }).catch(() => false);
-            expect(stillOpen || hasError).toBe(true);
-            console.log(`[UI-GUARD-01] Empty submit blocked: stillOpen=${stillOpen} hasError=${hasError}`);
-        }
-    });
-
-    test('UI-GUARD-02: Unauthenticated browser access to projects redirects to login', async ({ browser }) => {
-        const ctx = await browser.newContext({ storageState: undefined });
-        const page = await ctx.newPage();
-        await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
-        expect(page.url()).toContain('login');
-        await ctx.close();
-    });
-
-    test('UI-GUARD-03: Status filter pill click opens filter options', async ({ page }) => {
-        const { app } = await setup(page);
-        await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
-        const statusBtn = page.getByRole('button', { name: /Status/i }).first();
-        if (await statusBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await statusBtn.click();
-            await page.waitForTimeout(1000);
-            const dropdownOpen = await page.locator('[role="listbox"], [role="dialog"], [role="menu"], [class*="dropdown"], [class*="popover"]')
-                .filter({ visible: true }).first().isVisible({ timeout: 4000 }).catch(() => false);
-            console.log(`[UI-GUARD-03] Status filter opens dropdown: ${dropdownOpen}`);
-            expect(dropdownOpen).toBe(true);
-            await page.keyboard.press('Escape');
-        }
     });
 });

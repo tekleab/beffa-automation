@@ -83,8 +83,10 @@ export class AuthManager extends BasePage {
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
-      // No need to navigate to "/" and wait for dashboard metrics.
-      // We are already authenticated and the cookies/localStorage are set.
+      // 5. Navigate home to activate the authenticated session in the browser context.
+      // Tests that follow (API calls via page.request, page.goto) need the cookies
+      // and localStorage to be live — this one navigation settles the session.
+      await this.page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
@@ -97,12 +99,10 @@ export class AuthManager extends BasePage {
       await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
     }
 
-    if (!this.page.url().includes('/users/login')) {
-      await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 }).catch(() => {});
-      // Switch company if specific name provided
-      if (companyName) {
-        await this.switchCompany(companyName);
-      }
+    // Wait for company switcher — confirms the app is fully mounted & authenticated
+    await this.companyBtn.waitFor({ state: 'visible', timeout: 45000 }).catch(() => {});
+    if (companyName) {
+      await this.switchCompany(companyName);
     }
   }
 
