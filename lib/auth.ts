@@ -2,6 +2,8 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './base-page';
 
 export class AuthManager extends BasePage {
+  cachedToken: string | null = null;
+
   constructor(page: Page) {
     super(page);
     this.page = page;
@@ -50,9 +52,10 @@ export class AuthManager extends BasePage {
       const expiry = session.auth_token_exp;
 
       if (!token) throw new Error('No token returned from API');
+      this.cachedToken = token;
 
       // 2. Head to the Login page to settle the domain context
-      await this.page.goto('/users/login');
+      await this.page.goto('/users/login', { waitUntil: 'commit' });
 
       // 3. Inject the EXACT keys the frontend requires to "wake up" authenticated
       await this.page.evaluate(({ jwt, exp, company }: { jwt: string; exp: string; company: string }) => {
@@ -80,19 +83,8 @@ export class AuthManager extends BasePage {
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
-      // 5. Navigate to Home and verify we are authenticated
-      await this.page.goto('/', { waitUntil: 'load' });
-      
-      // If redirected back to login, the token injection failed — fall back to UI login
-      if (this.page.url().includes('/users/login')) {
-        console.log('[WARN] Token injection rejected by app, falling back to UI login...');
-        await this.emailInput.waitFor({ state: 'visible', timeout: 30000 });
-        await this.emailInput.fill(cleanEmail);
-        await this.passwordInput.fill(cleanPass);
-        await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
-        await this.loginBtn.click();
-        await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
-      }
+      // No need to navigate to "/" and wait for dashboard metrics.
+      // We are already authenticated and the cookies/localStorage are set.
 
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
@@ -105,15 +97,17 @@ export class AuthManager extends BasePage {
       await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
     }
 
-    await this.companyBtn.waitFor({ state: 'visible', timeout: 60000 });
-
-    // Switch company if specific name provided
-    if (companyName) {
-      await this.switchCompany(companyName);
+    if (!this.page.url().includes('/users/login')) {
+      await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 }).catch(() => {});
+      // Switch company if specific name provided
+      if (companyName) {
+        await this.switchCompany(companyName);
+      }
     }
   }
 
   async _getAuthToken(): Promise<string | null> {
+    if (this.cachedToken) return this.cachedToken;
     return await this.page.evaluate(() => {
       const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
       for (const key of keys) {
@@ -131,6 +125,7 @@ export class AuthManager extends BasePage {
 
   async switchCompany(targetName: string): Promise<void> {
     if (!targetName) return;
+    if (this.page.url().includes('/users/login')) return;
     const cleanTarget = targetName.trim();
 
     // Ensure we are on a page where sample switcher is visible

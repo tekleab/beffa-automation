@@ -5,7 +5,7 @@ import { AppManager } from '../../pages/AppManager';
  * SALES DOCUMENT INTEGRITY GUARDRAILS
  */
 test.describe('Sales Document Integrity Guardrails @sales @logic @security @regression @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;

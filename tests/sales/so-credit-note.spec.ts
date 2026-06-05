@@ -13,7 +13,7 @@ import { AppManager } from'../../../pages/AppManager';
 test.describe('Sales Return & Stock Recovery @sales @regression @full', () => {
 
     test('Forensic Audit: Invoice Void & Stock Restoration', async ({ page }) => {
-        test.setTimeout(240000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
 
         // --- STAGE 0: SETUP & BASELINE ---

@@ -4,7 +4,7 @@ import { AppManager } from'../../pages/AppManager';
 test.describe('Purchase to Bill Flow @purchase @smoke @full', () => {
 
     test('Create PO via UI, approve, create linked bill, verify in vendor profile', async ({ page }) => {
-        test.setTimeout(450000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
 
         console.log('[STEP] Phase 1: Login & PO Creation');

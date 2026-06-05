@@ -31,7 +31,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
     }
 
     test('Guardrail: System must reject zero, negative, and fractional receipt amounts', async ({ page }) => {
-        test.setTimeout(300000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
         const meta = sharedMeta;
         const item = sharedItem;
@@ -119,7 +119,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
     });
 
     test('Guardrail: System must prevent receipts against a voided invoice', async ({ page }) => {
-        test.setTimeout(400000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const meta = sharedMeta;

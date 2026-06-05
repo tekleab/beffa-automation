@@ -8,7 +8,7 @@ import { AppManager } from '../../../pages/AppManager';
  * and that vendor balances reflect outstanding amounts.
  */
 test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     test('API: Approved bill must post a debit to Accounts Payable', async ({ page }) => {
         const app = new AppManager(page);

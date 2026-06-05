@@ -11,7 +11,7 @@ import { Logger } from '../../lib/utils/Logger';
  */
 
 test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     test('UI Audit: Approved invoice reflects outstanding balance in customer profile', async ({ page }) => {
         const app = new AppManager(page);

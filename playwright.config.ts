@@ -81,37 +81,29 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'Forensic-Sales',
-      testMatch: '**/sales/{guardrails,audit,period-control}/*.spec.ts',
-    },
-    {
-      name: 'Forensic-Purchase',
-      testMatch: '**/purchase/{guardrails,audit,period-control}/*.spec.ts',
-    },
-    {
-      name: 'Forensic-Inventory',
-      testMatch: '**/inventory/**/*.spec.ts',
-    },
-    {
-      name: 'Sales-Workflows',
+      name: 'Sales',
       testMatch: '**/sales/*.spec.ts',
       use: { channel: 'chrome' },
     },
     {
-      name: 'Purchase-Workflows',
+      name: 'Purchase',
       testMatch: '**/purchase/*.spec.ts',
     },
     {
-      name: 'Project-Management',
-      testMatch: '**/project/**/*.spec.ts',
-    },
-    {
-      name: 'Cross-Module',
-      testMatch: '**/cross-module/*.spec.ts',
+      name: 'Inventory',
+      testMatch: '**/inventory/*.spec.ts',
     },
     {
       name: 'HR',
       testMatch: '**/hr/*.spec.ts',
+    },
+    {
+      name: 'Project-Management',
+      testMatch: '**/project/*.spec.ts',
+    },
+    {
+      name: 'Cross-Module',
+      testMatch: '**/cross-module/*.spec.ts',
     },
   ],
 

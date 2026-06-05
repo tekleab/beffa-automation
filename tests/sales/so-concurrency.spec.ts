@@ -5,7 +5,7 @@ import { AppManager } from '../../../pages/AppManager';
  * CATEGORY 2: Concurrency & Race Conditions
  */
 test.describe('Concurrency & Race Condition Audits @sales @concurrency @security @regression @full', () => {
-    test.setTimeout(500000);
+    test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
@@ -32,7 +32,7 @@ test.describe('Concurrency & Race Condition Audits @sales @concurrency @security
     }
 
     test('Guardrail: System must handle concurrent duplicate receipts atomically', async ({ page }) => {
-        test.setTimeout(400000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const meta = sharedMeta;

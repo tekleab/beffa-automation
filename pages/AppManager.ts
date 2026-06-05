@@ -88,6 +88,7 @@ export class AppManager {
     };
 
     // Core Dependencies bindings
+    this.base._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.sales._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.purchase._getAuthToken = this.auth._getAuthToken.bind(this.auth);
     this.api.inventory._getAuthToken = this.auth._getAuthToken.bind(this.auth);

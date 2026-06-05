@@ -8,7 +8,7 @@ const addressData: Array<{ region: string; zones: Array<{ name: string; woredas:
 );
 
 test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @full', () => {
-    test.setTimeout(480000);
+    test.setTimeout(120000);
 
     test('Validate TIN, create customer, edit, remove', async ({ page }) => {
         const app = new AppManager(page);

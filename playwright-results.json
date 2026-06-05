@@ -10,14 +10,18 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Forensic-Sales",
         "name": "Forensic-Sales",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -31,7 +35,9 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Forensic-Purchase",
         "name": "Forensic-Purchase",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -45,7 +51,9 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Forensic-Inventory",
         "name": "Forensic-Inventory",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -59,7 +67,9 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Sales-Workflows",
         "name": "Sales-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -73,7 +83,9 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Purchase-Workflows",
         "name": "Purchase-Workflows",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -87,7 +99,25 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Project-Management",
+        "name": "Project-Management",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/project/**/*.spec.ts"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Cross-Module",
         "name": "Cross-Module",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -101,7 +131,9 @@
         "outputDir": "/home/teklish/beffa-automation/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "HR",
         "name": "HR",
         "testDir": "/home/teklish/beffa-automation/tests",
@@ -183,85 +215,132 @@
     "workers": 2,
     "webServer": null
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-accounting.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/audit/so-accounting.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * CATEGORY 3: Accounting Flow & Ledger Logic"
-    },
-    {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-cogs.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/audit/so-cogs.spec.ts:2\n\n  1 | import { test } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES MULTI-ITEM INVOICE COGS AUDIT"
-    },
-    {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-gl-audit.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/audit/so-gl-audit.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES GL & LEDGER AUDITS"
-    },
-    {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/audit/so-tax-audit.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/audit/so-tax-audit.spec.ts:2\n\n  1 | import { test } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES TAX GL AUDIT"
-    },
-    {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/guardrails/so-concurrency.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/guardrails/so-concurrency.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * CATEGORY 2: Concurrency & Race Conditions"
-    },
-    {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/guardrails/so-guardrails.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/guardrails/so-guardrails.spec.ts:2\n\n  1 | import { test } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES SO GUARDRAIL AUDITS"
-    },
-    {
-      "message": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js",
-      "stack": "Error: Cannot find module '../../pages/AppManager'\nRequire stack:\n- /home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts\n- /home/teklish/beffa-automation/node_modules/playwright/lib/transform/transform.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/common/configLoader.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/testActions.js\n- /home/teklish/beffa-automation/node_modules/playwright/lib/program.js\n- /home/teklish/beffa-automation/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts:2:1)",
-      "location": {
-        "file": "/home/teklish/beffa-automation/tests/sales/period-control/so-period-control.spec.ts",
-        "column": 1,
-        "line": 2
-      },
-      "snippet": "   at sales/period-control/so-period-control.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { AppManager } from '../../pages/AppManager';\n    | ^\n  3 |\n  4 | /**\n  5 |  * SALES PERIOD CONTROL EDGE CASES"
+      "title": "project/guardrails/project-guardrails.spec.ts",
+      "file": "project/guardrails/project-guardrails.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Project Management: Guardrails & Edge Cases @project @guardrails @regression",
+          "file": "project/guardrails/project-guardrails.spec.ts",
+          "line": 16,
+          "column": 6,
+          "specs": [
+            {
+              "title": "UI-GUARD-03: Status filter pill click opens filter options",
+              "ok": false,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|494.61"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 54979,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts:250:34",
+                        "location": {
+                          "file": "/home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts",
+                          "column": 34,
+                          "line": 250
+                        },
+                        "snippet": "  248 |                 .first().isVisible({ timeout: 4000 }).catch(() => false);\n  249 |             console.log(`[UI-GUARD-03] Status filter opens dropdown: ${dropdownOpen}`);\n> 250 |             expect(dropdownOpen).toBe(true);\n      |                                  ^\n  251 |             await page.keyboard.press('Escape');\n  252 |         }\n  253 |     });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts",
+                            "column": 34,
+                            "line": 250
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  248 |                 .first().isVisible({ timeout: 4000 }).catch(() => false);\n  249 |             console.log(`[UI-GUARD-03] Status filter opens dropdown: ${dropdownOpen}`);\n> 250 |             expect(dropdownOpen).toBe(true);\n      |                                  ^\n  251 |             await page.keyboard.press('Escape');\n  252 |         }\n  253 |     });\n    at /home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts:250:34"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 494.61ms\n"
+                        },
+                        {
+                          "text": "[UI-GUARD-03] Status filter opens dropdown: false\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T06:07:52.454Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|494.61"
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts",
+                        "column": 34,
+                        "line": 250
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "cc39cd8930293b3a122f-9a88a7f8c6c8791d300d",
+              "file": "project/guardrails/project-guardrails.spec.ts",
+              "line": 239,
+              "column": 9
+            }
+          ]
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2026-06-04T13:23:59.673Z",
-    "duration": 304.85400000000027,
+    "startTime": "2026-06-05T06:07:49.668Z",
+    "duration": 73393.93000000001,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

@@ -10,7 +10,7 @@ import { AppManager } from '../../../pages/AppManager';
  */
 
 test.describe('Procurement PO Split Bill Audit @purchase @logic @regression @full', () => {
-    test.setTimeout(400000);
+    test.setTimeout(120000);
 
     test('Audit: PO split into multiple bills — total must never exceed PO quantity', async ({ page }) => {
         const app = new AppManager(page);

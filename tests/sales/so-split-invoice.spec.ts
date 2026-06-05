@@ -10,7 +10,7 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 test.describe('Sales SO Split Invoice Audit @sales @logic @regression @full', () => {
-    test.setTimeout(400000);
+    test.setTimeout(120000);
 
     test('Audit: SO split into multiple invoices — total must never exceed SO quantity', async ({ page }) => {
         const app = new AppManager(page);

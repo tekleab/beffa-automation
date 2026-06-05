@@ -12,7 +12,7 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () => {
 
     test('Sales UI: Partial payment updates invoice Amount Due correctly', async ({ page }) => {
-        test.setTimeout(300000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -81,7 +81,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
     });
 
     test('Purchase UI: Approved bill reflects outstanding balance in vendor profile', async ({ page }) => {
-        test.setTimeout(300000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 

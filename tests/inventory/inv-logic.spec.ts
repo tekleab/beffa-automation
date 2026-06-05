@@ -16,7 +16,6 @@ import { AppManager } from '../../../pages/AppManager';
  */
 
 test.describe('Location Transfer (Move Order) Audits @inventory @logic @regression @full', () => {
-    test.describe.configure({ mode: 'serial' });
 
     let app: AppManager;
     let item: Awaited<ReturnType<AppManager['captureRandomItemDataAPI']>>;

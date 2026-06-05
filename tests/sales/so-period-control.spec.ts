@@ -17,7 +17,7 @@ import { AppManager } from '../../../pages/AppManager';
  */
 
 test.describe('Sales Period Control Edge Cases @sales @security @temporal @regression @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;

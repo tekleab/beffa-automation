@@ -8,7 +8,7 @@ import { AppManager } from '../../pages/AppManager';
  *       → Payroll Run (API) → Assign all 3 (API) → Approve Run (UI) → Assert payrolls ≥ 3
  */
 test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', () => {
-    test.setTimeout(480000);
+    test.setTimeout(120000);
 
     const EMPLOYEE_COUNT = 3;
 

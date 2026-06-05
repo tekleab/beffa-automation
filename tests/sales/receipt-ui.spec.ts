@@ -9,7 +9,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
     });
 
     test('Create fresh invoice via API, then create receipt and link it', async ({ page }) => {
-        test.setTimeout(450000);
+        test.setTimeout(120000);
         const app = new AppManager(page);
         const { soDate: receiptDate } = app.getTransactionDates();
 

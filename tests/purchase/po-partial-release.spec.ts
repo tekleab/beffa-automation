@@ -5,7 +5,7 @@ import { AppManager } from '../../../pages/AppManager';
  * PROCUREMENT PARTIAL PO RELEASE AUDIT
  */
 test.describe('Procurement Partial PO Release Audit @purchase @logic @regression @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;

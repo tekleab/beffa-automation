@@ -10,7 +10,6 @@ import { AppManager } from'../../../pages/AppManager';
  */
 
 test.describe('Inventory Temporal & Data Isolation Audits @inventory @security @regression @full', () => {
-    test.describe.configure({ mode:'serial' });
 
     test('Guardrail: System must explicitly reject historical back-dated adjustments', async ({ page }) => {
         const app = new AppManager(page);

@@ -7,7 +7,7 @@ import { AppManager } from '../../pages/AppManager';
  * Edge cases: missing required fields on creation
  */
 test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     // -------------------------------------------------------------------------
     // HAPPY PATH: Leave applications endpoint responds with valid structure

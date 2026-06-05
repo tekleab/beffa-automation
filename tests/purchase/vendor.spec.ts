@@ -8,7 +8,7 @@ const addressData: Array<{ region: string; zones: Array<{ name: string; woredas:
 );
 
 test.describe('Vendor Lifecycle — Validation & CRUD @purchase @smoke @full', () => {
-    test.setTimeout(480000);
+    test.setTimeout(120000);
 
     test('Validate TIN, create vendor, edit, remove', async ({ page }) => {
         const app = new AppManager(page);

@@ -10,7 +10,7 @@ import { AppManager } from '../../../pages/AppManager';
  */
 
 test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(120000);
 
     test('Audit: Full cycle GL — AR debited on invoice, cleared on receipt', async ({ page }) => {
         const app = new AppManager(page);
