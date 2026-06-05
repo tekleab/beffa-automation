@@ -1,0 +1,20 @@
+[PERFORMANCE] API - Auth API Verification: 500.97ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1295.14ms
+[OK] Discovered: "Steam commercial 12 Complete with control panel" via API | Stock: 3
+[API] Advancing sales-orders "b20f82be-4b21-4fb8-8e9e-55ee788b2f59"...
+[OK] Sales Order SO/2026/06/05/000022 approved via API
+[API] Advancing invoices "9761c585-c459-4d09-afc6-10b07a46b6bf"...
+[OK] Invoice INV/2026/06/05/000072 approved via API
+[INFO] Document Setup Complete: INV/2026/06/05/000072 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[RECEIPT] amount=1000 | invoice=9761c585...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/05/000012
+[OK] Receipt created via API: RCPT/2026/06/05/000012
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "6305cf1a-21cd-41db-8074-c739a4f9d056"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/05/000012 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/05/000012 verified in profile
