@@ -1,0 +1,36 @@
+[PERFORMANCE] API - Auth API Verification: 268.55ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1366.08ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : da470815-0001-48e1-8b91-fec0170aca82 (Transfer Test Item)
+[ITEM]  Stock       : 50
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "fdfb6ffe-d5b4-473e-a874-410a413cc8c0"...
+[OK] SO SO/2026/06/05/000117 approved (ID: fdfb6ffe-d5b4-473e-a874-410a413cc8c0)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "d964c03e-778d-43ea-a095-3443fcbf7255"...
+[OK] Batch 1 invoice INV/2026/06/05/000466 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "2ae47714-d40c-4afe-9b1f-8e58c4e29c79"...
+[OK] Batch 2 invoice INV/2026/06/05/000468 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/06/05/000117 (ID: fdfb6ffe-d5b4-473e-a874-410a413cc8c0)
+[DOCUMENT] Invoice 1    : INV/2026/06/05/000466 (ID: d964c03e-778d-43ea-a095-3443fcbf7255) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/06/05/000468 (ID: 2ae47714-d40c-4afe-9b1f-8e58c4e29c79) — 6 units
+[ITEM]     Item         : Transfer Test Item (da470815-0001-48e1-8b91-fec0170aca82)
+[STOCK]    Before       : 50
+[STOCK]    After        : 40
+[STOCK]    Expected     : 40
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[API] Advancing invoices "7f29f0ab-3130-45fb-b3fa-d0a19a88d8a6"...

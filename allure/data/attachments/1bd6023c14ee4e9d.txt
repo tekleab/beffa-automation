@@ -1,0 +1,53 @@
+[PERFORMANCE] API - Auth API Verification: 188.74ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 610.55ms
+
+========== PRE-TRANSACTION SNAPSHOT ==========
+[ACCOUNT] AR Account    : a9331f21-418e-45e2-850b-8240bc8b80ff
+[ACCOUNT] Cash Account  : 0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b
+[ACCOUNT] Sales Account : 8ceb9744-4483-4c44-8e55-5210c29511ee
+[ITEM]    Item ID        : a32c63aa-694d-4ff7-943f-5dc79278ffcb (steam door 60g 60x202)
+[ITEM]    Location ID    : 5cb3fd0a-fa48-450e-85b7-492a3608e68c
+[ITEM]    Warehouse ID   : e84bd63f-9be7-43ea-aa63-10b717e02f79
+[ITEM]    Stock          : 32
+[CUSTOMER] Customer ID  : 223a2864-674f-42e7-b799-22730e12c57a
+==============================================
+
+[GL_AUDIT] Account: Accounts Receivable | Balance: 3397485.94
+[GL_AUDIT] Account: Cash - Main Office | Balance: -3982999.39
+[BALANCE] AR Before     : 3397485.94
+[BALANCE] Cash Before   : -3982999.39
+
+[STEP 2] Creating & approving standalone invoice...
+[API] Advancing invoices "e1e77342-a77e-4a38-a4d3-1d78d9945445"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 3408278.99
+
+========== POST-INVOICE SNAPSHOT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/05/000456
+[DOCUMENT] Invoice ID   : e1e77342-a77e-4a38-a4d3-1d78d9945445
+[DOCUMENT] Amount       : 500
+[BALANCE] AR After Inv  : 3408278.99
+[BALANCE] AR Delta      : 10793.05 (Expected: +500)
+============================================
+
+[STEP 3] Creating & approving full receipt...
+[RECEIPT] amount=500 | invoice=e1e77342...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/05/000125
+[API] Advancing receipts "e8758eaf-cfcf-483c-b2c1-b05b3c040dd4"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 3407678.99
+[GL_AUDIT] Account: Cash - Main Office | Balance: -3982199.39
+
+========== POST-RECEIPT SNAPSHOT ==========
+[DOCUMENT] Receipt Ref  : RCPT/2026/06/05/000125
+[DOCUMENT] Receipt ID   : e8758eaf-cfcf-483c-b2c1-b05b3c040dd4
+[DOCUMENT] Linked Inv   : INV/2026/06/05/000456 (e1e77342-a77e-4a38-a4d3-1d78d9945445)
+[ACCOUNT] AR Account    : a9331f21-418e-45e2-850b-8240bc8b80ff
+[ACCOUNT] Cash Account  : 0b62f6a9-97e4-47a2-95ea-74b3bb8f8d5b
+[BALANCE] AR Before     : 3397485.94
+[BALANCE] AR After Inv  : 3408278.99
+[BALANCE] AR After Rct  : 3407678.99 (Expected: ~3397485.94)
+[BALANCE] Cash Before   : -3982999.39
+[BALANCE] Cash After    : -3982199.39 (Expected change: +500)
+[BALANCE] AR Drift      : 10193.05 (Must be 0.00)
+============================================
+
