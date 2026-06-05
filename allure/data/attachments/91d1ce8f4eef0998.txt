@@ -1,0 +1,19 @@
+[PERFORMANCE] API - Auth API Verification: 495.91ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1983.51ms
+[OK] Discovered: "steam door 60g 60x202" via API | Stock: 13
+[API] Advancing sales-orders "a05ca78a-3261-4d97-b451-4a7f5dbe90c3"...
+[OK] Sales Order SO/2026/06/05/000102 approved via API
+[API] Advancing invoices "b676c212-eda7-44b3-97a4-bdb97b18e72e"...
+[OK] Invoice INV/2026/06/05/000416 approved via API
+[INFO] Document Setup Complete: INV/2026/06/05/000416 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[RECEIPT] amount=1000 | invoice=b676c212...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/05/000110
+[OK] Receipt created via API: RCPT/2026/06/05/000110
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "5369d1fb-d2bd-46a6-996e-074b24c4b995"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/05/000110 in customer profile

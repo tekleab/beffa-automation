@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 214.75ms
+[STEP 1] Discovering item with known stock...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 911.36ms
+[ATTACK] Attempting to invoice 10020 units of "DUP-GUARD-1780404293934" (available: 21)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 21, required: 10020.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+
