@@ -1,0 +1,17 @@
+[PERFORMANCE] API - Auth API Verification: 421.40ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 51]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1461.74ms
+[STEP 1] Creating negative adjustment (-50) for: Jacuzzi Lanzarote | Stock before: 51
+[SUCCESS] Adjustment created via API: ADJ/2026/06/05/000056 (ID: 30eab308-1350-4579-b190-ca827cca95fb)
+[STEP 2] Adjustment created: ADJ/2026/06/05/000056 | Approving...
+[API] Advancing inventory-adjustments "30eab308-1350-4579-b190-ca827cca95fb"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E2796)"
+}
+
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 5cb3fd0a-fa48-450e-85b7-492a3608e68c to hit 1...
+[SUCCESS] API Confirmed: Stock correctly reached 1.
+[AUDIT] Stock before: 51 | Adjustment: -50 | Expected: 1 | Final: 1
+[PASS] Negative adjustment applied correctly — stock reduced from 51 to 1.

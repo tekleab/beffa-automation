@@ -1,0 +1,36 @@
+[PERFORMANCE] API - Auth API Verification: 216.64ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1224.64ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : fe13c117-a6f8-42ba-87fe-6ebb7689d02f (Steam genrator 18 VA)
+[ITEM]  Stock       : 14
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "9413f62f-0006-4bad-a99a-897db82ba3fd"...
+[OK] SO SO/2026/06/05/000099 approved (ID: 9413f62f-0006-4bad-a99a-897db82ba3fd)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "5f41f2e7-92dc-41ab-bd9c-e4015b8e5639"...
+[OK] Batch 1 invoice INV/2026/06/05/000405 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "f3d4701b-5f5c-4745-9b1f-e56a575918c2"...
+[OK] Batch 2 invoice INV/2026/06/05/000406 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/06/05/000099 (ID: 9413f62f-0006-4bad-a99a-897db82ba3fd)
+[DOCUMENT] Invoice 1    : INV/2026/06/05/000405 (ID: 5f41f2e7-92dc-41ab-bd9c-e4015b8e5639) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/06/05/000406 (ID: f3d4701b-5f5c-4745-9b1f-e56a575918c2) — 6 units
+[ITEM]     Item         : Steam genrator 18 VA (fe13c117-a6f8-42ba-87fe-6ebb7689d02f)
+[STOCK]    Before       : 14
+[STOCK]    After        : 4
+[STOCK]    Expected     : 4
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[API] Advancing invoices "efb3d095-2e83-4268-a6b3-fa0ade74bba2"...

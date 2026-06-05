@@ -1,0 +1,17 @@
+[PERFORMANCE] API - Auth API Verification: 426.82ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 795.22ms
+[PERFORMANCE] API - Auth API Verification: 202.98ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "f2c0945c-f102-4874-865d-d5c53f01e347"...
+[BILL] BILL/2026/06/05/000421 (f2c0945c-f102-4874-865d-d5c53f01e347)
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+[INFO] Mismatch payment created: PAY/2026/06/05/000132 (1a800584-d498-4f9e-a129-d8829124a849)
+[API] Advancing payments "1a800584-d498-4f9e-a129-d8829124a849"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for payments 1a800584-d498-4f9e-a129-d8829124a849.
+[RESULT] Bill balance after mismatch payment: 5000

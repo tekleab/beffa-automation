@@ -1,0 +1,34 @@
+[PERFORMANCE] API - Auth API Verification: 201.47ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1233.04ms
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  Item ID     : 236b7bbb-2e01-4963-847e-bc15e72c4762 (Spare part steam)
+[ITEM]  Stock       : 17
+[PLAN]  PO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-receive: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving PO for 10 units...
+[API] Advancing purchase-orders "faaa6011-8d92-4c8e-b30c-51341a70193f"...
+[OK] PO PO/2026/06/05/000129 approved (ID: faaa6011-8d92-4c8e-b30c-51341a70193f)
+[STEP 2] Receiving Batch 1: 4 units...
+[API] Advancing bills "5949c800-fdb7-425b-bdf9-5bfe23522735"...
+[OK] Batch 1 bill BILL/2026/06/05/000412 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+[API] Advancing bills "d81d43bb-c5fd-45ee-8d24-84657e58b5df"...
+[OK] Batch 2 bill BILL/2026/06/05/000414 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO Ref       : PO/2026/06/05/000129 (ID: faaa6011-8d92-4c8e-b30c-51341a70193f)
+[DOCUMENT] Bill 1       : BILL/2026/06/05/000412 (ID: 5949c800-fdb7-425b-bdf9-5bfe23522735) — 4 units
+[DOCUMENT] Bill 2       : BILL/2026/06/05/000414 (ID: d81d43bb-c5fd-45ee-8d24-84657e58b5df) — 6 units
+[ITEM]     Item         : Spare part steam (236b7bbb-2e01-4963-847e-bc15e72c4762)
+[STOCK]    Before       : 17
+[STOCK]    After        : 17
+[STOCK]    Expected     : 27
+================================================
+
