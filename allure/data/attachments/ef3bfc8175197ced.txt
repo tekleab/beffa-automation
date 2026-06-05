@@ -1,0 +1,41 @@
+[PERFORMANCE] API - Auth API Verification: 195.51ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 727.63ms
+
+========== PRE-TRANSACTION SNAPSHOT ==========
+[ACCOUNT] AR Account    : 89da421e-103b-4d81-95cf-a5f2bd78cdb5
+[ACCOUNT] Sales Account : 566ec46a-0418-4009-9366-537669cc4ad5
+[ITEM]    Item ID        : 90db0019-a850-4bc7-ad53-18cb9489e355 (Steam room special 6F Elysee complete set)
+[ITEM]    Location ID    : 177ca387-8b0e-46c9-9716-afcdd945d3ef
+[ITEM]    Warehouse ID   : 159fe8cb-f2f2-4ff1-8b02-cae159e6ab2c
+[CUSTOMER] Customer ID  : ddba3abe-40b3-4c51-8d43-7341690d1949
+==============================================
+
+[GL_AUDIT] Account: Accounts Receivable | Balance: 990900.82
+[BALANCE] AR Before     : 990900.82
+
+[STEP 2] Creating & approving invoice...
+[API] Advancing invoices "a2749e08-b45c-4065-95ce-43ac4d6b8320"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1180328.84
+
+========== POST-INVOICE SNAPSHOT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/05/000046
+[DOCUMENT] Invoice ID   : a2749e08-b45c-4065-95ce-43ac4d6b8320
+[DOCUMENT] Amount       : 800
+[BALANCE] AR After Inv  : 1180328.84
+[BALANCE] AR Delta      : 189428.02 (Expected: +800)
+============================================
+
+[STEP 3] Voiding invoice (credit note)...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 821377.42
+
+========== CREDIT NOTE AUDIT REPORT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/05/000046
+[DOCUMENT] Invoice ID   : a2749e08-b45c-4065-95ce-43ac4d6b8320
+[ACCOUNT] AR Account    : 89da421e-103b-4d81-95cf-a5f2bd78cdb5
+[BALANCE] AR Before Sale: 990900.82
+[BALANCE] AR After Inv  : 1180328.84 (Delta: +189428.02)
+[BALANCE] AR After Void : 821377.42 (Expected: ~990900.82)
+[BALANCE] AR Drift      : 169523.40 (Must be 0.00)
+===============================================
+
