@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 12,
-  "failed": 5,
+  "passed": 11,
+  "failed": 6,
   "skipped": 0,
-  "passRate": 70.6,
-  "avgDurationMs": 31791,
-  "lastUpdated": "2026-06-05T12:58:04.060Z",
+  "passRate": 64.7,
+  "avgDurationMs": 34017,
+  "lastUpdated": "2026-06-05T13:04:29.020Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 12,
-      "failed": 5,
+      "passed": 11,
+      "failed": 6,
       "skipped": 0,
       "trend": [
-        70.6,
         71.4,
         58.8,
         65.8,
         69.6,
         58.8,
-        70.6
+        70.6,
+        64.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "489",
+      "commit": "6646cb0",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "9m 38s",
+      "passRate": 64.7,
+      "status": "failed"
+    },
     {
       "run": "488",
       "commit": "a6e18ed",
@@ -95,14 +103,6 @@
       "duration": "7m 13s",
       "passRate": 70.6,
       "status": "failed"
-    },
-    {
-      "run": "479",
-      "commit": "99e946c",
-      "trigger": "push (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-05T12:54:11.602Z",
+      "firstSeen": "2026-06-05T13:00:47.880Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,7 +118,15 @@
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
-      "firstSeen": "2026-06-05T12:54:11.575Z",
+      "firstSeen": "2026-06-05T13:00:47.878Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for \"BM Tech\" is invalid or expired.\n\n   at ../lib/base-page.ts:164\n\n  162 |         break;\n  163 |       } else if (status === 401) {\n> 1",
+      "firstSeen": "2026-06-05T13:01:27.528Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -126,15 +134,15 @@
       "severity": "medium",
       "title": "API: Vendor outstanding balance increases after bill approval",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  104 |             { headers ",
-      "firstSeen": "2026-06-05T12:55:08.582Z",
+      "firstSeen": "2026-06-05T13:01:38.722Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
+      "severity": "high",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test timeout of 120000ms exceeded.\n\n  63 |                 if (attempt === 3) throw e;\n  64 |                 console.log(`[RET",
-      "firstSeen": "2026-06-05T12:55:46.167Z",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+      "firstSeen": "2026-06-05T13:02:12.883Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +150,7 @@
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h3, [role=\"tablist\"]') to be visible\u001b[22m\n\n\n  134 |\n  135 |         // Wait for the vendor detail h",
-      "firstSeen": "2026-06-05T12:55:55.664Z",
+      "firstSeen": "2026-06-05T13:02:17.312Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
