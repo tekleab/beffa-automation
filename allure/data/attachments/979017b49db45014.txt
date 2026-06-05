@@ -1,0 +1,27 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 310.52ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 5
+[SUCCESS] "Purchase Order Date" set to Day 5 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2797.69ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2739.24ms
+[INFO] Vendor: Beniam
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2251.29ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2410.40ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2300.79ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2242.39ms
+[PERFORMANCE] UI - Random Selection: Location: 2133.21ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2304.92ms
+[OK] Line item added (Price: 3511)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/05/000149 | Vendor: Beniam
+[API] Advancing purchase-orders "2ba7a782-4a72-4afc-8362-5081492425f1"...
+[OK] PO PO/2026/06/05/000149 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/05/000149 via API
+[API] Advancing bills "e0abd8bf-8983-4718-b108-d744b15ed91c"...
+[OK] Linked Bill BILL/2026/06/05/000484 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/05/000484 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/05/000484 is physically present in Beniam's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/05/000149 -> Bill BILL/2026/06/05/000484
