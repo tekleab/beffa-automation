@@ -179,6 +179,7 @@ jobs:
             --project=Purchase \
             --project=Cross-Module \
             --project=HR \
+            --project=Project-Management \
             --workers=4 \
             $GREP_ARGS \
             --pass-with-no-tests || FINAL_EXIT_CODE=$?
@@ -190,14 +191,17 @@ jobs:
           echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
           echo "=========================================================="
 
-          echo "-> Forensic Sales..."
+          echo "--> Forensic Sales..."
           npx playwright test --project=Sales --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
-          echo "-> Forensic Purchase..."
+          echo "--> Forensic Purchase..."
           npx playwright test --project=Purchase --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
-          echo "-> Forensic Inventory..."
+          echo "--> Forensic Inventory..."
           npx playwright test --project=Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+
+          echo "--> Forensic Project Management..."
+          npx playwright test --project=Project-Management --workers=4 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
         elif [ "$TEST_TYPE" != "full" ]; then
           echo "=========================================================="
           echo "⏭️  Skipping Forensic Audits for $TEST_TYPE run."

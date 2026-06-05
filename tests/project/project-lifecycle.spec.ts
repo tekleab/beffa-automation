@@ -17,7 +17,7 @@ import { AppManager } from '../../pages/AppManager';
  *
  * PARALLEL MODE: Each test creates its own isolated project — no shared state.
  */
-test.describe('Project Management: Lifecycle & CRUD Audits @project @audit @regression', () => {
+test.describe('Project Management: Lifecycle & CRUD Audits @project @audit @smoke @regression @full', () => {
 
     // Helper: creates a fresh project + returns app, meta, project
     async function setup(page: any) {
@@ -224,7 +224,8 @@ test.describe('Project Management: Lifecycle & CRUD Audits @project @audit @regr
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
         await page.waitForLoadState('networkidle');
-        await expect(page.getByRole('button', { name: /Add Project/i })).toBeVisible({ timeout: 8000 });
+        const addProjectEl = page.getByRole('link', { name: /Add Project/i }).or(page.getByRole('button', { name: /Add Project/i })).first();
+        await expect(addProjectEl).toBeVisible({ timeout: 8000 });
         await expect(page.getByRole('button', { name: /Export/i })).toBeVisible({ timeout: 8000 });
     });
 
@@ -272,7 +273,8 @@ test.describe('Project Management: Lifecycle & CRUD Audits @project @audit @regr
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
         await page.waitForLoadState('networkidle');
-        await page.getByRole('button', { name: /Add Project/i }).click();
+        const addProjectEl = page.getByRole('link', { name: /Add Project/i }).or(page.getByRole('button', { name: /Add Project/i })).first();
+        await addProjectEl.click();
         await page.waitForTimeout(2000);
         const formOpen = await page.locator('[role="dialog"], form').first().isVisible({ timeout: 6000 }).catch(() => false)
             || page.url().includes('new') || page.url().includes('create');
@@ -283,7 +285,8 @@ test.describe('Project Management: Lifecycle & CRUD Audits @project @audit @regr
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
         await page.waitForLoadState('networkidle');
-        await page.getByRole('button', { name: /Add Project/i }).click();
+        const addProjectEl2 = page.getByRole('link', { name: /Add Project/i }).or(page.getByRole('button', { name: /Add Project/i })).first();
+        await addProjectEl2.click();
         await page.waitForTimeout(2000);
         const nameInput = page.getByRole('textbox', { name: /project name/i })
             .or(page.locator('input[name*="name"], input[placeholder*="name" i]').first());
