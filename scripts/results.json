@@ -1,29 +1,37 @@
 {
-  "total": 17,
-  "passed": 10,
-  "failed": 7,
+  "total": 161,
+  "passed": 106,
+  "failed": 55,
   "skipped": 0,
-  "passRate": 58.8,
-  "avgDurationMs": 48893,
-  "lastUpdated": "2026-06-05T10:14:10.319Z",
+  "passRate": 65.8,
+  "avgDurationMs": 17943,
+  "lastUpdated": "2026-06-05T12:19:20.943Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 10,
-      "failed": 7,
+      "passed": 106,
+      "failed": 55,
       "skipped": 0,
       "trend": [
-        90,
         92,
         70.6,
         64.3,
         70.6,
         71.4,
-        58.8
+        58.8,
+        65.8
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "485",
+      "commit": "0cc2be1",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "48m 8s",
+      "passRate": 65.8,
+      "status": "failed"
+    },
     {
       "run": "484",
       "commit": "271e57d",
@@ -95,14 +103,6 @@
       "duration": "7m 49s",
       "passRate": 71.4,
       "status": "failed"
-    },
-    {
-      "run": "475",
-      "commit": "b39cc15",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "7m 27s",
-      "passRate": 71.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-05T10:09:51.802Z",
+      "firstSeen": "2026-06-05T12:03:31.817Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,47 +118,71 @@
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  242 |         \n  243 |         // Wait for tab content to load completely\n> 244 |         await page.waitForLoadState('networkidle', {",
-      "firstSeen": "2026-06-05T10:09:51.867Z",
+      "firstSeen": "2026-06-05T12:03:31.797Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6\n\n  64 |             try {\n  65 |                 await app.advanceDocumentAPI(body.id, 'invoices');\n> 66 |                 throw ",
+      "firstSeen": "2026-06-05T12:04:10.257Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Double-Dip Success: Invoice INV/2026/06/05/000006 is over-paid (Balance: -40.55)\n\n  134 |             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);\n  135 |   ",
+      "firstSeen": "2026-06-05T12:04:20.035Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: 38934.1358, Expected: 500\n\n  167 |\n  168 |             if (Number(finalInv.unreceived_amount)",
+      "firstSeen": "2026-06-05T12:04:26.691Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  122 |                 await app.advanceDocumentAPI(body1.id, 'invoices');\n  123 |            ",
+      "firstSeen": "2026-06-05T12:04:49.158Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/06/05/000128').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-06-05T10:09:52.007Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: locator.click: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.chakra-form-control, [role=\"group\"], div').filter({ has: g",
-      "firstSeen": "2026-06-05T10:10:26.755Z",
+      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "error": "Error: [VULNERABILITY] GL Drift — Full Cycle AR Reconciliation Failed\n  Invoice      : INV/2026/06/05/000014 (ID: 9fbddcc2-f50d-407f-9735-c07bdad2adef)\n  Receipt      : RCPT/2026/06/05/000010 (ID: 563",
+      "firstSeen": "2026-06-05T12:05:12.780Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  104 |             { headers ",
-      "firstSeen": "2026-06-05T10:10:40.756Z",
+      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
+      "error": "Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance\n  Invoice      : INV/2026/06/05/000015 (ID: e8f7cf5a-400a-46d0-8b46-11144cc7e2db)\n  AR Account   : 89da421e-103b-4",
+      "firstSeen": "2026-06-05T12:05:17.176Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/receipts/4a411605-461e-423c-85c8-315795a89cc7/advance?year=2018&period=yearly&calendar=ec\u001b[22m\n",
-      "firstSeen": "2026-06-05T10:12:40.890Z",
+      "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
+      "error": "Error: SO creation failed\n\n  46 |             warehouseId: item.warehouseId\n  47 |         });\n> 48 |         if (!so.success) throw new Error(\"SO creation failed\");\n     |                            ",
+      "firstSeen": "2026-06-05T12:05:19.722Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h3, [role=\"tablist\"]') to be visible\u001b[22m\n\n\n  134 |\n  135 |         // Wait for the vendor detail h",
-      "firstSeen": "2026-06-05T10:12:41.022Z",
+      "severity": "critical",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
+      "firstSeen": "2026-06-05T12:05:49.273Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
