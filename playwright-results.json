@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 4
     },
     "preserveOutput": "always",
     "projects": [
@@ -20,58 +20,10 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
-        "id": "Forensic-Sales",
-        "name": "Forensic-Sales",
-        "testDir": "/home/teklish/beffa-automation/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/sales/{guardrails,audit,period-control}/*.spec.ts"
-        ],
-        "timeout": 120000
-      },
-      {
-        "outputDir": "/home/teklish/beffa-automation/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "Forensic-Purchase",
-        "name": "Forensic-Purchase",
-        "testDir": "/home/teklish/beffa-automation/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/purchase/{guardrails,audit,period-control}/*.spec.ts"
-        ],
-        "timeout": 120000
-      },
-      {
-        "outputDir": "/home/teklish/beffa-automation/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "Forensic-Inventory",
-        "name": "Forensic-Inventory",
-        "testDir": "/home/teklish/beffa-automation/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/inventory/**/*.spec.ts"
-        ],
-        "timeout": 120000
-      },
-      {
-        "outputDir": "/home/teklish/beffa-automation/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "Sales-Workflows",
-        "name": "Sales-Workflows",
+        "id": "Sales",
+        "name": "Sales",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
@@ -84,10 +36,10 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
-        "id": "Purchase-Workflows",
-        "name": "Purchase-Workflows",
+        "id": "Purchase",
+        "name": "Purchase",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
@@ -100,14 +52,14 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
-        "id": "Project-Management",
-        "name": "Project-Management",
+        "id": "Inventory",
+        "name": "Inventory",
         "testDir": "/home/teklish/beffa-automation/tests",
         "testIgnore": [],
         "testMatch": [
-          "**/project/**/*.spec.ts"
+          "**/inventory/*.spec.ts"
         ],
         "timeout": 120000
       },
@@ -116,23 +68,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "Cross-Module",
-        "name": "Cross-Module",
-        "testDir": "/home/teklish/beffa-automation/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/cross-module/*.spec.ts"
-        ],
-        "timeout": 120000
-      },
-      {
-        "outputDir": "/home/teklish/beffa-automation/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "HR",
         "name": "HR",
@@ -140,6 +76,38 @@
         "testIgnore": [],
         "testMatch": [
           "**/hr/*.spec.ts"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Project-Management",
+        "name": "Project-Management",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/project/*.spec.ts"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/home/teklish/beffa-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Cross-Module",
+        "name": "Cross-Module",
+        "testDir": "/home/teklish/beffa-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/cross-module/*.spec.ts"
         ],
         "timeout": 120000
       }
@@ -212,25 +180,661 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.59.1",
-    "workers": 2,
+    "workers": 4,
     "webServer": null
   },
   "suites": [
     {
-      "title": "project/guardrails/project-guardrails.spec.ts",
-      "file": "project/guardrails/project-guardrails.spec.ts",
+      "title": "project/project-guardrails.spec.ts",
+      "file": "project/project-guardrails.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "Project Management: Guardrails & Edge Cases @project @guardrails @regression",
-          "file": "project/guardrails/project-guardrails.spec.ts",
+          "file": "project/project-guardrails.spec.ts",
           "line": 16,
           "column": 6,
           "specs": [
             {
-              "title": "UI-GUARD-03: Status filter pill click opens filter options",
+              "title": "GUARD-01: Missing customer_id → 422 with \"Customer is required\"",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|755.32"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15156,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 755.32ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:33.137Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|755.32"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-05d7d0ba06adcd8d41db",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 37,
+              "column": 9
+            },
+            {
+              "title": "GUARD-02: Empty project_name → 422 with \"Project Name is required\"",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|686.85"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 22717,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 686.85ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:32.658Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|686.85"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-e38ba3f0322f32ec1fe0",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 55,
+              "column": 9
+            },
+            {
+              "title": "GUARD-03: start_date after end_date → 422 with date validation message",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|592.27"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 16019,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 592.27ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:32.967Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|592.27"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-6d0cbdcfce0c3c390f4b",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 74,
+              "column": 9
+            },
+            {
+              "title": "GUARD-04: Negative estimated_revenue → 422 \"must be positive\"",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|527.19"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 22529,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 527.19ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:32.214Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|527.19"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-45785e8ec245607712b3",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 93,
+              "column": 9
+            },
+            {
+              "title": "GUARD-05: Invalid project_status value \"approved\" → 400",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|293.72"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 13315,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 293.72ms\n"
+                        },
+                        {
+                          "text": "[GUARD-05] status='approved' → 422\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:51.169Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|293.72"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-7eba4f09fdccae52ec6d",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 112,
+              "column": 9
+            },
+            {
+              "title": "GUARD-06: Non-existent customer_id UUID → 4xx",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|280.05"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9913,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 280.05ms\n"
+                        },
+                        {
+                          "text": "[GUARD-06] Fake customer → 422\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:55.900Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|280.05"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-68054017abedd3e6f3fb",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 131,
+              "column": 9
+            },
+            {
+              "title": "GUARD-07: PATCH with invalid status \"cancelled\" → 400 \"Invalid project status\"",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|298.94"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 17177,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 298.94ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:57.798Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|298.94"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-f0811b46d4f734acf3f1",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 152,
+              "column": 9
+            },
+            {
+              "title": "GUARD-08: PATCH non-existent project_id → 4xx",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|246.33"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 12425,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 246.33ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:26:58.136Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|246.33"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-5a0ec644e122303bdd81",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 164,
+              "column": 9
+            },
+            {
+              "title": "GUARD-09: DELETE /projects/:id → 404 (endpoint not implemented)",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|295.08"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 13526,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 295.08ms\n"
+                        },
+                        {
+                          "text": "[GUARD-09] DELETE not implemented → 404 ✓\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:27:04.960Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|295.08"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-1d91e42e6e3808001caf",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 174,
+              "column": 9
+            },
+            {
+              "title": "GUARD-10: Unauthenticated GET /projects → 401",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|295.24"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15897,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 295.24ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:27:06.132Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|295.24"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-eca5992ad8666f3a2f84",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 183,
+              "column": 9
+            },
+            {
+              "title": "GUARD-11: GET non-existent project_id → 4xx",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|251.62"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 15226,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 251.62ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:27:11.439Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|251.62"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-316778a4a01876c47a1f",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 192,
+              "column": 9
+            },
+            {
+              "title": "GUARD-12: remaining_balance is expense-revenue when expense > revenue (no server clamp)",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|334.44"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 16305,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 334.44ms\n"
+                        },
+                        {
+                          "text": "[GUARD-12] Negative balance allowed: -4000 — document for product team\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:27:15.758Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|334.44"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-c85cc9a6d5a28e8009be",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 199,
+              "column": 9
+            },
+            {
+              "title": "UI-GUARD-01: Add Project form blocks empty submit — keeps form open or shows error",
               "ok": false,
               "tags": [
                 "project",
@@ -243,7 +847,7 @@
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|494.61"
+                      "description": "API|Auth API Verification|267.77"
                     }
                   ],
                   "expectedStatus": "passed",
@@ -251,81 +855,163 @@
                   "projectName": "Project-Management",
                   "results": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 54979,
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "timedOut",
+                      "duration": 125880,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts:250:34",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts",
-                          "column": 34,
-                          "line": 250
-                        },
-                        "snippet": "  248 |                 .first().isVisible({ timeout: 4000 }).catch(() => false);\n  249 |             console.log(`[UI-GUARD-03] Status filter opens dropdown: ${dropdownOpen}`);\n> 250 |             expect(dropdownOpen).toBe(true);\n      |                                  ^\n  251 |             await page.keyboard.press('Escape');\n  252 |         }\n  253 |     });"
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
                       },
                       "errors": [
                         {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                        },
+                        {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts",
-                            "column": 34,
-                            "line": 250
+                            "file": "/home/teklish/beffa-automation/tests/project/project-guardrails.spec.ts",
+                            "column": 66,
+                            "line": 214
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  248 |                 .first().isVisible({ timeout: 4000 }).catch(() => false);\n  249 |             console.log(`[UI-GUARD-03] Status filter opens dropdown: ${dropdownOpen}`);\n> 250 |             expect(dropdownOpen).toBe(true);\n      |                                  ^\n  251 |             await page.keyboard.press('Escape');\n  252 |         }\n  253 |     });\n    at /home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts:250:34"
+                          "message": "Error: locator.click: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Project/i })\u001b[22m\n\n\n  212 |         await page.goto('/project-management/projects');\n  213 |         await page.waitForLoadState('networkidle');\n> 214 |         await page.getByRole('button', { name: /Add Project/i }).click();\n      |                                                                  ^\n  215 |         await page.waitForTimeout(1500);\n  216 |\n  217 |         const saveBtn = page.getByRole('button', { name: /save|create|submit|add/i }).last();\n    at /home/teklish/beffa-automation/tests/project/project-guardrails.spec.ts:214:66"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 494.61ms\n"
-                        },
-                        {
-                          "text": "[UI-GUARD-03] Status filter opens dropdown: false\n"
+                          "text": "[PERFORMANCE] API - Auth API Verification: 267.77ms\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-05T06:07:52.454Z",
+                      "startTime": "2026-06-05T07:27:18.882Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|494.61"
+                          "description": "API|Auth API Verification|267.77"
                         }
                       ],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/test-failed-1.png"
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-guardrails-cd454-ps-form-open-or-shows-error-Project-Management/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/video.webm"
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-guardrails-cd454-ps-form-open-or-shows-error-Project-Management/video.webm"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-guardrails-cd454-ps-form-open-or-shows-error-Project-Management/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-guardrails-project-5348b--click-opens-filter-options-Project-Management/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-guardrails-cd454-ps-form-open-or-shows-error-Project-Management/trace.zip"
                         }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/project/guardrails/project-guardrails.spec.ts",
-                        "column": 34,
-                        "line": 250
-                      }
+                      ]
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "cc39cd8930293b3a122f-9a88a7f8c6c8791d300d",
-              "file": "project/guardrails/project-guardrails.spec.ts",
+              "id": "662dd29d58051b75e00b-9dbb613ce1acbd4e53f0",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 210,
+              "column": 9
+            },
+            {
+              "title": "UI-GUARD-02: Unauthenticated browser access to projects redirects to login",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22866,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:27:22.669Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-ba9032580114bf45a6c8",
+              "file": "project/project-guardrails.spec.ts",
+              "line": 230,
+              "column": 9
+            },
+            {
+              "title": "UI-GUARD-03: Status filter pill click opens filter options",
+              "ok": true,
+              "tags": [
+                "project",
+                "guardrails",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|395.04"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 60520,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 395.04ms\n"
+                        },
+                        {
+                          "text": "[UI-GUARD-03] Status filter opens dropdown: true\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-05T07:27:27.080Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|395.04"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "662dd29d58051b75e00b-fcee409ce0570b1bde80",
+              "file": "project/project-guardrails.spec.ts",
               "line": 239,
               "column": 9
             }
@@ -336,9 +1022,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-05T06:07:49.668Z",
-    "duration": 73393.93000000001,
-    "expected": 0,
+    "startTime": "2026-06-05T07:26:28.320Z",
+    "duration": 184676.697,
+    "expected": 14,
     "skipped": 0,
     "unexpected": 1,
     "flaky": 0

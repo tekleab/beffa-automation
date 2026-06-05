@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { AppManager } from '../../../pages/AppManager';
+import { AppManager } from '../../pages/AppManager';
 
 /**
  * PROJECT GUARDRAILS — API Validation & UI Edge Cases
@@ -245,7 +245,7 @@ test.describe('Project Management: Guardrails & Edge Cases @project @guardrails 
             await statusBtn.click();
             await page.waitForTimeout(1000);
             const dropdownOpen = await page.locator('[role="listbox"], [role="dialog"], [role="menu"], [class*="dropdown"], [class*="popover"]')
-                .first().isVisible({ timeout: 4000 }).catch(() => false);
+                .filter({ visible: true }).first().isVisible({ timeout: 4000 }).catch(() => false);
             console.log(`[UI-GUARD-03] Status filter opens dropdown: ${dropdownOpen}`);
             expect(dropdownOpen).toBe(true);
             await page.keyboard.press('Escape');

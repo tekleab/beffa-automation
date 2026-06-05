@@ -1,5 +1,5 @@
 import { test, expect } from'@playwright/test';
-import { AppManager } from'../../../pages/AppManager';
+import { AppManager } from'../../pages/AppManager';
 
 /**
  * INVENTORY INTEGRITY & BOUNDARY AUDITS

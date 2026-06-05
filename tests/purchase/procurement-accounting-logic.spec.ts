@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { test, expect } from '@playwright/test';
-import { AppManager } from '../../../pages/AppManager';
+import { AppManager } from '../../pages/AppManager';
 
 /**
  * Purchase: Procurement Accounting Logic
