@@ -175,8 +175,8 @@ jobs:
           echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
           echo "=========================================================="
           npx playwright test \
-            --project=Sales-Workflows \
-            --project=Purchase-Workflows \
+            --project=Sales \
+            --project=Purchase \
             --project=Cross-Module \
             --project=HR \
             --workers=4 \
@@ -191,13 +191,13 @@ jobs:
           echo "=========================================================="
 
           echo "-> Forensic Sales..."
-          npx playwright test --project=Forensic-Sales --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Sales --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
           echo "-> Forensic Purchase..."
-          npx playwright test --project=Forensic-Purchase --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Purchase --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
           echo "-> Forensic Inventory..."
-          npx playwright test --project=Forensic-Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
         elif [ "$TEST_TYPE" != "full" ]; then
           echo "=========================================================="
           echo "⏭️  Skipping Forensic Audits for $TEST_TYPE run."
@@ -209,7 +209,7 @@ jobs:
           echo "=========================================================="
           echo "🔗 PART 3: Running E2E Cross-Module Flows..."
           echo "=========================================================="
-          npx playwright test --project=Purchase-Workflows --workers=1 --grep @e2e --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Purchase --workers=1 --grep @e2e --pass-with-no-tests || FINAL_EXIT_CODE=$?
         fi
 
         set -e
