@@ -1,0 +1,41 @@
+[PERFORMANCE] API - Auth API Verification: 170.75ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 433.15ms
+
+========== PRE-TRANSACTION SNAPSHOT ==========
+[ACCOUNT] AR Account    : 89da421e-103b-4d81-95cf-a5f2bd78cdb5
+[ACCOUNT] Sales Account : 566ec46a-0418-4009-9366-537669cc4ad5
+[ITEM]    Item ID        : 2db09619-4dea-4fc1-b22e-5cec9562943c (Sauna ladle Classic)
+[ITEM]    Location ID    : 177ca387-8b0e-46c9-9716-afcdd945d3ef
+[ITEM]    Warehouse ID   : 159fe8cb-f2f2-4ff1-8b02-cae159e6ab2c
+[CUSTOMER] Customer ID  : ddba3abe-40b3-4c51-8d43-7341690d1949
+==============================================
+
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1137650.47
+[BALANCE] AR Before     : 1137650.47
+
+[STEP 2] Creating & approving invoice...
+[API] Advancing invoices "e6cde0e8-4c5e-48ea-8de4-cdc1a779edb3"...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1139557.70
+
+========== POST-INVOICE SNAPSHOT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/06/000096
+[DOCUMENT] Invoice ID   : e6cde0e8-4c5e-48ea-8de4-cdc1a779edb3
+[DOCUMENT] Amount       : 800
+[BALANCE] AR After Inv  : 1139557.70
+[BALANCE] AR Delta      : 1907.23 (Expected: +800)
+============================================
+
+[STEP 3] Voiding invoice (credit note)...
+[GL_AUDIT] Account: Accounts Receivable | Balance: 1135243.24
+
+========== CREDIT NOTE AUDIT REPORT ==========
+[DOCUMENT] Invoice Ref  : INV/2026/06/06/000096
+[DOCUMENT] Invoice ID   : e6cde0e8-4c5e-48ea-8de4-cdc1a779edb3
+[ACCOUNT] AR Account    : 89da421e-103b-4d81-95cf-a5f2bd78cdb5
+[BALANCE] AR Before Sale: 1137650.47
+[BALANCE] AR After Inv  : 1139557.70 (Delta: +1907.23)
+[BALANCE] AR After Void : 1135243.24 (Expected: ~1137650.47)
+[BALANCE] AR Drift      : 2407.23 (Must be 0.00)
+===============================================
+

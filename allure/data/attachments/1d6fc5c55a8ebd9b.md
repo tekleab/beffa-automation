@@ -1,0 +1,488 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/cross-module-ui-flows.spec.ts >> Cross-Module UI Flow Audits @sales @purchase @smoke @full >> Purchase UI: Approved bill reflects outstanding balance in vendor profile
+- Location: tests/cross-module/cross-module-ui-flows.spec.ts:83:9
+
+# Error details
+
+```
+Error: Bill BILL/2026/06/06/000131 should be visible in vendor profile Bills tab
+
+expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e11]: Enterprise
+      - generic [ref=e13]:
+        - generic:
+          - img
+        - textbox "Search tasks" [ref=e14]
+      - generic [ref=e15]:
+        - navigation [ref=e17]:
+          - link "Dashboard" [ref=e18] [cursor=pointer]:
+            - /url: /dashboard
+            - paragraph [ref=e21]: Dashboard
+        - generic [ref=e23] [cursor=pointer]:
+          - paragraph [ref=e26]: Accounting
+          - paragraph [ref=e27]:
+            - button "Toggle section" [ref=e28]:
+              - img [ref=e29]
+        - generic [ref=e32] [cursor=pointer]:
+          - paragraph [ref=e35]: Account Reconciliation
+          - paragraph [ref=e36]:
+            - button "Toggle section" [ref=e37]:
+              - img [ref=e38]
+        - generic [ref=e41] [cursor=pointer]:
+          - paragraph [ref=e44]: CRM
+          - paragraph [ref=e45]:
+            - button "Toggle section" [ref=e46]:
+              - img [ref=e47]
+        - generic [ref=e50] [cursor=pointer]:
+          - paragraph [ref=e53]: HRM
+          - paragraph [ref=e54]:
+            - button "Toggle section" [ref=e55]:
+              - img [ref=e56]
+        - generic [ref=e59] [cursor=pointer]:
+          - paragraph [ref=e62]: Project Management
+          - paragraph [ref=e63]:
+            - button "Toggle section" [ref=e64]:
+              - img [ref=e65]
+        - generic [ref=e68] [cursor=pointer]:
+          - paragraph [ref=e71]: SCM
+          - paragraph [ref=e72]:
+            - button "Toggle section" [ref=e73]:
+              - img [ref=e74]
+        - generic [ref=e77] [cursor=pointer]:
+          - paragraph [ref=e80]: Lease Management
+          - paragraph [ref=e81]:
+            - button "Toggle section" [ref=e82]:
+              - img [ref=e83]
+        - generic [ref=e86] [cursor=pointer]:
+          - paragraph [ref=e89]: Service Management
+          - paragraph [ref=e90]:
+            - button "Toggle section" [ref=e91]:
+              - img [ref=e92]
+        - generic [ref=e95] [cursor=pointer]:
+          - paragraph [ref=e98]: Report
+          - paragraph [ref=e99]:
+            - button "Toggle section" [ref=e100]:
+              - img [ref=e101]
+      - generic [ref=e103]:
+        - button "Settings" [ref=e105] [cursor=pointer]:
+          - generic:
+            - generic:
+              - img
+              - paragraph: Settings
+        - navigation [ref=e107]:
+          - link "User Management" [ref=e109] [cursor=pointer]:
+            - /url: /settings/general/users
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - paragraph [ref=e114]: User Management
+              - button [ref=e115]:
+                - img [ref=e116]
+        - button "Logout" [ref=e118] [cursor=pointer]:
+          - img [ref=e120]
+          - text: Logout
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img "BM Tech" [ref=e126]: BT
+          - generic [ref=e127]:
+            - button "BM Tech" [ref=e128] [cursor=pointer]:
+              - generic: BM Tech
+              - img [ref=e130]
+            - generic [ref=e132] [cursor=pointer]:
+              - button "Company Detail" [ref=e133]:
+                - img [ref=e134]
+              - button "Edit Company" [ref=e137]:
+                - img [ref=e138]
+              - button "Company Detail" [ref=e141]:
+                - img [ref=e142]
+        - generic [ref=e145]:
+          - button "New" [ref=e146] [cursor=pointer]:
+            - text: New
+            - img [ref=e148]
+          - generic [ref=e152] [cursor=pointer]:
+            - generic [ref=e153]: "5"
+            - img "Notifications" [ref=e154]
+          - button "EC" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: EC
+          - button [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+          - generic [ref=e165] [cursor=pointer]:
+            - img "System" [ref=e167]: S
+            - generic [ref=e168]:
+              - generic [ref=e169]: System
+              - paragraph [ref=e170]: IT Administrator / User Manager
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - navigation "breadcrumb" [ref=e176]:
+                  - list [ref=e177]:
+                    - listitem [ref=e178]:
+                      - link "Home" [ref=e179] [cursor=pointer]:
+                        - /url: /
+                      - text: /
+                    - listitem [ref=e180]:
+                      - link "Payables" [ref=e181] [cursor=pointer]:
+                        - /url: /payables/overview/
+                      - text: /
+                    - listitem [ref=e182]:
+                      - link "Vendors" [ref=e183] [cursor=pointer]:
+                        - /url: /payables/vendors/?page=1&pageSize=15
+                      - text: /
+                    - listitem [ref=e184]:
+                      - link "Detail" [ref=e185] [cursor=pointer]:
+                        - /url: /payables/vendors/3c944c8a-5ec4-4950-9cfa-faff67e7640e/detail
+            - button "2018" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: "2018"
+              - img [ref=e189]
+          - generic [ref=e192]:
+            - button "Toggle Visibility" [ref=e195] [cursor=pointer]:
+              - img [ref=e196]
+            - generic [ref=e198]:
+              - generic [ref=e200]:
+                - heading "Vendor Details" [level=3] [ref=e201]
+                - group [ref=e204]:
+                  - button "submit" [ref=e205] [cursor=pointer]: Submit
+                  - button "edit" [ref=e206] [cursor=pointer]: Edit
+                  - button "remove" [ref=e208] [cursor=pointer]: Remove
+              - generic [ref=e210]:
+                - generic [ref=e211]:
+                  - paragraph [ref=e212]: General
+                  - generic [ref=e213]:
+                    - paragraph [ref=e214]: "Vendor ID:"
+                    - paragraph [ref=e215]: VEND/2026/06/05/000001
+                    - paragraph [ref=e216]: "Name:"
+                    - paragraph [ref=e217]: Gentium Concrite Industry
+                    - paragraph [ref=e218]: "Vendor Type:"
+                    - paragraph [ref=e219]: service
+                  - paragraph [ref=e220]: Accounting
+                  - generic [ref=e221]:
+                    - paragraph [ref=e222]: "Expense Account:"
+                    - paragraph [ref=e223]: Salaries and Wages
+                    - paragraph [ref=e224]: "TIN:"
+                    - paragraph [ref=e225]: "0014345098"
+                    - paragraph [ref=e226]: "Due Balance:"
+                    - paragraph [ref=e227]: 1,004,640.00
+                - generic [ref=e228]:
+                  - paragraph [ref=e229]: Address
+                  - generic [ref=e230]:
+                    - generic [ref=e231]:
+                      - paragraph [ref=e232]: "Region:"
+                      - paragraph [ref=e233]: Addis Ababa City Administration
+                    - generic [ref=e234]:
+                      - paragraph [ref=e235]: "Zone:"
+                      - paragraph [ref=e236]: Bole Subcity
+                    - generic [ref=e237]:
+                      - paragraph [ref=e238]: "City:"
+                      - paragraph
+                    - generic [ref=e239]:
+                      - paragraph [ref=e240]: "Woreda:"
+                      - paragraph [ref=e241]: Woreda 5
+                    - generic [ref=e242]:
+                      - paragraph [ref=e243]: "Kebele:"
+                      - paragraph [ref=e244]: Kebele 01
+                    - generic [ref=e245]:
+                      - paragraph [ref=e246]: "House NO:"
+                      - paragraph
+              - generic [ref=e249]:
+                - tablist [ref=e250]:
+                  - tab "Purchase Orders" [ref=e251] [cursor=pointer]
+                  - tab "Bills" [active] [selected] [ref=e252] [cursor=pointer]
+                  - tab "Payments" [ref=e253] [cursor=pointer]
+                  - tab "Quotes" [ref=e254] [cursor=pointer]
+                  - tab "Leases" [ref=e255] [cursor=pointer]
+                  - tab "Services" [ref=e256] [cursor=pointer]
+                - tabpanel "Bills" [ref=e258]:
+                  - generic [ref=e259]:
+                    - table [ref=e262]:
+                      - rowgroup [ref=e263]:
+                        - row "Invoice No Date Status Net Due" [ref=e264]:
+                          - columnheader "Invoice No" [ref=e265] [cursor=pointer]: Invoice No
+                          - columnheader "Date" [ref=e267] [cursor=pointer]: Date
+                          - columnheader "Status" [ref=e269] [cursor=pointer]: Status
+                          - columnheader "Net Due" [ref=e271] [cursor=pointer]: Net Due
+                      - rowgroup [ref=e273]:
+                        - row "No record found" [ref=e274]:
+                          - cell "No record found" [ref=e275]:
+                            - paragraph [ref=e277]: No record found
+                      - rowgroup [ref=e278]:
+                        - row [ref=e279]:
+                          - columnheader [ref=e280]
+                          - columnheader [ref=e281]
+                          - columnheader [ref=e282]
+                          - columnheader [ref=e283]
+                    - generic [ref=e284]:
+                      - generic [ref=e286]:
+                        - combobox [ref=e287]:
+                          - option "Show 5 rows"
+                          - option "Show 10 rows" [selected]
+                          - option "Show 15 rows"
+                          - option "Show 25 rows"
+                          - option "Show 50 rows"
+                          - option "Show 100 rows"
+                        - generic:
+                          - img
+                      - generic [ref=e289]:
+                        - button "go to first page" [disabled] [ref=e290]:
+                          - img [ref=e291]
+                        - generic [ref=e293]:
+                          - button "go to previous page" [disabled] [ref=e294]:
+                            - img [ref=e295]
+                          - paragraph [ref=e297]: Page
+                          - paragraph [ref=e298]: 1 of -1
+                          - button "go to next page" [ref=e299] [cursor=pointer]:
+                            - img [ref=e300]
+                        - button "go to last page" [ref=e302] [cursor=pointer]:
+                          - img [ref=e303]
+        - generic [ref=e305]: BM Technology © 2026
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - option "1950"
+    - option "1951"
+    - option "1952"
+    - option "1953"
+    - option "1954"
+    - option "1955"
+    - option "1956"
+    - option "1957"
+    - option "1958"
+    - option "1959"
+    - option "1960"
+    - option "1961"
+    - option "1962"
+    - option "1963"
+    - option "1964"
+    - option "1965"
+    - option "1966"
+    - option "1967"
+    - option "1968"
+    - option "1969"
+    - option "1970"
+    - option "1971"
+    - option "1972"
+    - option "1973"
+    - option "1974"
+    - option "1975"
+    - option "1976"
+    - option "1977"
+    - option "1978"
+    - option "1979"
+    - option "1980"
+    - option "1981"
+    - option "1982"
+    - option "1983"
+    - option "1984"
+    - option "1985"
+    - option "1986"
+    - option "1987"
+    - option "1988"
+    - option "1989"
+    - option "1990"
+    - option "1991"
+    - option "1992"
+    - option "1993"
+    - option "1994"
+    - option "1995"
+    - option "1996"
+    - option "1997"
+    - option "1998"
+    - option "1999"
+    - option "2000"
+    - option "2001"
+    - option "2002"
+    - option "2003"
+    - option "2004"
+    - option "2005"
+    - option "2006"
+    - option "2007"
+    - option "2008"
+    - option "2009"
+    - option "2010"
+    - option "2011"
+    - option "2012"
+    - option "2013"
+    - option "2014"
+    - option "2015"
+    - option "2016"
+    - option "2017"
+    - option "2018 (open)" [selected]
+    - option "2019"
+    - option "2020"
+    - option "2021"
+    - option "2022"
+    - option "2023"
+    - option "2024"
+    - option "2025"
+    - option "2026"
+    - option "2027"
+    - option "2028"
+    - option "2029"
+    - option "2030"
+    - option "2031"
+    - option "2032"
+    - option "2033"
+    - option "2034"
+    - option "2035"
+    - option "2036"
+    - option "2037"
+    - option "2038"
+    - option "2039"
+    - option "2040"
+    - option "2041"
+    - option "2042"
+    - option "2043"
+    - option "2044"
+    - option "2045"
+    - option "2046"
+    - option "2047"
+    - option "2048"
+    - option "2049"
+```
+
+# Test source
+
+```ts
+  54  |         for (let attempt = 1; attempt <= 3; attempt++) {
+  55  |             try {
+  56  |                 rcptResult = await app.createInvoiceReceiptAPI({
+  57  |                     invoiceId: inv.id,
+  58  |                     customerId: meta.customerId,
+  59  |                     amount: ACTUAL_PARTIAL
+  60  |                 });
+  61  |                 break;
+  62  |             } catch (e: any) {
+  63  |                 if (attempt === 3) throw e;
+  64  |                 console.log(`[RETRY ${attempt}/3] Receipt API failed (${e.message?.substring(0, 80)}), retrying in 5s...`);
+  65  |                 await page.waitForTimeout(5000);
+  66  |             }
+  67  |         }
+  68  |         await app.advanceDocumentAPI(rcptResult.id, 'receipts');
+  69  |         console.log(`[OK] Partial receipt ${rcptResult.ref} created and approved.`);
+  70  | 
+  71  |         console.log(`[STEP 4] Verifying Amount Due updated on invoice detail page...`);
+  72  |         await page.reload({ waitUntil: 'networkidle' });
+  73  | 
+  74  |         const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
+  75  |         const remaining = parseFloat(finalInv.unreceived_amount || finalInv.balance || '0');
+  76  | 
+  77  |         console.log(`[AUDIT] Invoice ${inv.ref} | Paid: ${ACTUAL_PARTIAL} | Remaining: ${remaining} | Expected: ~${ACTUAL_REMAINING}`);
+  78  |         expect(remaining).toBeCloseTo(ACTUAL_REMAINING, 0);
+  79  | 
+  80  |         console.log(`[PASS] Partial payment confirmed. Amount Due correctly updated to ${remaining}.`);
+  81  |     });
+  82  | 
+  83  |     test('Purchase UI: Approved bill reflects outstanding balance in vendor profile', async ({ page }) => {
+  84  |         test.setTimeout(120000);
+  85  |         const app = new AppManager(page);
+  86  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  87  | 
+  88  |         console.log(`[STEP 1] Creating & approving bill via API...`);
+  89  |         const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 0 });
+  90  |         const BILL_AMOUNT = 5000;
+  91  | 
+  92  |         const bill = await app.api.purchase.createBillAPI({
+  93  |             itemData: item,
+  94  |             quantity: 1,
+  95  |             unitPrice: BILL_AMOUNT
+  96  |         });
+  97  |         await app.advanceDocumentAPI(bill.id, 'bills');
+  98  |         console.log(`[OK] Bill ${bill.ref} approved.`);
+  99  | 
+  100 |         console.log(`[STEP 2] Fetching bill details to get vendor info...`);
+  101 |         const billData = await app.api.purchase.getBillAPI(bill.id);
+  102 |         const vendorId = billData.vendor_id || billData.vendor?.id;
+  103 |         const vendorName = billData.vendor?.name || billData.vendor_name;
+  104 | 
+  105 |         if (!vendorId) {
+  106 |             console.log(`[SKIP] Could not resolve vendor from bill. Skipping UI verification.`);
+  107 |             return;
+  108 |         }
+  109 | 
+  110 |         console.log(`[STEP 3] Navigating to vendor profile UI...`);
+  111 | 
+  112 |         // Navigate and re-login if session expired — retry up to 2 times
+  113 |         for (let navAttempt = 1; navAttempt <= 2; navAttempt++) {
+  114 |             await page.goto(`/payables/vendors/${vendorId}/detail`, { waitUntil: 'domcontentloaded' });
+  115 |             await page.waitForTimeout(2000);
+  116 | 
+  117 |             if (page.url().includes('/users/login')) {
+  118 |                 console.log(`[AUTH] Session expired on attempt ${navAttempt} — re-authenticating...`);
+  119 |                 await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  120 |                 continue;
+  121 |             }
+  122 |             break;
+  123 |         }
+  124 | 
+  125 |         if (page.url().includes('/users/login')) {
+  126 |             throw new Error('[CRITICAL] Session could not be restored after re-auth.');
+  127 |         }
+  128 | 
+  129 |         // Confirm we landed on the correct vendor page
+  130 |         console.log(`[INFO] Current URL: ${page.url()}`);
+  131 |         if (!page.url().includes(vendorId)) {
+  132 |             throw new Error(`[CRITICAL] Navigation failed — not on vendor ${vendorId} page. URL: ${page.url()}`);
+  133 |         }
+  134 | 
+  135 |         // Wait for the vendor detail heading to confirm SPA content rendered
+  136 |         await page.waitForSelector('h3, [role="tablist"]', { timeout: 30000 });
+  137 | 
+  138 |         console.log(`[STEP 4] Navigating to Bills tab...`);
+  139 |         const billsTab = page.getByRole('tab', { name: /Bills/i }).first();
+  140 |         await billsTab.waitFor({ state: 'visible', timeout: 20000 });
+  141 |         await billsTab.click();
+  142 |         await expect(billsTab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
+  143 |         await page.waitForTimeout(3000);
+  144 | 
+  145 |         console.log(`[STEP 5] Asserting bill ${bill.ref} is visible in vendor profile...`);
+  146 |         // Poll: bill may be on any page; scroll/search if not immediately visible
+  147 |         let billVisible = false;
+  148 |         for (let attempt = 0; attempt < 5; attempt++) {
+  149 |             billVisible = await page.getByText(bill.ref).first().isVisible({ timeout: 8000 }).catch(() => false);
+  150 |             if (billVisible) break;
+  151 |             console.log(`[POLL ${attempt + 1}/5] Bill not yet visible, waiting...`);
+  152 |             await page.waitForTimeout(3000);
+  153 |         }
+> 154 |         expect(billVisible, `Bill ${bill.ref} should be visible in vendor profile Bills tab`).toBe(true);
+      |                                                                                               ^ Error: Bill BILL/2026/06/06/000131 should be visible in vendor profile Bills tab
+  155 | 
+  156 |         console.log(`[PASS] Bill ${bill.ref} confirmed visible in vendor "${vendorName}" profile. Outstanding balance reflected.`);
+  157 |     });
+  158 | });
+  159 | 
+```
