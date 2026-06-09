@@ -1,29 +1,37 @@
 {
-  "total": 161,
-  "passed": 110,
-  "failed": 51,
+  "total": 17,
+  "passed": 11,
+  "failed": 6,
   "skipped": 0,
-  "passRate": 68.3,
-  "avgDurationMs": 22735,
-  "lastUpdated": "2026-06-08T06:54:13.217Z",
+  "passRate": 64.7,
+  "avgDurationMs": 30344,
+  "lastUpdated": "2026-06-09T12:19:33.315Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 110,
-      "failed": 51,
+      "passed": 11,
+      "failed": 6,
       "skipped": 0,
       "trend": [
-        69.6,
         58.8,
         70.6,
         64.7,
         64.7,
         70.8,
-        68.3
+        68.3,
+        64.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "493",
+      "commit": "32f2273",
+      "trigger": "push (smoke)",
+      "duration": "8m 35s",
+      "passRate": 64.7,
+      "status": "failed"
+    },
     {
       "run": "492",
       "commit": "4ff2c1b",
@@ -95,14 +103,6 @@
       "duration": "13m 51s",
       "passRate": 58.8,
       "status": "failed"
-    },
-    {
-      "run": "483",
-      "commit": "3f1fb63",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "37m 6s",
-      "passRate": 71.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "TimeoutError: page.waitForLoadState: Timeout 10000ms exceeded.\n\n  54 |         \n  55 |         // Wait for tab content to load completely\n> 56 |         await page.waitForLoadState('networkidle', { ti",
-      "firstSeen": "2026-06-08T06:34:43.223Z",
+      "firstSeen": "2026-06-09T12:16:03.090Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,71 +118,39 @@
       "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:560\n\n  558 |     }\n ",
-      "firstSeen": "2026-06-08T06:34:43.229Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-      "firstSeen": "2026-06-08T06:34:43.228Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Allowed over-invoicing! SO: 2, Invoiced: 6\n\n  64 |             try {\n  65 |                 await app.advanceDocumentAPI(body.id, 'invoices');\n> 66 |                 throw ",
-      "firstSeen": "2026-06-08T06:35:25.330Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:560\n\n  558 |     }\n ",
-      "firstSeen": "2026-06-08T06:35:47.266Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  122 |                 await app.advanceDocumentAPI(body1.id, 'invoices');\n  123 |            ",
-      "firstSeen": "2026-06-08T06:36:52.798Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Invoice must reject second receipt after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:560\n\n  558 |     }\n ",
-      "firstSeen": "2026-06-08T06:37:08.237Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:560\n\n  558 |     }\n ",
-      "firstSeen": "2026-06-08T06:37:35.978Z",
+      "firstSeen": "2026-06-09T12:16:02.967Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Audit: Credit note (void) must reduce AR balance back to pre-sale state",
-      "error": "Error: [VULNERABILITY] Credit Note GL Drift — Invoice Void Did Not Restore AR Balance\n  Invoice      : INV/2026/06/08/000128 (ID: 05a440f8-5bd5-4072-a147-eadeee69a382)\n  AR Account   : 89da421e-103b-4",
-      "firstSeen": "2026-06-08T06:37:36.299Z",
+      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [ERROR] Failed selection for Location\n\n   at ../lib/base-page.ts:565\n\n  563 |       }\n  564 |     }\n> 565 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);\n  ",
+      "firstSeen": "2026-06-09T12:16:30.619Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
-      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
-      "firstSeen": "2026-06-08T06:38:48.908Z",
+      "severity": "medium",
+      "title": "API: Vendor outstanding balance increases after bill approval",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  104 |             { headers ",
+      "firstSeen": "2026-06-09T12:16:43.540Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "high",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.reload: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for navigation until \"networkidle\"\u001b[22m\n\u001b[2m    - navigated to \"http://168",
+      "firstSeen": "2026-06-09T12:17:15.889Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h3, [role=\"tablist\"]') to be visible\u001b[22m\n\n\n  134 |\n  135 |         // Wait for the vendor detail h",
+      "firstSeen": "2026-06-09T12:17:24.379Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
