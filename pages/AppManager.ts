@@ -10,6 +10,7 @@ import { SharedUI } from './components/SharedUI';
 import { SalesPage } from './SalesPage';
 import { PurchasePage } from './PurchasePage';
 import { InventoryPage } from './InventoryPage';
+import { ProjectPage } from './ProjectPage';
 
 export class AppManager {
   page: Page;
@@ -42,6 +43,7 @@ export class AppManager {
     sales: SalesPage;
     purchase: PurchasePage;
     inventory: InventoryPage;
+    project: ProjectPage;
   };
 
   constructor(page: Page) {
@@ -84,7 +86,8 @@ export class AppManager {
       shared: new SharedUI(page),
       sales: new SalesPage(page),
       purchase: new PurchasePage(page),
-      inventory: new InventoryPage(page)
+      inventory: new InventoryPage(page),
+      project: new ProjectPage(page)
     };
 
     // Core Dependencies bindings

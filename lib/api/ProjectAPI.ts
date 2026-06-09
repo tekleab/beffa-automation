@@ -4,6 +4,8 @@ import { BasePage } from '../base-page';
 export interface ProjectMeta {
     customerId: string;
     customerName: string;
+    workspaceId: string;
+    workspaceName: string;
 }
 
 export interface ProjectRecord {
@@ -42,12 +44,35 @@ export class ProjectAPI extends BasePage {
 
     async discoverMetadataAPI(): Promise<ProjectMeta> {
         const headers = await this.h();
-        const resp = await this.page.request.get(`${this.apiBase}/customers?page=1&pageSize=5&${this.qs}`, { headers });
-        if (!resp.ok()) throw new Error(`[ProjectAPI] Customer discovery failed: ${resp.status()}`);
-        const data = await resp.json();
-        const customer = (data.items || data.data || [])[0];
+
+        // Customer
+        const custResp = await this.page.request.get(`${this.apiBase}/customers?page=1&pageSize=5&${this.qs}`, { headers });
+        if (!custResp.ok()) throw new Error(`[ProjectAPI] Customer discovery failed: ${custResp.status()}`);
+        const custData = await custResp.json();
+        const customer = (custData.items || custData.data || [])[0];
         if (!customer) throw new Error('[ProjectAPI] No customers found.');
-        return { customerId: customer.id, customerName: customer.name };
+
+        // Workspace — auto-create if none exist
+        const wsResp = await this.page.request.get(`${this.apiBase}/workspaces?page=1&pageSize=5&${this.qs}`, { headers });
+        let workspace: { id: string; name: string } | null = null;
+        if (wsResp.ok()) {
+            const wsData = await wsResp.json();
+            workspace = (wsData.items || wsData.data || [])[0] || null;
+        }
+        if (!workspace) {
+            const createResp = await this.page.request.post(`${this.apiBase}/workspaces?${this.qs}`, {
+                data: { name: 'Default Workspace' }, headers
+            });
+            if (!createResp.ok()) throw new Error(`[ProjectAPI] Workspace creation failed: ${createResp.status()} ${await createResp.text()}`);
+            workspace = await createResp.json();
+        }
+
+        return {
+            customerId: customer.id,
+            customerName: customer.name,
+            workspaceId: workspace!.id,
+            workspaceName: workspace!.name
+        };
     }
 
     async createProjectAPI(data: {

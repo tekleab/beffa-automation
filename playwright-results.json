@@ -180,94 +180,92 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.59.1",
-    "workers": 1,
+    "workers": 2,
     "webServer": null
   },
   "suites": [
     {
-      "title": "project/project-lifecycle.spec.ts",
-      "file": "project/project-lifecycle.spec.ts",
+      "title": "project/ui-probe-temp.spec.ts",
+      "file": "project/ui-probe-temp.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [],
-      "suites": [
+      "specs": [
         {
-          "title": "Project Management: Lifecycle & CRUD Audits @project @audit @smoke @regression @full",
-          "file": "project/project-lifecycle.spec.ts",
-          "line": 20,
-          "column": 6,
-          "specs": [
+          "title": "Diagnostic: which field enables Create project button",
+          "ok": true,
+          "tags": [],
+          "tests": [
             {
-              "title": "API-01: Create project returns valid id, ref and pending status",
-              "ok": false,
-              "tags": [
-                "project",
-                "audit",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
+              "timeout": 120000,
+              "annotations": [
                 {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 390,
-                      "error": {
-                        "message": "Error: browserContext.newPage: Executable doesn't exist at /home/teklish/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserContext.newPage: Executable doesn't exist at /home/teklish/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝"
-                      },
-                      "errors": [
-                        {
-                          "message": "Error: browserContext.newPage: Executable doesn't exist at /home/teklish/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-05T09:08:00.743Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-lifecycle--92a16-d-id-ref-and-pending-status-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-lifecycle--92a16-d-id-ref-and-pending-status-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
+                  "type": "tactical-perf",
+                  "description": "API|Auth API Verification|448.34"
                 }
               ],
-              "id": "3feecfdb9bd821f9615f-138fcbf1eb2af8bffca4",
-              "file": "project/project-lifecycle.spec.ts",
-              "line": 44,
-              "column": 9
+              "expectedStatus": "passed",
+              "projectId": "Project-Management",
+              "projectName": "Project-Management",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 62626,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "[PERFORMANCE] API - Auth API Verification: 448.34ms\n"
+                    },
+                    {
+                      "text": "[disabled  ] ref + name\n"
+                    },
+                    {
+                      "text": "customer_id value after selection: \"Base Ethiopia\"\n"
+                    },
+                    {
+                      "text": "[disabled  ] customer selected\n"
+                    },
+                    {
+                      "text": "workspace_id value after selection: \"Default Workspace\"\n"
+                    },
+                    {
+                      "text": "[disabled  ] workspace selected\n"
+                    },
+                    {
+                      "text": "workflow_set_id options: 1\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-06-09T14:48:13.537Z",
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|448.34"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
             }
-          ]
+          ],
+          "id": "84f4ae0f98b9ab5c8803-d610a1140acfda8d368c",
+          "file": "project/ui-probe-temp.spec.ts",
+          "line": 4,
+          "column": 5
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-05T09:07:56.106Z",
-    "duration": 14296.843,
-    "expected": 0,
+    "startTime": "2026-06-09T14:48:10.487Z",
+    "duration": 75301.809,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }
