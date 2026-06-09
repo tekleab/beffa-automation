@@ -1,0 +1,20 @@
+[PERFORMANCE] API - Auth API Verification: 494.88ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1540.27ms
+[OK] Discovered: "Pencil-A-1781005677389" via API | Stock: 15
+[API] Advancing sales-orders "617957fe-48e1-4097-9ce4-e4260a7711c6"...
+[OK] Sales Order SO/2026/06/09/000051 approved via API
+[API] Advancing invoices "6c12f0aa-56d4-4c88-b454-80ea4068187e"...
+[OK] Invoice INV/2026/06/09/000166 approved via API
+[INFO] Document Setup Complete: INV/2026/06/09/000166 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[RECEIPT] amount=1000 | invoice=6c12f0aa...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/09/000033
+[OK] Receipt created via API: RCPT/2026/06/09/000033
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "ab07fe47-3ce6-4f7a-938a-7e7087530048"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/09/000033 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/09/000033 verified in profile
