@@ -1,0 +1,30 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 428.06ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 9
+[SUCCESS] "Purchase Order Date" set to Day 9 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2774.28ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2371.95ms
+[INFO] Vendor: Gentium Concrite Industry
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2280.45ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2598.74ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2034.08ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 1979.97ms
+[PERFORMANCE] UI - Random Selection: Location: 2328.82ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2195.04ms
+[PERFORMANCE] UI - Random Selection: Tax: 2143.56ms
+[OK] Line item added (Price: 5230)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/09/000064 | Vendor: Gentium Concrite Industry
+[API] Advancing purchase-orders "f5cfba76-bfcf-4e09-8315-f216efc07947"...
+[OK] PO PO/2026/06/09/000064 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/09/000064 via API
+[API] Advancing bills "dcd8c4cf-651b-4038-910d-d7a19896cae5"...
+[OK] Linked Bill BILL/2026/06/09/000195 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/09/000195 in vendor profile via API
+[WARN] Ledger API busy or returned error. Retrying...
+[INFO] Bill not found in ledger yet (Index pending). Attempt 1/15. Retrying in 2s...
+[SUCCESS] API Confirmed: Bill BILL/2026/06/09/000195 is physically present in Gentium Concrite Industry's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/09/000064 -> Bill BILL/2026/06/09/000195

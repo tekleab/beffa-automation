@@ -1,0 +1,35 @@
+[PERFORMANCE] API - Auth API Verification: 400.87ms
+[PERFORMANCE] API - Auth API Verification: 215.84ms
+[STEP 1] Discovering 3 items with stock ≥ 1...
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1197.25ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 702.25ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 531.16ms
+[ITEM 1] Pencil-B-1781005468577 | stock:10 | cost:$15
+[ITEM 2] Switch complete set | stock:44 | cost:$39728.71
+[ITEM 3] Control panal | stock:25 | cost:$5088.172307692307
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/06/09/000175 (29f794ec-8ef1-4596-87e5-a68e6b631538)
+[API] Advancing invoices "29f794ec-8ef1-4596-87e5-a68e6b631538"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] Pencil-B-1781005468577 | before:10 → after:9 (exp:9)
+[ITEM 2] Switch complete set | before:44 → after:43 (exp:43)
+[ITEM 3] Control panal | before:25 → after:24 (exp:24)
+[STEP 5] Verifying COGS journal entries...
+[JE] 11 entries found
+[JE] Sales (Revenue) | Dr:0 Cr:15
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:15 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:15
+[JE] Sales (Revenue) | Dr:0 Cr:39728.71
+[JE] Withholding Tax Receivable (Trade & Other Receivables) | Dr:794.5742 Cr:0
+[JE] Cost of Others (Cost of Sales) | Dr:39728.71 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:39728.71
+[JE] Sales (Revenue) | Dr:0 Cr:5088.172307692307
+[JE] Cost of Others (Cost of Sales) | Dr:5088.172307692307 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:5088.172307692307
+[JE] Accounts Receivable (Trade & Other Receivables) | Dr:44037.308107692304 Cr:0
+[AUDIT] COGS debit: $39728.71 | Matched inventory credit: $39728.71
+[PASS] COGS journal verified — Dr:$39728.71 = Cr:$39728.71
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced

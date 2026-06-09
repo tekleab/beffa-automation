@@ -1,0 +1,36 @@
+[PERFORMANCE] API - Auth API Verification: 210.62ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1244.70ms
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 8b7763c3-3265-417f-8212-b2fb61d66f6f (steam door 78x2.02)
+[ITEM]  Stock       : 16
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "516959d4-b675-47ef-90d6-fef3ee7d5faa"...
+[OK] SO SO/2026/06/09/000061 approved (ID: 516959d4-b675-47ef-90d6-fef3ee7d5faa)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "38a1ccb2-a405-42d0-9984-9c2a889c6454"...
+[OK] Batch 1 invoice INV/2026/06/09/000194 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "e3aaf077-9854-45a6-b4db-94af870f55d2"...
+[OK] Batch 2 invoice INV/2026/06/09/000195 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/06/09/000061 (ID: 516959d4-b675-47ef-90d6-fef3ee7d5faa)
+[DOCUMENT] Invoice 1    : INV/2026/06/09/000194 (ID: 38a1ccb2-a405-42d0-9984-9c2a889c6454) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/06/09/000195 (ID: e3aaf077-9854-45a6-b4db-94af870f55d2) — 6 units
+[ITEM]     Item         : steam door 78x2.02 (8b7763c3-3265-417f-8212-b2fb61d66f6f)
+[STOCK]    Before       : 16
+[STOCK]    After        : 6
+[STOCK]    Expected     : 6
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[API] Advancing invoices "e6b9c131-eb31-4ccc-9525-711db050adb7"...

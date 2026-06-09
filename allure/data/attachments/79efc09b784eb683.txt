@@ -1,0 +1,19 @@
+[PERFORMANCE] API - Auth API Verification: 221.26ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1031.65ms
+[PERFORMANCE] API - Auth API Verification: 197.49ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "e14f52e5-731f-43dc-a80f-5c0c8240f7d8"...
+[BILL] BILL/2026/06/09/000198 (e14f52e5-731f-43dc-a80f-5c0c8240f7d8)
+[ATTACK] Attempting to create and approve a 0.00 payment against live bill...
+[PASS] Zero-amount payment correctly blocked: apiRequestContext.get: socket hang up
+Call log:
+  - → GET http://168.119.175.142:8001/api/currency?year=2018&period=yearly&calendar=ec
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - x-company: BM Tech
+    - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4MTEwNDM1OCwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODExMDQzNTh9.Z30as4i0mwUv7qyihOGa-YJE9xECKmPOdTw6_Y-8d44
+    - Content-Type: application/json
+    - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4MTEwNDM1OCwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODExMDQzNTh9.Z30as4i0mwUv7qyihOGa-YJE9xECKmPOdTw6_Y-8d44; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4MTEwNDM1OCwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODExMDQzNTh9.Z30as4i0mwUv7qyihOGa-YJE9xECKmPOdTw6_Y-8d44
+
