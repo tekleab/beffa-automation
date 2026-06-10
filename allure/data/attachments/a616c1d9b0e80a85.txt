@@ -1,0 +1,29 @@
+[PERFORMANCE] API - Auth API Verification: 211.92ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 533.41ms
+[PERFORMANCE] API - Auth API Verification: 203.32ms
+[API] Advancing purchase-orders "c1843c47-ba6d-485f-a738-24e3fbde5ac2"...
+[API] Advancing bills "3a9a8683-d7ad-462f-9023-576934ed0f6b"...
+[BILL 1] BILL/2026/06/10/000013 — approved
+[API] Advancing bills "f764fd68-ba48-4ecb-ab95-2ddd8938ce07"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ Double-Billing Audit — PO: PO/2026/06/10/000001                             │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ PO Ref                           │ PO/2026/06/10/000001                     │
+  │ PO Qty                           │ 10 units                                 │
+  │ PO Unit Price                    │ $1000.00                                 │
+  │ PO Total Auth.                   │ $10000.00                                │
+  │ Bill 1 Ref                       │ BILL/2026/06/10/000013                   │
+  │ Bill 1 Amount                    │ $10000.00                                │
+  │ Bill 1 Status                    │ approved                                 │
+  │ Bill 2 Ref                       │ BILL/2026/06/10/000014                   │
+  │ Bill 2 Amount                    │ $10000.00                                │
+  │ Bill 2 Status                    │ approved                                 │
+  │ Total AP Liability               │ $20000.00                                │
+  │ Overpaid By                      │ $10000.00                                │
+  │ Fix Required                     │ Reject bill if PO already fully billed   │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

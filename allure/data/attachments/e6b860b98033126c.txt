@@ -1,0 +1,33 @@
+[PERFORMANCE] API - Auth API Verification: 228.58ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 10]...
+[PERFORMANCE] API - Item Discovery (50 Records): 722.17ms
+[PERFORMANCE] API - Auth API Verification: 264.84ms
+[STEP 1] Creating PO for 10 units...
+[API] Advancing purchase-orders "d8f5dffe-3e54-44d3-b0da-c4c4ca28825b"...
+[OK] PO PO/2026/06/10/000005 approved.
+[STEP 2] Receiving only 5 / 10 units via partial PO bill...
+[API] Advancing bills "04cd155d-8c27-4214-ba0f-f0531b82d915"...
+[OK] Bill BILL/2026/06/10/000021 approved for 5 units.
+[STEP 3] Verifying partial release via bill detail...
+
+  ┌───────────────────────────────────────────────────────────────────┐
+  │ Partial PO Release Audit                                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Ref                       │ PO/2026/06/10/000005             │
+  │ PO ID                        │ d8f5dffe-3e54-44d3-b0da-c4c4ca2… │
+  │ Bill Ref                     │ BILL/2026/06/10/000021           │
+  │ Bill ID                      │ 04cd155d-8c27-4214-ba0f-f0531b8… │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Qty Authorized            │ 10 units                         │
+  │ Received (this bill)         │ 5 units                          │
+  │ Remaining on PO              │ 5 units                          │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Unit Price                   │ $5000.00                         │
+  │ Bill Amount                  │ $25000.00                        │
+  │ Remaining Liability          │ $25000.00                        │
+  │ PO Total                     │ $50000.00                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Result                       │ ✓ PASS — Partial tracking corre… │
+  └───────────────────────────────────────────────────────────────────┘
+
+[PASS] Partial PO release confirmed: 5 received, 5 remaining.

@@ -1,0 +1,23 @@
+[PERFORMANCE] API - Auth API Verification: 390.10ms
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 662.15ms
+[PERFORMANCE] API - Auth API Verification: 218.21ms
+[ATTACK] Injecting Bill with future date: 2028-06-10T00:00:00Z...
+[API] Advancing bills "a7fed67c-c5f4-4522-965b-ad6f8cad1712"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/06/10/000012                   │
+  │ Bill ID                          │ a7fed67c-c5f4-4522-965b-ad6f8cad1712     │
+  │ Invoice Date                     │ 2028-06-10T00:00:00Z                     │
+  │ Today                            │ 2026-06-10                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
