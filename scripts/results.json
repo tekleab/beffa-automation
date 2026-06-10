@@ -1,29 +1,37 @@
 {
-  "total": 17,
-  "passed": 10,
-  "failed": 7,
+  "total": 163,
+  "passed": 103,
+  "failed": 60,
   "skipped": 0,
-  "passRate": 58.8,
-  "avgDurationMs": 24428,
-  "lastUpdated": "2026-06-10T13:39:34.947Z",
+  "passRate": 63.2,
+  "avgDurationMs": 16006,
+  "lastUpdated": "2026-06-10T14:55:39.446Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 10,
-      "failed": 7,
+      "passed": 103,
+      "failed": 60,
       "skipped": 0,
       "trend": [
-        68.3,
         64.7,
         64.7,
         71.8,
         64.7,
         64.7,
-        58.8
+        58.8,
+        63.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "499",
+      "commit": "7dcd76b",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "43m 28s",
+      "passRate": 63.2,
+      "status": "failed"
+    },
     {
       "run": "498",
       "commit": "7e0d091",
@@ -95,14 +103,6 @@
       "duration": "9m 37s",
       "passRate": 64.7,
       "status": "failed"
-    },
-    {
-      "run": "489",
-      "commit": "6646cb0",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "9m 38s",
-      "passRate": 64.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
-      "firstSeen": "2026-06-10T13:36:40.084Z",
+      "firstSeen": "2026-06-10T14:40:57.708Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,7 +118,7 @@
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
-      "firstSeen": "2026-06-10T13:36:40.110Z",
+      "firstSeen": "2026-06-10T14:40:57.627Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -126,39 +126,63 @@
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
       "error": "Error: SO API Failed\n\n  23 |             warehouseId: itemResult.warehouseId\n  24 |         });\n> 25 |         if (!soResult.success) throw new Error(\"SO API Failed\");\n     |                          ",
-      "firstSeen": "2026-06-10T13:36:40.099Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for \"BM Tech\" is invalid or expired.\n\n   at ../lib/base-page.ts:164\n\n  162 |         break;\n  163 |       } else if (status === 401) {\n> 1",
-      "firstSeen": "2026-06-10T13:37:01.633Z",
+      "firstSeen": "2026-06-10T14:40:57.486Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  104 |             { headers ",
-      "firstSeen": "2026-06-10T13:37:05.979Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
       "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
-      "firstSeen": "2026-06-10T13:37:50.869Z",
+      "firstSeen": "2026-06-10T14:41:47.615Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-06-10T13:38:05.306Z",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
+      "firstSeen": "2026-06-10T14:42:05.964Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
+      "error": "Error: Invoice creation failed: 422 — {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t],\n\t\t\"items.1.price\": [\n\t\t\t\"price must be positive\"\n\t\t],\n\t\t\"items.2.price\": [\n\t\t\t",
+      "firstSeen": "2026-06-10T14:42:10.902Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
+      "firstSeen": "2026-06-10T14:42:10.256Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Forensic Audit: Invoice Void & Stock Restoration",
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
+      "firstSeen": "2026-06-10T14:42:25.765Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Invoice must reject second receipt after full payment",
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
+      "firstSeen": "2026-06-10T14:42:30.246Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.price\": [\n\t\t\t\"price must be positive\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating invoice\"\n}\n\n\n   ",
+      "firstSeen": "2026-06-10T14:42:40.684Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
