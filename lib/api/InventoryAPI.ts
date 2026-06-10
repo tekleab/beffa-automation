@@ -628,7 +628,7 @@ export class InventoryAPI extends BasePage {
     return { id: order.id, ref: order.ref, status: 'approved', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
   }
 
-  async ensureTransferDestinationAPI(fromLocationId: string): Promise<{ locationId: string; warehouseId: string }> {
+  async ensureTransferDestinationAPI(fromLocationId: string, itemId?: string): Promise<{ locationId: string; warehouseId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -641,31 +641,62 @@ export class InventoryAPI extends BasePage {
       'x-role': 'IT Administrator / User Manager'
     };
 
-    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
-    if (locResp.ok()) {
-      const locData = await locResp.json();
-      const dest = (locData.items || locData.data || []).find((l: any) => l.id !== fromLocationId);
-      if (dest) return { locationId: dest.id, warehouseId: dest.warehouse_id || dest.warehouse?.id };
+    // Priority 1: another location the item is already registered at
+    if (itemId) {
+      const itemResp = await this.page.request.get(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
+      if (itemResp.ok()) {
+        const itemData = await itemResp.json();
+        const otherLoc = (itemData.inventory_item_locations || [])
+          .find((l: any) => l.location_id !== fromLocationId && (l.warehouse_id || l.warehouse?.id));
+        if (otherLoc) {
+          console.log(`[DEST] Using existing item location: ${otherLoc.location_id}`);
+          return { locationId: otherLoc.location_id, warehouseId: otherLoc.warehouse_id || otherLoc.warehouse?.id };
+        }
+      }
     }
 
-    // No second location — create one
-    console.log('[SELF-HEALING] No second location found. Creating destination warehouse + location...');
-    const whResp = await this.page.request.get(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
-    let address = { region: 'Addis Ababa City Administration', zone: 'Bole Subcity', woreda: 'Woreda 2', kebele: '1' };
-    if (whResp.ok()) {
-      const existing = ((await whResp.json()).items || [])[0];
-      if (existing?.address) address = { ...address, ...existing.address };
+    // Priority 2: any other system location
+    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers });
+    if (locResp.ok()) {
+      const locData = await locResp.json();
+      const allLocs = locData.items || locData.data || [];
+      const dest = allLocs.find((l: any) => l.id !== fromLocationId && (l.warehouse_id || l.warehouse?.id));
+      if (dest) {
+        console.log(`[DEST] Using system location: ${dest.id}`);
+        return { locationId: dest.id, warehouseId: dest.warehouse_id || dest.warehouse?.id };
+      }
+
+      // Priority 3: only one location exists — create a second one inside the SAME warehouse
+      // (locations don't require an address — only warehouses do)
+      const srcLoc = allLocs.find((l: any) => l.id === fromLocationId) || allLocs[0];
+      const warehouseId = srcLoc?.warehouse_id || srcLoc?.warehouse?.id;
+      if (warehouseId) {
+        console.log(`[SELF-HEALING] Only one location found. Creating a second location in warehouse ${warehouseId}...`);
+        const createResp = await this.safePost(`${apiBase}/locations?${params}`, {
+          data: {
+            name: `Transfer Dest ${Date.now().toString().slice(-5)}`,
+            warehouse_id: warehouseId,
+            type: 'Section',
+            max_capacity: 100,
+            ref: `xfer-dest-${Date.now().toString().slice(-5)}`,
+            description: 'Auto-created for E2E transfer tests'
+          },
+          headers,
+          label: 'Create Dest Location'
+        });
+        if (createResp.ok()) {
+          const newLoc = await createResp.json();
+          if (newLoc?.id) {
+            console.log(`[SELF-HEALING] Created location: ${newLoc.name} (${newLoc.id})`);
+            return { locationId: newLoc.id, warehouseId };
+          }
+        }
+        const errText = await createResp.text().catch(() => '(unreadable)');
+        console.log(`[SELF-HEALING] Location creation failed (${createResp.status()}): ${errText.substring(0, 120)}`);
+      }
     }
-    const newWh = await (await this.safePost(`${apiBase}/warehouses?${params}`, {
-      data: { name: 'Transfer Destination Warehouse', status: 'Active', max_capacity: 500, address },
-      headers, label: 'Create Dest Warehouse'
-    })).json();
-    const newLoc = await (await this.safePost(`${apiBase}/locations?${params}`, {
-      data: { name: 'Transfer Destination Location', warehouse_id: newWh.id, type: 'Section', max_capacity: 500, ref: `xfer-dest-${Date.now().toString().slice(-5)}` },
-      headers, label: 'Create Dest Location'
-    })).json();
-    console.log(`[SELF-HEALING] Created: ${newWh.name} / ${newLoc.name}`);
-    return { locationId: newLoc.id, warehouseId: newWh.id };
+
+    throw new Error('[SETUP] Could not resolve or create a second location. Ensure the environment has at least 2 locations, or that the API allows location creation.');
   }
 
   async ensureTransferLocationAPI(
@@ -698,7 +729,7 @@ export class InventoryAPI extends BasePage {
         name: 'Transfer Destination Location',
         warehouse_id: newWarehouse.id,
         type: 'Section',
-        max_capacity: 500,
+        max_capacity: 100,
         description: 'Auto-created for E2E transfer tests',
         ref: `transfer-dest-${Date.now().toString().slice(-5)}`
       },

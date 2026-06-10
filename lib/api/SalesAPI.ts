@@ -363,7 +363,7 @@ export class SalesAPI extends BasePage {
     return { success: true, ref: json.ref, id: json.id };
   }
 
-  async reverseInvoiceAPI(invoiceId: string): Promise<boolean> {
+  async reverseInvoiceAPI(invoiceId: string): Promise<{ id: string; ref: string; voidedStatus: string } | false> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -371,15 +371,11 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
-    // Based on user feedback, the reversal action is a PATCH to /api/invoices/:id/void
     const response = await this.page.request.patch(`${apiBase}/invoices/${invoiceId}/void?${params}`, {
-      data: { status: 'reversed' }, // Some backends ignore body for void, but sending status is safe
-      headers: {
-        'x-company': process.env.BEFFA_COMPANY as string,
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json'
-      }
+      data: { status: 'reversed' },
+      headers
     });
 
     if (!response.ok()) {
@@ -387,7 +383,34 @@ export class SalesAPI extends BasePage {
       console.error(`[ERROR] Invoice Reversal API failed (${response.status()}): ${err}`);
       return false;
     }
-    return true;
+
+    // Fetch the invoice after void to confirm its actual status and check for a linked credit note
+    await new Promise(r => setTimeout(r, 2000));
+    const invResp = await this.page.request.get(`${apiBase}/invoice/${invoiceId}?${params}`, { headers });
+    if (!invResp.ok()) {
+      console.warn(`[WARN] Could not re-fetch invoice after void: ${invResp.status()}`);
+      return { id: invoiceId, ref: '', voidedStatus: 'unknown' };
+    }
+    const inv = await invResp.json();
+    const voidedStatus: string = inv.status || 'unknown';
+
+    // Check if ERP created a linked credit note document
+    const creditNoteId: string | undefined =
+      inv.credit_note_id || inv.credit_note?.id ||
+      inv.reversed_invoice_id || inv.reversal_id ||
+      inv.void_invoice_id || inv.void_id;
+    const creditNoteRef: string =
+      inv.credit_note_number || inv.credit_note?.ref ||
+      inv.credit_note?.invoice_number || inv.void_invoice_number || '';
+
+    if (creditNoteId) {
+      console.log(`[VOID] Credit note linked on invoice: id=${creditNoteId} ref=${creditNoteRef}`);
+      return { id: creditNoteId, ref: creditNoteRef, voidedStatus };
+    }
+
+    // ERP void = undo to draft (no separate credit note) — return original ID with status
+    console.log(`[VOID] Invoice ${invoiceId} voided → status=${voidedStatus} (no separate credit note; sales_journal cleared)`);
+    return { id: invoiceId, ref: inv.invoice_number || '', voidedStatus };
   }
 
   async reverseReceiptAPI(receiptId: string): Promise<boolean> {

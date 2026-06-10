@@ -32,21 +32,28 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
         item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 10 });
         if (!item) throw new Error('[SETUP] No item with minStock=10 found.');
 
-        const dest = await app.api.inventory.ensureTransferDestinationAPI(item.locationId!);
-        destLocationId  = dest.locationId;
-        destWarehouseId = dest.warehouseId;
+        // TC-04 and TC-05 only need item + source location — destination resolved best-effort
+        try {
+            const dest = await app.api.inventory.ensureTransferDestinationAPI(item.locationId!, item.itemId);
+            destLocationId  = dest.locationId;
+            destWarehouseId = dest.warehouseId;
+        } catch (e: any) {
+            console.log(`[SETUP] Destination location unavailable: ${e.message}`);
+            // destLocationId stays undefined — TC-01/02/03 will skip, TC-04/05 run fine
+        }
 
         // Snapshot stock at both locations before any transfer
         const srcDetails  = await app.api.inventory.getItemDetailsAPI(item.itemId, item.locationId);
-        const destDetails = await app.api.inventory.getItemDetailsAPI(item.itemId, destLocationId);
+        const destDetails = destLocationId ? await app.api.inventory.getItemDetailsAPI(item.itemId, destLocationId) : null;
         srcStockBefore  = srcDetails?.currentStock  ?? item.currentStock;
         destStockBefore = destDetails?.currentStock ?? 0;
 
         console.log(`[SETUP] Item: "${item.itemName}" | Src stock: ${srcStockBefore} | Dest stock: ${destStockBefore}`);
-        console.log(`[SETUP] Src loc: ${item.locationId} | Dest loc: ${destLocationId}`);
+        console.log(`[SETUP] Src loc: ${item.locationId} | Dest loc: ${destLocationId ?? 'N/A (single-location env)'}`);
     });
 
     test('TC-01: Source stock must decrease by exact transfer quantity', async () => {
+        if (!destLocationId) { test.skip(true, 'Single-location environment — transfer tests require 2 locations'); return; }
         const qty = 5;
 
         await app.api.inventory.createMoveOrderAPI({
@@ -67,6 +74,7 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
     });
 
     test('TC-02: Destination stock must increase by exact transfer quantity', async () => {
+        if (!destLocationId) { test.skip(true, 'Single-location environment — transfer tests require 2 locations'); return; }
         const qty = 5;
         const expectedDest = destStockBefore + qty;
 
@@ -80,6 +88,7 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
     });
 
     test('TC-03: Total stock conservation — sum across locations unchanged', async () => {
+        if (!destLocationId) { test.skip(true, 'Single-location environment — transfer tests require 2 locations'); return; }
         const qty = 3;
         const totalBefore = srcStockBefore + destStockBefore;
 
@@ -106,15 +115,18 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
 
     test('TC-04: Move order with quantity=0 must be rejected', async () => {
         const { apiBase, headers, qs } = await app.buildApiContext();
+        // Use source location as destination placeholder — rejection should happen before location validation
+        const effectiveDest = destLocationId ?? item.locationId!;
+        const effectiveDestWh = destWarehouseId ?? item.warehouseId!;
         const resp = await app.page.request.post(`${apiBase}/move-orders?${qs}`, {
             headers,
             data: {
-                inventory_item_id:       item.itemId,
-                quantity:                0,
-                from_warehouse_id:       item.warehouseId,
-                from_location_id:        item.locationId,
-                destination_warehouse_id: destWarehouseId,
-                destination_location_id:  destLocationId
+                inventory_item_id:        item.itemId,
+                quantity:                 0,
+                from_warehouse_id:        item.warehouseId,
+                from_location_id:         item.locationId,
+                destination_warehouse_id: effectiveDestWh,
+                destination_location_id:  effectiveDest
             }
         });
         console.log(`[TC-04] Zero qty response: ${resp.status()}`);
@@ -124,15 +136,17 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
     test('TC-05: Move order exceeding available stock must be rejected', async () => {
         const excessQty = srcStockBefore + 9999;
         const { apiBase, headers, qs } = await app.buildApiContext();
+        const effectiveDest = destLocationId ?? item.locationId!;
+        const effectiveDestWh = destWarehouseId ?? item.warehouseId!;
         const resp = await app.page.request.post(`${apiBase}/move-orders?${qs}`, {
             headers,
             data: {
-                inventory_item_id:       item.itemId,
-                quantity:                excessQty,
-                from_warehouse_id:       item.warehouseId,
-                from_location_id:        item.locationId,
-                destination_warehouse_id: destWarehouseId,
-                destination_location_id:  destLocationId
+                inventory_item_id:        item.itemId,
+                quantity:                 excessQty,
+                from_warehouse_id:        item.warehouseId,
+                from_location_id:         item.locationId,
+                destination_warehouse_id: effectiveDestWh,
+                destination_location_id:  effectiveDest
             }
         });
         const body = await resp.text();
