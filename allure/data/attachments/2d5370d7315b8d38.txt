@@ -1,0 +1,26 @@
+[PERFORMANCE] API - Auth API Verification: 476.66ms
+[AUTH] Frontend not rendered — skipping company switch (API session active).
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] Discovering random item via API (Year 2018) [MinStock: 1]...
+[PERFORMANCE] API - Item Discovery (50 Records): 1287.83ms
+[OK] Discovered: "Timer 6 pol 12 H" via API | Stock: 22
+[API] Advancing sales-orders "842bd1e1-3214-4fd7-8f04-0f27775a8bbe"...
+[OK] Sales Order SO/2026/06/10/000064 approved via API
+[API] Advancing invoices "08f46d7e-7161-4f3d-b716-9bc63d0e283e"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[OK] Invoice INV/2026/06/10/000244 approved via API
+[INFO] Document Setup Complete: INV/2026/06/10/000244 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[RECEIPT] amount=1000 | invoice=08f46d7e...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/10/000065
+[OK] Receipt created via API: RCPT/2026/06/10/000065
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "071a330b-2a38-4f2b-b23b-cbb3f28b51ea"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/10/000065 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/10/000065 verified in profile
