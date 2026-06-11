@@ -61,8 +61,8 @@ async function isEnvironmentClean(apiUrl: string, company: string): Promise<bool
             email: process.env.BEFFA_USER,
             password: process.env.BEFFA_PASS
         });
-        if (loginRes.status !== 200 || !loginRes.body?.auth_token) {
-            console.log('[SEED] ⚠ Could not login to check environment');
+        if (![200, 201].includes(loginRes.status) || !loginRes.body?.auth_token) {
+            console.log(`[SEED] ⚠ Could not login to check environment (status=${loginRes.status} user=${process.env.BEFFA_USER})`);
             return false;
         }
         const token = loginRes.body.auth_token;
@@ -118,7 +118,7 @@ async function seedDemoData(frontendUrl: string, company: string): Promise<boole
             email: process.env.BEFFA_USER,
             password: process.env.BEFFA_PASS
         });
-        if (loginRes.status !== 200 || !loginRes.body?.auth_token) {
+        if (![200, 201].includes(loginRes.status) || !loginRes.body?.auth_token) {
             console.log('[SEED] ⚠ Login failed during seeding');
             return false;
         }

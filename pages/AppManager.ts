@@ -133,8 +133,8 @@ export class AppManager {
   async captureRandomItemDataAPI(...args: Parameters<InventoryAPI['captureRandomItemDataAPI']>) { return await this.api.inventory.captureRandomItemDataAPI(...args); }
   async createFreshItemWithStockAPI(...args: Parameters<InventoryAPI['createFreshItemWithStockAPI']>) { return await this.api.inventory.createFreshItemWithStockAPI(...args); }
   async captureRandomItemDetails() {
-    const target = await this.api.inventory.captureRandomItemDataAPI();
-    console.log(`[OK] Discovered: "${target.itemName}" via API | Stock: ${target.currentStock}`);
+    const target = await this.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+    console.log(`[OK] Created fresh item: "${target.itemName}" | Stock: ${target.currentStock}`);
     return target;
   }
   async extractDetailValue(...args: Parameters<BasePage['extractDetailValue']>) { return await this.base.extractDetailValue(...args); }
