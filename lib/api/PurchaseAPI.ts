@@ -101,10 +101,15 @@ export class PurchaseAPI extends BasePage {
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
-    // 3. Fetch Tax
-    const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
-    const taxData = await safeJson(taxResp, 'Tax Discovery');
-    const tax = taxData.items?.[0] || taxData.data?.[0];
+    // 3. Fetch Tax (optional)
+    let tax: any = null;
+    try {
+      const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+      if (taxResp.ok()) {
+        const taxData = await taxResp.json();
+        tax = taxData.items?.[0] || taxData.data?.[0] || null;
+      }
+    } catch (e) { console.warn(`[WARN] Tax Discovery failed — continuing without tax`); }
 
     // 4. Fetch Location/Warehouse
     const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });

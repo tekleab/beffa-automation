@@ -67,8 +67,9 @@ async function isEnvironmentClean(apiUrl: string, company: string): Promise<bool
         }
         const token = loginRes.body.auth_token;
 
-        // Authenticated check: count customers via API
-        const checkUrl = `${apiUrl}/api/customers?page=1&pageSize=1&year=2018&period=yearly&calendar=ec`;
+        // Check account count — Seed Basic Data populates 100 accounts.
+        // If < 10 accounts exist, basic data has not been seeded yet.
+        const checkUrl = `${apiUrl}/api/accounts?page=1&pageSize=1&year=2018&period=yearly&calendar=ec`;
         const res = await new Promise<{ status: number; body: any }>((resolve) => {
             const lib = checkUrl.startsWith('https') ? https : http;
             const req = lib.get(checkUrl, {
@@ -89,8 +90,8 @@ async function isEnvironmentClean(apiUrl: string, company: string): Promise<bool
 
         if (res.status !== 200 || !res.body) return false;
         const count = res.body.total ?? res.body.count ?? (res.body.items || res.body.data || []).length;
-        const isClean = Number(count) === 0;
-        console.log(`[SEED] Customer count: ${count} → ${isClean ? 'clean (needs seeding)' : 'has data'}`);
+        const isClean = Number(count) < 10;
+        console.log(`[SEED] Chart of Accounts count: ${count} → ${isClean ? 'not seeded (needs seeding)' : 'already seeded'}`);
         return isClean;
     } catch (error) {
         console.log('[SEED] ⚠ Error checking environment:', error);

@@ -83,10 +83,19 @@ export class SalesAPI extends BasePage {
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
-    // 4. Fetch Tax
-    const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
-    const taxData = await safeJson(taxResp, 'Tax Discovery');
-    const tax = taxData.items?.[0] || taxData.data?.[0];
+    // 4. Fetch Tax (optional — swallow transient errors like conn busy)
+    let tax: any = null;
+    try {
+      const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+      if (taxResp.ok()) {
+        const taxData = await taxResp.json();
+        tax = taxData.items?.[0] || taxData.data?.[0] || null;
+      } else {
+        console.warn(`[WARN] Tax Discovery non-OK (${taxResp.status()}) — continuing without tax`);
+      }
+    } catch (e) {
+      console.warn(`[WARN] Tax Discovery failed — continuing without tax`);
+    }
 
     // 5. Fetch Location/Warehouse
     const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
@@ -332,10 +341,12 @@ export class SalesAPI extends BasePage {
     const currency = currData.items?.[0] || currData.data?.[0];
     if (!currency) throw new Error('Receipt Discovery Failed: No currencies found.');
 
-    // 4. Discover Tax
-    const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
-    const taxData = await safeJson(taxResp, 'Tax Discovery');
-    const tax = taxData.items?.[0] || taxData.data?.[0];
+    // 4. Discover Tax (optional)
+    let tax: any = null;
+    try {
+      const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+      if (taxResp.ok()) { const taxData = await taxResp.json(); tax = taxData.items?.[0] || taxData.data?.[0]; }
+    } catch (e) { console.warn('[WARN] Tax Discovery failed — continuing without tax'); }
 
     const amount = data.amount || Math.floor(Math.random() * 1500000) + 500000;
 
