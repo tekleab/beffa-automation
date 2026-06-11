@@ -1,0 +1,30 @@
+[PERFORMANCE] API - Auth API Verification: 259.18ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781175854923 (228d40c4-aff9-4788-95e9-76c373508c33) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 155.50ms
+[API] Advancing purchase-orders "b8dffd9a-5df6-4260-b58a-5b1d54bdb399"...
+[API] Advancing bills "ae9a9cfe-066d-4463-a4ec-23490efa838c"...
+[BILL 1] BILL/2026/06/11/000112 — 100% of PO consumed
+[API] Advancing bills "c078bfb7-f167-42d6-9f43-79f5d88e4a43"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ PO Overbilling Audit — PO: PO/2026/06/11/000037                             │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ PO Ref                           │ PO/2026/06/11/000037                     │
+  │ PO Qty Authorized                │ 10 units                                 │
+  │ PO Unit Price                    │ $1000.00                                 │
+  │ PO Total                         │ $10000.00                                │
+  │ Bill 1 (100%)                    │ BILL/2026/06/11/000112 — $10000.00       │
+  │ Bill 1 Status                    │ approved                                 │
+  │ Overflow Bill Ref                │ BILL/2026/06/11/000113                   │
+  │ Overflow Qty                     │ 1 unit (beyond PO)                       │
+  │ Overflow Amount                  │ $1000.00                                 │
+  │ Overflow Status                  │ approved                                 │
+  │ Total Billed                     │ $11000.00                                │
+  │ Overbilled By                    │ $1000.00                                 │
+  │ Fix Required                     │ Reject if received_qty > PO qty          │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

@@ -1,0 +1,34 @@
+[PERFORMANCE] API - Auth API Verification: 239.69ms
+[PERFORMANCE] API - Auth API Verification: 162.50ms
+[STEP 1] Creating 3 fresh WAC items...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1781175647794 (68699f77-a15d-4668-b98d-14419e61a76a) | method=WAC | stock=10@$50 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1781175649889 (4857d3c9-13aa-4534-a591-b3a0243ebbec) | method=WAC | stock=10@$80 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1781175651816 (b3e29acf-2c2c-4fd0-97f9-bb23a7dc6074) | method=WAC | stock=10@$120 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ITEM 1] WAC-Item-1781175647794 | stock:10 | cost:$50
+[ITEM 2] WAC-Item-1781175649889 | stock:10 | cost:$80
+[ITEM 3] WAC-Item-1781175651816 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/06/11/000061 (5f519fde-4a8d-4ff2-8a20-8fbade22b1ff)
+[API] Advancing invoices "5f519fde-4a8d-4ff2-8a20-8fbade22b1ff"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] WAC-Item-1781175647794 | before:10 → after:9 (exp:9)
+[ITEM 2] WAC-Item-1781175649889 | before:10 → after:9 (exp:9)
+[ITEM 3] WAC-Item-1781175651816 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales (Revenue) | Dr:0 Cr:50
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:50 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:50
+[JE] Sales (Revenue) | Dr:0 Cr:80
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:80 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:80
+[JE] Sales (Revenue) | Dr:0 Cr:120
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:120 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:120
+[JE] Accounts Receivable (Trade & Other Receivables) | Dr:250 Cr:0

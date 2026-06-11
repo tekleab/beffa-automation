@@ -1,0 +1,26 @@
+[PERFORMANCE] API - Auth API Verification: 156.71ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781175895152 (53d05fcb-f744-4164-a8f9-516f6166009c) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 199.54ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "c875f6ad-6b17-4b59-8ea5-e31bdc62b4c0"...
+[BILL] BILL/2026/06/11/000119 (c875f6ad-6b17-4b59-8ea5-e31bdc62b4c0)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for c875f6ad-6b17-4b59-8ea5-e31bdc62b4c0 via API (CashAcct: eb913a22-1146-48e3-abb4-2148afb10cd9)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/06/11/000119               │
+  │ Bill ID                          │ c875f6ad-6b17-4b59-8ea5-e31bdc62b4c… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API Failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.
