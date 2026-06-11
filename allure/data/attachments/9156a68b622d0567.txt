@@ -1,0 +1,30 @@
+[PERFORMANCE] API - Auth API Verification: 184.29ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781170553761 (b0d3fcb8-49a1-4420-a12a-2acef0a0c8c9) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 144.55ms
+[API] Advancing purchase-orders "1436cc7d-f0b8-41f3-8b66-4389b5ba70d0"...
+[API] Advancing bills "806b391a-653b-4d8b-b7d1-cf0c09009eb0"...
+[BILL 1] BILL/2026/06/11/000067 — approved
+[API] Advancing bills "36869623-9190-42f6-b78b-59b6a7aa4ff3"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ Double-Billing Audit — PO: PO/2026/06/11/000021                             │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ PO Ref                           │ PO/2026/06/11/000021                     │
+  │ PO Qty                           │ 10 units                                 │
+  │ PO Unit Price                    │ $1000.00                                 │
+  │ PO Total Auth.                   │ $10000.00                                │
+  │ Bill 1 Ref                       │ BILL/2026/06/11/000067                   │
+  │ Bill 1 Amount                    │ $10000.00                                │
+  │ Bill 1 Status                    │ approved                                 │
+  │ Bill 2 Ref                       │ BILL/2026/06/11/000068                   │
+  │ Bill 2 Amount                    │ $10000.00                                │
+  │ Bill 2 Status                    │ approved                                 │
+  │ Total AP Liability               │ $20000.00                                │
+  │ Overpaid By                      │ $10000.00                                │
+  │ Fix Required                     │ Reject bill if PO already fully billed   │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
