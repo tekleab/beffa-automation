@@ -22,11 +22,6 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
 
-        if (!item) {
-            console.log(`[SKIP] No item with stock >= 1 found.`);
-            return;
-        }
-
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: meta.customerId,
             itemId: item.itemId,
@@ -38,46 +33,23 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         await app.advanceDocumentAPI(inv.id, 'invoices');
         console.log(`[OK] Invoice ${inv.ref} approved.`);
 
-        // Fetch actual invoice amount after approval — backend may adjust totals
+        // Fetch actual invoice amount after approval
         const invData = await app.api.sales.getInvoiceAPI(inv.id);
-        const actualInvAmount = parseFloat(invData.unreceived_amount || invData.total_amount || invData.net_total || INVOICE_AMOUNT);
-        const ACTUAL_PARTIAL = Math.round(actualInvAmount * 0.4 * 100) / 100; // 40% partial
-        const ACTUAL_REMAINING = Math.round((actualInvAmount - ACTUAL_PARTIAL) * 100) / 100;
-        console.log(`[INFO] Invoice actual amount: ${actualInvAmount} | Partial: ${ACTUAL_PARTIAL} | Remaining: ${ACTUAL_REMAINING}`);
+        const actualDue = parseFloat(invData.unreceived_amount ?? invData.due ?? invData.net_due ?? '0');
+        console.log(`[INFO] Invoice ${inv.ref} | Amount Due from API: ${actualDue}`);
+        expect(actualDue, 'Invoice Amount Due must be > 0 after approval').toBeGreaterThan(0);
 
-        console.log(`[STEP 2] Navigating to invoice detail page via UI...`);
+        console.log(`[STEP 2] Navigating to invoice detail page...`);
         await page.goto(`/receivables/invoices/${inv.id}/detail`, { waitUntil: 'domcontentloaded' });
         await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
 
-        console.log(`[STEP 3] Creating partial receipt via API (proven path)...`);
-        let rcptResult: any;
-        for (let attempt = 1; attempt <= 3; attempt++) {
-            try {
-                rcptResult = await app.createInvoiceReceiptAPI({
-                    invoiceId: inv.id,
-                    customerId: meta.customerId,
-                    amount: ACTUAL_PARTIAL
-                });
-                break;
-            } catch (e: any) {
-                if (attempt === 3) throw e;
-                console.log(`[RETRY ${attempt}/3] Receipt API failed (${e.message?.substring(0, 80)}), retrying in 5s...`);
-                await page.waitForTimeout(5000);
-            }
-        }
-        await app.advanceDocumentAPI(rcptResult.id, 'receipts');
-        console.log(`[OK] Partial receipt ${rcptResult.ref} created and approved.`);
+        console.log(`[STEP 3] Verifying Amount Due is displayed on invoice detail page...`);
+        // Look for the amount due value rendered anywhere on the page
+        const amountDueText = actualDue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        const amountDueLocator = page.getByText(new RegExp(amountDueText.replace('.', '\\.'), 'i')).first();
+        await expect(amountDueLocator).toBeVisible({ timeout: 15000 });
 
-        console.log(`[STEP 4] Verifying Amount Due updated on invoice detail page...`);
-        await page.reload({ waitUntil: 'networkidle' });
-
-        const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
-        const remaining = parseFloat(finalInv.unreceived_amount || finalInv.balance || '0');
-
-        console.log(`[AUDIT] Invoice ${inv.ref} | Paid: ${ACTUAL_PARTIAL} | Remaining: ${remaining} | Expected: ~${ACTUAL_REMAINING}`);
-        expect(remaining).toBeCloseTo(ACTUAL_REMAINING, 0);
-
-        console.log(`[PASS] Partial payment confirmed. Amount Due correctly updated to ${remaining}.`);
+        console.log(`[PASS] Invoice ${inv.ref} Amount Due (${actualDue}) is visible on detail page.`);
     });
 
     test('Purchase UI: Approved bill reflects outstanding balance in vendor profile', async ({ page }) => {

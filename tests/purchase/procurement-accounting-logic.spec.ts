@@ -100,16 +100,18 @@ test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', (
         }
 
         const vendorResp = await page.request.get(
-            `${app.apiBase}/vendors/${vendorId}?${params}`,
+            `${app.apiBase}/vendor/${vendorId}?${params}`,
             { headers }
         );
         expect(vendorResp.ok()).toBe(true);
 
         const vendor = await vendorResp.json();
         const outstanding = parseFloat(
-            vendor.outstanding_balance ?? vendor.balance ?? vendor.amount_due ?? '0'
+            vendor.balance ??
+            vendor.outstanding_balance ??
+            vendor.amount_due ?? '0'
         );
-        console.log(`[INFO] Vendor "${vendor.name}" outstanding balance: ${outstanding}`);
+        console.log(`[INFO] Vendor "${vendor.name}" balance: ${outstanding}`);
         expect(outstanding).toBeGreaterThanOrEqual(0);
         console.log(`[PASS] Vendor balance is non-negative after bill approval — accounting integrity confirmed`);
     });

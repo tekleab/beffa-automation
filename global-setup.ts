@@ -57,33 +57,40 @@ function httpPost(url: string, data: any, headers: any = {}, timeoutMs = 10000):
 async function isEnvironmentClean(apiUrl: string, company: string): Promise<boolean> {
     try {
         const loginUrl = `${apiUrl}/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
-        const loginData = {
+        const loginRes = await httpPost(loginUrl, {
             email: process.env.BEFFA_USER,
             password: process.env.BEFFA_PASS
-        };
-        const loginRes = await httpPost(loginUrl, loginData);
+        });
         if (loginRes.status !== 200 || !loginRes.body?.auth_token) {
             console.log('[SEED] ⚠ Could not login to check environment');
             return false;
         }
-        
         const token = loginRes.body.auth_token;
-        const headers = {
-            'Authorization': `Bearer ${token}`,
-            'x-company': company
-        };
-        
-        // Check if projects exist
-        const projectsUrl = `${apiUrl}/projects?year=2018&period=yearly&calendar=ec`;
-        const projectsRes = await httpPing(projectsUrl);
-        
-        // Check if customers exist
-        const customersUrl = `${apiUrl}/customers?year=2018&period=yearly&calendar=ec`;
-        const customersRes = await httpPing(customersUrl);
-        
-        // If both return 0 or empty, environment is clean
-        const isClean = projectsRes === 0 && customersRes === 0;
-        console.log(`[SEED] Environment check - Projects: ${projectsRes}, Customers: ${customersRes}, Clean: ${isClean}`);
+
+        // Authenticated check: count customers via API
+        const checkUrl = `${apiUrl}/api/customers?page=1&pageSize=1&year=2018&period=yearly&calendar=ec`;
+        const res = await new Promise<{ status: number; body: any }>((resolve) => {
+            const lib = checkUrl.startsWith('https') ? https : http;
+            const req = lib.get(checkUrl, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'x-company': company
+                }
+            }, (r) => {
+                let body = '';
+                r.on('data', (c) => body += c);
+                r.on('end', () => {
+                    try { resolve({ status: r.statusCode || 0, body: JSON.parse(body) }); }
+                    catch { resolve({ status: r.statusCode || 0, body: null }); }
+                });
+            });
+            req.on('error', () => resolve({ status: 0, body: null }));
+        });
+
+        if (res.status !== 200 || !res.body) return false;
+        const count = res.body.total ?? res.body.count ?? (res.body.items || res.body.data || []).length;
+        const isClean = Number(count) === 0;
+        console.log(`[SEED] Customer count: ${count} → ${isClean ? 'clean (needs seeding)' : 'has data'}`);
         return isClean;
     } catch (error) {
         console.log('[SEED] ⚠ Error checking environment:', error);
@@ -98,72 +105,105 @@ async function seedDemoData(frontendUrl: string, company: string): Promise<boole
     let browser: Browser | null = null;
     let context: BrowserContext | null = null;
     let page: Page | null = null;
-    
+
     try {
         console.log('[SEED] Starting data seeding process...');
-        
         browser = await chromium.launch({ headless: true });
         context = await browser.newContext();
         page = await context.newPage();
-        
-        // Login
-        console.log('[SEED] Logging in...');
-        await page.goto(frontendUrl);
-        await page.waitForLoadState('domcontentloaded');
-        
-        // Fill login form
-        await page.fill('input[type="email"], input[name="email"]', process.env.BEFFA_USER || '');
-        await page.fill('input[type="password"], input[name="password"]', process.env.BEFFA_PASS || '');
-        await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
-        
-        // Navigate to data-seeding page
-        console.log('[SEED] Navigating to data-seeding page...');
-        // First, get company ID from URL or navigate to company settings
-        await page.goto(`${frontendUrl}/company-management/companies`);
-        await page.waitForLoadState('domcontentloaded');
-        
-        // Try to find the company and get its ID
-        const companyRow = page.getByText(company).first();
-        if (await companyRow.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await companyRow.click();
-            await page.waitForLoadState('domcontentloaded');
-            const currentUrl = page.url();
-            const companyIdMatch = currentUrl.match(/\/company\/([a-f0-9-]+)/);
-            const companyId = companyIdMatch ? companyIdMatch[1] : null;
-            
-            if (companyId) {
-                console.log(`[SEED] Found company ID: ${companyId}`);
-                await page.goto(`${frontendUrl}/company/${companyId}/data-seeding`);
-                await page.waitForLoadState('domcontentloaded');
-                
-                // Click seeding buttons sequentially
-                const buttons = [
-                    'Seed Basic Data',
-                    'Seed Demo Data',
-                    'Company Settings',
-                    'Company Detail'
-                ];
-                
-                for (const buttonText of buttons) {
-                    console.log(`[SEED] Clicking: ${buttonText}`);
-                    const btn = page.getByRole('button', { name: buttonText }).or(page.getByText(buttonText)).first();
-                    if (await btn.isVisible({ timeout: 5000 }).catch(() => false)) {
-                        await btn.click();
-                        await page.waitForTimeout(2000); // Wait for seeding to complete
-                        console.log(`[SEED] ✓ Completed: ${buttonText}`);
-                    } else {
-                        console.log(`[SEED] ⚠ Button not found: ${buttonText}`);
-                    }
-                }
-                
-                console.log('[SEED] ✅ Data seeding completed successfully');
-                return true;
-            }
+
+        // Login via API to get token, then inject into localStorage
+        const loginUrl = `${frontendUrl.replace(':4173', ':8001')}/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+        const loginRes = await httpPost(loginUrl, {
+            email: process.env.BEFFA_USER,
+            password: process.env.BEFFA_PASS
+        });
+        if (loginRes.status !== 200 || !loginRes.body?.auth_token) {
+            console.log('[SEED] ⚠ Login failed during seeding');
+            return false;
         }
-        
-        console.log('[SEED] ⚠ Could not find company or navigate to data-seeding page');
-        return false;
+        const token = loginRes.body.auth_token;
+
+        // Get company ID from API
+        const apiBase = frontendUrl.replace(':4173', ':8001') + '/api';
+        const companyRes = await new Promise<{ status: number; body: any }>((resolve) => {
+            const url = `${apiBase}/companies?page=1&pageSize=10`;
+            const lib = url.startsWith('https') ? https : http;
+            const req = lib.get(url, {
+                headers: { 'Authorization': `Bearer ${token}`, 'x-company': company }
+            }, (r) => {
+                let body = '';
+                r.on('data', (c) => body += c);
+                r.on('end', () => {
+                    try { resolve({ status: r.statusCode || 0, body: JSON.parse(body) }); }
+                    catch { resolve({ status: r.statusCode || 0, body: null }); }
+                });
+            });
+            req.on('error', () => resolve({ status: 0, body: null }));
+        });
+
+        const companies = companyRes.body?.items || companyRes.body?.data || [];
+        const found = companies.find((c: any) =>
+            c.name?.toLowerCase() === company.toLowerCase()
+        ) || companies[0];
+
+        if (!found?.id) {
+            console.log('[SEED] ⚠ Could not resolve company ID');
+            return false;
+        }
+        const companyId = found.id;
+        console.log(`[SEED] Company ID: ${companyId}`);
+
+        // Navigate to data-seeding page with injected session
+        await page.goto(frontendUrl, { waitUntil: 'domcontentloaded' });
+        await page.evaluate(({ jwt, comp }: { jwt: string; comp: string }) => {
+            localStorage.setItem('auth-token', jwt);
+            localStorage.setItem('token', jwt);
+            localStorage.setItem('selectedYear', '2018');
+            localStorage.setItem('calendar', 'EC');
+            localStorage.setItem('period', 'yearly');
+            localStorage.setItem('selected-role', 'IT Administrator / User Manager');
+            localStorage.setItem('currentCompany', comp);
+        }, { jwt: token, comp: company });
+
+        const seedUrl = `${frontendUrl}/company/${companyId}/data-seeding`;
+        console.log(`[SEED] Navigating to: ${seedUrl}`);
+        await page.goto(seedUrl, { waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(2000);
+
+        // Click each button ONLY if it is enabled (not disabled)
+        // Disabled = already seeded; Enabled = needs to be clicked
+        const seedButtons = ['Seed Basic Data', 'Seed Demo Data'];
+        let anySeedDone = false;
+
+        for (const btnText of seedButtons) {
+            const btn = page.getByRole('button', { name: new RegExp(btnText, 'i') }).first();
+            if (!await btn.isVisible({ timeout: 5000 }).catch(() => false)) {
+                console.log(`[SEED] ⚠ Button not found: "${btnText}"`);
+                continue;
+            }
+            const isDisabled = await btn.isDisabled().catch(() => true);
+            if (isDisabled) {
+                console.log(`[SEED] ✓ "${btnText}" is disabled → already seeded, skipping`);
+                continue;
+            }
+            console.log(`[SEED] Clicking: "${btnText}"...`);
+            await btn.click();
+            // Wait for button to become disabled (seeding complete) or timeout after 30s
+            await btn.waitFor({ state: 'attached' });
+            for (let i = 0; i < 15; i++) {
+                const done = await btn.isDisabled().catch(() => false);
+                if (done) break;
+                await page.waitForTimeout(2000);
+            }
+            console.log(`[SEED] ✓ "${btnText}" seeding complete`);
+            anySeedDone = true;
+        }
+
+        if (!anySeedDone) {
+            console.log('[SEED] ✓ All seed buttons were already disabled — data was seeded previously');
+        }
+        return true;
     } catch (error) {
         console.log('[SEED] ❌ Error during data seeding:', error);
         return false;
