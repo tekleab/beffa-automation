@@ -18,7 +18,7 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Location Transfer (Move Order) Audits @inventory @logic @regression @full', () => {
 
     let app: AppManager;
-    let item: Awaited<ReturnType<AppManager['captureRandomItemDataAPI']>>;
+    let item: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
     let destLocationId: string;
     let destWarehouseId: string;
     let srcStockBefore: number;
@@ -29,7 +29,7 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
         app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 10 });
+        item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 30, unit_cost: 100 });
         if (!item) throw new Error('[SETUP] No item with minStock=10 found.');
 
         // TC-04 and TC-05 only need item + source location — destination resolved best-effort

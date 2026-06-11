@@ -13,7 +13,7 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Procurement Payment Attack Vectors @purchase @security @logic @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
-    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
+    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     // ── Shared audit table printer ─────────────────────────────────────────
     const printAuditTable = (title: string, rows: [string, string][], result: boolean, verdict: string) => {
@@ -36,7 +36,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.captureRandomItemDataAPI();
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 

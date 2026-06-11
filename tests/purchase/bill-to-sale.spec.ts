@@ -20,7 +20,7 @@ test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
 
         // ── Phase 1: Discover a valid item ──────────────────────────────────
         console.log('[PHASE 1] Discovering item for E2E cycle...');
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 0 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         if (!item) throw new Error('[SKIP] No items found in inventory.');
 
         const stockBefore = item.currentStock;

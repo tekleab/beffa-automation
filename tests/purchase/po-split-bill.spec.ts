@@ -21,7 +21,7 @@ test.describe('Procurement PO Split Bill Audit @purchase @logic @regression @ful
         const BATCH_2 = 6;
         const OVER_QTY = 1; // attempt after PO is fully received
 
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: PO_QTY });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: PO_QTY + 10, unit_cost: 100 });
         if (!item) { console.log(`[SKIP] No item with stock >= ${PO_QTY}.`); return; }
 
         const meta = await app.api.purchase.discoverMetadataAPI();

@@ -48,20 +48,16 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
         const currencyId = salesMeta.currencyId;
 
         // 1. Create FIFO item with initial import batch: 10 @ $15
-        const item = await app.api.inventory.createInventoryItemAPI({
+        const freshItem = await app.api.inventory.createFreshItemWithStockAPI({
             name: `Pencil-${suffix}-${ts}`,
-            item_id: `PENCIL-${suffix}-${ts}`,
-            part_number: `PN-${suffix}-${ts}`,
-            item_class: 'MER',
             cost_method_code: 'FIFO',
             quantity: 10,
             unit_cost: 15,
-            default_location_id: envMeta.locationId,
-            default_warehouse_id: envMeta.warehouseId,
+            locationId: envMeta.locationId,
+            warehouseId: envMeta.warehouseId,
         });
-        const itemId = item.id;
-        await app.api.inventory.pollStockAPI(itemId, 10, envMeta.locationId);
-        console.log(`[SETUP] Item: ${item.itemName} (${itemId})`);
+        const itemId = freshItem.id;
+        console.log(`[SETUP] Item: ${freshItem.itemName} (${itemId})`);
 
         // 2. Discover vendor + AP account
         const vendorJson = await (await page.request.get(

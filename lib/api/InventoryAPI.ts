@@ -99,7 +99,7 @@ export class InventoryAPI extends BasePage {
         name,
         type: 'inventory',
         category: typeof data === 'string' ? "Raw Materials" : (data.category || "Raw Materials"),
-        cost_method_code: typeof data === 'string' ? "FIFO" : (data.cost_method_code || "FIFO"),
+        cost_method_code: typeof data === 'string' ? "WAC" : (data.cost_method_code || "WAC"),
         item_class: typeof data === 'string' ? 'MER' : (data.item_class || 'MER'),
         item_id: typeof data === 'string' ? `ITM-${Date.now().toString().slice(-6)}` : (data.item_id || `ITM-${Date.now().toString().slice(-6)}`),
         unit_of_measurement: "Kilogram (kg)",
@@ -113,8 +113,8 @@ export class InventoryAPI extends BasePage {
         ],
         min_stock: 0,
         initial_stock: typeof data === 'string' ? 0 : (data.quantity || 0),
-        purchase_price: 0,
-        selling_price: 0,
+        purchase_price: typeof data === 'string' ? 1 : (data.unit_cost || 1),
+        selling_price: typeof data === 'string' ? 1 : (data.unit_cost || 1),
         unit_cost: typeof data === 'string' ? 0 : (data.unit_cost || 0),
         gl_sales_account_id: incAcct,
         gl_cost_account_id: expAcct,
@@ -577,6 +577,56 @@ export class InventoryAPI extends BasePage {
       debit: entry.debit?.toString() || '0',
       credit: entry.credit?.toString() || '0'
     }));
+  }
+
+  /**
+   * Creates a fresh inventory item with the specified costing method and injects
+   * initial stock via an approved adjustment. Tests own this item from line 1 —
+   * no seeded-data pollution.
+   */
+  async createFreshItemWithStockAPI(opts: {
+    name?: string;
+    cost_method_code: 'FIFO' | 'WAC' | 'AVERAGE';
+    quantity: number;
+    unit_cost: number;
+    locationId?: string;
+    warehouseId?: string;
+  }): Promise<{ id: string; itemId: string; itemName: string; currentStock: number; unitCost: number; locationId: string; warehouseId: string }> {
+    let locationId = opts.locationId;
+    let warehouseId = opts.warehouseId;
+    if (!locationId || !warehouseId) {
+      const meta = await this.discoverMetadataAPI();
+      locationId = locationId || meta.locationId;
+      warehouseId = warehouseId || meta.warehouseId;
+    }
+
+    const ts = Date.now();
+    const name = opts.name || `${opts.cost_method_code}-Item-${ts}`;
+
+    // Use initial_stock + quantity on item creation — creates an import FIFO layer
+    // immediately without a separate adjustment (avoids approval-limit 403 errors)
+    const item = await this.createInventoryItemAPI({
+      name,
+      item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-6)}`,
+      part_number: `PN-${ts.toString().slice(-5)}`,
+      cost_method_code: opts.cost_method_code,
+      quantity: opts.quantity,
+      unit_cost: opts.unit_cost,
+      default_location_id: locationId,
+      default_warehouse_id: warehouseId,
+    });
+
+    await this.pollStockAPI(item.id, opts.quantity, locationId);
+    console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
+    return {
+      id: item.id,
+      itemId: item.id,          // alias — matches captureRandomItemDataAPI shape
+      itemName: name,
+      currentStock: opts.quantity,
+      unitCost: opts.unit_cost,
+      locationId: locationId!,
+      warehouseId: warehouseId!
+    };
   }
 
   // --- Missing Methods / Aliases for Compatibility ---

@@ -15,7 +15,7 @@ test.describe('Inventory Temporal & Data Isolation Audits @inventory @security @
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        const item = await app.api.inventory.captureRandomItemDataAPI();
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         const backDate ='2022-01-01T00:00:00Z';
         
         console.log(`[ATTACK] Attempting to inject stock adjustment from ${backDate} (Historical Manipulation)...`);

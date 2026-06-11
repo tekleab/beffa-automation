@@ -30,14 +30,14 @@ function printAuditTable(title: string, rows: AuditRow[]) {
 test.describe('Procurement Document Integrity Attacks @purchase @security @logic @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
-    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
+    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.captureRandomItemDataAPI();
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 

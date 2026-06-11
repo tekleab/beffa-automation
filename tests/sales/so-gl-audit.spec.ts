@@ -79,7 +79,7 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         if (!item) { console.log('[SKIP] No stock.'); return; }
 
         console.log(`[ITEM] ${item.itemName} | stock:${item.currentStock}`);
@@ -145,7 +145,7 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         if (!item) { console.log('[SKIP] No stock.'); return; }
 
         console.log(`[ITEM] ${item.itemName} | stock:${item.currentStock}`);

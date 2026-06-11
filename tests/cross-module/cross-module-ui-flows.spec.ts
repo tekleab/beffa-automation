@@ -20,7 +20,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
 
         console.log(`[STEP 1] Creating & approving invoice for ${INVOICE_AMOUNT} via API...`);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
 
         if (!item) {
             console.log(`[SKIP] No item with stock >= 1 found.`);
@@ -86,7 +86,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log(`[STEP 1] Creating & approving bill via API...`);
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 0 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         const BILL_AMOUNT = 5000;
 
         const bill = await app.api.purchase.createBillAPI({

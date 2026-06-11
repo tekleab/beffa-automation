@@ -7,13 +7,13 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Sales Partial SO Release Audit @sales @logic @regression @full', () => {
     test.setTimeout(120000);
 
-    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
+    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        sharedItem = await app.api.inventory.captureRandomItemDataAPI({ minStock: 10 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 30, unit_cost: 100 });
         await page.close();
     });
 

@@ -21,7 +21,7 @@ test.describe('Sales SO Split Invoice Audit @sales @logic @regression @full', ()
         const BATCH_2 = 6;
         const OVER_QTY = 1; // attempt after SO is fully released
 
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: SO_QTY });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: SO_QTY + 10, unit_cost: 100 });
         if (!item) { console.log(`[SKIP] No item with stock >= ${SO_QTY}.`); return; }
 
         console.log(`\n========== SO SPLIT INVOICE SETUP ==========`);

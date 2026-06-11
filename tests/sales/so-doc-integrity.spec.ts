@@ -8,14 +8,14 @@ test.describe('Sales Document Integrity Guardrails @sales @logic @security @regr
     test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
-    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
+    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.sales.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 

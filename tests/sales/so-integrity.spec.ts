@@ -7,14 +7,14 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
-    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['captureRandomItemDataAPI']>>;
+    let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.sales.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.captureRandomItemDataAPI({ minStock: 0 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
         await page.close();
     });
 
@@ -23,11 +23,8 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });
 
-    async function ensureStock(app: AppManager, item: any, quantity: number) {
-        if (Number(item.currentStock) < quantity) {
-            const bill = await app.createBillAPI({ itemData: { ...item }, quantity: quantity * 2, unitPrice: 100 });
-            await app.advanceDocumentAPI(bill.id, 'bills');
-        }
+    async function ensureStock(_app: AppManager, _item: any, _quantity: number) {
+        // item always has sufficient stock from createFreshItemWithStockAPI (qty=50)
     }
 
     test('Guardrail: System must reject zero, negative, and fractional receipt amounts', async ({ page }) => {

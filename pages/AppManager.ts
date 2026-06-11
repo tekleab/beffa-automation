@@ -131,6 +131,7 @@ export class AppManager {
   async handleSOReleasedTab(...args: Parameters<SalesPage['handleSOReleasedTab']>) { return await this.ui.sales.handleSOReleasedTab(...args); }
   getInvoiceDates(...args: Parameters<BasePage['getInvoiceDates']>) { return this.base.getInvoiceDates(...args); }
   async captureRandomItemDataAPI(...args: Parameters<InventoryAPI['captureRandomItemDataAPI']>) { return await this.api.inventory.captureRandomItemDataAPI(...args); }
+  async createFreshItemWithStockAPI(...args: Parameters<InventoryAPI['createFreshItemWithStockAPI']>) { return await this.api.inventory.createFreshItemWithStockAPI(...args); }
   async captureRandomItemDetails() {
     const target = await this.api.inventory.captureRandomItemDataAPI();
     console.log(`[OK] Discovered: "${target.itemName}" via API | Stock: ${target.currentStock}`);

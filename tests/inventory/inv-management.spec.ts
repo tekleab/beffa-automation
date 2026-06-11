@@ -111,7 +111,7 @@ test.describe('Inventory Item Management @inventory @logic @regression @full', (
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log(`[STEP 1] Discovering item with known stock...`);
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
 
         if (!item) {
             console.log(`[SKIP] No item with stock >= 1 found. Cannot run oversell guardrail.`);

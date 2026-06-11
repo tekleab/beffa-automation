@@ -16,7 +16,7 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         if (!item) { console.log('[SKIP] No stock available.'); return; }
 
         // ── STEP 1: Create & approve invoice via API ──────────────────────────
@@ -69,7 +69,7 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         if (!item) { console.log('[SKIP] No stock available.'); return; }
 
         // ── STEP 1: Create, approve, and pay invoice ──────────────────────────

@@ -19,7 +19,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
     test('Audit: Negative stock adjustment must correctly reduce stock and apply GL impact', async ({ page }) => {
         const app = new AppManager(page);
         // Pick an item with at least 51 units so -50 reduction is physically possible
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 51 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 100, unit_cost: 100 });
 
         if (!item) {
             console.log('[SKIP] No item found with stock >= 51. Skipping.');
@@ -58,7 +58,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
 
     test('Guardrail: System must reject zero-quantity adjustments', async ({ page }) => {
         const app = new AppManager(page);
-        const item = await app.api.inventory.captureRandomItemDataAPI({ minStock: 1 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
 
         console.log(`[ATTACK] Attempting zero-quantity adjustment for item: ${item.itemName}`);
 
