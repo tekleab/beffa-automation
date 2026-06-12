@@ -1,0 +1,745 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: purchase/bill-ui.spec.ts >> Purchase to Bill Flow @purchase @smoke @full >> Create PO via UI, approve, create linked bill, verify in vendor profile
+- Location: tests/purchase/bill-ui.spec.ts:6:9
+
+# Error details
+
+```
+Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for "BM Tech" is invalid or expired.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e11]: Enterprise
+      - generic [ref=e13]:
+        - generic:
+          - img
+        - textbox "Search tasks" [ref=e14]
+      - generic [ref=e15]:
+        - navigation [ref=e17]:
+          - link "Dashboard" [ref=e18] [cursor=pointer]:
+            - /url: /dashboard
+            - paragraph [ref=e21]: Dashboard
+        - generic [ref=e23] [cursor=pointer]:
+          - paragraph [ref=e26]: Accounting
+          - paragraph [ref=e27]:
+            - button "Toggle section" [ref=e28]:
+              - img [ref=e29]
+        - generic [ref=e32] [cursor=pointer]:
+          - paragraph [ref=e35]: Account Reconciliation
+          - paragraph [ref=e36]:
+            - button "Toggle section" [ref=e37]:
+              - img [ref=e38]
+        - generic [ref=e41] [cursor=pointer]:
+          - paragraph [ref=e44]: CRM
+          - paragraph [ref=e45]:
+            - button "Toggle section" [ref=e46]:
+              - img [ref=e47]
+        - generic [ref=e50] [cursor=pointer]:
+          - paragraph [ref=e53]: HRM
+          - paragraph [ref=e54]:
+            - button "Toggle section" [ref=e55]:
+              - img [ref=e56]
+        - generic [ref=e59] [cursor=pointer]:
+          - paragraph [ref=e62]: Project Management
+          - paragraph [ref=e63]:
+            - button "Toggle section" [ref=e64]:
+              - img [ref=e65]
+        - generic [ref=e68] [cursor=pointer]:
+          - paragraph [ref=e71]: SCM
+          - paragraph [ref=e72]:
+            - button "Toggle section" [ref=e73]:
+              - img [ref=e74]
+        - generic [ref=e77] [cursor=pointer]:
+          - paragraph [ref=e80]: Lease Management
+          - paragraph [ref=e81]:
+            - button "Toggle section" [ref=e82]:
+              - img [ref=e83]
+        - generic [ref=e86] [cursor=pointer]:
+          - paragraph [ref=e89]: Service Management
+          - paragraph [ref=e90]:
+            - button "Toggle section" [ref=e91]:
+              - img [ref=e92]
+        - generic [ref=e95] [cursor=pointer]:
+          - paragraph [ref=e98]: Report
+          - paragraph [ref=e99]:
+            - button "Toggle section" [ref=e100]:
+              - img [ref=e101]
+      - generic [ref=e103]:
+        - button "Settings" [ref=e105] [cursor=pointer]:
+          - generic:
+            - generic:
+              - img
+              - paragraph: Settings
+        - navigation [ref=e107]:
+          - link "User Management" [ref=e109] [cursor=pointer]:
+            - /url: /settings/general/users
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - paragraph [ref=e114]: User Management
+              - button [ref=e115]:
+                - img [ref=e116]
+        - button "Logout" [ref=e118] [cursor=pointer]:
+          - img [ref=e120]
+          - text: Logout
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img "BM Tech" [ref=e126]: BT
+          - generic [ref=e127]:
+            - button "BM Tech" [ref=e128] [cursor=pointer]:
+              - generic: BM Tech
+              - img [ref=e130]
+            - generic [ref=e132] [cursor=pointer]:
+              - button "Company Detail" [ref=e133]:
+                - img [ref=e134]
+              - button "Edit Company" [ref=e137]:
+                - img [ref=e138]
+              - button "Company Detail" [ref=e141]:
+                - img [ref=e142]
+        - generic [ref=e145]:
+          - button "New" [ref=e146] [cursor=pointer]:
+            - text: New
+            - img [ref=e148]
+          - generic [ref=e152] [cursor=pointer]:
+            - generic [ref=e153]: "5"
+            - img "Notifications" [ref=e154]
+          - button "EC" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: EC
+          - button [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+          - generic [ref=e165] [cursor=pointer]:
+            - img "System" [ref=e167]: S
+            - generic [ref=e168]:
+              - generic [ref=e169]: System
+              - paragraph [ref=e170]: IT Administrator / User Manager
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - navigation "breadcrumb" [ref=e176]:
+                  - list [ref=e177]:
+                    - listitem [ref=e178]:
+                      - link "Home" [ref=e179] [cursor=pointer]:
+                        - /url: /
+                      - text: /
+                    - listitem [ref=e180]:
+                      - link "Payables" [ref=e181] [cursor=pointer]:
+                        - /url: /payables/overview/
+                      - text: /
+                    - listitem [ref=e182]:
+                      - link "Purchase Orders" [ref=e183] [cursor=pointer]:
+                        - /url: /payables/purchase-orders/?page=1&pageSize=15
+                      - text: /
+                    - listitem [ref=e184]:
+                      - link "Detail" [ref=e185] [cursor=pointer]:
+                        - /url: /payables/purchase-orders/607fa903-6992-4c4a-bb9b-39639719f5b2/detail
+            - button "2018" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: "2018"
+              - img [ref=e189]
+          - generic [ref=e192]:
+            - button "Toggle Visibility" [ref=e195] [cursor=pointer]:
+              - img [ref=e196]
+            - generic [ref=e201]:
+              - generic [ref=e203]:
+                - heading "Purchase Order Details" [level=3] [ref=e204]
+                - generic [ref=e205]:
+                  - button "Purchase Order Journal Detail" [ref=e206] [cursor=pointer]:
+                    - img [ref=e208]
+                    - text: POJ
+                  - button "Print" [ref=e210] [cursor=pointer]:
+                    - img [ref=e212]
+                    - text: Print
+              - generic [ref=e216]:
+                - generic [ref=e217]:
+                  - generic [ref=e218]:
+                    - paragraph [ref=e219]: "Order Date:"
+                    - paragraph [ref=e220]: Friday, June 19th 2026
+                  - generic [ref=e221]:
+                    - paragraph [ref=e222]: "PO Number:"
+                    - paragraph [ref=e223]: PO/2026/06/12/000052
+                  - generic [ref=e224]:
+                    - paragraph [ref=e225]: "PO Status:"
+                    - generic [ref=e227]:
+                      - generic [ref=e229]: Draft
+                      - img [ref=e231]
+                  - generic [ref=e233]:
+                    - paragraph [ref=e234]: "Account Payable:"
+                    - paragraph [ref=e235]: 1202 - Prepayment
+                  - generic [ref=e236]:
+                    - paragraph [ref=e237]: "Currency:"
+                    - paragraph [ref=e238]: Birr - BRR
+                  - generic [ref=e239]:
+                    - paragraph [ref=e240]: "vendor:"
+                    - paragraph [ref=e241]: BAMACO PLC
+                  - generic [ref=e242]:
+                    - paragraph [ref=e243]: "Discount Terms:"
+                    - paragraph
+                - generic [ref=e244]:
+                  - generic [ref=e245]:
+                    - paragraph [ref=e246]: Shipping Address
+                    - button "update vendor address" [ref=e247] [cursor=pointer]:
+                      - img [ref=e248]
+                  - generic [ref=e252]:
+                    - paragraph [ref=e253]: "Region:"
+                    - paragraph [ref=e254]: Addis Ababa City Administration
+                  - generic [ref=e255]:
+                    - paragraph [ref=e256]: "Zone:"
+                    - paragraph [ref=e257]: Kirkos Subcity
+                  - generic [ref=e258]:
+                    - paragraph [ref=e259]: "Woreda:"
+                    - paragraph [ref=e260]: Woreda 9
+                  - generic [ref=e261]:
+                    - paragraph [ref=e262]: "City:"
+                    - paragraph
+                  - generic [ref=e263]:
+                    - paragraph [ref=e264]: "Kebele:"
+                    - paragraph [ref=e265]: Kebele 06
+                  - generic [ref=e266]:
+                    - paragraph [ref=e267]: "House No.:"
+                    - paragraph
+              - generic [ref=e268]:
+                - tablist [ref=e269]:
+                  - tab "Purchase Order Items" [selected] [ref=e270] [cursor=pointer]
+                  - tab "PO Journal" [ref=e271] [cursor=pointer]
+                  - tab "Related Documents" [ref=e272] [cursor=pointer]
+                  - tab "History" [ref=e273] [cursor=pointer]
+                - tabpanel "Purchase Order Items" [ref=e275]:
+                  - table [ref=e279]:
+                    - rowgroup [ref=e280]:
+                      - row "Item ID Quantity Selling Price Purchase Type Description G/L Account Project Before Tax Tax Total" [ref=e281]:
+                        - columnheader "Item ID" [ref=e282]: Item ID
+                        - columnheader "Quantity" [ref=e284]: Quantity
+                        - columnheader "Selling Price" [ref=e286]: Selling Price
+                        - columnheader "Purchase Type" [ref=e288]: Purchase Type
+                        - columnheader "Description" [ref=e290]: Description
+                        - columnheader "G/L Account" [ref=e292]: G/L Account
+                        - columnheader "Project" [ref=e294]: Project
+                        - columnheader "Before Tax" [ref=e296]: Before Tax
+                        - columnheader "Tax" [ref=e298]: Tax
+                        - columnheader "Total" [ref=e300]: Total
+                    - rowgroup [ref=e302]:
+                      - row "Saw Blade 350 9 Goods Cash - Branch Office 44775 TOT 45670.50" [ref=e303]:
+                        - cell "Saw Blade 350" [ref=e304]:
+                          - generic [ref=e305]: Saw Blade 350
+                        - cell "9" [ref=e306]:
+                          - generic [ref=e307]: "9"
+                        - cell [ref=e308]
+                        - cell "Goods" [ref=e309]:
+                          - generic [ref=e310]: Goods
+                        - cell [ref=e311]
+                        - cell "Cash - Branch Office" [ref=e312]:
+                          - generic [ref=e313]: Cash - Branch Office
+                        - cell [ref=e314]
+                        - cell "44775" [ref=e315]:
+                          - generic [ref=e316]: "44775"
+                        - cell "TOT" [ref=e317]:
+                          - generic [ref=e318]: TOT
+                        - cell "45670.50" [ref=e319]:
+                          - generic [ref=e320]: "45670.50"
+                      - row [ref=e321]:
+                        - cell [ref=e322]
+                        - cell [ref=e323]
+                        - cell [ref=e324]
+                        - cell [ref=e325]
+                        - cell [ref=e326]
+                        - cell [ref=e327]
+                        - cell [ref=e328]
+                        - cell [ref=e329]
+                        - cell [ref=e330]
+                        - cell [ref=e331]
+                      - row [ref=e332]:
+                        - cell [ref=e333]
+                        - cell [ref=e334]
+                        - cell [ref=e335]
+                        - cell [ref=e336]
+                        - cell [ref=e337]
+                        - cell [ref=e338]
+                        - cell [ref=e339]
+                        - cell [ref=e340]
+                        - cell [ref=e341]
+                        - cell [ref=e342]
+                      - row [ref=e343]:
+                        - cell [ref=e344]
+                        - cell [ref=e345]
+                        - cell [ref=e346]
+                        - cell [ref=e347]
+                        - cell [ref=e348]
+                        - cell [ref=e349]
+                        - cell [ref=e350]
+                        - cell [ref=e351]
+                        - cell [ref=e352]
+                        - cell [ref=e353]
+                      - row [ref=e354]:
+                        - cell [ref=e355]
+                        - cell [ref=e356]
+                        - cell [ref=e357]
+                        - cell [ref=e358]
+                        - cell [ref=e359]
+                        - cell [ref=e360]
+                        - cell [ref=e361]
+                        - cell [ref=e362]
+                        - cell [ref=e363]
+                        - cell [ref=e364]
+                      - row [ref=e365]:
+                        - cell [ref=e366]
+                        - cell [ref=e367]
+                        - cell [ref=e368]
+                        - cell [ref=e369]
+                        - cell [ref=e370]
+                        - cell [ref=e371]
+                        - cell [ref=e372]
+                        - cell [ref=e373]
+                        - cell [ref=e374]
+                        - cell [ref=e375]
+                      - row [ref=e376]:
+                        - cell [ref=e377]
+                        - cell [ref=e378]
+                        - cell [ref=e379]
+                        - cell [ref=e380]
+                        - cell [ref=e381]
+                        - cell [ref=e382]
+                        - cell [ref=e383]
+                        - cell [ref=e384]
+                        - cell [ref=e385]
+                        - cell [ref=e386]
+                      - row [ref=e387]:
+                        - cell [ref=e388]
+                        - cell [ref=e389]
+                        - cell [ref=e390]
+                        - cell [ref=e391]
+                        - cell [ref=e392]
+                        - cell [ref=e393]
+                        - cell [ref=e394]
+                        - cell [ref=e395]
+                        - cell [ref=e396]
+                        - cell [ref=e397]
+                      - row [ref=e398]:
+                        - cell [ref=e399]
+                        - cell [ref=e400]
+                        - cell [ref=e401]
+                        - cell [ref=e402]
+                        - cell [ref=e403]
+                        - cell [ref=e404]
+                        - cell [ref=e405]
+                        - cell [ref=e406]
+                        - cell [ref=e407]
+                        - cell [ref=e408]
+                      - row [ref=e409]:
+                        - cell [ref=e410]
+                        - cell [ref=e411]
+                        - cell [ref=e412]
+                        - cell [ref=e413]
+                        - cell [ref=e414]
+                        - cell [ref=e415]
+                        - cell [ref=e416]
+                        - cell [ref=e417]
+                        - cell [ref=e418]
+                        - cell [ref=e419]
+                      - row [ref=e420]:
+                        - cell [ref=e421]
+                        - cell [ref=e422]
+                        - cell [ref=e423]
+                        - cell [ref=e424]
+                        - cell [ref=e425]
+                        - cell [ref=e426]
+                        - cell [ref=e427]
+                        - cell [ref=e428]
+                        - cell [ref=e429]
+                        - cell [ref=e430]
+                      - row [ref=e431]:
+                        - cell [ref=e432]
+                        - cell [ref=e433]
+                        - cell [ref=e434]
+                        - cell [ref=e435]
+                        - cell [ref=e436]
+                        - cell [ref=e437]
+                        - cell [ref=e438]
+                        - cell [ref=e439]
+                        - cell [ref=e440]
+                        - cell [ref=e441]
+                      - row [ref=e442]:
+                        - cell [ref=e443]
+                        - cell [ref=e444]
+                        - cell [ref=e445]
+                        - cell [ref=e446]
+                        - cell [ref=e447]
+                        - cell [ref=e448]
+                        - cell [ref=e449]
+                        - cell [ref=e450]
+                        - cell [ref=e451]
+                        - cell [ref=e452]
+                      - row [ref=e453]:
+                        - cell [ref=e454]
+                        - cell [ref=e455]
+                        - cell [ref=e456]
+                        - cell [ref=e457]
+                        - cell [ref=e458]
+                        - cell [ref=e459]
+                        - cell [ref=e460]
+                        - cell [ref=e461]
+                        - cell [ref=e462]
+                        - cell [ref=e463]
+                      - row [ref=e464]:
+                        - cell [ref=e465]
+                        - cell [ref=e466]
+                        - cell [ref=e467]
+                        - cell [ref=e468]
+                        - cell [ref=e469]
+                        - cell [ref=e470]
+                        - cell [ref=e471]
+                        - cell [ref=e472]
+                        - cell [ref=e473]
+                        - cell [ref=e474]
+                    - rowgroup [ref=e475]:
+                      - row "44775.00 895.50 45670.50" [ref=e476]:
+                        - columnheader [ref=e477]
+                        - columnheader [ref=e478]
+                        - columnheader [ref=e479]
+                        - columnheader [ref=e480]
+                        - columnheader [ref=e481]
+                        - columnheader [ref=e482]
+                        - columnheader [ref=e483]
+                        - columnheader "44775.00" [ref=e484]
+                        - columnheader "895.50" [ref=e485]
+                        - columnheader "45670.50" [ref=e486]
+        - generic [ref=e487]: BM Technology © 2026
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - option "1950"
+    - option "1951"
+    - option "1952"
+    - option "1953"
+    - option "1954"
+    - option "1955"
+    - option "1956"
+    - option "1957"
+    - option "1958"
+    - option "1959"
+    - option "1960"
+    - option "1961"
+    - option "1962"
+    - option "1963"
+    - option "1964"
+    - option "1965"
+    - option "1966"
+    - option "1967"
+    - option "1968"
+    - option "1969"
+    - option "1970"
+    - option "1971"
+    - option "1972"
+    - option "1973"
+    - option "1974"
+    - option "1975"
+    - option "1976"
+    - option "1977"
+    - option "1978"
+    - option "1979"
+    - option "1980"
+    - option "1981"
+    - option "1982"
+    - option "1983"
+    - option "1984"
+    - option "1985"
+    - option "1986"
+    - option "1987"
+    - option "1988"
+    - option "1989"
+    - option "1990"
+    - option "1991"
+    - option "1992"
+    - option "1993"
+    - option "1994"
+    - option "1995"
+    - option "1996"
+    - option "1997"
+    - option "1998"
+    - option "1999"
+    - option "2000"
+    - option "2001"
+    - option "2002"
+    - option "2003"
+    - option "2004"
+    - option "2005"
+    - option "2006"
+    - option "2007"
+    - option "2008"
+    - option "2009"
+    - option "2010"
+    - option "2011"
+    - option "2012"
+    - option "2013"
+    - option "2014"
+    - option "2015"
+    - option "2016"
+    - option "2017"
+    - option "2018 (open)" [selected]
+    - option "2019"
+    - option "2020"
+    - option "2021"
+    - option "2022"
+    - option "2023"
+    - option "2024"
+    - option "2025"
+    - option "2026"
+    - option "2027"
+    - option "2028"
+    - option "2029"
+    - option "2030"
+    - option "2031"
+    - option "2032"
+    - option "2033"
+    - option "2034"
+    - option "2035"
+    - option "2036"
+    - option "2037"
+    - option "2038"
+    - option "2039"
+    - option "2040"
+    - option "2041"
+    - option "2042"
+    - option "2043"
+    - option "2044"
+    - option "2045"
+    - option "2046"
+    - option "2047"
+    - option "2048"
+    - option "2049"
+```
+
+# Test source
+
+```ts
+  64  |     this.createCustomerBtn = page.locator('button:has-text("Create customer")');
+  65  |     this.editCustomerBtn = page.locator('button:has-text("Edit")').first();
+  66  |     this.removeCustomerBtn = page.locator('button:has-text("Remove")');
+  67  | 
+  68  |     // Status and Button Selectors
+  69  |     this.approvedStatus = 'span.css-1ny2kle:has-text("Approved"), span:has-text("Approved")';
+  70  |     this.actionButtons = 'button:has-text("Submit For Review"), button:has-text("Approve"), button:has-text("Advance"), button:has-text("Submit For Approver"), button:has-text("Submit Forapprover"), button:has-text("Submit For Approve"), button:has-text("Submit For Apporver")';
+  71  | 
+  72  |     // Company Switcher Selectors (Top-left Header)
+  73  |     this.companyBtn = page.locator('header button.chakra-menu__menu-button, .chakra-stack button.chakra-menu__menu-button').first();
+  74  |   }
+  75  | 
+  76  |   /**
+  77  |    * Starts a high-resolution timer for tactical performance sync.
+  78  |    */
+  79  |   async startTacticalTimer() {
+  80  |     this.startTime = performance.now();
+  81  |   }
+  82  | 
+  83  |   /**
+  84  |    * Stops the timer and records the latency metric.
+  85  |    * Automatically attaches metadata for the Dashboard's Latency Engine.
+  86  |    */
+  87  |   async stopTacticalTimer(label: string, category: 'API' | 'UI' = 'API') {
+  88  |     const duration = performance.now() - this.startTime;
+  89  |     console.log(`[PERFORMANCE] ${category} - ${label}: ${duration.toFixed(2)}ms`);
+  90  | 
+  91  |     // Attach to Playwright annotations for Allure consumption
+  92  |     try {
+  93  |       const { test } = require('@playwright/test');
+  94  |       if (test && typeof test.info === 'function') {
+  95  |         const info = test.info();
+  96  |         if (info) {
+  97  |           info.annotations.push({
+  98  |             type: 'tactical-perf',
+  99  |             description: `${category}|${label}|${duration.toFixed(2)}`
+  100 |           });
+  101 |         }
+  102 |       }
+  103 |     } catch (e) {
+  104 |       // Context unavailable (e.g. initialization or utility run)
+  105 |     }
+  106 |     return duration;
+  107 |   }
+  108 | 
+  109 |   /**
+  110 |    * Universal API-driven Document Approval / Advancement
+  111 |    * Handles the 'Draft -> Verifier -> Approver -> Approved' transition in seconds.
+  112 |    */
+  113 |   async advanceDocumentAPI(docId: string, docType: string): Promise<void> {
+  114 |     const token = await this._getAuthToken();
+  115 |     if (!token) throw new Error("[ERROR] No Auth Token found. API Advance cannot proceed.");
+  116 | 
+  117 |     // Bulletproof Company Detection: Pull directly from ERP state
+  118 |     const company = await this.page.evaluate(() => {
+  119 |       return localStorage.getItem('currentCompany') ||
+  120 |         localStorage.getItem('company');
+  121 |     }) || process.env.BEFFA_COMPANY || 'sample';
+  122 | 
+  123 |     const year = process.env.BEFFA_YEAR || '2018';
+  124 |     const period = process.env.BEFFA_PERIOD || 'yearly';
+  125 |     const calendar = process.env.BEFFA_CALENDAR || 'ec';
+  126 | 
+  127 |     const url = `${this.apiBase}/${docType}/${docId}/advance?year=${year}&period=${period}&calendar=${calendar}`;
+  128 |     const headers = {
+  129 |       'x-company': company,
+  130 |       'Authorization': `Bearer ${token}`,
+  131 |       'Content-Type': 'application/json',
+  132 |       'x-role': 'IT Administrator / User Manager'
+  133 |     };
+  134 | 
+  135 |     console.log(`[API] Advancing ${docType} "${docId}"...`);
+  136 | 
+  137 |     // Fetch current user once before the loop
+  138 |     let submittedTo: string | undefined;
+  139 |     try {
+  140 |       const meResp = await this.page.request.get(`${this.apiBase}/users/me`, { headers });
+  141 |       if (meResp.ok()) {
+  142 |         const meData = await meResp.json();
+  143 |         submittedTo = meData?.user?.id || meData?.id || meData?.user_id;
+  144 |         if (submittedTo) Logger.debug(`Current user ID: ${submittedTo}`);
+  145 |       }
+  146 |     } catch (e: any) {
+  147 |       // /users/me unavailable, use fallback
+  148 |     }
+  149 |     submittedTo ??= process.env.BEFFA_ADMIN_ID || '14bb1e8c-496f-4556-99e0-830681fcf3de';
+  150 |     const payload = { submitted_to: submittedTo };
+  151 | 
+  152 |     let success = false;
+  153 |     for (let i = 0; i < 4; i++) {
+  154 |       const resp = await this.page.request.patch(url, { headers, data: payload });
+  155 |       const status = resp.status();
+  156 | 
+  157 |       if (status === 200 || status === 204) {
+  158 |         success = true;
+  159 |         await this.page.waitForTimeout(1000);
+  160 |       } else if (status === 400 || status === 404) {
+  161 |         if (success) break;
+  162 |         break;
+  163 |       } else if (status === 401) {
+> 164 |         throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${company}" is invalid or expired.`);
+      |               ^ Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for "BM Tech" is invalid or expired.
+  165 |       } else if (status === 422) {
+  166 |         if (success) break;
+  167 |         const text = await resp.text();
+  168 |         throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
+  169 |       } else {
+  170 |         const errBody = await resp.text().catch(() => '(unreadable)');
+  171 |         console.log(`[ERROR] Advance failed. Status: ${status} | Body: ${errBody.substring(0, 200)}`);
+  172 |         // For employee-contracts, a 500/E1481 may mean already at final state — check current status
+  173 |         if (docType === 'employee-contracts' && status === 500) {
+  174 |           console.log(`[INFO] employee-contracts advance returned 500 (E1481) — checking if contract is already approved...`);
+  175 |           break;
+  176 |         }
+  177 |         break;
+  178 |       }
+  179 |     }
+  180 | 
+  181 |     if (!success) console.log(`[WARN] Advance had no successful steps for ${docType} ${docId}.`);
+  182 |   }
+  183 | 
+  184 |   /**
+  185 |    * Resilient POST helper that handles transient 500 errors with automatic retries.
+  186 |    */
+  187 |   /**
+  188 |    * Builds a reusable API context (base URL + auth headers) for raw page.request calls.
+  189 |    * Eliminates the repeated apiBase + headers construction block across test files.
+  190 |    */
+  191 |   async buildApiContext(): Promise<{ apiBase: string; headers: Record<string, string>; qs: string }> {
+  192 |     const token = await this._getAuthToken();
+  193 |     const company = process.env.BEFFA_COMPANY as string;
+  194 |     const year = process.env.BEFFA_YEAR || '2018';
+  195 |     const period = process.env.BEFFA_PERIOD || 'yearly';
+  196 |     const calendar = process.env.BEFFA_CALENDAR || 'ec';
+  197 |     return {
+  198 |       apiBase: this.apiBase,
+  199 |       qs: `year=${year}&period=${period}&calendar=${calendar}`,
+  200 |       headers: {
+  201 |         'x-company': company,
+  202 |         'Authorization': `Bearer ${token}`,
+  203 |         'Content-Type': 'application/json'
+  204 |       }
+  205 |     };
+  206 |   }
+  207 | 
+  208 |   /**
+  209 |    * Race an API call against a timeout — prevents indefinite hangs under backend load.
+  210 |    */
+  211 |   private withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  212 |     return Promise.race([
+  213 |       promise,
+  214 |       new Promise<T>((_, reject) =>
+  215 |         setTimeout(() => reject(new Error(`[TIMEOUT] ${label} exceeded ${ms}ms — backend may be deadlocked`)), ms)
+  216 |       )
+  217 |     ]);
+  218 |   }
+  219 | 
+  220 |   /**
+  221 |    * Resilient POST with Promise.race timeout + exponential backoff for 500/503.
+  222 |    * Gracefully swallows "target closed" errors so a crashed page doesn't kill the suite.
+  223 |    */
+  224 |   async safePost(url: string, options: { data: any, headers: any, label: string }, timeoutMs = 30000): Promise<any> {
+  225 |     let lastError: any = null;
+  226 | 
+  227 |     for (let attempt = 1; attempt <= 3; attempt++) {
+  228 |       try {
+  229 |         const response = await this.withTimeout(
+  230 |           this.page.request.post(url, { data: options.data, headers: options.headers }),
+  231 |           timeoutMs,
+  232 |           options.label
+  233 |         );
+  234 | 
+  235 |         if (response.ok()) return response;
+  236 | 
+  237 |         const status = response.status();
+  238 |         const text = await response.text();
+  239 |         lastError = { status, text };
+  240 | 
+  241 |         // Exponential backoff only for transient server errors
+  242 |         if (status === 500 || status === 503) {
+  243 |           const backoff = attempt * attempt * 1000; // 1s, 4s, 9s
+  244 |           Logger.warn(`${options.label} → ${status}. Retry ${attempt}/3 in ${backoff}ms...`);
+  245 |           await this.page.waitForTimeout(backoff);
+  246 |           continue;
+  247 |         }
+  248 | 
+  249 |         return response; // 4xx — return as-is, no retry
+  250 | 
+  251 |       } catch (err: any) {
+  252 |         // Gracefully handle page/context closed — don't crash the suite
+  253 |         if (
+  254 |           err.message?.includes('Target page, context or browser has been closed') ||
+  255 |           err.message?.includes('page has been closed') ||
+  256 |           err.message?.includes('context was destroyed')
+  257 |         ) {
+  258 |           Logger.warn(`${options.label} → Page closed mid-request (attempt ${attempt}). Skipping.`);
+  259 |           return { ok: () => false, status: () => 0, text: async () => 'page-closed', json: async () => ({}) };
+  260 |         }
+  261 | 
+  262 |         // Timeout hit — no point retrying a deadlocked backend immediately
+  263 |         if (err.message?.includes('[TIMEOUT]')) {
+  264 |           Logger.warn(err.message);
+```

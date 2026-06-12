@@ -1,16 +1,16 @@
 {
   "total": 17,
-  "passed": 13,
-  "failed": 4,
+  "passed": 12,
+  "failed": 5,
   "skipped": 0,
-  "passRate": 76.5,
-  "avgDurationMs": 40363,
-  "lastUpdated": "2026-06-12T08:40:30.782Z",
+  "passRate": 70.6,
+  "avgDurationMs": 51041,
+  "lastUpdated": "2026-06-12T08:46:06.021Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 13,
-      "failed": 4,
+      "passed": 12,
+      "failed": 5,
       "skipped": 0,
       "trend": [
         88,
@@ -19,17 +19,17 @@
         76.7,
         94.1,
         76.7,
-        76.5
+        70.6
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "506",
-      "commit": "e21a679",
+      "run": "507",
+      "commit": "7bfbd5e",
       "trigger": "push (smoke)",
-      "duration": "11m 26s",
-      "passRate": 76.5,
+      "duration": "14m 27s",
+      "passRate": 70.6,
       "status": "failed"
     },
     {
@@ -107,34 +107,42 @@
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#customer_name-input-id')\nExpected: visible\nTimeout: 30000ms\nError: element(s) not found\n\nC",
-      "firstSeen": "2026-06-12T08:36:12.927Z",
+      "severity": "critical",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: Currency Discovery HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Error fetching currencies\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 ",
+      "firstSeen": "2026-06-12T08:41:33.241Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] Failed selection for G/L Account\n\n   at ../lib/base-page.ts:648\n\n  646 |       }\n  647 |     }\n> 648 |     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);",
-      "firstSeen": "2026-06-12T08:37:06.938Z",
+      "error": "Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for \"BM Tech\" is invalid or expired.\n\n   at ../lib/base-page.ts:164\n\n  162 |         break;\n  163 |       } else if (status === 401) {\n> 1",
+      "firstSeen": "2026-06-12T08:42:15.265Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - us",
-      "firstSeen": "2026-06-12T08:37:59.973Z",
+      "title": "API: Org chart must return company context and department segments",
+      "error": "Error: Get org-chart failed: 401\n\n   at ../lib/api/HrAPI.ts:188\n\n  186 |       `${this.apiBase}/organization-chart?${this.params}`, { headers: h }\n  187 |     );\n> 188 |     if (!resp.ok()) throw new ",
+      "firstSeen": "2026-06-12T08:43:24.852Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "high",
+      "severity": "medium",
+      "title": "UI: Employees page must load and display employee records",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/employee/\u001b[39m\nReceived string:  \u001b[31m\"http://168.119.175.142:4173/users/logi",
+      "firstSeen": "2026-06-12T08:43:27.993Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForSelector: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1, h2, h3, [role=\"tablist\"], [role=\"tab\"], nav') to",
-      "firstSeen": "2026-06-12T08:38:15.408Z",
+      "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1, h2, h3, [role=\"tablist\"], [role=\"tab\"], nav') to be visible\u001b[22m\n\n\n  106 |\n  107 |         // W",
+      "firstSeen": "2026-06-12T08:44:17.053Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
