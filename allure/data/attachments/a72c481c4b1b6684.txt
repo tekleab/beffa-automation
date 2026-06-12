@@ -1,0 +1,34 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 263.64ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 12
+[SUCCESS] "Purchase Order Date" set to Day 12 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2501.32ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2385.42ms
+[INFO] Vendor: MIDROC S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 3045.52ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2674.14ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2113.16ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2219.02ms
+[PERFORMANCE] UI - Random Selection: Location: 2634.38ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2102.81ms
+[PERFORMANCE] UI - Random Selection: Tax: 2212.80ms
+[OK] Line item added (Price: 6781)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/12/000056 | Vendor: MIDROC S.C
+[API] Advancing purchase-orders "c03d46e1-d686-4f37-9d64-8a36df5e467f"...
+[OK] PO PO/2026/06/12/000056 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/12/000056 via API
+[API] Advancing bills "a5f67b26-af7f-4fd9-b2b8-9656d7b2c0db"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for bills a5f67b26-af7f-4fd9-b2b8-9656d7b2c0db.
+[OK] Linked Bill BILL/2026/06/12/000176 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/12/000176 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/12/000176 is physically present in MIDROC S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/12/000056 -> Bill BILL/2026/06/12/000176

@@ -1,0 +1,35 @@
+[PERFORMANCE] API - Auth API Verification: 143.42ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781255718646 (c8906beb-a52b-4b25-86fa-da5144875b1f) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  Item ID     : c8906beb-a52b-4b25-86fa-da5144875b1f (WAC-Item-1781255718646)
+[ITEM]  Stock       : 20
+[PLAN]  PO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-receive: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving PO for 10 units...
+[API] Advancing purchase-orders "f2a15e74-3453-4055-8a01-d3a4be0ea2a8"...
+[OK] PO PO/2026/06/12/000063 approved (ID: f2a15e74-3453-4055-8a01-d3a4be0ea2a8)
+[STEP 2] Receiving Batch 1: 4 units...
+[API] Advancing bills "9d21702f-0b3e-4513-a3d6-e0824c461cec"...
+[OK] Batch 1 bill BILL/2026/06/12/000186 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+[API] Advancing bills "5fff82bd-5a1a-4aba-ad39-9c943929a996"...
+[OK] Batch 2 bill BILL/2026/06/12/000188 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO Ref       : PO/2026/06/12/000063 (ID: f2a15e74-3453-4055-8a01-d3a4be0ea2a8)
+[DOCUMENT] Bill 1       : BILL/2026/06/12/000186 (ID: 9d21702f-0b3e-4513-a3d6-e0824c461cec) — 4 units
+[DOCUMENT] Bill 2       : BILL/2026/06/12/000188 (ID: 5fff82bd-5a1a-4aba-ad39-9c943929a996) — 6 units
+[ITEM]     Item         : WAC-Item-1781255718646 (c8906beb-a52b-4b25-86fa-da5144875b1f)
+[STOCK]    Before       : 20
+[STOCK]    After        : 20
+[STOCK]    Expected     : 30
+================================================
+

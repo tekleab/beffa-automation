@@ -1,0 +1,339 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: purchase/po-doc-integrity.spec.ts >> Procurement Document Integrity Attacks @purchase @security @logic @regression @full >> Guardrail: System must reject approval of a future-dated Bill
+- Location: tests/purchase/po-doc-integrity.spec.ts:50:9
+
+# Error details
+
+```
+Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-06-12T00:00:00Z. Future-period AP liability injection possible — balance sheet manipulation.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - img "BM Tech" [ref=e10]: BT
+        - generic [ref=e11]:
+          - button "BM Tech" [ref=e12] [cursor=pointer]:
+            - generic: BM Tech
+            - img [ref=e14]
+          - generic [ref=e16] [cursor=pointer]:
+            - button "Company Detail" [ref=e17]:
+              - img [ref=e18]
+            - button "Edit Company" [ref=e21]:
+              - img [ref=e22]
+            - button "Company Detail" [ref=e25]:
+              - img [ref=e26]
+      - generic [ref=e29]:
+        - button "New" [ref=e30] [cursor=pointer]:
+          - text: New
+          - img [ref=e32]
+        - generic [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: "5"
+          - img "Notifications" [ref=e38]
+        - button "EC" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+          - paragraph [ref=e44]: EC
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+        - generic [ref=e49] [cursor=pointer]:
+          - img "System" [ref=e51]: S
+          - generic [ref=e52]:
+            - generic [ref=e53]: System
+            - paragraph [ref=e54]: IT Administrator / User Manager
+    - generic [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - img "BM Tech" [ref=e62]: BT
+          - paragraph [ref=e63]: Welcome, System
+        - paragraph [ref=e65]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+        - generic [ref=e66]:
+          - link "Dashboard" [ref=e67] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Settings" [ref=e68] [cursor=pointer]:
+            - /url: /settings/company/details
+        - generic [ref=e69]:
+          - link "Add Customer" [ref=e70] [cursor=pointer]:
+            - /url: /receivables/customers/new
+            - img [ref=e73]
+            - text: Add Customer
+          - link "Add Invoice" [ref=e74] [cursor=pointer]:
+            - /url: /receivables/invoices/new
+            - img [ref=e77]
+            - text: Add Invoice
+          - link "Add Receipt" [ref=e78] [cursor=pointer]:
+            - /url: /receivables/receipts/new
+            - img [ref=e81]
+            - text: Add Receipt
+          - link "Add Sales Order" [ref=e82] [cursor=pointer]:
+            - /url: /receivables/sale-orders/new
+            - img [ref=e85]
+            - text: Add Sales Order
+        - paragraph [ref=e87]: Quick Access
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - link "Sales Sales" [ref=e91] [cursor=pointer]:
+              - /url: /receivables/overview/
+              - button "Sales Sales" [ref=e92]:
+                - generic [ref=e93]:
+                  - img "Sales" [ref=e94]
+                  - paragraph [ref=e95]: Sales
+            - link "Purchase Purchase" [ref=e97] [cursor=pointer]:
+              - /url: /payables/overview/
+              - button "Purchase Purchase" [ref=e98]:
+                - generic [ref=e99]:
+                  - img "Purchase" [ref=e100]
+                  - paragraph [ref=e101]: Purchase
+            - link "Accounting Accounting" [ref=e103] [cursor=pointer]:
+              - /url: /accounting/overview
+              - button "Accounting Accounting" [ref=e104]:
+                - generic [ref=e105]:
+                  - img "Accounting" [ref=e106]
+                  - paragraph [ref=e107]: Accounting
+            - link "Leases Leases" [ref=e109] [cursor=pointer]:
+              - /url: /leases/leases/?page=1&pageSize=15
+              - button "Leases Leases" [ref=e110]:
+                - generic [ref=e111]:
+                  - img "Leases" [ref=e112]
+                  - paragraph [ref=e113]: Leases
+            - link "Assets Assets" [ref=e115] [cursor=pointer]:
+              - /url: /assets/overview
+              - button "Assets Assets" [ref=e116]:
+                - generic [ref=e117]:
+                  - img "Assets" [ref=e118]
+                  - paragraph [ref=e119]: Assets
+            - link "Budgets Budgets" [ref=e121] [cursor=pointer]:
+              - /url: /public-sector-budgets/overview
+              - button "Budgets Budgets" [ref=e122]:
+                - generic [ref=e123]:
+                  - img "Budgets" [ref=e124]
+                  - paragraph [ref=e125]: Budgets
+            - link "Payroll Payroll" [ref=e127] [cursor=pointer]:
+              - /url: /payrolls
+              - button "Payroll Payroll" [ref=e128]:
+                - generic [ref=e129]:
+                  - img "Payroll" [ref=e130]
+                  - paragraph [ref=e131]: Payroll
+            - link "Report Report" [ref=e133] [cursor=pointer]:
+              - /url: /reports
+              - button "Report Report" [ref=e134]:
+                - generic [ref=e135]:
+                  - img "Report" [ref=e136]
+                  - paragraph [ref=e137]: Report
+          - button "View All" [ref=e138] [cursor=pointer]:
+            - text: View All
+            - img [ref=e140]
+      - img "Floating Icon" [ref=e143]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  1   | import { test } from '@playwright/test';
+  2   | import { AppManager } from '../../pages/AppManager';
+  3   | 
+  4   | type AuditRow = { label: string; value: string };
+  5   | 
+  6   | function printAuditTable(title: string, rows: AuditRow[]) {
+  7   |     const W = { label: 32, value: 40 };
+  8   |     const line = '─'.repeat(W.label + W.value + 7);
+  9   |     const pad = (s: string, n: number) => s.length >= n ? s.substring(0, n - 1) + '…' : s.padEnd(n);
+  10  |     console.log(`\n  ┌${'─'.repeat(line.length - 2)}┐`);
+  11  |     console.log(`  │ ${pad(title, line.length - 4)} │`);
+  12  |     console.log(`  ├${'─'.repeat(line.length - 2)}┤`);
+  13  |     console.log(`  │ ${pad('Field', W.label)} │ ${pad('Value', W.value)} │`);
+  14  |     console.log(`  ├${'─'.repeat(line.length - 2)}┤`);
+  15  |     for (const r of rows) console.log(`  │ ${pad(r.label, W.label)} │ ${pad(r.value, W.value)} │`);
+  16  |     console.log(`  └${'─'.repeat(line.length - 2)}┘\n`);
+  17  | }
+  18  | 
+  19  | /**
+  20  |  * PROCUREMENT DOCUMENT INTEGRITY ATTACKS
+  21  |  *
+  22  |  * 1. Future-dated bill injection       [REAL BUG — ERP approves future bills]
+  23  |  * 2. PO quantity exhaustion +1 unit    [REAL BUG — overflow bill approved]
+  24  |  * 3. Same PO billed twice              [REAL BUG — double AP liability]
+  25  |  * 4. Approved bill line item mutation  [PASS — ERP rejects]
+  26  |  * 5. Bill with no vendor               [PASS — ERP rejects at creation]
+  27  |  * 6. PO↔Bill 1:1 reconciliation        [PASS — maps correctly]
+  28  |  */
+  29  | 
+  30  | test.describe('Procurement Document Integrity Attacks @purchase @security @logic @regression @full', () => {
+  31  | 
+  32  |     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
+  33  |     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
+  34  | 
+  35  |     test.beforeAll(async ({ browser }) => {
+  36  |         const page = await browser.newPage();
+  37  |         const app = new AppManager(page);
+  38  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  39  |         sharedMeta = await app.api.purchase.discoverMetadataAPI();
+  40  |         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+  41  |         await page.close();
+  42  |     });
+  43  | 
+  44  |     test.beforeEach(async ({ page }) => {
+  45  |         const app = new AppManager(page);
+  46  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  47  |     });
+  48  | 
+  49  |     // ── 1. POST-DATED BILL INJECTION ─────────────────────────────────────────
+  50  |     test('Guardrail: System must reject approval of a future-dated Bill', async ({ page }) => {
+  51  |         const app = new AppManager(page);
+  52  |         const meta = sharedMeta;
+  53  |         const item = sharedItem;
+  54  | 
+  55  |         const futureDate = new Date();
+  56  |         futureDate.setFullYear(futureDate.getFullYear() + 2);
+  57  |         const futureDateStr = futureDate.toISOString().split('T')[0] + 'T00:00:00Z';
+  58  | 
+  59  |         console.log(`[ATTACK] Injecting Bill with future date: ${futureDateStr}...`);
+  60  |         try {
+  61  |             const bill = await app.api.purchase.createBillAPI({
+  62  |                 itemData: item, unitPrice: 10000, quantity: 1,
+  63  |                 vendorId: meta.vendorId, invoice_date: futureDateStr, due_date: futureDateStr
+  64  |             } as any);
+  65  | 
+  66  |             await app.advanceDocumentAPI(bill.id, 'bills');
+  67  |             const billData = await app.api.purchase.getBillAPI(bill.id);
+  68  | 
+  69  |             printAuditTable('VULNERABILITY: Future-Dated Bill Approved', [
+  70  |                 { label: 'Bill Ref',       value: bill.ref },
+  71  |                 { label: 'Bill ID',        value: bill.id },
+  72  |                 { label: 'Invoice Date',   value: futureDateStr },
+  73  |                 { label: 'Today',          value: new Date().toISOString().split('T')[0] },
+  74  |                 { label: 'Status',         value: billData.status },
+  75  |                 { label: 'Amount',         value: `$${(10000).toFixed(2)}` },
+  76  |                 { label: 'Vendor',         value: billData.vendor?.name || meta.vendorId },
+  77  |                 { label: 'Impact',         value: 'Future-period AP liability injected' },
+  78  |                 { label: 'Fix Required',   value: 'Reject if invoice_date > today' },
+  79  |             ]);
+  80  | 
+  81  |             if (billData.status === 'approved') {
+> 82  |                 throw new Error(`[CRITICAL_LOGIC_BUG] System approved a bill dated ${futureDateStr}. Future-period AP liability injection possible — balance sheet manipulation.`);
+      |                       ^ Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-06-12T00:00:00Z. Future-period AP liability injection possible — balance sheet manipulation.
+  83  |             }
+  84  |             console.log(`[PASS] Future-dated bill advance ok but status=${billData.status} — not approved.`);
+  85  |         } catch (err: any) {
+  86  |             if (err.message.includes('[CRITICAL_LOGIC_BUG]')) throw err;
+  87  |             console.log(`[PASS] Future-dated bill correctly blocked: ${err.message.substring(0, 100)}`);
+  88  |         }
+  89  |     });
+  90  | 
+  91  |     // ── 2. PO QUANTITY EXHAUSTION THEN +1 UNIT ───────────────────────────────
+  92  |     test('Guardrail: System must block billing beyond 100% of PO quantity', async ({ page }) => {
+  93  |         const app = new AppManager(page);
+  94  |         const meta = sharedMeta;
+  95  |         const item = sharedItem;
+  96  | 
+  97  |         const poQty = 10;
+  98  |         const unitPrice = 1000;
+  99  |         const po = await app.api.purchase.createPurchaseOrderAPI(item, poQty, unitPrice, meta.vendorId);
+  100 |         await app.advanceDocumentAPI(po.poId, 'purchase-orders');
+  101 | 
+  102 |         const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
+  103 |         await app.advanceDocumentAPI(bill1.billId, 'bills');
+  104 |         await page.waitForTimeout(3000);
+  105 | 
+  106 |         const bill1Data = await app.api.purchase.getBillAPI(bill1.billId);
+  107 |         const bill1Qty = (bill1Data.received_purchase_order_items || [])
+  108 |             .reduce((sum: number, row: any) => sum + parseFloat(row.received_quantity || '0'), 0);
+  109 |         const poStatus = await app.api.purchase.getPoReceiveStatusAPI(po.poId);
+  110 | 
+  111 |         console.log(`[BILL 1] ${bill1.billNumber} — received ${bill1Qty}/${poQty} | PO remaining: ${poStatus.remainingQty}`);
+  112 | 
+  113 |         if (bill1Qty !== poQty || poStatus.remainingQty > 0) {
+  114 |             throw new Error(
+  115 |                 `[SETUP_FAIL] PO ${po.poNumber} not fully received before overflow attack ` +
+  116 |                 `(bill1=${bill1Qty}, poQty=${poQty}, remaining=${poStatus.remainingQty}).`
+  117 |             );
+  118 |         }
+  119 | 
+  120 |         const { apiBase, headers, qs } = await app.buildApiContext();
+  121 |         const poResp = await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers });
+  122 |         const poData = await poResp.json();
+  123 |         const poItemId = poData.po_items?.[0]?.id;
+  124 |         if (!poItemId) throw new Error(`[SETUP_FAIL] PO ${po.poNumber} has no billable line items.`);
+  125 | 
+  126 |         const overflowBill = await app.api.purchase.createPartialBillFromPoAPI(po.poId, [{
+  127 |             po_item_id: poItemId,
+  128 |             received_quantity: 1,
+  129 |             received_unit_price: unitPrice
+  130 |         }]);
+  131 | 
+  132 |         if (overflowBill.success) {
+  133 |             try { await app.advanceDocumentAPI(overflowBill.billId, 'bills'); } catch { /* block expected */ }
+  134 |             const overflowData = await app.api.purchase.getBillAPI(overflowBill.billId);
+  135 | 
+  136 |             printAuditTable(`PO Overbilling Audit — PO: ${po.poNumber}`, [
+  137 |                 { label: 'PO Ref',               value: po.poNumber },
+  138 |                 { label: 'PO Qty Authorized',    value: `${poQty} units` },
+  139 |                 { label: 'PO Unit Price',         value: `$${unitPrice.toFixed(2)}` },
+  140 |                 { label: 'PO Total',              value: `$${(poQty * unitPrice).toFixed(2)}` },
+  141 |                 { label: 'Bill 1 (100%)',          value: `${bill1.billNumber} — $${(poQty * unitPrice).toFixed(2)}` },
+  142 |                 { label: 'Bill 1 Status',         value: bill1Data.status },
+  143 |                 { label: 'Overflow Bill Ref',     value: overflowBill.billNumber || overflowBill.billId?.substring(0, 8) },
+  144 |                 { label: 'Overflow Qty',          value: '1 unit (beyond PO)' },
+  145 |                 { label: 'Overflow Amount',       value: `$${unitPrice.toFixed(2)}` },
+  146 |                 { label: 'Overflow Status',       value: overflowData.status },
+  147 |                 { label: 'Total Billed',          value: `$${((poQty + 1) * unitPrice).toFixed(2)}` },
+  148 |                 { label: 'Overbilled By',         value: `$${unitPrice.toFixed(2)}` },
+  149 |                 { label: 'Fix Required',          value: 'Reject if received_qty > PO qty' },
+  150 |             ]);
+  151 | 
+  152 |             if (overflowData.status === 'approved') {
+  153 |                 throw new Error(`[CRITICAL_LOGIC_BUG] System approved a bill for 1 unit beyond the fully-exhausted PO ${po.poNumber}. Over-receiving liability created.`);
+  154 |             }
+  155 |             console.log(`[PASS] Overflow bill status=${overflowData.status} — approval correctly blocked.`);
+  156 |         } else {
+  157 |             console.log(`[PASS] Overflow bill creation rejected at API level: HTTP ${overflowBill.status} — ${overflowBill.error?.substring(0, 120)}`);
+  158 |         }
+  159 |     });
+  160 | 
+  161 |     // ── 3. SAME PO BILLED TWICE ───────────────────────────────────────────────
+  162 |     test('Guardrail: Concurrent identical PO submissions must not create duplicate liability', async ({ page }) => {
+  163 |         const app = new AppManager(page);
+  164 |         const meta = sharedMeta;
+  165 |         const item = sharedItem;
+  166 |         const poQty = 10;
+  167 |         const unitPrice = 1000;
+  168 | 
+  169 |         const [result1] = await Promise.allSettled([
+  170 |             app.api.purchase.createPurchaseOrderAPI(item, poQty, unitPrice, meta.vendorId),
+  171 |             app.api.purchase.createPurchaseOrderAPI(item, poQty, unitPrice, meta.vendorId)
+  172 |         ]);
+  173 | 
+  174 |         if (result1.status !== 'fulfilled') { console.log(`[SKIP] PO creation failed.`); return; }
+  175 | 
+  176 |         const po = (result1 as PromiseFulfilledResult<any>).value;
+  177 |         await app.advanceDocumentAPI(po.poId, 'purchase-orders');
+  178 | 
+  179 |         const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
+  180 |         await app.advanceDocumentAPI(bill1.billId, 'bills');
+  181 |         const bill1Data = await app.api.purchase.getBillAPI(bill1.billId);
+  182 |         console.log(`[BILL 1] ${bill1.billNumber} — approved`);
+```
