@@ -46,14 +46,14 @@ export class ProjectAPI extends BasePage {
         const headers = await this.h();
 
         // Customer
-        const custResp = await this.page.request.get(`${this.apiBase}/customers?page=1&pageSize=5&${this.qs}`, { headers });
+        const custResp = await this.safeGet(`${this.apiBase}/customers?page=1&pageSize=5&${this.qs}`, { headers });
         if (!custResp.ok()) throw new Error(`[ProjectAPI] Customer discovery failed: ${custResp.status()}`);
         const custData = await custResp.json();
         const customer = (custData.items || custData.data || [])[0];
         if (!customer) throw new Error('[ProjectAPI] No customers found.');
 
         // Workspace — auto-create if none exist
-        const wsResp = await this.page.request.get(`${this.apiBase}/workspaces?page=1&pageSize=5&${this.qs}`, { headers });
+        const wsResp = await this.safeGet(`${this.apiBase}/workspaces?page=1&pageSize=5&${this.qs}`, { headers });
         let workspace: { id: string; name: string } | null = null;
         if (wsResp.ok()) {
             const wsData = await wsResp.json();
@@ -111,7 +111,7 @@ export class ProjectAPI extends BasePage {
 
     async getProjectAPI(projectId: string): Promise<any> {
         const headers = await this.h();
-        const resp = await this.page.request.get(`${this.apiBase}/project/${projectId}?${this.qs}`, { headers });
+        const resp = await this.safeGet(`${this.apiBase}/project/${projectId}?${this.qs}`, { headers });
         if (!resp.ok()) throw new Error(`Get Project failed: ${resp.status()}`);
         return await resp.json();
     }
@@ -120,7 +120,7 @@ export class ProjectAPI extends BasePage {
         const headers = await this.h();
         const extra = Object.entries(filters).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
         const url = `${this.apiBase}/projects?page=1&pageSize=50&${this.qs}${extra ? '&' + extra : ''}`;
-        const resp = await this.page.request.get(url, { headers });
+        const resp = await this.safeGet(url, { headers });
         if (!resp.ok()) return [];
         const json = await resp.json();
         return json.items || json.data || [];

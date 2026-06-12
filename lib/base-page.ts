@@ -242,6 +242,54 @@ export class BasePage {
   }
 
   /**
+   * Resilient GET with exponential backoff for 500/503/socket-hang-up.
+   */
+  async safeGet(url: string, options: { headers: any }, timeoutMs = 30000): Promise<any> {
+    let lastError: any = null;
+    for (let attempt = 1; attempt <= 4; attempt++) {
+      try {
+        const response = await this.withTimeout(
+          this.page.request.get(url, { headers: options.headers }),
+          timeoutMs,
+          `GET ${url}`
+        );
+        if (response.ok()) return response;
+        const status = response.status();
+        const text = await response.text();
+        lastError = { status, text };
+        if (status === 500 || status === 503) {
+          const backoff = attempt * attempt * 1500;
+          console.log(`[WARN] GET ${url} → ${status}. Retry ${attempt}/4 in ${backoff}ms...`);
+          await this.page.waitForTimeout(backoff);
+          continue;
+        }
+        return response; // 4xx — return as-is
+      } catch (err: any) {
+        if (
+          err.message?.includes('socket hang up') ||
+          err.message?.includes('ECONNRESET') ||
+          err.message?.includes('ECONNREFUSED') ||
+          err.message?.includes('Target page') ||
+          err.message?.includes('[TIMEOUT]')
+        ) {
+          const backoff = attempt * attempt * 1500;
+          console.log(`[WARN] GET ${url} → ${err.message.split('\n')[0]}. Retry ${attempt}/4 in ${backoff}ms...`);
+          lastError = { status: 0, text: err.message };
+          await this.page.waitForTimeout(backoff);
+          continue;
+        }
+        lastError = { status: 0, text: err.message };
+      }
+    }
+    return {
+      ok: () => false,
+      status: () => lastError?.status ?? 0,
+      text: async () => lastError?.text ?? '',
+      json: async () => { try { return JSON.parse(lastError?.text ?? '{}'); } catch { return {}; } }
+    };
+  }
+
+  /**
    * Resilient POST with Promise.race timeout + exponential backoff for 500/503.
    * Gracefully swallows "target closed" errors so a crashed page doesn't kill the suite.
    */
@@ -364,7 +412,7 @@ export class BasePage {
       return null;
     };
 
-    const companiesResp = await this.page.request.get(`${this.apiBase}/companies?page=1&pageSize=50&${params}`, {
+    const companiesResp = await this.safeGet(`${this.apiBase}/companies?page=1&pageSize=50&${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (companiesResp.ok()) {

@@ -55,50 +55,47 @@ export class SalesAPI extends BasePage {
       }
     };
 
-    // 1. Fetch Accounts — API returns type as nested object: {id, name, type}
-    const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });
+    // 1. Fetch Accounts
+    const accResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });
     const accData = await safeJson(accResp, 'Accounts Discovery');
     const allAccounts = accData.items || accData.data || [];
 
-    // Precise AR account: name='Accounts Receivable', type.name='Trade & Other Receivables'
+    // Precise AR account
     const arAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase() === 'accounts receivable') ||
       allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('trade') && a.name?.toLowerCase().includes('receivable')) ||
       allAccounts.find((a: any) => a.type?.type?.toLowerCase() === 'accounts receivable') ||
       allAccounts[0];
 
-    // Sales/Revenue account for line item GL mapping
     const salesAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase() === 'sales') ||
       allAccounts.find((a: any) => a.type?.type?.toLowerCase().includes('revenue')) ||
       arAccount;
 
     // 2. Fetch Customer
-    const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
+    const custResp = await this.safeGet(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
     const custData = await safeJson(custResp, 'Customer Discovery');
     const customer = custData.items?.[0] || custData.data?.[0];
 
     // 3. Fetch Currency
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
-    // 4. Fetch Tax (optional — swallow transient errors like conn busy)
+    // 4. Fetch Tax (optional)
     let tax: any = null;
     try {
-      const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+      const taxResp = await this.safeGet(`${apiBase}/taxes?${params}`, { headers });
       if (taxResp.ok()) {
         const taxData = await taxResp.json();
         tax = taxData.items?.[0] || taxData.data?.[0] || null;
-      } else {
-        console.warn(`[WARN] Tax Discovery non-OK (${taxResp.status()}) — continuing without tax`);
       }
     } catch (e) {
       console.warn(`[WARN] Tax Discovery failed — continuing without tax`);
     }
 
     // 5. Fetch Location/Warehouse
-    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+    const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
     let locationId = '', warehouseId = '';
     if (locResp.ok()) {
       const locData = await locResp.json();
@@ -109,7 +106,6 @@ export class SalesAPI extends BasePage {
       }
     }
 
-    // 6. Fetch Business/Cash Account
     const cashAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')) ||
       allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('cash')) ||
@@ -146,7 +142,7 @@ export class SalesAPI extends BasePage {
     let locationId = data.locationId;
     let warehouseId = data.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
       if (locResp.ok()) {
         const locData = await locResp.json();
         const locs = locData.items || locData.data || [];
@@ -318,13 +314,13 @@ export class SalesAPI extends BasePage {
     };
 
     // 1. Discover Customer
-    const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
+    const custResp = await this.safeGet(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
     const custData = await safeJson(custResp, 'Customer Discovery');
     const customer = custData.items?.[0] || custData.data?.[0];
     if (!customer) throw new Error('Receipt Discovery Failed: No customers found in this company.');
 
     // 2. Discover Business Accounts (Cash + GL)
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Business Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
     const cashAccount = allAccounts.find((a: any) =>
@@ -336,7 +332,7 @@ export class SalesAPI extends BasePage {
     if (!cashAccount) throw new Error('Receipt Discovery Failed: No cash/bank accounts found.');
 
     // 3. Discover Currency
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
     if (!currency) throw new Error('Receipt Discovery Failed: No currencies found.');
@@ -344,7 +340,7 @@ export class SalesAPI extends BasePage {
     // 4. Discover Tax (optional)
     let tax: any = null;
     try {
-      const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+      const taxResp = await this.safeGet(`${apiBase}/taxes?${params}`, { headers });
       if (taxResp.ok()) { const taxData = await taxResp.json(); tax = taxData.items?.[0] || taxData.data?.[0]; }
     } catch (e) { console.warn('[WARN] Tax Discovery failed — continuing without tax'); }
 
@@ -397,7 +393,7 @@ export class SalesAPI extends BasePage {
 
     // Fetch the invoice after void to confirm its actual status and check for a linked credit note
     await new Promise(r => setTimeout(r, 2000));
-    const invResp = await this.page.request.get(`${apiBase}/invoice/${invoiceId}?${params}`, { headers });
+    const invResp = await this.safeGet(`${apiBase}/invoice/${invoiceId}?${params}`, { headers });
     if (!invResp.ok()) {
       console.warn(`[WARN] Could not re-fetch invoice after void: ${invResp.status()}`);
       return { id: invoiceId, ref: '', voidedStatus: 'unknown' };
@@ -481,7 +477,7 @@ export class SalesAPI extends BasePage {
 
     // Verify invoice exists and is in approved state before creating receipt
     try {
-      const invoiceCheck = await this.page.request.get(`${apiBase}/invoice/${data.invoiceId}?${params}`, { headers });
+      const invoiceCheck = await this.safeGet(`${apiBase}/invoice/${data.invoiceId}?${params}`, { headers });
       if (invoiceCheck.ok()) {
         const invoiceData = await invoiceCheck.json();
         if (invoiceData.status !== 'approved') {
@@ -495,7 +491,7 @@ export class SalesAPI extends BasePage {
     // Discover Cash Account dynamically if not provided
     let cashAccountId = data.cashAccountId;
     if (!cashAccountId) {
-      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
       if (acctResp.ok()) {
         const acctData = await acctResp.json();
         const allAccounts = acctData.items || acctData.data || [];
@@ -512,7 +508,7 @@ export class SalesAPI extends BasePage {
     // Discover Currency dynamically if not provided
     let currencyId = data.currencyId;
     if (!currencyId) {
-      const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+      const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
       if (currResp.ok()) {
         const currData = await currResp.json();
         const currency = currData.items?.[0] || currData.data?.[0];
@@ -603,7 +599,7 @@ export class SalesAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    const response = await this.page.request.get(`${apiBase}/invoice/${invoiceId}?${params}`, {
+    const response = await this.safeGet(`${apiBase}/invoice/${invoiceId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(() => 'No Response')}`);
@@ -618,7 +614,7 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const qs = `year=${year}&period=${period}&calendar=${calendar}`;
-    const response = await this.page.request.get(`${apiBase}/customer/${customerId}?${qs}`, {
+    const response = await this.safeGet(`${apiBase}/customer/${customerId}?${qs}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok()) return '';

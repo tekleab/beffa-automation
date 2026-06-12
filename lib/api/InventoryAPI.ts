@@ -67,7 +67,7 @@ export class InventoryAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
     // Smart Account Discovery
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=100&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=100&${params}`, { headers });
     let incAcct = typeof data !== 'string' ? data.gl_sales_account_id : undefined;
     let expAcct = typeof data !== 'string' ? data.gl_cost_account_id : undefined;
     let invAcct = typeof data !== 'string' ? data.gl_inventory_account_id : undefined;
@@ -84,7 +84,7 @@ export class InventoryAPI extends BasePage {
     let warehouseId = typeof data === 'string' ? undefined : data.default_warehouse_id;
 
     if (!locId || !warehouseId) {
-        const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+        const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
         if (locResp.ok()) {
             const ldata = await locResp.json();
             const locs = ldata.items || ldata.data || [];
@@ -145,7 +145,7 @@ export class InventoryAPI extends BasePage {
     };
     const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
-    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
+    const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
     if (locResp.ok()) {
       const locJson = await locResp.json();
       const locs = locJson.items || locJson.data || [];
@@ -177,11 +177,11 @@ export class InventoryAPI extends BasePage {
 
       const { locationId, warehouseId } = await this.ensureDefaultLocationAPI();
 
-      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
       const acctJson = await acctResp.json();
       const sales = (acctJson.items || acctJson.data || []).find((a: any) => a.name?.toLowerCase().includes('sales'))?.id;
 
-      const custResp = await this.page.request.get(`${apiBase}/customers?page=1&pageSize=1&${params}`, { headers });
+      const custResp = await this.safeGet(`${apiBase}/customers?page=1&pageSize=1&${params}`, { headers });
       const custJson = await custResp.json();
       const cust = (custJson.items?.[0] || custJson.data?.[0])?.id;
       if (!cust) throw new Error('[METADATA] No customers found. Ensure the environment has at least one customer.');
@@ -240,7 +240,7 @@ export class InventoryAPI extends BasePage {
     // 1. Discover Adjustment Account dynamically
     let adjustmentAccountId = data.adjustmentAccountId;
     if (!adjustmentAccountId) {
-      const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
       const acctData = await safeJson(acctResp);
       if (acctData) {
         const allAccounts = acctData.items || acctData.data || [];
@@ -253,7 +253,7 @@ export class InventoryAPI extends BasePage {
     let locationId = data.locationId;
     let warehouseId = data.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
       const locData = await safeJson(locResp);
       if (locData) {
         const firstLoc = (locData.items || locData.data || [])[0];
@@ -269,7 +269,7 @@ export class InventoryAPI extends BasePage {
     let locationQuantity = 0;
     let existingUnitCost = 0;
     if (data.itemId) {
-      const itemResp = await this.page.request.get(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+      const itemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
       const itemData = await safeJson(itemResp);
       if (itemData) {
         const locEntry = (itemData.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
@@ -354,7 +354,7 @@ export class InventoryAPI extends BasePage {
     
     // The previous error was due to hitting the frontend port 4173. 
     // Now that the port is fixed (8001), the correct list endpoint is indeed the plural /inventory-items.
-    let response = await this.page.request.get(`${apiBase}/inventory-items?${params}`, {
+    let response = await this.safeGet(`${apiBase}/inventory-items?${params}`, {
       headers: { 
         'x-company': process.env.BEFFA_COMPANY as string, 
         'Authorization': `Bearer ${token}`,
@@ -364,7 +364,7 @@ export class InventoryAPI extends BasePage {
 
     if (!response.ok()) {
        console.log(`[WARN] /inventory-items failed (${response.status()}). Trying fallback: /items`);
-       response = await this.page.request.get(`${apiBase}/items?${params}`, {
+       response = await this.safeGet(`${apiBase}/items?${params}`, {
          headers: { 
            'x-company': process.env.BEFFA_COMPANY as string, 
            'Authorization': `Bearer ${token}`,
@@ -477,7 +477,7 @@ export class InventoryAPI extends BasePage {
         if (!apiBase.endsWith('/api')) apiBase += '/api';
         const token = await this._getAuthToken();
         const y = process.env.BEFFA_YEAR || '2018', p = process.env.BEFFA_PERIOD || 'yearly', c = process.env.BEFFA_CALENDAR || 'ec';
-        const locResp = await this.page.request.get(`${apiBase}/location/${locId}?year=${y}&period=${p}&calendar=${c}`, {
+        const locResp = await this.safeGet(`${apiBase}/location/${locId}?year=${y}&period=${p}&calendar=${c}`, {
           headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
         if (locResp.ok()) {
@@ -513,7 +513,7 @@ export class InventoryAPI extends BasePage {
       try { return JSON.parse(text); } catch { return null; }
     };
 
-    let response = await this.page.request.get(`${apiBase}/inventory-item/${itemId}?${params}`, {
+    let response = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, {
       headers: { 
         'x-company': process.env.BEFFA_COMPANY as string, 
         'Authorization': `Bearer ${token}`,
@@ -525,7 +525,7 @@ export class InventoryAPI extends BasePage {
 
     if (!json) {
       console.log(`[INFO] Direct Item API for ${itemId} failed. Trying search...`);
-      const searchResp = await this.page.request.get(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
+      const searchResp = await this.safeGet(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
         headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
       });
       const searchJson = await safeJson(searchResp);
@@ -595,17 +595,17 @@ export class InventoryAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
     // Try singular invoice endpoint first
-    let response = await this.page.request.get(`${apiBase}/invoice/${receiptId}?${params}`, {
+    let response = await this.safeGet(`${apiBase}/invoice/${receiptId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
     });
 
     if (!response.ok() && response.status() === 404) {
       // fallback to plural invoices and generic receipt endpoint if needed
-      response = await this.page.request.get(`${apiBase}/invoices/${receiptId}?${params}`, {
+      response = await this.safeGet(`${apiBase}/invoices/${receiptId}?${params}`, {
         headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok() && response.status() === 404) {
-        response = await this.page.request.get(`${apiBase}/receipts/${receiptId}?${params}`, {
+        response = await this.safeGet(`${apiBase}/receipts/${receiptId}?${params}`, {
           headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
         });
       }
@@ -747,7 +747,7 @@ export class InventoryAPI extends BasePage {
 
     // Priority 1: another location the item is already registered at
     if (itemId) {
-      const itemResp = await this.page.request.get(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
+      const itemResp = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
       if (itemResp.ok()) {
         const itemData = await itemResp.json();
         const otherLoc = (itemData.inventory_item_locations || [])
@@ -760,7 +760,7 @@ export class InventoryAPI extends BasePage {
     }
 
     // Priority 2: any other system location
-    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers });
+    const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers });
     if (locResp.ok()) {
       const locData = await locResp.json();
       const allLocs = locData.items || locData.data || [];
@@ -809,7 +809,7 @@ export class InventoryAPI extends BasePage {
     headers: Record<string, string>
   ): Promise<{ id: string; warehouse_id: string }> {
     // 1. Fetch existing warehouse to reuse its address fields
-    const whResp = await this.page.request.get(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
+    const whResp = await this.safeGet(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
     let address = { region: 'Addis Ababa City Administration', zone: 'Bole Subcity', woreda: 'Woreda 2', kebele: '1' };
     if (whResp.ok()) {
       const whData = await whResp.json();
@@ -871,7 +871,7 @@ export class InventoryAPI extends BasePage {
 
     // 1. Discover adjustment account
     let adjAccountId: string | undefined;
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     if (acctResp.ok()) {
       const acctData = await acctResp.json();
       const accounts = acctData.items || acctData.data || [];
@@ -882,7 +882,7 @@ export class InventoryAPI extends BasePage {
     let toLocationId  = data.toLocationId;
     let toWarehouseId = data.toWarehouseId;
     if (!toLocationId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=20&${params}`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=20&${params}`, { headers });
       if (locResp.ok()) {
         const locData = await locResp.json();
         const locs = locData.items || locData.data || [];
@@ -906,7 +906,7 @@ export class InventoryAPI extends BasePage {
     let destItemId   = data.itemId;
 
     // Check if item is actually registered at destination by inspecting its location list directly
-    const srcItemResp = await this.page.request.get(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+    const srcItemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
     const srcItemData = srcItemResp.ok() ? await srcItemResp.json() : {};
     const registeredAtDest = (srcItemData.inventory_item_locations || []).some((l: any) => l.location_id === toLocationId);
 

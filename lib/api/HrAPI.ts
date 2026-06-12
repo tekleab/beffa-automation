@@ -78,9 +78,8 @@ export class HrAPI extends BasePage {
     const email = data.email as string;
     const name = data.name as string;
     await this.page.waitForTimeout(1500);
-    const listResp = await this.page.request.get(
-      `${this.apiBase}/employees?page=1&pageSize=50&sort=created_at:desc&${this.params}`, { headers: h }
-    );
+    const listResp = await this.safeGet(
+      `${this.apiBase}/employees?page=1&pageSize=50&sort=created_at:desc&${this.params}`, { headers: h });
     if (listResp.ok()) {
       const list = (await listResp.json()).data || [];
       // Match by email first (guaranteed unique), then name
@@ -103,27 +102,24 @@ export class HrAPI extends BasePage {
 
   async listEmployees(pageSize = 10): Promise<any[]> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/employees?page=1&pageSize=${pageSize}&${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/employees?page=1&pageSize=${pageSize}&${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`List employees failed: ${resp.status()}`);
     return (await resp.json()).data || [];
   }
 
   async getEmployee(id: string): Promise<any> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/employees/${id}?${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/employees/${id}?${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`Get employee failed: ${resp.status()}`);
     return resp.json();
   }
 
   async listTimesheets(pageSize = 10): Promise<any[]> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/timesheets?page=1&pageSize=${pageSize}&${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/timesheets?page=1&pageSize=${pageSize}&${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`List timesheets failed: ${resp.status()}`);
     return (await resp.json()).data || [];
   }
@@ -140,18 +136,16 @@ export class HrAPI extends BasePage {
 
   async listLeaveApplications(pageSize = 10): Promise<any[]> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/leave-applications?page=1&pageSize=${pageSize}&${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/leave-applications?page=1&pageSize=${pageSize}&${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`List leave-applications failed: ${resp.status()}`);
     return (await resp.json()).data || [];
   }
 
   async listPayrollRuns(pageSize = 10): Promise<any[]> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/payroll-runs?page=1&pageSize=${pageSize}&${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/payroll-runs?page=1&pageSize=${pageSize}&${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`List payroll-runs failed: ${resp.status()}`);
     return (await resp.json()).data || [];
   }
@@ -168,18 +162,16 @@ export class HrAPI extends BasePage {
 
   async getPayrollRun(id: string): Promise<any> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/payroll-runs/${id}?${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/payroll-runs/${id}?${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`Get payroll-run failed: ${resp.status()}`);
     return resp.json();
   }
 
   async listPayComponents(pageSize = 10): Promise<any[]> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/pay-components?page=1&pageSize=${pageSize}&${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/pay-components?page=1&pageSize=${pageSize}&${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`List pay-components failed: ${resp.status()}`);
     return (await resp.json()).data || [];
   }
@@ -196,18 +188,16 @@ export class HrAPI extends BasePage {
 
   async getOrgChart(): Promise<any> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/organization-chart?${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/organization-chart?${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`Get org-chart failed: ${resp.status()}`);
     return resp.json();
   }
 
   async listDepartments(pageSize = 10): Promise<any[]> {
     const h = await this.headers();
-    const resp = await this.page.request.get(
-      `${this.apiBase}/departments?page=1&pageSize=${pageSize}&${this.params}`, { headers: h }
-    );
+    const resp = await this.safeGet(
+      `${this.apiBase}/departments?page=1&pageSize=${pageSize}&${this.params}`, { headers: h });
     if (!resp.ok()) throw new Error(`List departments failed: ${resp.status()}`);
     return (await resp.json()).data || [];
   }
@@ -225,9 +215,8 @@ export class HrAPI extends BasePage {
 
     // Fetch config to get child hierarchy levels
     if (rootDept?.config_id) {
-      const cfgResp = await this.page.request.get(
-        `${this.apiBase}/departments/configs/${rootDept.config_id}?${this.params}`, { headers: h }
-      );
+      const cfgResp = await this.safeGet(
+        `${this.apiBase}/departments/configs/${rootDept.config_id}?${this.params}`, { headers: h });
       if (cfgResp.ok()) {
         const cfg = await cfgResp.json();
         const levels: any[] = cfg.hierarchy_levels || [];
@@ -274,9 +263,8 @@ export class HrAPI extends BasePage {
    */
   async ensureJobPosition(departmentId: string, title: string = 'Audit Engineer'): Promise<{ id: string; title: string }> {
     const h = await this.headers();
-    const listResp = await this.page.request.get(
-      `${this.apiBase}/job-positions?page=1&pageSize=100&${this.params}`, { headers: h }
-    );
+    const listResp = await this.safeGet(
+      `${this.apiBase}/job-positions?page=1&pageSize=100&${this.params}`, { headers: h });
     if (listResp.ok()) {
       const all = (await listResp.json()).data || [];
       // Only use job positions that belong to this exact department
@@ -328,7 +316,7 @@ export class HrAPI extends BasePage {
   async discoverMetadataAPI(): Promise<{ employeeId: string; glAccountId: string; departmentId: string; departmentName: string; jobPositionId: string; jobPositionTitle: string }> {
     const [employees, accounts] = await Promise.all([
       this.listEmployees(10),
-      this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=50&${this.params}`, { headers: await this.headers() })
+      this.safeGet(`${this.apiBase}/accounts?page=1&pageSize=50&${this.params}`, { headers: await this.headers() })
         .then(r => r.json()).then(d => d.items || d.data || []),
     ]);
 

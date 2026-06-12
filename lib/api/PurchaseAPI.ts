@@ -47,7 +47,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
 
-    const response = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=10&${params}`, {
+    const response = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10&${params}`, {
       headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
     });
 
@@ -76,7 +76,7 @@ export class PurchaseAPI extends BasePage {
     };
 
     // 1. Fetch Accounts
-    const accResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
+    const accResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
     const accData = await safeJson(accResp, 'Accounts Discovery');
     const allAccounts = accData.items || accData.data || [];
 
@@ -97,14 +97,14 @@ export class PurchaseAPI extends BasePage {
       apAccount;
 
     // 2. Fetch Currency
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
     // 3. Fetch Tax (optional)
     let tax: any = null;
     try {
-      const taxResp = await this.page.request.get(`${apiBase}/taxes?${params}`, { headers });
+      const taxResp = await this.safeGet(`${apiBase}/taxes?${params}`, { headers });
       if (taxResp.ok()) {
         const taxData = await taxResp.json();
         tax = taxData.items?.[0] || taxData.data?.[0] || null;
@@ -112,7 +112,7 @@ export class PurchaseAPI extends BasePage {
     } catch (e) { console.warn(`[WARN] Tax Discovery failed — continuing without tax`); }
 
     // 4. Fetch Location/Warehouse
-    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+    const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
     let locationId = '', warehouseId = '';
     if (locResp.ok()) {
       const locData = await locResp.json();
@@ -124,7 +124,7 @@ export class PurchaseAPI extends BasePage {
     }
 
     // 5. Fetch Vendor
-    const vendorResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=5&${params}`, { headers });
+    const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=5&${params}`, { headers });
     const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
     const vendor = (vendorData.items || vendorData.data || [])[0];
 
@@ -159,7 +159,7 @@ export class PurchaseAPI extends BasePage {
     // 1. Discover Vendor
     let resolvedVendorId = vendorId;
     if (!resolvedVendorId) {
-      const vendorResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=10`, { headers });
+      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10`, { headers });
       const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
       const vendor = vendorData.items?.[0] || vendorData.data?.[0];
       if (!vendor) throw new Error('PO Discovery Failed: No vendors found.');
@@ -167,7 +167,7 @@ export class PurchaseAPI extends BasePage {
     }
 
     // 2. Discover Accounts (AP + GL)
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
     const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
@@ -177,7 +177,7 @@ export class PurchaseAPI extends BasePage {
     let locationId = itemData.locationId;
     let warehouseId = itemData.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10`, { headers });
       const locData = await safeJson(locResp, 'Location Discovery');
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
@@ -186,7 +186,7 @@ export class PurchaseAPI extends BasePage {
       }
     }
     // 5. Discover Currency if missing
-    const currResp = await this.page.request.get(`${apiBase}/currency?page=1&pageSize=5`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?page=1&pageSize=5`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = (currData.items || currData.data || [])[0];
 
@@ -242,7 +242,7 @@ export class PurchaseAPI extends BasePage {
     let resolvedVendorId = vendorId;
     if (!resolvedVendorId) {
       // Use same pattern as createPurchaseOrderAPI which works reliably
-      const vendorResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=10`, { headers });
+      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10`, { headers });
       const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
       const vendor = vendorData.items?.[0] || vendorData.data?.[0];
       if (!vendor) throw new Error('Bill Discovery Failed: No vendors found in current company.');
@@ -250,7 +250,7 @@ export class PurchaseAPI extends BasePage {
     }
 
     // 2. Discover Accounts (AP + GL)
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
 
@@ -263,7 +263,7 @@ export class PurchaseAPI extends BasePage {
     const resolvedGlAccount = glAccountId !== undefined ? { id: glAccountId } : (allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0]);
 
     // 3. Discover Currency
-    const currResp = await this.page.request.get(`${apiBase}/currency?${qs}`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${qs}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
@@ -271,7 +271,7 @@ export class PurchaseAPI extends BasePage {
     let locationId = itemData.locationId;
     let warehouseId = itemData.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${qs}`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${qs}`, { headers });
       const locData = await safeJson(locResp, 'Location Discovery');
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
@@ -329,11 +329,11 @@ export class PurchaseAPI extends BasePage {
     };
 
     // 1. Fetch the Purchase Order to gather its precise mapping metadata
-    const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
+    const poResp = await this.safeGet(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     const poData = await safeJson(poResp, `Fetch PO ${poId}`);
 
     // 2. Discover Accounts Payable ID for validation overlay
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
     const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
@@ -381,7 +381,7 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-    const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
+    const poResp = await this.safeGet(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     if (!poResp.ok()) throw new Error(`Fetch PO ${poId} failed: ${poResp.status()}`);
     const poData = await poResp.json();
     const poItems = poData.po_items || [];
@@ -416,11 +416,11 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-    const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
+    const poResp = await this.safeGet(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     if (!poResp.ok()) throw new Error(`Fetch PO ${poId} failed: ${poResp.status()}`);
     const poData = await poResp.json();
 
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await acctResp.json();
     const allAccounts = acctData.items || acctData.data || [];
     const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
@@ -457,7 +457,7 @@ export class PurchaseAPI extends BasePage {
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}` };
 
     // 1. Resolve Vendor ID from Name
-    const vendResp = await this.page.request.get(`${apiBase}/vendors?page=1&pageSize=50&${params}`, { headers });
+    const vendResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=50&${params}`, { headers });
     const vendData = await vendResp.json();
     const vendor = (vendData.items || vendData.data || []).find((v: any) => v.name.toLowerCase() === vendorName.toLowerCase());
 
@@ -472,7 +472,7 @@ export class PurchaseAPI extends BasePage {
     };
 
     for (let i = 0; i < 15; i++) {
-      const billResp = await this.page.request.get(`${apiBase}/vendor/${vendorId}/bills?${params}`, { headers });
+      const billResp = await this.safeGet(`${apiBase}/vendor/${vendorId}/bills?${params}`, { headers });
       const billData = await safeJson(billResp, 'Vendor Ledger');
       if (!billData) {
         console.log(`[WARN] Ledger API busy or returned error. Retrying...`);
@@ -566,13 +566,13 @@ export class PurchaseAPI extends BasePage {
     };
 
     // 1. Discover Accounts
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
     const cashAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
 
     // 2. Discover Currency
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = currData.items?.[0] || currData.data?.[0];
 
@@ -618,14 +618,14 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await acctResp.json();
     const allAccounts = acctData.items || acctData.data || [];
     const cashAccount = allAccounts.find((a: any) =>
       a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
     ) || allAccounts[0];
 
-    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await currResp.json();
     const currency = currData.items?.[0] || currData.data?.[0];
 
@@ -654,7 +654,7 @@ export class PurchaseAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    const response = await this.page.request.get(`${apiBase}/bill/${billId}?${params}`, {
+    const response = await this.safeGet(`${apiBase}/bill/${billId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     if (!response.ok()) throw new Error(`Failed to fetch Bill ${billId}: ${response.status()}`);
@@ -667,7 +667,7 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=yearly&calendar=ec`;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
-    const response = await this.page.request.get(`${apiBase}/payments/${paymentId}?${params}`, {
+    const response = await this.safeGet(`${apiBase}/payments/${paymentId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY || 'sample', 'Authorization': `Bearer ${token}` }
     });
     return await response.json();
@@ -747,7 +747,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     console.log(`[ACTION] API Discovery: Scanning for unpaid approved bills in "${company}"...`);
-    const response = await this.page.request.get(`${apiBase}/bills?pageSize=50&${params}`, {
+    const response = await this.safeGet(`${apiBase}/bills?pageSize=50&${params}`, {
       headers: { 'x-company': company, 'Authorization': `Bearer ${token}` }
     });
 
