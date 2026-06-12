@@ -370,6 +370,81 @@ export class PurchaseAPI extends BasePage {
     return { success: true, billNumber: json.invoice_number, billId: json.id };
   }
 
+  async getPoReceiveStatusAPI(poId: string): Promise<{ poQty: number; receivedQty: number; remainingQty: number }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+    const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
+    if (!poResp.ok()) throw new Error(`Fetch PO ${poId} failed: ${poResp.status()}`);
+    const poData = await poResp.json();
+    const poItems = poData.po_items || [];
+
+    let poQty = 0;
+    let receivedQty = 0;
+    for (const item of poItems) {
+      const qty = parseFloat(item.quantity || '0');
+      poQty += qty;
+      const unreceived = item.unreceived_quantity ?? item.remaining_quantity ?? item.unreceived_qty;
+      if (unreceived != null) {
+        receivedQty += qty - parseFloat(unreceived);
+      } else if (item.received_quantity != null) {
+        receivedQty += parseFloat(item.received_quantity);
+      }
+    }
+
+    return { poQty, receivedQty, remainingQty: poQty - receivedQty };
+  }
+
+  async createPartialBillFromPoAPI(
+    poId: string,
+    receivedItems: Array<{ po_item_id: string; received_quantity: number; received_unit_price: number }>
+  ): Promise<{ success: boolean; billNumber: string; billId: string; status: number; error?: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+    const poResp = await this.page.request.get(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
+    if (!poResp.ok()) throw new Error(`Fetch PO ${poId} failed: ${poResp.status()}`);
+    const poData = await poResp.json();
+
+    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctData = await acctResp.json();
+    const allAccounts = acctData.items || acctData.data || [];
+    const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
+
+    const payload = {
+      accounts_payable_id: apAccount?.id,
+      currency_id: poData.currency_id || poData.currency?.id,
+      due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      items: [],
+      purchase_order_id: poId,
+      vendor_id: poData.vendor_id || poData.vendor?.id,
+      received_purchase_order_items: receivedItems,
+      status: 'draft'
+    };
+
+    const response = await this.page.request.post(`${apiBase}/bills?${params}`, { data: payload, headers });
+    if (!response.ok()) {
+      return { success: false, billNumber: '', billId: '', status: response.status(), error: await response.text() };
+    }
+    const json = await response.json();
+    return { success: true, billNumber: json.invoice_number, billId: json.id, status: response.status() };
+  }
+
   async verifyBillInVendorAPI(vendorName: string, billNumber: string): Promise<boolean> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -423,6 +498,56 @@ export class PurchaseAPI extends BasePage {
     throw new Error(`[ERROR] API Verification Failed: Bill ${billNumber} never appeared in "${vendorName}" ledger.`);
   }
 
+  private async postPaymentWithCashTopUp(
+    apiBase: string,
+    params: string,
+    headers: Record<string, string>,
+    payload: Record<string, any>,
+    label: string
+  ): Promise<any> {
+    const maxTopUpAttempts = 5;
+    let response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers });
+
+    for (let attempt = 0; !response.ok() && attempt < maxTopUpAttempts; attempt++) {
+      const errText = await response.text();
+      const topUp = this.parseInsufficientCashTopUp(errText);
+      if (response.status() !== 422 || topUp === null) {
+        throw new Error(`${label} failed: ${response.status()} - ${errText}`);
+      }
+
+      const accountName = this.parseInsufficientCashAccountName(errText);
+      const cashAccountId = await this.resolveCashAccountId(payload.cash_account_id, accountName);
+      payload.cash_account_id = cashAccountId;
+
+      console.log(`[CASH_TOPUP] ${label}: insufficient balance (attempt ${attempt + 1}/${maxTopUpAttempts}) — topping up ${topUp}...`);
+      await this.seedCashBalanceAPI(topUp, cashAccountId);
+      await this.page.waitForTimeout(3000);
+
+      response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers });
+    }
+
+    if (response.ok()) return response.json();
+    throw new Error(`${label} failed after ${maxTopUpAttempts} cash top-up attempts: ${response.status()} - ${await response.text()}`);
+  }
+
+  private parseInsufficientCashAccountName(errorText: string): string | null {
+    const match = errorText.match(/account\s+([^:]+):\s*available/i);
+    return match ? match[1].trim() : null;
+  }
+
+  private async resolveCashAccountId(preferredId?: string, accountName?: string | null): Promise<string> {
+    const accounts = await this.getAllAccountsAPI();
+    if (accountName) {
+      const byName = accounts.find((a: any) => a.name === accountName);
+      if (byName) return byName.id;
+    }
+    if (preferredId && accounts.some((a: any) => a.id === preferredId)) return preferredId;
+    const cashAccount = accounts.find((a: any) =>
+      a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+    ) || accounts[0];
+    return cashAccount?.id;
+  }
+
   async createBillPaymentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -472,14 +597,51 @@ export class PurchaseAPI extends BasePage {
     };
 
     console.log(`[ACTION] Creating Bill Payment for ${data.billId} via API (CashAcct: ${resolvedCashAccountId})...`);
-    const response = await this.page.request.post(`${apiBase}/payments?${params}`, {
-      data: payload,
-      headers
-    });
-
-    if (!response.ok()) throw new Error(`Bill-Payment API Failed: ${response.status()} - ${await response.text()}`);
-    const json = await response.json();
+    const json = await this.postPaymentWithCashTopUp(apiBase, params, headers, payload, 'Bill-Payment API');
     console.log(`[SUCCESS] Payment created: ${json.ref} (ID: ${json.id})`);
+    return { success: true, ref: json.ref, id: json.id };
+  }
+
+  async createMultiBillPaymentAPI(data: {
+    amount: number;
+    vendorId: string;
+    billPayments: Array<{ amount: number; bill_id: string }>;
+    cashAccountId?: string;
+  }): Promise<{ success: boolean; ref: string; id: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+    const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctData = await acctResp.json();
+    const allAccounts = acctData.items || acctData.data || [];
+    const cashAccount = allAccounts.find((a: any) =>
+      a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+    ) || allAccounts[0];
+
+    const currResp = await this.page.request.get(`${apiBase}/currency?${params}`, { headers });
+    const currData = await currResp.json();
+    const currency = currData.items?.[0] || currData.data?.[0];
+
+    const payload = {
+      amount: data.amount,
+      cash_account_id: data.cashAccountId || cashAccount?.id,
+      vendor_id: data.vendorId,
+      date: new Date().toISOString(),
+      payment_method: 'cash',
+      currency_id: currency?.id,
+      bill_payments: data.billPayments
+    };
+
+    console.log(`[ACTION] Creating multi-bill payment of ${data.amount} covering ${data.billPayments.length} bills...`);
+    const json = await this.postPaymentWithCashTopUp(apiBase, params, headers, payload, 'Multi-bill payment');
+    console.log(`[SUCCESS] Multi-bill payment created: ${json.ref} (ID: ${json.id})`);
     return { success: true, ref: json.ref, id: json.id };
   }
 

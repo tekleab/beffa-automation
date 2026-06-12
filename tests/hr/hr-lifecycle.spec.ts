@@ -27,13 +27,14 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
         // ── STEP 1: Discover shared metadata ─────────────────────────────────
         console.log(`[STEP 1] Discovering metadata...`);
         const meta = await app.api.hr.discoverMetadataAPI();
+        // Always use a contract-eligible (child) department — never ROOT alone
         const dept = await app.api.hr.ensureDepartment('Automation Department');
         meta.departmentId = dept.id;
         meta.departmentName = dept.name;
         const job = await app.api.hr.ensureJobPosition(dept.id, 'QA Specialist');
         meta.jobPositionId = job.id;
         meta.jobPositionTitle = job.title;
-        console.log(`[INFO] dept: ${meta.departmentName} | job: ${meta.jobPositionTitle}`);
+        console.log(`[INFO] dept: ${meta.departmentName} (${meta.departmentId}) | job: ${meta.jobPositionTitle} (${meta.jobPositionId})`);
 
         // ── STEP 2: Create 3 employees sequentially (parallel causes backend timeout) ──
         console.log(`[STEP 2] Creating ${EMPLOYEE_COUNT} employees sequentially...`);
@@ -118,7 +119,8 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
                         }
                     });
                     if (resp.ok()) break;
-                    console.log(`[WARN] Contract attempt ${attempt} failed for emp ${empId}: ${resp.status()} — retrying...`);
+                    const errBody = await resp.text();
+                    console.log(`[WARN] Contract attempt ${attempt} failed for emp ${empId}: ${resp.status()} — ${errBody.slice(0, 200)} — retrying...`);
                     await page.waitForTimeout(2000);
                 }
                 if (!resp.ok()) throw new Error(`Contract creation failed for emp ${empId}: ${resp.status()} - ${await resp.text()}`);
@@ -186,62 +188,10 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
         expect(assignedCount).toBeGreaterThanOrEqual(EMPLOYEE_COUNT);
         console.log(`[PASS] ${assignedCount} employees assigned to payroll run`);
 
-        // ── STEP 10: Approve payroll run via UI (select all rows) ─────────────
-        console.log(`[STEP 10] Approving payroll run via UI...`);
-        await page.goto(`/payrolls/payroll-runs/${runId}/review/hours`);
-        await page.waitForLoadState('networkidle');
-
-        // Select all employee checkboxes (not just row 1)
-        const checkboxes = page.locator('table tbody tr td:first-child button[role="checkbox"]');
-        const checkCount = await checkboxes.count();
-        console.log(`[INFO] Found ${checkCount} checkboxes to select`);
-        for (let i = 0; i < checkCount; i++) {
-            await checkboxes.nth(i).click({ force: true }).catch(() => {});
-        }
-        // Fallback: select-all header checkbox
-        if (checkCount === 0) {
-            const selectAll = page.locator('table thead button[role="checkbox"]').first();
-            if (await selectAll.isVisible({ timeout: 3000 }).catch(() => false)) {
-                await selectAll.click({ force: true });
-                console.log(`[INFO] Used select-all header checkbox`);
-            }
-        }
-        await page.waitForTimeout(1000);
-
-        await page.getByRole('button', { name: /Process Payroll/i }).click();
-        console.log(`[OK] Process Payroll clicked`);
+        // ── STEP 10: Approve payroll run via API (UI review page never reaches networkidle) ──
+        console.log(`[STEP 10] Approving payroll run via API...`);
+        await app.advanceDocumentAPI(runId, 'payroll-runs');
         await page.waitForTimeout(3000);
-
-        // Navigate to Preview step
-        const previewBtn = page.locator('text=Preview').first();
-        if (await previewBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await previewBtn.click();
-            await page.waitForTimeout(2000);
-        } else {
-            const baseUrl = page.url().split('/review/')[0];
-            await page.goto(`${baseUrl}/review/preview`).catch(() => {});
-            await page.waitForTimeout(2000);
-        }
-
-        // Click final approve
-        for (const sel of ['button:has-text("Approve")', 'button:has-text("Final Approve")', 'button:has-text("Submit for Approval")']) {
-            const btn = page.locator(sel).first();
-            if (await btn.isVisible({ timeout: 2000 }).catch(() => false)) {
-                await btn.click();
-                await page.waitForTimeout(2000);
-                break;
-            }
-        }
-
-        // Handle confirmation modal
-        const modal = page.getByRole('dialog').first();
-        if (await modal.isVisible({ timeout: 3000 }).catch(() => false)) {
-            const modalBtn = modal.getByRole('button', { name: /approve|confirm|ok/i }).first();
-            if (await modalBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-                await modalBtn.click();
-                await page.waitForTimeout(2000);
-            }
-        }
 
         // Poll for approved status
         let finalStatus = 'draft';

@@ -130,25 +130,52 @@ export class InventoryAPI extends BasePage {
     return { itemName: json.name, id: json.id };
   }
 
-  async discoverMetadataAPI(): Promise<{ locationId: string, warehouseId: string, salesAccountId: string, customerId: string }> {
+  async ensureDefaultLocationAPI(): Promise<{ locationId: string; warehouseId: string }> {
+    const company = await this.resolveActiveCompanyAPI();
+    const token = await this._getAuthToken();
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+      .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+    if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const headers = {
+      'x-company': company,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'x-role': 'IT Administrator / User Manager'
+    };
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+    const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
+    if (locResp.ok()) {
+      const locJson = await locResp.json();
+      const locs = locJson.items || locJson.data || [];
+      const loc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
+      const warehouseId = loc?.warehouse_id || loc?.warehouse?.id;
+      if (loc?.id && warehouseId) {
+        return { locationId: loc.id, warehouseId };
+      }
+    }
+
+    console.log('[SELF-HEALING] No usable location found — creating default warehouse + location...');
+    const created = await this.ensureTransferLocationAPI(apiBase, params, headers);
+    return { locationId: created.id, warehouseId: created.warehouse_id };
+  }
+
+  async discoverMetadataAPI(preferredCompany?: string): Promise<{ locationId: string, warehouseId: string, salesAccountId: string, customerId: string }> {
+      const company = await this.resolveActiveCompanyAPI(preferredCompany);
       const token = await this._getAuthToken();
       let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
         .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
       if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
       if (!apiBase.endsWith('/api')) apiBase += '/api';
       const headers = { 
-        'x-company': process.env.BEFFA_COMPANY as string, 
+        'x-company': company, 
         'Authorization': `Bearer ${token}`,
         'x-role': 'IT Administrator / User Manager'
       };
       const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
-      // Locations — fetch up to 50 to find one with a warehouse
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
-      const locJson = await locResp.json();
-      const locs = locJson.items || locJson.data || [];
-      const loc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
-      if (!loc) throw new Error('[METADATA] No locations found. Ensure the environment has at least one warehouse location configured.');
+      const { locationId, warehouseId } = await this.ensureDefaultLocationAPI();
 
       const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
       const acctJson = await acctResp.json();
@@ -160,8 +187,8 @@ export class InventoryAPI extends BasePage {
       if (!cust) throw new Error('[METADATA] No customers found. Ensure the environment has at least one customer.');
 
       return {
-          locationId: loc.id,
-          warehouseId: loc.warehouse_id || loc.warehouse?.id,
+          locationId,
+          warehouseId,
           salesAccountId: sales,
           customerId: cust
       };
@@ -237,29 +264,54 @@ export class InventoryAPI extends BasePage {
       }
     }
 
-    const qty = data.quantity !== undefined ? data.quantity : (data.adjustedQuantity || 10);
-    const unitCost = data.cost || 0;
-    
+    // 3. Read live item quantities — ERP needs these for cost layer / WAC recalculation
+    let currentQuantity = 0;
+    let locationQuantity = 0;
+    let existingUnitCost = 0;
+    if (data.itemId) {
+      const itemResp = await this.page.request.get(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+      const itemData = await safeJson(itemResp);
+      if (itemData) {
+        const locEntry = (itemData.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
+        locationQuantity = locEntry?.quantity ?? 0;
+        currentQuantity = (itemData.inventory_item_locations || []).reduce(
+          (sum: number, l: any) => sum + (l.quantity || 0), 0
+        ) || itemData.quantity || itemData.current_stock || 0;
+        existingUnitCost = parseFloat(itemData.unit_cost || '0');
+      }
+    }
+
+    const adjustedBy: string = data.adjusted_by || 'quantity';
+    const isWriteDown = data.isWriteDown === true || data.isWriteDown === 'true';
+    let qty = data.quantity !== undefined ? data.quantity : (data.adjustedQuantity ?? 10);
+    if (adjustedBy === 'quantity' && isWriteDown && qty > 0) qty = -Math.abs(qty);
+
+    const unitCost = data.cost !== undefined ? data.cost : existingUnitCost;
+    const absQty = Math.abs(qty);
+    const totalCost = absQty * unitCost;
+
     const payload = {
-      adjusted_by: 'quantity',
-      adjusted_cost: 0, 
-      adjusted_quantity: qty,
+      adjusted_by: adjustedBy,
+      adjusted_cost: adjustedBy === 'cost' ? unitCost : 0,
+      adjusted_quantity: adjustedBy === 'cost' ? 0 : qty,
       adjustment_account_id: adjustmentAccountId,
       inventory_item_id: data.itemId,
-      is_write_down: data.isWriteDown !== undefined ? String(data.isWriteDown) : 'true',
+      is_write_down: isWriteDown ? 'true' : 'false',
       location_id: locationId,
       warehouse_id: warehouseId,
       date: new Date().toISOString().split('T')[0] + 'T00:00:00.000Z',
       reason: data.reason || 'Automated E2E Adjustment',
       note: '',
       unit_cost: unitCost,
-      unit_price: unitCost, // Alias
-      total_cost: qty * unitCost,
-      current_quantity: 0,  // From manual payload
-      location_quantity: 0, // From manual payload
+      unit_price: unitCost,
+      total_cost: adjustedBy === 'cost' ? 0 : totalCost,
+      current_quantity: currentQuantity,
+      location_quantity: locationQuantity,
       skip_draft: false,
       status: 'draft'
     };
+
+    console.log(`[ADJ] ${adjustedBy} | qty=${payload.adjusted_quantity} @ $${unitCost} | current=${currentQuantity} loc=${locationQuantity}`);
 
     const response = await this.safePost(`${apiBase}/inventory-adjustments?${params}`, {
       data: payload,
@@ -517,18 +569,20 @@ export class InventoryAPI extends BasePage {
     return 0;
   }
 
-  async pollCostAPI(itemId: string, expectedCost: number, locationId?: string, maxRetries: number = 30): Promise<number> {
-    console.log(`[ACTION] API Polling: Waiting for cost to hit ${expectedCost}...`);
+  async pollCostAPI(itemId: string, expectedCost: number, locationId?: string, maxRetries: number = 30, precision: number = 1): Promise<number> {
+    const tolerance = Math.pow(10, -precision) * 5;
+    console.log(`[ACTION] API Polling: Waiting for cost to hit ~${expectedCost} (±${tolerance})...`);
     for (let i = 1; i <= maxRetries; i++) {
       const details = await this.getItemDetailsAPI(itemId, locationId);
-      if (details && details.unitCost === expectedCost) {
-        console.log(`[SUCCESS] API Confirmed: Cost correctly reached ${expectedCost}.`);
+      if (details && Math.abs(details.unitCost - expectedCost) <= tolerance) {
+        console.log(`[SUCCESS] API Confirmed: Cost correctly reached ${details.unitCost}.`);
         return details.unitCost;
       }
       console.log(`[INFO] Attempt ${i}: Cost is ${details?.unitCost || 0}. Retrying in 2s...`);
       await this.page.waitForTimeout(2000);
     }
-    return 0;
+    const final = await this.getItemDetailsAPI(itemId, locationId);
+    return final?.unitCost ?? 0;
   }
 
   async getJournalEntriesAPI(receiptId: string): Promise<Array<{ accountCode: string; accountName: string; accountType: string; debit: string; credit: string }>> {

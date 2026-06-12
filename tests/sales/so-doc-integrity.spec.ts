@@ -34,14 +34,18 @@ test.describe('Sales Document Integrity Guardrails @sales @logic @security @regr
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, quantity: 1, unitPrice: AMOUNT, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
-        const rct1 = await app.api.sales.createInvoiceReceiptAPI({ invoiceId: inv.id, customerId: meta.customerId, amount: AMOUNT });
+        // Use actual invoice due amount to avoid amount-mismatch 422
+        const invData = await app.api.sales.getInvoiceAPI(inv.id);
+        const actualDue = parseFloat(invData.unreceived_amount ?? invData.net_due ?? invData.total_amount ?? String(AMOUNT));
+
+        const rct1 = await app.api.sales.createInvoiceReceiptAPI({ invoiceId: inv.id, customerId: meta.customerId, amount: actualDue });
         await app.advanceDocumentAPI(rct1.id, 'receipts');
 
         await page.waitForTimeout(2000);
 
         console.log(`[ATTACK] Attempting second receipt on fully paid invoice...`);
         try {
-            const rct2 = await app.api.sales.createInvoiceReceiptAPI({ invoiceId: inv.id, customerId: meta.customerId, amount: AMOUNT });
+            const rct2 = await app.api.sales.createInvoiceReceiptAPI({ invoiceId: inv.id, customerId: meta.customerId, amount: actualDue });
             await app.advanceDocumentAPI(rct2.id, 'receipts');
 
             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);

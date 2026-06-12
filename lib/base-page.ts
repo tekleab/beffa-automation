@@ -289,6 +289,89 @@ export class BasePage {
     return parts.find(p => /^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(p)) || '';
   }
 
+  /** Resolve a valid x-company header — validates against API and falls back to user's companies. */
+  async resolveActiveCompanyAPI(preferred?: string): Promise<string> {
+    const token = await this._getAuthToken();
+    if (!token) throw new Error('[COMPANY] No auth token — login first.');
+
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const candidates = new Set<string>();
+    const addCandidate = (value?: string | null) => { if (value?.trim()) candidates.add(value.trim()); };
+
+    addCandidate(preferred);
+    addCandidate(process.env.BEFFA_COMPANY);
+    addCandidate(await this.page.evaluate(() => localStorage.getItem('currentCompany')).catch(() => null));
+
+    const isValidCompany = async (company: string): Promise<boolean> => {
+      const resp = await this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=1&${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'x-company': company,
+          'x-role': 'IT Administrator / User Manager'
+        }
+      });
+      return resp.ok();
+    };
+
+    for (const company of candidates) {
+      if (await isValidCompany(company)) {
+        if (company !== process.env.BEFFA_COMPANY) {
+          console.log(`[COMPANY] Resolved active company: "${company}"`);
+        }
+        process.env.BEFFA_COMPANY = company;
+        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), company).catch(() => {});
+        return company;
+      }
+    }
+
+    const preferredLower = (preferred || process.env.BEFFA_COMPANY || '').toLowerCase();
+    const pickFromList = async (companies: any[]): Promise<string | null> => {
+      const ordered = [...companies].sort((a, b) => {
+        const aName = (a.name || a.company_name || '').toLowerCase();
+        const bName = (b.name || b.company_name || '').toLowerCase();
+        if (aName === preferredLower) return -1;
+        if (bName === preferredLower) return 1;
+        return 0;
+      });
+      for (const entry of ordered) {
+        const name = entry?.name || entry?.company_name;
+        if (name && await isValidCompany(name)) return name;
+      }
+      return null;
+    };
+
+    const companiesResp = await this.page.request.get(`${this.apiBase}/companies?page=1&pageSize=50&${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (companiesResp.ok()) {
+      const data = await companiesResp.json();
+      const resolved = await pickFromList(data.items || data.data || []);
+      if (resolved) {
+        const note = preferred && resolved.toLowerCase() !== preferredLower ? ` (fallback — "${preferred}" not found)` : '';
+        console.log(`[COMPANY] Resolved company from API list: "${resolved}"${note}`);
+        process.env.BEFFA_COMPANY = resolved;
+        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
+        return resolved;
+      }
+    }
+
+    const meResp = await this.page.request.get(`${this.apiBase}/users/me?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (meResp.ok()) {
+      const me = await meResp.json();
+      const resolved = await pickFromList(me.user?.companies || me.companies || []);
+      if (resolved) {
+        console.log(`[COMPANY] Resolved company from user profile: "${resolved}"`);
+        process.env.BEFFA_COMPANY = resolved;
+        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
+        return resolved;
+      }
+    }
+
+    throw new Error(`[COMPANY] Could not resolve a valid company. Tried: ${[...candidates].join(', ') || '(none)'}`);
+  }
+
   /**
    * Internal helper to retrieve the security bearer token from the session.
    */
@@ -689,5 +772,77 @@ export class BasePage {
     if (!response.ok()) return [];
     const data = await response.json();
     return data.items || data.data || [];
+  }
+
+  /** Parse 422 insufficient-balance payment errors; returns top-up amount needed or null. */
+  parseInsufficientCashTopUp(errorText: string): number | null {
+    if (!/insufficient balance/i.test(errorText)) return null;
+    const match = errorText.match(/available\s+(-?[\d.]+),\s*required\s+([\d.]+)/i);
+    if (!match) return null;
+    const available = parseFloat(match[1]);
+    const required = parseFloat(match[2]);
+    return Math.ceil(required - available + 1000);
+  }
+
+  /** Inject cash into a cash/bank account via an approved standalone receipt. */
+  async seedCashBalanceAPI(amount: number, cashAccountId?: string): Promise<void> {
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+    const acctResp = await this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctData = await acctResp.json();
+    const allAccounts = acctData.items || acctData.data || [];
+    const cashAccount = cashAccountId
+      ? allAccounts.find((a: any) => a.id === cashAccountId)
+      : allAccounts.find((a: any) =>
+          a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+        ) || allAccounts[0];
+
+    const glAccount = allAccounts.find((a: any) =>
+      a.account_type?.toLowerCase().includes('receivable')
+    ) || allAccounts[1] || allAccounts[0];
+
+    const custResp = await this.page.request.get(`${this.apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
+    const custData = await custResp.json();
+    const customer = custData.items?.[0] || custData.data?.[0];
+
+    const currResp = await this.page.request.get(`${this.apiBase}/currency?${params}`, { headers });
+    const currData = await currResp.json();
+    const currency = currData.items?.[0] || currData.data?.[0];
+
+    if (!cashAccount || !customer || !currency) {
+      throw new Error('[CASH_TOPUP] Discovery failed: missing cash account, customer, or currency.');
+    }
+
+    const roundedAmount = Math.ceil(amount);
+    const payload = {
+      amount: roundedAmount,
+      cash_account_id: cashAccount.id,
+      customer_id: customer.id,
+      date: new Date().toISOString(),
+      payment_method: 'cash',
+      currency_id: currency.id,
+      receipt_items: [{
+        amount: roundedAmount,
+        general_ledger_account_id: glAccount.id,
+        unit_price: roundedAmount,
+        quantity: 1,
+        description: 'E2E Cash Balance Top-Up'
+      }]
+    };
+
+    console.log(`[CASH_TOPUP] Seeding ${roundedAmount} into ${cashAccount.name || cashAccount.id}...`);
+    const response = await this.page.request.post(`${this.apiBase}/receipts?${params}`, { data: payload, headers });
+    if (!response.ok()) throw new Error(`[CASH_TOPUP] Receipt creation failed: ${response.status()} - ${await response.text()}`);
+
+    const receipt = await response.json();
+    await this.advanceDocumentAPI(receipt.id, 'receipts');
+    await this.page.waitForTimeout(2000);
+    console.log(`[CASH_TOPUP] Successfully seeded ${roundedAmount} (receipt ${receipt.ref})`);
   }
 }

@@ -51,14 +51,17 @@ export class HrAPI extends BasePage {
     );
     const text = await resp.text();
     if (!resp.ok()) throw new Error(`Create employee failed: ${resp.status()} - ${text}`);
-    // Backend may return null body on success — fetch the latest employee by name as fallback
+
+    // Try to parse direct response first
     if (text && text.trim() !== 'null' && text.trim() !== '') {
       try {
         const parsed = JSON.parse(text);
-        if (parsed && parsed.id) return parsed;
+        if (parsed?.id) return parsed;
       } catch {}
     }
-    // Fallback: find the just-created employee by name
+
+    // Fallback: search by the unique email — guarantees we get OUR employee, not another company's
+    const email = data.email as string;
     const name = data.name as string;
     await this.page.waitForTimeout(1500);
     const listResp = await this.page.request.get(
@@ -66,10 +69,10 @@ export class HrAPI extends BasePage {
     );
     if (listResp.ok()) {
       const list = (await listResp.json()).data || [];
-      const found = list.find((e: any) => e.name === name || e.full_name === name);
+      // Match by email first (guaranteed unique), then name
+      const found = list.find((e: any) => e.email === email)
+        || list.find((e: any) => e.name === name || e.full_name === name);
       if (found) return found;
-      // Last resort: return the most recently created employee
-      if (list.length > 0) return list[0];
     }
     throw new Error(`Create employee: could not retrieve created employee "${name}" - response: ${text.slice(0, 200)}`);
   }
@@ -195,58 +198,60 @@ export class HrAPI extends BasePage {
     return (await resp.json()).data || [];
   }
 
-  async ensureDepartment(name: string = 'Automation Department'): Promise<{ id: string; name: string }> {
+  async ensureDepartment(name: string = 'Automation Department'): Promise<{ id: string; name: string; configId: string; levelId: string }> {
     const existing = await this.listDepartments(50);
-    if (existing.length > 0) {
-      // Prefer ROOT-level department (parent_id === null) as it has the approval workflow correctly linked
-      const root = existing.find((d: any) => !d.parent_id) || existing[0];
-      return { id: root.id, name: root.name };
-    }
-
-    // No departments — need to discover the org config + hierarchy level from ROOT first
     const h = await this.headers();
-    const rootResp = await this.page.request.get(
-      `${this.apiBase}/departments?page=1&pageSize=1&${this.params}`, { headers: h }
-    );
-    // There are truly zero departments — need the HR config to create one
-    // Fetch the HR/org config to get config_id and a valid hierarchy_level_id
-    const configResp = await this.page.request.get(
-      `${this.apiBase}/hr-configs?page=1&pageSize=1&${this.params}`, { headers: h }
-    );
-    let configId: string | undefined;
-    let levelId: string | undefined;
-    let parentId: string | undefined;
 
-    if (configResp.ok()) {
-      const cfg = await configResp.json();
-      const configs = cfg.data || cfg.items || (Array.isArray(cfg) ? cfg : [cfg]);
-      const first = configs[0];
-      configId = first?.id;
-      levelId = (first?.hierarchy_levels || [])[0]?.id;
-    }
+    // If a non-ROOT child department already exists, prefer it for contracts
+    const childDept = existing.find((d: any) => d.parent_id !== null);
+    if (childDept) return { id: childDept.id, name: childDept.name, configId: childDept.config_id, levelId: childDept.hierarchy_level_id };
 
-    if (!configId || !levelId) {
-      throw new Error(
-        '[HR] No department hierarchy configuration found. ' +
-        'Please set up at least one HR org structure config in the ERP admin UI before running HR tests.'
+    // Fall back to ROOT if it's the only one and has a config
+    const rootDept = existing.find((d: any) => d.parent_id === null) || existing[0];
+
+    // Fetch config to get child hierarchy levels
+    if (rootDept?.config_id) {
+      const cfgResp = await this.page.request.get(
+        `${this.apiBase}/departments/configs/${rootDept.config_id}?${this.params}`, { headers: h }
       );
+      if (cfgResp.ok()) {
+        const cfg = await cfgResp.json();
+        const levels: any[] = cfg.hierarchy_levels || [];
+        // Find the first child level (level > 1) that allows children or is a leaf
+        const childLevel = levels.find((l: any) => l.level > 1 && l.parent_id === rootDept.hierarchy_level_id)
+          || levels.find((l: any) => l.level > 1)
+          || levels[1];
+
+        if (childLevel) {
+          const ts = Date.now().toString().slice(-6);
+          const createResp = await this.page.request.post(
+            `${this.apiBase}/departments?${this.params}`,
+            { headers: h, data: {
+              name,
+              code: `AUTO-${ts}`,
+              config_id: rootDept.config_id,
+              hierarchy_level_id: childLevel.id,
+              parent_id: rootDept.id,
+              description: 'Auto-created by E2E suite'
+            }}
+          );
+          if (createResp.ok()) {
+            const created = await createResp.json();
+            if (created?.id) {
+              console.log(`[HR] Created child department: "${created.name}" (${created.id})`);
+              return { id: created.id, name: created.name, configId: rootDept.config_id, levelId: childLevel.id };
+            }
+          }
+          const errText = await createResp.text().catch(() => '');
+          console.log(`[HR] Child dept creation failed (${createResp.status()}): ${errText.slice(0, 120)}`);
+        }
+      }
     }
 
-    const ts = Date.now().toString().slice(-6);
-    const resp = await this.page.request.post(
-      `${this.apiBase}/departments?${this.params}`,
-      { headers: h, data: {
-        name,
-        code: `AUTO-${ts}`,
-        config_id: configId,
-        hierarchy_level_id: levelId,
-        parent_id: parentId || null,
-        description: 'Auto-created by E2E suite'
-      }}
-    );
-    if (!resp.ok()) throw new Error(`Create department failed: ${resp.status()} - ${await resp.text()}`);
-    const created = await resp.json();
-    return { id: created.id, name: created.name };
+    // Last resort: return ROOT as-is
+    if (rootDept) return { id: rootDept.id, name: rootDept.name, configId: rootDept.config_id, levelId: rootDept.hierarchy_level_id };
+
+    throw new Error('[HR] No departments found and could not create one. Set up org structure first.');
   }
 
   /**
@@ -260,34 +265,49 @@ export class HrAPI extends BasePage {
     );
     if (listResp.ok()) {
       const all = (await listResp.json()).data || [];
+      // Only use job positions that belong to this exact department
       const deptJobs = all.filter((j: any) => j.department_id === departmentId && j.id);
       if (deptJobs.length > 0) {
         const match = deptJobs.find((j: any) => j.title?.toLowerCase().includes(title.toLowerCase())) || deptJobs[0];
         const filled = match.filled_slots ?? 0;
         const slots = match.slot_count ?? 0;
-        // If slot_count is 1 OR all slots are taken, bump slot_count to filled+100 via PATCH
-        if (slots === 1 || (slots > 0 && filled >= slots)) {
-          console.log(`[HR] Job "${match.title}" slots exhausted or singleton (${filled}/${slots}). Expanding slots...`);
+        if (slots === 0 || slots === 1 || filled >= slots) {
+          console.log(`[HR] Job "${match.title}" slots exhausted (${filled}/${slots}). Expanding...`);
           await this.page.request.patch(
             `${this.apiBase}/job-positions/${match.id}?${this.params}`,
             { headers: h, data: { slot_count: filled + 100 } }
           );
         }
-        console.log(`[HR] Using job position: "${match.title}" (${match.id}) | slots: ${filled}/${slots}`);
+        console.log(`[HR] Using job position: "${match.title}" (${match.id}) | dept: ${departmentId}`);
         return { id: match.id, title: match.title };
       }
     }
 
-    // None found — create one with ample slot_count
+    // None found for this department — create one
     const ts = Date.now().toString().slice(-6);
     const createResp = await this.page.request.post(
       `${this.apiBase}/job-positions?${this.params}`,
-      { headers: h, data: { title, code: `JP-${ts}`, department_id: departmentId, min_salary: 0, max_salary: 100000, slot_count: 100 } }
+      { headers: h, data: {
+        title,
+        code: `JP-${ts}`,
+        department_id: departmentId,
+        min_salary: 0,
+        max_salary: 100000,
+        slot_count: 100,
+        description: 'Auto-created by E2E suite',
+        requirements: 'Auto-created',
+        responsibilities: 'Auto-created',
+        job_grade: 'G1',
+        pay_grade: 'E0'
+      }}
     );
-    if (!createResp.ok()) throw new Error(`Failed to create job position for dept ${departmentId}: ${createResp.status()} - ${(await createResp.text()).slice(0, 200)}`);
+    if (!createResp.ok()) {
+      const errText = await createResp.text();
+      throw new Error(`Failed to create job position for dept ${departmentId}: ${createResp.status()} - ${errText.slice(0, 200)}`);
+    }
     const created = await createResp.json();
     if (!created.id) throw new Error(`Job position created but no ID returned: ${JSON.stringify(created).slice(0, 200)}`);
-    console.log(`[HR] Created job position: "${created.title}" (${created.id}) | slots: 100`);
+    console.log(`[HR] Created job position: "${created.title}" (${created.id}) | dept: ${departmentId}`);
     return { id: created.id, title: created.title };
   }
 

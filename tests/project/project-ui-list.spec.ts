@@ -52,8 +52,8 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
         await page.waitForLoadState('networkidle');
-        await expect(page.getByRole('button', { name: /Sort/i })).toBeVisible({ timeout: 8000 });
-        await expect(page.getByRole('button', { name: /View/i })).toBeVisible({ timeout: 8000 });
+        await expect(page.getByRole('button', { name: /Sort/i }).first()).toBeVisible({ timeout: 8000 });
+        await expect(page.getByRole('button', { name: /View/i }).first()).toBeVisible({ timeout: 8000 });
     });
 
     test('UI-04: Advanced filters and Command filters links are present', async ({ page }) => {

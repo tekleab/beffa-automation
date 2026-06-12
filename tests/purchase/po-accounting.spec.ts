@@ -51,40 +51,17 @@ test.describe('Procurement Ledger & Payment Audits @purchase @logic @regression 
         expect(amountA).toBeGreaterThan(0);
         expect(amountB).toBeGreaterThan(0);
 
-        // 3. Create a single payment covering both bills
+        // 3. Create a single payment covering both bills (auto top-up on insufficient cash balance)
         const totalAmount = amountA + amountB;
         console.log(`[STEP 2] Creating single payment of ${totalAmount} covering both bills...`);
-        const { apiBase, headers, qs } = await app.buildApiContext();
-
-        const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-        const acctData = await acctResp.json();
-        const cashAccount = (acctData.items || acctData.data || []).find((a: any) =>
-            a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
-        ) || (acctData.items || acctData.data || [])[0];
-
-        const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
-        const currData = await currResp.json();
-        const currency = currData.items?.[0] || currData.data?.[0];
-
-        const paymentResp = await page.request.post(`${apiBase}/payments?${qs}`, {
-            headers,
-            data: {
-                amount: totalAmount,
-                cash_account_id: cashAccount?.id,
-                vendor_id: meta.vendorId,
-                date: new Date().toISOString(),
-                payment_method: 'cash',
-                currency_id: currency?.id,
-                bill_payments: [
-                    { amount: amountA, bill_id: billA.id },
-                    { amount: amountB, bill_id: billB.id }
-                ]
-            }
+        const payment = await app.api.purchase.createMultiBillPaymentAPI({
+            amount: totalAmount,
+            vendorId: meta.vendorId,
+            billPayments: [
+                { amount: amountA, bill_id: billA.id },
+                { amount: amountB, bill_id: billB.id }
+            ]
         });
-
-        if (!paymentResp.ok()) throw new Error(`Multi-bill payment failed: ${paymentResp.status()} - ${await paymentResp.text()}`);
-        const payment = await paymentResp.json();
-        console.log(`[SUCCESS] Multi-bill payment created: ${payment.ref} (ID: ${payment.id})`);
 
         await app.advanceDocumentAPI(payment.id, 'payments');
 

@@ -114,6 +114,7 @@ export class AppManager {
 
   async login(...args: Parameters<AuthManager['login']>) { return await this.auth.login(...args); }
   async switchCompany(...args: Parameters<AuthManager['switchCompany']>) { return await this.auth.switchCompany(...args); }
+  async resolveActiveCompanyAPI(...args: Parameters<BasePage['resolveActiveCompanyAPI']>) { return await this.base.resolveActiveCompanyAPI(...args); }
   async smartSearch(...args: Parameters<BasePage['smartSearch']>) { return await this.base.smartSearch(...args); }
   async handleApprovalFlow(...args: Parameters<SharedUI['handleApprovalFlow']>) { return await this.ui.shared.handleApprovalFlow(...args); }
   // smartApprove removed — approval is handled entirely by SharedUI.handleApprovalFlow

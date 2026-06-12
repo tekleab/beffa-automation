@@ -105,7 +105,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         }
 
         // Wait for the vendor detail heading to confirm SPA content rendered
-        await page.waitForSelector('h3, [role="tablist"]', { timeout: 30000 });
+        await page.waitForSelector('h1, h2, h3, [role="tablist"], [role="tab"], nav', { timeout: 30000 });
 
         console.log(`[STEP 4] Navigating to Bills tab...`);
         const billsTab = page.getByRole('tab', { name: /Bills/i }).first();

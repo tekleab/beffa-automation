@@ -101,30 +101,37 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
 
         const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
         await app.advanceDocumentAPI(bill1.billId, 'bills');
-        console.log(`[BILL 1] ${bill1.billNumber} — 100% of PO consumed`);
+        await page.waitForTimeout(3000);
+
+        const bill1Data = await app.api.purchase.getBillAPI(bill1.billId);
+        const bill1Qty = (bill1Data.received_purchase_order_items || [])
+            .reduce((sum: number, row: any) => sum + parseFloat(row.received_quantity || '0'), 0);
+        const poStatus = await app.api.purchase.getPoReceiveStatusAPI(po.poId);
+
+        console.log(`[BILL 1] ${bill1.billNumber} — received ${bill1Qty}/${poQty} | PO remaining: ${poStatus.remainingQty}`);
+
+        if (bill1Qty !== poQty || poStatus.remainingQty > 0) {
+            throw new Error(
+                `[SETUP_FAIL] PO ${po.poNumber} not fully received before overflow attack ` +
+                `(bill1=${bill1Qty}, poQty=${poQty}, remaining=${poStatus.remainingQty}).`
+            );
+        }
 
         const { apiBase, headers, qs } = await app.buildApiContext();
         const poResp = await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers });
         const poData = await poResp.json();
         const poItemId = poData.po_items?.[0]?.id;
+        if (!poItemId) throw new Error(`[SETUP_FAIL] PO ${po.poNumber} has no billable line items.`);
 
-        const overflowResp = await page.request.post(`${apiBase}/bills?${qs}`, {
-            headers,
-            data: {
-                purchase_order_id: po.poId, vendor_id: meta.vendorId,
-                accounts_payable_id: sharedMeta.apAccountId, currency_id: sharedMeta.currencyId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                items: [],
-                received_purchase_order_items: [{ po_item_id: poItemId, received_quantity: 1, received_unit_price: unitPrice }],
-                status: 'draft'
-            }
-        });
+        const overflowBill = await app.api.purchase.createPartialBillFromPoAPI(po.poId, [{
+            po_item_id: poItemId,
+            received_quantity: 1,
+            received_unit_price: unitPrice
+        }]);
 
-        if (overflowResp.ok()) {
-            const overflowBill = await overflowResp.json();
-            try { await app.advanceDocumentAPI(overflowBill.id, 'bills'); } catch { /* block expected */ }
-            const overflowData = await app.api.purchase.getBillAPI(overflowBill.id);
+        if (overflowBill.success) {
+            try { await app.advanceDocumentAPI(overflowBill.billId, 'bills'); } catch { /* block expected */ }
+            const overflowData = await app.api.purchase.getBillAPI(overflowBill.billId);
 
             printAuditTable(`PO Overbilling Audit — PO: ${po.poNumber}`, [
                 { label: 'PO Ref',               value: po.poNumber },
@@ -132,8 +139,8 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
                 { label: 'PO Unit Price',         value: `$${unitPrice.toFixed(2)}` },
                 { label: 'PO Total',              value: `$${(poQty * unitPrice).toFixed(2)}` },
                 { label: 'Bill 1 (100%)',          value: `${bill1.billNumber} — $${(poQty * unitPrice).toFixed(2)}` },
-                { label: 'Bill 1 Status',         value: 'approved' },
-                { label: 'Overflow Bill Ref',     value: overflowBill.invoice_number || overflowBill.id?.substring(0, 8) },
+                { label: 'Bill 1 Status',         value: bill1Data.status },
+                { label: 'Overflow Bill Ref',     value: overflowBill.billNumber || overflowBill.billId?.substring(0, 8) },
                 { label: 'Overflow Qty',          value: '1 unit (beyond PO)' },
                 { label: 'Overflow Amount',       value: `$${unitPrice.toFixed(2)}` },
                 { label: 'Overflow Status',       value: overflowData.status },
@@ -147,7 +154,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
             }
             console.log(`[PASS] Overflow bill status=${overflowData.status} — approval correctly blocked.`);
         } else {
-            console.log(`[PASS] Overflow bill creation rejected at API level: HTTP ${overflowResp.status()}`);
+            console.log(`[PASS] Overflow bill creation rejected at API level: HTTP ${overflowBill.status} — ${overflowBill.error?.substring(0, 120)}`);
         }
     });
 
