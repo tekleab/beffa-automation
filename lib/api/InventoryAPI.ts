@@ -125,7 +125,27 @@ export class InventoryAPI extends BasePage {
     };
 
     const resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload });
-    if (!resp.ok()) throw new Error(`Item Creation API Failed: ${resp.status()} - ${await resp.text()}`);
+    if (!resp.ok()) {
+      // Re-auth once on 401 then retry
+      if (resp.status() === 401) {
+        const loginResp = await this.page.request.post(`${apiBase}/users/login?${params}&month=6`, {
+          data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (loginResp.ok()) {
+          const newToken = (await loginResp.json()).auth_token;
+          if (newToken) {
+            await this.page.evaluate((t) => { localStorage.setItem('token', t); localStorage.setItem('auth-token', t); }, newToken);
+            headers['Authorization'] = `Bearer ${newToken}`;
+            const retry = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload });
+            if (!retry.ok()) throw new Error(`Item Creation API Failed: ${retry.status()} - ${await retry.text()}`);
+            const retryJson = await retry.json();
+            return { itemName: retryJson.name, id: retryJson.id };
+          }
+        }
+      }
+      throw new Error(`Item Creation API Failed: ${resp.status()} - ${await resp.text()}`);
+    }
     const json = await resp.json();
     return { itemName: json.name, id: json.id };
   }

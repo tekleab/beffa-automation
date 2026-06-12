@@ -399,6 +399,25 @@ export class PurchaseAPI extends BasePage {
       }
     }
 
+    // Fallback: if PO item fields don't reflect received qty, sum approved bills linked to this PO
+    if (receivedQty === 0 && poQty > 0) {
+      const billsResp = await this.safeGet(`${apiBase}/bills?purchase_order_id=${poId}&pageSize=50&${params}`, { headers });
+      if (billsResp.ok()) {
+        const billsData = await billsResp.json();
+        const bills = billsData.data || billsData.items || [];
+        const approvedBills = bills.filter((b: any) => b.status === 'approved');
+        for (const bill of approvedBills) {
+          const billDetail = await this.safeGet(`${apiBase}/bill/${bill.id}?${params}`, { headers });
+          if (billDetail.ok()) {
+            const bd = await billDetail.json();
+            for (const ri of (bd.received_purchase_order_items || [])) {
+              receivedQty += parseFloat(ri.received_quantity || '0');
+            }
+          }
+        }
+      }
+    }
+
     return { poQty, receivedQty, remainingQty: poQty - receivedQty };
   }
 

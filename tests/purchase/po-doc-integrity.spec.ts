@@ -101,12 +101,16 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
 
         const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
         await app.advanceDocumentAPI(bill1.billId, 'bills');
-        await page.waitForTimeout(3000);
+        // Poll until PO shows fully received (unreceived_quantity = 0)
+        let poStatus = await app.api.purchase.getPoReceiveStatusAPI(po.poId);
+        for (let i = 0; i < 10 && poStatus.remainingQty > 0; i++) {
+            await page.waitForTimeout(2000);
+            poStatus = await app.api.purchase.getPoReceiveStatusAPI(po.poId);
+        }
 
         const bill1Data = await app.api.purchase.getBillAPI(bill1.billId);
         const bill1Qty = (bill1Data.received_purchase_order_items || [])
             .reduce((sum: number, row: any) => sum + parseFloat(row.received_quantity || '0'), 0);
-        const poStatus = await app.api.purchase.getPoReceiveStatusAPI(po.poId);
 
         console.log(`[BILL 1] ${bill1.billNumber} — received ${bill1Qty}/${poQty} | PO remaining: ${poStatus.remainingQty}`);
 

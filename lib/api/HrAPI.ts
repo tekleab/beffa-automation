@@ -74,18 +74,19 @@ export class HrAPI extends BasePage {
       } catch {}
     }
 
-    // Fallback: search by the unique email — guarantees we get OUR employee, not another company's
+    // Fallback: search by email with retries — backend may not index instantly
     const email = data.email as string;
     const name = data.name as string;
-    await this.page.waitForTimeout(1500);
-    const listResp = await this.safeGet(
-      `${this.apiBase}/employees?page=1&pageSize=50&sort=created_at:desc&${this.params}`, { headers: h });
-    if (listResp.ok()) {
-      const list = (await listResp.json()).data || [];
-      // Match by email first (guaranteed unique), then name
-      const found = list.find((e: any) => e.email === email)
-        || list.find((e: any) => e.name === name || e.full_name === name);
-      if (found) return found;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await this.page.waitForTimeout(2000);
+      const listResp = await this.safeGet(
+        `${this.apiBase}/employees?page=1&pageSize=100&sort=created_at:desc&${this.params}`, { headers: h });
+      if (listResp.ok()) {
+        const list = (await listResp.json()).data || [];
+        const found = list.find((e: any) => e.email === email)
+          || list.find((e: any) => e.name === name || e.full_name === name);
+        if (found) return found;
+      }
     }
     throw new Error(`Create employee: could not retrieve created employee "${name}" - response: ${text.slice(0, 200)}`);
   }

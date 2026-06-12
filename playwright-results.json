@@ -185,87 +185,207 @@
   },
   "suites": [
     {
-      "title": "project/ui-probe-temp.spec.ts",
-      "file": "project/ui-probe-temp.spec.ts",
+      "title": "purchase/po-split-bill.spec.ts",
+      "file": "purchase/po-split-bill.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [
+      "specs": [],
+      "suites": [
         {
-          "title": "Diagnostic: which field enables Create project button",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "Procurement PO Split Bill Audit @purchase @logic @regression @full",
+          "file": "purchase/po-split-bill.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 120000,
-              "annotations": [
-                {
-                  "type": "tactical-perf",
-                  "description": "API|Auth API Verification|448.34"
-                }
+              "title": "Audit: PO split into multiple bills — total must never exceed PO quantity",
+              "ok": false,
+              "tags": [
+                "purchase",
+                "logic",
+                "regression",
+                "full"
               ],
-              "expectedStatus": "passed",
-              "projectId": "Project-Management",
-              "projectName": "Project-Management",
-              "results": [
+              "tests": [
                 {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 62626,
-                  "errors": [],
-                  "stdout": [
-                    {
-                      "text": "[PERFORMANCE] API - Auth API Verification: 448.34ms\n"
-                    },
-                    {
-                      "text": "[disabled  ] ref + name\n"
-                    },
-                    {
-                      "text": "customer_id value after selection: \"Base Ethiopia\"\n"
-                    },
-                    {
-                      "text": "[disabled  ] customer selected\n"
-                    },
-                    {
-                      "text": "workspace_id value after selection: \"Default Workspace\"\n"
-                    },
-                    {
-                      "text": "[disabled  ] workspace selected\n"
-                    },
-                    {
-                      "text": "workflow_set_id options: 1\n"
-                    }
-                  ],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-06-09T14:48:13.537Z",
+                  "timeout": 120000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|448.34"
+                      "description": "API|Auth API Verification|870.68"
                     }
                   ],
-                  "attachments": []
+                  "expectedStatus": "passed",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 52403,
+                      "error": {
+                        "message": "Error: [VULNERABILITY] Over-Receive Allowed: BILL/2026/06/12/000205 — 1 unit beyond fully received PO PO/2026/06/12/000070",
+                        "stack": "Error: [VULNERABILITY] Over-Receive Allowed: BILL/2026/06/12/000205 — 1 unit beyond fully received PO PO/2026/06/12/000070\n    at /home/teklish/beffa-automation/tests/purchase/po-split-bill.spec.ts:95:23",
+                        "location": {
+                          "file": "/home/teklish/beffa-automation/tests/purchase/po-split-bill.spec.ts",
+                          "column": 23,
+                          "line": 95
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 93 |\u001b[39m             \u001b[36mif\u001b[39m (bill3\u001b[33m.\u001b[39msuccess) {\n \u001b[90m 94 |\u001b[39m                 \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39madvanceDocumentAPI(bill3\u001b[33m.\u001b[39mbillId\u001b[33m,\u001b[39m \u001b[32m'bills'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m                 \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m                     \u001b[32m`[VULNERABILITY] Over-Receive Allowed: ${bill3.billNumber} — ${OVER_QTY} unit beyond fully received PO ${po.poNumber}`\u001b[39m\n \u001b[90m 97 |\u001b[39m                 )\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m             }\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/tests/purchase/po-split-bill.spec.ts",
+                            "column": 23,
+                            "line": 95
+                          },
+                          "message": "Error: [VULNERABILITY] Over-Receive Allowed: BILL/2026/06/12/000205 — 1 unit beyond fully received PO PO/2026/06/12/000070\n\n\u001b[0m \u001b[90m 93 |\u001b[39m             \u001b[36mif\u001b[39m (bill3\u001b[33m.\u001b[39msuccess) {\n \u001b[90m 94 |\u001b[39m                 \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39madvanceDocumentAPI(bill3\u001b[33m.\u001b[39mbillId\u001b[33m,\u001b[39m \u001b[32m'bills'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m                 \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m                     \u001b[32m`[VULNERABILITY] Over-Receive Allowed: ${bill3.billNumber} — ${OVER_QTY} unit beyond fully received PO ${po.poNumber}`\u001b[39m\n \u001b[90m 97 |\u001b[39m                 )\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m             }\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-split-bill.spec.ts:95:23\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[PERFORMANCE] API - Auth API Verification: 870.68ms\n"
+                        },
+                        {
+                          "text": "[AUTH] Frontend not rendered — skipping company switch (API session active).\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1781260519398 (3ee66f51-8ae9-43f2-8b2d-f5e7152b3093) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372\n"
+                        },
+                        {
+                          "text": "\n========== PO SPLIT BILL SETUP ==========\n"
+                        },
+                        {
+                          "text": "[ITEM]  WAC-Item-1781260519398 | Stock: 20\n"
+                        },
+                        {
+                          "text": "[PLAN]  PO: 10 | Batch1: 4 | Batch2: 6 | Over: 1\n"
+                        },
+                        {
+                          "text": "=========================================\n\n"
+                        },
+                        {
+                          "text": "[STEP 1] Creating & approving PO for 10 units...\n"
+                        },
+                        {
+                          "text": "[API] Advancing purchase-orders \"9b313e99-4036-4e4b-a4cc-44a8de33e1ab\"...\n"
+                        },
+                        {
+                          "text": "[OK] PO PO/2026/06/12/000070 approved (ID: 9b313e99-4036-4e4b-a4cc-44a8de33e1ab)\n"
+                        },
+                        {
+                          "text": "[STEP 2] Receiving Batch 1: 4 units...\n"
+                        },
+                        {
+                          "text": "[API] Advancing bills \"502c3a40-b4af-4186-bd75-70cae1b541d5\"...\n"
+                        },
+                        {
+                          "text": "[OK] Batch 1 bill BILL/2026/06/12/000203 approved.\n"
+                        },
+                        {
+                          "text": "[STEP 3] Receiving Batch 2: 6 units...\n"
+                        },
+                        {
+                          "text": "[API] Advancing bills \"fcf7fed9-0666-4882-8fa2-51176c951b64\"...\n"
+                        },
+                        {
+                          "text": "[OK] Batch 2 bill BILL/2026/06/12/000204 approved.\n"
+                        },
+                        {
+                          "text": "[STEP 4] Verifying stock added correctly (10 units total)...\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 30...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 30.\n"
+                        },
+                        {
+                          "text": "\n========== SPLIT BILL STOCK AUDIT ==========\n"
+                        },
+                        {
+                          "text": "[DOCUMENT] PO    : PO/2026/06/12/000070 (9b313e99-4036-4e4b-a4cc-44a8de33e1ab)\n"
+                        },
+                        {
+                          "text": "[DOCUMENT] Bill1 : BILL/2026/06/12/000203 (502c3a40-b4af-4186-bd75-70cae1b541d5) — 4 units\n"
+                        },
+                        {
+                          "text": "[DOCUMENT] Bill2 : BILL/2026/06/12/000204 (fcf7fed9-0666-4882-8fa2-51176c951b64) — 6 units\n"
+                        },
+                        {
+                          "text": "[STOCK] Before: 20 | After: 30 | Expected: 30\n"
+                        },
+                        {
+                          "text": "=============================================\n\n"
+                        },
+                        {
+                          "text": "[STEP 5] Attempting over-receive (1 unit beyond fully received PO)...\n"
+                        },
+                        {
+                          "text": "[API] Advancing bills \"23382a53-d856-430d-baba-aaea96940d79\"...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-12T10:34:59.593Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|870.68"
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-split-bill-Pro-31c9e-st-never-exceed-PO-quantity-Purchase/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-split-bill-Pro-31c9e-st-never-exceed-PO-quantity-Purchase/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-split-bill-Pro-31c9e-st-never-exceed-PO-quantity-Purchase/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/teklish/beffa-automation/tests/purchase/po-split-bill.spec.ts",
+                        "column": 23,
+                        "line": 95
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
                 }
               ],
-              "status": "expected"
+              "id": "0f375e584ef527c4e3ee-8dc6ba0b73bee60609cd",
+              "file": "purchase/po-split-bill.spec.ts",
+              "line": 14,
+              "column": 9
             }
-          ],
-          "id": "84f4ae0f98b9ab5c8803-d610a1140acfda8d368c",
-          "file": "project/ui-probe-temp.spec.ts",
-          "line": 4,
-          "column": 5
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-09T14:48:10.487Z",
-    "duration": 75301.809,
-    "expected": 1,
+    "startTime": "2026-06-12T10:34:56.233Z",
+    "duration": 65406.76899999999,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }
