@@ -104,8 +104,15 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
             throw new Error(`[CRITICAL] Navigation failed — not on vendor ${vendorId} page. URL: ${page.url()}`);
         }
 
-        // Wait for the vendor detail heading to confirm SPA content rendered
-        await page.waitForSelector('h1, h2, h3, [role="tablist"], [role="tab"], nav', { timeout: 30000 });
+        // Wait for the vendor detail page content — broader selector resilient to SPA variations
+        await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+        const pageReady = await page.locator('h1, h2, h3, [role="tablist"], [role="tab"], nav, main').first()
+          .isVisible({ timeout: 20000 }).catch(() => false);
+        if (!pageReady) {
+          // One reload if SPA didn't hydrate
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+        }
 
         console.log(`[STEP 4] Navigating to Bills tab...`);
         const billsTab = page.getByRole('tab', { name: /Bills/i }).first();

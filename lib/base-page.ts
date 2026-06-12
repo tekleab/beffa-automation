@@ -161,6 +161,30 @@ export class BasePage {
         if (success) break;
         break;
       } else if (status === 401) {
+        // Token expired mid-test — re-authenticate once and retry
+        console.log(`[AUTH] 401 on advance — re-authenticating and retrying...`);
+        try {
+          const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
+          const loginResp = await this.page.request.post(loginUrl, {
+            data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (loginResp.ok()) {
+            const session = await loginResp.json();
+            const newToken = session.auth_token;
+            if (newToken) {
+              await this.page.evaluate((t) => {
+                localStorage.setItem('token', t);
+                localStorage.setItem('auth-token', t);
+              }, newToken);
+              headers['Authorization'] = `Bearer ${newToken}`;
+              console.log(`[AUTH] Re-authenticated successfully — retrying advance...`);
+              continue;
+            }
+          }
+        } catch (e: any) {
+          console.log(`[AUTH] Re-auth failed: ${e.message}`);
+        }
         throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${company}" is invalid or expired.`);
       } else if (status === 422) {
         if (success) break;

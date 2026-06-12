@@ -29,13 +29,27 @@ export class HrAPI extends BasePage {
       } catch { token = null; }
     }
     if (!token) {
-      await this.page.evaluate((creds) => {
-        return fetch(`/api/users/login?year=2018&period=yearly&calendar=ec`,
-          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(creds) })
-          .then(r => r.json())
-          .then(d => { if (d.token) { localStorage.setItem('token', d.token); localStorage.setItem('auth-token', d.token); } });
-      }, { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS });
-      token = await this._getAuthToken();
+      try {
+        const loginUrl = `${this.apiBase}/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+        const loginResp = await this.page.request.post(loginUrl, {
+          data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (loginResp.ok()) {
+          const d = await loginResp.json();
+          const newToken = d.auth_token || d.token;
+          if (newToken) {
+            await this.page.evaluate((t) => {
+              localStorage.setItem('token', t);
+              localStorage.setItem('auth-token', t);
+            }, newToken);
+            token = newToken;
+          }
+        }
+      } catch (e: any) {
+        console.log(`[HR] Re-auth failed: ${e.message}`);
+      }
+      token = token || await this._getAuthToken();
     }
     return {
       'Authorization': `Bearer ${token}`,
