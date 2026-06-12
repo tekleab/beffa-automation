@@ -1,0 +1,23 @@
+[PERFORMANCE] API - Auth API Verification: 367.78ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781263062970 (3cd9af9f-4f79-4982-8197-e102977e13e1) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[OK] Created fresh item: "WAC-Item-1781263062970" | Stock: 20
+11:17:46 [WARN] Create Sales Order → 500. Retry 1/3 in 1000ms...
+[API] Advancing sales-orders "b0abc004-ad45-40f9-b179-8648b3442099"...
+[OK] Sales Order SO/2026/06/12/000065 approved via API
+[API] Advancing invoices "46dcf6da-628a-4e6b-a63a-89418ce15ecd"...
+[OK] Invoice INV/2026/06/12/000182 approved via API
+[INFO] Document Setup Complete: INV/2026/06/12/000182 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT] amount=102 | invoice=46dcf6da...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/12/000035
+[OK] Receipt created via API: RCPT/2026/06/12/000035
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "fb164846-8f23-474c-9bc1-f118e0ecb339"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/06/12/000035 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/06/12/000035 verified in profile
