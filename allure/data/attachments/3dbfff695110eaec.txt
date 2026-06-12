@@ -1,0 +1,70 @@
+[PERFORMANCE] API - Auth API Verification: 151.85ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781276549472 (5742dea4-04a0-47d1-a79e-2db48b8801d8) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ITEM] WAC-Item-1781276549472 | stock:20
+[API] Advancing invoices "0b3f9e88-ad2a-4db1-b34b-b2c47efec1dc"...
+[INVOICE JOURNAL] INV/2026/06/12/000196 (4 entries)
+  Sales (Revenue) Dr:0 Cr:100
+  Cash - Main Office (Cash & Cash Equivalents) Dr:100 Cr:0
+  Inventory (Inventories) Dr:0 Cr:100
+  Accounts Receivable (Trade & Other Receivables) Dr:100 Cr:0
+[PASS] AR debited $100 on INV/2026/06/12/000196
+[RECEIPT] amount=100 | invoice=0b3f9e88...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/06/12/000041
+[API] Advancing receipts "4416048b-e5cd-46dc-898e-5260e7dbf890"...
+[RECEIPT] RCPT/2026/06/12/000041 approved
+[STEP] Reversing receipt RCPT/2026/06/12/000041...
+[PASS] Receipt RCPT/2026/06/12/000041 reversed
+[STEP] Voiding invoice INV/2026/06/12/000196...
+[VOID] Invoice 0b3f9e88-ad2a-4db1-b34b-b2c47efec1dc voided → status=draft (no separate credit note; sales_journal cleared)
+[VOID] id=0b3f9e88-ad2a-4db1-b34b-b2c47efec1dc ref=INV/2026/06/12/000196 status=draft
+[VOID JOURNAL] original invoice after void (0 entries)
+[PASS] Void confirmed: sales_journal cleared, GL fully reversed for INV/2026/06/12/000196
+
+===============================================================================================
+  GL AUDIT REPORT — BEFFA ERP  |  Company: BM Tech  |  2026-06-12T15:02:58.880Z
+===============================================================================================
+
+  ▶ 1. Invoice (AR Debit — Pre-Void) [APPROVED]
+    Ref: INV/2026/06/12/000196
+    ID : 0b3f9e88-ad2a-4db1-b34b-b2c47efec1dc
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Sales                                | Revenue                      |            — |       100.00 |
+  | Cash - Main Office                   | Cash & Cash Equivalents      |       100.00 |            — |
+  | Inventory                            | Inventories                  |            — |       100.00 |
+  | Accounts Receivable                  | Trade & Other Receivables    |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 2. Receipt (AR Cleared)
+    Ref: RCPT/2026/06/12/000041
+    ID : 4416048b-e5cd-46dc-898e-5260e7dbf890
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 3. Receipt Reversal
+    Ref: RCPT/2026/06/12/000041
+    ID : 4416048b-e5cd-46dc-898e-5260e7dbf890
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 4. Invoice After Void (GL Cleared) [DRAFT]
+    Ref: INV/2026/06/12/000196
+    ID : 0b3f9e88-ad2a-4db1-b34b-b2c47efec1dc
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+

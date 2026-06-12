@@ -1,0 +1,15 @@
+[PERFORMANCE] API - Auth API Verification: 161.83ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781276475098 (15efaeb2-4905-4a71-b3b2-1dbf940fd52f) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 147.33ms
+[STEP 1] Creating Sales Order for 2 units...
+[API] Advancing sales-orders "c7070931-fabf-4ce0-b8cc-a0c885874a42"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for sales-orders c7070931-fabf-4ce0-b8cc-a0c885874a42.
+[ATTACK] Attempting to invoice for 6 units (SO only allows 2)...
+[PASS] Over-invoice rejected with status 400.

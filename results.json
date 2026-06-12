@@ -1,29 +1,37 @@
 {
-  "total": 17,
-  "passed": 16,
-  "failed": 1,
+  "total": 162,
+  "passed": 115,
+  "failed": 47,
   "skipped": 0,
-  "passRate": 94.1,
-  "avgDurationMs": 34263,
-  "lastUpdated": "2026-06-12T11:20:54.012Z",
+  "passRate": 71,
+  "avgDurationMs": 27331,
+  "lastUpdated": "2026-06-12T15:22:42.319Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 1,
+      "passed": 115,
+      "failed": 47,
       "skipped": 0,
       "trend": [
-        70.6,
         82.4,
         88.2,
         79.6,
         82.4,
         80.2,
-        94.1
+        94.1,
+        71
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "514",
+      "commit": "935d758",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "73m 47s",
+      "passRate": 71,
+      "status": "failed"
+    },
     {
       "run": "513",
       "commit": "f72c491",
@@ -95,22 +103,86 @@
       "duration": "8m 29s",
       "passRate": 94.1,
       "status": "success"
-    },
-    {
-      "run": "503",
-      "commit": "89f8810",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "45m 23s",
-      "passRate": 76.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: Item Creation API Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Something went wrong\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:147\n\n  145 |         }\n  146 |       }\n> 147 |       throw new Error(`Ite",
+      "firstSeen": "2026-06-12T15:01:24.055Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  122 |                 await app.advanceDocumentAPI(body1.id, 'invoices');\n  123 |            ",
+      "firstSeen": "2026-06-12T15:01:35.243Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
+      "firstSeen": "2026-06-12T15:03:05.925Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
+      "firstSeen": "2026-06-12T15:03:27.591Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Invoice: Reject back-dated Invoice from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Invoice from previous fiscal year!\n\n  128 |             try {\n  129 |                 await app.advanceDocumentAPI(inv.id, 'invoices');\n",
+      "firstSeen": "2026-06-12T15:03:50.046Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/06/12/00",
+      "firstSeen": "2026-06-12T15:03:30.315Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/06/12/00",
+      "firstSeen": "2026-06-12T15:03:53.007Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!\n\n  300 |\n  301 |         if (inv.success) {\n> 302 |             throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-",
+      "firstSeen": "2026-06-12T15:03:33.376Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
       "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.175.142:417",
-      "firstSeen": "2026-06-12T11:19:20.487Z",
+      "title": "Audit: SO split into multiple invoices — total must never exceed SO quantity",
+      "error": "Error: [VULNERABILITY] Split Invoice Stock Mismatch\n  SO         : SO/2026/06/12/000075 (ID: fc3a823a-a281-4409-9445-58b848bb3132)\n  Invoice 1  : INV/2026/06/12/000208 — 4 units\n  Invoice 2  : INV/202",
+      "firstSeen": "2026-06-12T15:04:04.651Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "high",
+      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: PO-to-Bill API Failed: 0 - page-closed\n\n   at ../lib/api/PurchaseAPI.ts:368\n\n  366 |     });\n  367 |\n> 368 |     if (!response.ok()) throw new Error",
+      "firstSeen": "2026-06-12T15:04:27.251Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
