@@ -1,0 +1,25 @@
+[PERFORMANCE] API - Auth API Verification: 198.06ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1781261963680 (3a9bc842-0493-45f2-955b-04bc5f0577f2) | method=WAC | stock=50@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 206.05ms
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec → [TIMEOUT] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec exceeded 30000ms — backend may be deadlocked. Retry 1/4 in 1500ms...
+[PASS] Negative price blocked: Accounts Discovery HTTP 401: {
+	"code": 401,
+	"message": "User not found"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec → [TIMEOUT] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec exceeded 30000ms — backend may be deadlocked. Retry 1/4 in 1500ms...
+[WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2018&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 2/4 in 6000ms...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
