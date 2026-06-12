@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 12,
-  "failed": 5,
+  "passed": 14,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 70.6,
-  "avgDurationMs": 51041,
-  "lastUpdated": "2026-06-12T08:46:06.021Z",
+  "passRate": 82.4,
+  "avgDurationMs": 38650,
+  "lastUpdated": "2026-06-12T08:54:56.977Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 12,
-      "failed": 5,
+      "passed": 14,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        88,
         90,
         92,
         76.7,
         94.1,
         76.7,
-        70.6
+        70.6,
+        82.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "508",
+      "commit": "ef5834d",
+      "trigger": "push (smoke)",
+      "duration": "10m 57s",
+      "passRate": 82.4,
+      "status": "success"
+    },
     {
       "run": "507",
       "commit": "7bfbd5e",
@@ -95,14 +103,6 @@
       "duration": "9m 6s",
       "passRate": 64.7,
       "status": "failed"
-    },
-    {
-      "run": "496",
-      "commit": "a8eea2c",
-      "trigger": "push (smoke)",
-      "duration": "8m 49s",
-      "passRate": 64.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,39 +110,23 @@
       "severity": "critical",
       "title": "Create fresh invoice via API, then create receipt and link it",
       "error": "Error: Currency Discovery HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Error fetching currencies\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 ",
-      "firstSeen": "2026-06-12T08:41:33.241Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [CRITICAL] API Advance Failed: 401 Unauthorized. Token for \"BM Tech\" is invalid or expired.\n\n   at ../lib/base-page.ts:164\n\n  162 |         break;\n  163 |       } else if (status === 401) {\n> 1",
-      "firstSeen": "2026-06-12T08:42:15.265Z",
+      "firstSeen": "2026-06-12T08:51:13.374Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Org chart must return company context and department segments",
-      "error": "Error: Get org-chart failed: 401\n\n   at ../lib/api/HrAPI.ts:188\n\n  186 |       `${this.apiBase}/organization-chart?${this.params}`, { headers: h }\n  187 |     );\n> 188 |     if (!resp.ok()) throw new ",
-      "firstSeen": "2026-06-12T08:43:24.852Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI: Employees page must load and display employee records",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/employee/\u001b[39m\nReceived string:  \u001b[31m\"http://168.119.175.142:4173/users/logi",
-      "firstSeen": "2026-06-12T08:43:27.993Z",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Mozilla",
+      "firstSeen": "2026-06-12T08:53:06.876Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1, h2, h3, [role=\"tablist\"], [role=\"tab\"], nav') to be visible\u001b[22m\n\n\n  106 |\n  107 |         // W",
-      "firstSeen": "2026-06-12T08:44:17.053Z",
+      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5",
+      "firstSeen": "2026-06-12T08:53:10.094Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
