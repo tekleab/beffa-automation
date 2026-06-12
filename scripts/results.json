@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 14,
-  "failed": 3,
+  "passed": 15,
+  "failed": 2,
   "skipped": 0,
-  "passRate": 82.4,
-  "avgDurationMs": 38650,
-  "lastUpdated": "2026-06-12T08:54:56.977Z",
+  "passRate": 88.2,
+  "avgDurationMs": 35560,
+  "lastUpdated": "2026-06-12T09:06:22.208Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 14,
-      "failed": 3,
+      "passed": 15,
+      "failed": 2,
       "skipped": 0,
       "trend": [
-        90,
         92,
         76.7,
         94.1,
         76.7,
         70.6,
-        82.4
+        82.4,
+        88.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "509",
+      "commit": "9d875cb",
+      "trigger": "push (smoke)",
+      "duration": "10m 4s",
+      "passRate": 88.2,
+      "status": "success"
+    },
     {
       "run": "508",
       "commit": "ef5834d",
@@ -95,38 +103,22 @@
       "duration": "6m 55s",
       "passRate": 58.8,
       "status": "failed"
-    },
-    {
-      "run": "497",
-      "commit": "394fb7a",
-      "trigger": "push (smoke)",
-      "duration": "9m 6s",
-      "passRate": 64.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "critical",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: Currency Discovery HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Error fetching currencies\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:52\n\n  50 |     const safeJson = async (resp: any, label: string) => {\n  51 ",
-      "firstSeen": "2026-06-12T08:51:13.374Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Mozilla",
-      "firstSeen": "2026-06-12T08:53:06.876Z",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:590\n\n  588 |     }\n ",
+      "firstSeen": "2026-06-12T09:02:06.096Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5",
-      "firstSeen": "2026-06-12T08:53:10.094Z",
+      "error": "Error: Bill BILL/2026/06/12/000163 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
+      "firstSeen": "2026-06-12T09:04:36.809Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
