@@ -1,0 +1,57 @@
+[PERFORMANCE] API - Auth API Verification: 180.27ms
+[STEP 1] Discovering metadata...
+[INFO] dept: ROOT (19d2ca3a-dd83-49e4-9dd6-0b7ecae93298) | job: QA (075fc5b4-7fd7-435f-89e2-610d39b03faf)
+[STEP 2] Creating 3 employees sequentially...
+[PASS] Employee 1: Lifecycle-Emp-1781508093746-1 | id: 0b8a49ff-fdd8-4a6b-b284-35a67dfd5a73
+[PASS] Employee 2: Lifecycle-Emp-1781508093746-2 | id: 48879fba-093f-4cf1-90e7-50926508e51c
+[PASS] Employee 3: Lifecycle-Emp-1781508093746-3 | id: 052c907f-d39d-4e16-91e1-40cdc81917ca
+[STEP 3] Creating shared pay component and pay structure...
+[PASS] Pay structure: 05a68d78-490d-452b-b2b9-4047bf3b5419
+[STEP 4] Assigning pay structure to all 3 employees...
+[PASS] Pay structure assigned to all employees
+[STEP 5] Creating contracts for all 3 employees...
+[WARN] Contract attempt 1 failed for emp 0b8a49ff-fdd8-4a6b-b284-35a67dfd5a73: 500 — {
+	"message": "Failed to check existing contracts"
+}
+ — retrying...
+[PASS] Contract 1: 558d1dbf-ef73-4e7b-bf94-88da8e18a128 | status: draft
+[PASS] Contract 2: 5932424d-ecca-4b18-bbd7-a9c8f75ef791 | status: draft
+[PASS] Contract 3: e3be4bf4-dbdf-4fa6-8f1a-84aaf1d1dafb | status: draft
+[STEP 6] Approving all 3 contracts...
+[API] Advancing employee-contracts "558d1dbf-ef73-4e7b-bf94-88da8e18a128"...
+[API] Advancing employee-contracts "5932424d-ecca-4b18-bbd7-a9c8f75ef791"...
+[API] Advancing employee-contracts "e3be4bf4-dbdf-4fa6-8f1a-84aaf1d1dafb"...
+[PASS] All contracts approved
+[STEP 7] Verifying all 3 employees are active...
+[PASS] Employee 2 is active
+[PASS] Employee 1 is active
+[PASS] Employee 3 is active
+[STEP 8] Creating payroll run...
+[PASS] Payroll run: be512659-8279-4570-90a8-a6da05746128
+[STEP 9] Assigning all 3 employees to payroll run...
+[PASS] 3 employees assigned to payroll run
+[STEP 10] Approving payroll run via API...
+[HR] Payroll process step returned 404: 404 page not found
+
+[API] Advancing payroll-runs "be512659-8279-4570-90a8-a6da05746128"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] Advance had no successful steps for payroll-runs be512659-8279-4570-90a8-a6da05746128.
+[POLL 1/15] Payroll run status: draft
+[POLL 2/15] Payroll run status: draft
+[POLL 3/15] Payroll run status: draft
+[POLL 4/15] Payroll run status: draft
+[POLL 5/15] Payroll run status: draft
+[POLL 6/15] Payroll run status: draft
+[POLL 7/15] Payroll run status: draft
+[POLL 8/15] Payroll run status: draft
+[POLL 9/15] Payroll run status: draft
+[POLL 10/15] Payroll run status: draft
+[POLL 11/15] Payroll run status: draft
+[POLL 12/15] Payroll run status: draft
+[POLL 13/15] Payroll run status: draft
+[POLL 14/15] Payroll run status: draft
+[POLL 15/15] Payroll run status: draft

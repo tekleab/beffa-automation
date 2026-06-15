@@ -1,0 +1,16 @@
+[PERFORMANCE] API - Auth API Verification: 169.96ms
+[STEP 1] Discovering item with known stock...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1781507981018 (85b30776-f0d9-410d-8eb6-c76fcd58a8f1) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ATTACK] Attempting to invoice 10019 units of "WAC-Item-1781507981018" (available: 20)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 20, required: 10019.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+
