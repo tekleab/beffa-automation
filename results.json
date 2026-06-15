@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 9,
-  "failed": 7,
+  "passed": 10,
+  "failed": 6,
   "skipped": 1,
-  "passRate": 52.9,
-  "avgDurationMs": 45226,
-  "lastUpdated": "2026-06-13T07:56:32.554Z",
+  "passRate": 58.8,
+  "avgDurationMs": 44386,
+  "lastUpdated": "2026-06-15T06:51:39.611Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 9,
-      "failed": 7,
+      "passed": 10,
+      "failed": 6,
       "skipped": 1,
       "trend": [
-        80.2,
         94.1,
         71,
         68.9,
         68.3,
         67.7,
-        56.3
+        56.3,
+        62.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "519",
+      "commit": "6f02997",
+      "trigger": "push (smoke)",
+      "duration": "12m 34s",
+      "passRate": 58.8,
+      "status": "failed"
+    },
     {
       "run": "518",
       "commit": "024b408",
@@ -95,38 +103,22 @@
       "duration": "51m 47s",
       "passRate": 79.6,
       "status": "failed"
-    },
-    {
-      "run": "509",
-      "commit": "9d875cb",
-      "trigger": "push (smoke)",
-      "duration": "10m 4s",
-      "passRate": 88.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/06/13/000299 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-06-13T07:52:22.765Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:590\n\n  588 |     }\n ",
-      "firstSeen": "2026-06-13T07:52:22.776Z",
+      "firstSeen": "2026-06-15T06:47:39.302Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "high",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: PO-to-Bill API Failed: 0 - page-closed\n\n   at ../lib/api/PurchaseAPI.ts:368\n\n  366 |     });\n  367 |\n> 368 |     if (!response.ok()) throw new Error",
-      "firstSeen": "2026-06-13T07:53:16.525Z",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n   at ../lib/base-page.ts:342\n\n  340 |\n  341 |         lastError = { status: 0",
+      "firstSeen": "2026-06-15T06:48:27.858Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,7 +126,7 @@
       "severity": "critical",
       "title": "API: Approved bill must post a debit to Accounts Payable",
       "error": "Error: Bill API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Error creating bill\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:310\n\n  308 |     });\n  309 |\n> 310 |     if (!response.ok()) throw new Erro",
-      "firstSeen": "2026-06-13T07:53:32.501Z",
+      "firstSeen": "2026-06-15T06:48:42.009Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +134,7 @@
       "severity": "critical",
       "title": "API: Vendor outstanding balance increases after bill approval",
       "error": "Error: Bill API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Error creating bill\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:310\n\n  308 |     });\n  309 |\n> 310 |     if (!response.ok()) throw new Erro",
-      "firstSeen": "2026-06-13T07:53:53.112Z",
+      "firstSeen": "2026-06-15T06:49:06.163Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -150,7 +142,7 @@
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/100/i).first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n",
-      "firstSeen": "2026-06-13T07:55:06.302Z",
+      "firstSeen": "2026-06-15T06:50:17.092Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -158,7 +150,7 @@
       "severity": "critical",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "Error: Bill API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Error creating bill\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:310\n\n  308 |     });\n  309 |\n> 310 |     if (!response.ok()) throw new Erro",
-      "firstSeen": "2026-06-13T07:55:06.486Z",
+      "firstSeen": "2026-06-15T06:50:18.491Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
