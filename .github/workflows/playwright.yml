@@ -323,8 +323,11 @@ jobs:
         if [ -d "temp-report" ]; then
           mv temp-report deploy/allure
           echo "[SUCCESS] Allure report finalized in deploy/allure"
+        elif [ -d "gh-pages/allure" ]; then
+          echo "[WARN] No new Allure report generated — preserving previous report from gh-pages"
+          cp -r gh-pages/allure deploy/allure
         else
-          echo "[ERROR] temp-report not found. Check generate step."
+          echo "[ERROR] No Allure report available (new or previous). Skipping."
         fi
 
         if [ -f "deploy/allure/index.html" ]; then
@@ -356,6 +359,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: deploy
         publish_branch: gh-pages
+        keep_files: true
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
 
