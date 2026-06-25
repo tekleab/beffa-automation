@@ -1,156 +1,132 @@
 {
   "total": 17,
-  "passed": 8,
-  "failed": 8,
-  "skipped": 1,
-  "passRate": 47.1,
-  "avgDurationMs": 48777,
-  "lastUpdated": "2026-06-16T06:38:07.163Z",
+  "passed": 12,
+  "failed": 5,
+  "skipped": 0,
+  "passRate": 70.6,
+  "avgDurationMs": 41532,
+  "lastUpdated": "2026-06-25T07:45:07.485Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 8,
-      "failed": 8,
-      "skipped": 1,
+      "passed": 12,
+      "failed": 5,
+      "skipped": 0,
       "trend": [
-        56.3,
-        62.5,
-        66.8,
-        56.3,
-        56.3,
-        56.3,
-        50
+        76.7,
+        70.6,
+        82.4,
+        88.2,
+        79.6,
+        82.4,
+        70.6
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "533",
-      "commit": "008f372",
-      "trigger": "push (smoke)",
-      "duration": "13m 49s",
-      "passRate": 47.1,
-      "status": "failed"
-    },
-    {
-      "run": "530",
-      "commit": "f25ba53",
-      "trigger": "push (smoke)",
-      "duration": "12m 57s",
-      "passRate": 52.9,
-      "status": "failed"
-    },
-    {
-      "run": "529",
-      "commit": "f3e2881",
+      "run": "534",
+      "commit": "2b7ffbe",
       "trigger": "workflow_dispatch (smoke)",
-      "duration": "13m 9s",
-      "passRate": 52.9,
+      "duration": "11m 46s",
+      "passRate": 70.6,
       "status": "failed"
     },
     {
-      "run": "521",
-      "commit": "fd70e97",
+      "run": "511",
+      "commit": "9f60b9f",
       "trigger": "push (smoke)",
-      "duration": "12m 38s",
-      "passRate": 52.9,
-      "status": "failed"
+      "duration": "9m 57s",
+      "passRate": 82.4,
+      "status": "success"
     },
     {
-      "run": "520",
-      "commit": "75cfb86",
+      "run": "510",
+      "commit": "18ed062",
       "trigger": "workflow_dispatch (full)",
-      "duration": "90m 51s",
-      "passRate": 66.5,
+      "duration": "51m 47s",
+      "passRate": 79.6,
       "status": "failed"
     },
     {
-      "run": "519",
-      "commit": "6f02997",
+      "run": "509",
+      "commit": "9d875cb",
       "trigger": "push (smoke)",
-      "duration": "12m 34s",
-      "passRate": 58.8,
-      "status": "failed"
+      "duration": "10m 4s",
+      "passRate": 88.2,
+      "status": "success"
     },
     {
-      "run": "518",
-      "commit": "024b408",
+      "run": "508",
+      "commit": "ef5834d",
       "trigger": "push (smoke)",
-      "duration": "12m 48s",
-      "passRate": 52.9,
+      "duration": "10m 57s",
+      "passRate": 82.4,
+      "status": "success"
+    },
+    {
+      "run": "507",
+      "commit": "7bfbd5e",
+      "trigger": "push (smoke)",
+      "duration": "14m 27s",
+      "passRate": 70.6,
       "status": "failed"
     },
     {
-      "run": "517",
-      "commit": "d6db63a",
+      "run": "505",
+      "commit": "cc0f130",
       "trigger": "workflow_dispatch (full)",
-      "duration": "82m 31s",
-      "passRate": 67.3,
+      "duration": "46m 58s",
+      "passRate": 76.7,
       "status": "failed"
     },
     {
-      "run": "516",
-      "commit": "b63e983",
+      "run": "504",
+      "commit": "3b0d9d1",
+      "trigger": "push (smoke)",
+      "duration": "8m 29s",
+      "passRate": 94.1,
+      "status": "success"
+    },
+    {
+      "run": "503",
+      "commit": "89f8810",
       "trigger": "workflow_dispatch (full)",
-      "duration": "84m 0s",
-      "passRate": 67.9,
+      "duration": "45m 23s",
+      "passRate": 76.7,
       "status": "failed"
     },
     {
-      "run": "515",
-      "commit": "ad85254",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "78m 17s",
-      "passRate": 68.5,
-      "status": "failed"
+      "run": "502",
+      "commit": "70a1638",
+      "trigger": "push (smoke)",
+      "duration": "0m 0s",
+      "passRate": 0,
+      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/06/16/000475 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-06-16T06:33:42.459Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:590\n\n  588 |     }\n ",
-      "firstSeen": "2026-06-16T06:33:42.464Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: PO-to-Bill API Failed: 0 - page-closed\n\n   at ../lib/api/PurchaseAPI.ts:368\n\n  366 |     });\n  367 |\n> 368 |     if (!response.ok()) throw new Error",
-      "firstSeen": "2026-06-16T06:34:36.364Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: Bill API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Error creating bill\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:310\n\n  308 |     });\n  309 |\n> 310 |     if (!response.ok()) throw new Erro",
-      "firstSeen": "2026-06-16T06:34:59.280Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: Bill API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Error creating bill\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:310\n\n  308 |     });\n  309 |\n> 310 |     if (!response.ok()) throw new Erro",
-      "firstSeen": "2026-06-16T06:35:21.158Z",
+      "error": "Error: Invoice INV/2026/06/25/000479 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-06-25T07:41:10.060Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "Error: Create employee: could not retrieve created employee \"Audit-Emp-1781591757271\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create em",
-      "firstSeen": "2026-06-16T06:35:51.254Z",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice INV/2026/06/25/000478 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-06-25T07:41:10.089Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('section[role=\"dialog\"] button, div[role=\"alertdialog\"] button').filter({ hasText: /Yes|Confirm|Delete/i ",
+      "firstSeen": "2026-06-25T07:42:29.268Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -158,15 +134,15 @@
       "severity": "critical",
       "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/100/i).first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n",
-      "firstSeen": "2026-06-16T06:36:38.007Z",
+      "firstSeen": "2026-06-25T07:43:13.705Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
+      "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill API Creation Failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Error creating bill\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:310\n\n  308 |     });\n  309 |\n> 310 |     if (!response.ok()) throw new Erro",
-      "firstSeen": "2026-06-16T06:36:41.639Z",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  117 |         console.log(`[STEP 4] Navigatin",
+      "firstSeen": "2026-06-25T07:43:24.479Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }

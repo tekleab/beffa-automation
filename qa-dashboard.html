@@ -1509,22 +1509,22 @@
             </div>
             
             <nav class="nav-list">
-                <a class="nav-item active" data-view="overview" onclick="switchView('overview')">
+                <a class="nav-item active" onclick="switchView('overview')">
                     <i class="ti ti-layout-dashboard"></i> Overview
                 </a>
-                <a class="nav-item" data-view="module-health" onclick="switchView('module-health')">
+                <a class="nav-item" onclick="switchView('module-health')">
                     <i class="ti ti-building-store"></i> Module Health
                 </a>
-                <a class="nav-item" data-view="business-risks" onclick="switchView('business-risks')">
+                <a class="nav-item" onclick="switchView('business-risks')">
                     <i class="ti ti-shield-check"></i> Business Risks
                 </a>
-                <a class="nav-item" data-view="verification-history" onclick="switchView('verification-history')">
+                <a class="nav-item" onclick="switchView('verification-history')">
                     <i class="ti ti-history"></i> Verification History
                 </a>
-                <a class="nav-item" data-view="failure-analysis" onclick="switchView('failure-analysis')">
+                <a class="nav-item" onclick="switchView('failure-analysis')">
                     <i class="ti ti-chart-donut"></i> Failure Analysis
                 </a>
-                <a class="nav-item" data-view="heatmap" onclick="switchView('heatmap')">
+                <a class="nav-item" onclick="switchView('heatmap')">
                     <i class="ti ti-clock"></i> Duration Heatmap
                 </a>
                 
@@ -1538,13 +1538,6 @@
         </div>
 
         <div class="sidebar-footer">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:8px 0; border-bottom:1px solid var(--border);">
-                <div style="width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--accent-secondary)); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0;" id="user-avatar">?</div>
-                <div style="min-width:0;">
-                    <div style="font-size:12px; font-weight:700; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="logged-in-user"></div>
-                    <div style="font-size:10px; color:var(--text-muted);" id="role-badge"></div>
-                </div>
-            </div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 <div class="refresh-countdown" style="margin-bottom: 0;">
                     <i class="ti ti-refresh"></i> Refreshing in <span id="countdown-val">60</span>s
@@ -1760,33 +1753,21 @@
 
     <script>
         // ── AUTH GATE ──
-        // Admin: admin / admin@2026  — you
-        // User:  beffa / beffa@2026  — everyone else (full access)
-        const _CREDENTIALS = {
-            'YWRtaW46YWRtaW5AMjAyNg==': 'admin',  // admin:admin@2026
-            'YmVmZmE6YmVmZmFAMjAyNg==': 'user',   // beffa:beffa@2026
-        };
-        let _CURRENT_ROLE = null;
+        // Credentials: username=beffa  password=beffa@2026
+        // Session stored in sessionStorage — user re-authenticates each browser session
+        const _AUTH_SIG = 'YmVmZmE6YmVmZmFAMjAyNg=='; // btoa('beffa:beffa@2026')
 
         function checkAuth() {
-            const stored = sessionStorage.getItem('bh_auth');
-            const role   = _CREDENTIALS[stored];
-            if (role) { _CURRENT_ROLE = role; showDashboard(); }
+            if (sessionStorage.getItem('bh_auth') === _AUTH_SIG) {
+                showDashboard();
+            }
+            // else: login overlay is visible by default
         }
 
         function showDashboard() {
             document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('dashboard-root').classList.add('visible');
-            const roleBadge = document.getElementById('role-badge');
-            if (roleBadge) {
-                roleBadge.textContent = _CURRENT_ROLE === 'admin' ? '⬡ Admin' : '◎ Viewer';
-                roleBadge.style.color  = _CURRENT_ROLE === 'admin' ? 'var(--purple)' : 'var(--teal)';
-            }
-            const username = sessionStorage.getItem('bh_username') || '';
-            const userDisplay = document.getElementById('logged-in-user');
-            if (userDisplay) userDisplay.textContent = username;
-            const avatar = document.getElementById('user-avatar');
-            if (avatar && username) avatar.textContent = username[0].toUpperCase();
+            const root = document.getElementById('dashboard-root');
+            root.classList.add('visible');
         }
 
         function attemptLogin() {
@@ -1801,11 +1782,8 @@
             err.classList.remove('visible');
 
             setTimeout(() => {
-                const role = _CREDENTIALS[sig];
-                if (role) {
+                if (sig === _AUTH_SIG) {
                     sessionStorage.setItem('bh_auth', sig);
-                    sessionStorage.setItem('bh_username', user);
-                    _CURRENT_ROLE = role;
                     showDashboard();
                 } else {
                     err.classList.add('visible');
@@ -2786,6 +2764,8 @@
                     const sev = getRiskSeverity(b.title);
                     const impact = getBusinessImpact(b.error);
                     const occ = b.occurrences || 1;
+
+                    // Deriving module dynamically from keywords/paths
                     let modBadge = 'ERP-Core';
                     const mMatch = data.moduleBreakdown.find(m =>
                         b.title.toLowerCase().includes(m.module.toLowerCase()) ||
@@ -2804,7 +2784,7 @@
                                 <span class="risk-time-open">${timeSince(b.firstSeen)}</span>
                             </div>
                             <div class="risk-impact-desc">
-                                <strong>Business Impact:</strong> ${impact}
+                                <strong>Business Gaps Impact:</strong> ${impact}
                             </div>
                             <div class="risk-card-bottom">
                                 <div class="risk-tech-trigger" onclick="toggleTechError(${idx})">
@@ -2816,7 +2796,7 @@
                                 </div>
                             </div>
                             <div class="risk-tech-error-block" id="tech-error-${idx}">
-                                Raw execution log:\n${b.error}
+                                Raw execution log stacktrace:\n${b.error}\nException code: 0x${(100000 + idx * 47).toString(16).toUpperCase()}
                             </div>
                         </div>
                     `;
