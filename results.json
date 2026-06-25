@@ -1,13 +1,37 @@
 {
-  "total": 0,
-  "passed": 0,
-  "failed": 0,
+  "total": 17,
+  "passed": 12,
+  "failed": 5,
   "skipped": 0,
-  "passRate": 0,
-  "avgDurationMs": 0,
-  "lastUpdated": "2026-06-25T07:47:31.271Z",
-  "moduleBreakdown": [],
+  "passRate": 70.6,
+  "avgDurationMs": 40753,
+  "lastUpdated": "2026-06-25T08:02:29.711Z",
+  "moduleBreakdown": [
+    {
+      "module": "Other",
+      "passed": 12,
+      "failed": 5,
+      "skipped": 0,
+      "trend": [
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        70.6
+      ]
+    }
+  ],
   "last10Runs": [
+    {
+      "run": "536",
+      "commit": "6676ebe",
+      "trigger": "push (smoke)",
+      "duration": "11m 32s",
+      "passRate": 70.6,
+      "status": "failed"
+    },
     {
       "run": "535",
       "commit": "edc6c98",
@@ -79,15 +103,48 @@
       "duration": "8m 29s",
       "passRate": 94.1,
       "status": "success"
-    },
-    {
-      "run": "503",
-      "commit": "89f8810",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "45m 23s",
-      "passRate": 76.7,
-      "status": "failed"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/06/25/000482 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-06-25T07:58:13.804Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice INV/2026/06/25/000483 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-06-25T07:58:13.807Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: Create employee: could not retrieve created employee \"Audit-Emp-1782374386334\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create em",
+      "firstSeen": "2026-06-25T07:59:40.682Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/100/i).first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n",
+      "firstSeen": "2026-06-25T08:00:20.682Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.175.142:417",
+      "firstSeen": "2026-06-25T08:00:35.421Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ]
 }
