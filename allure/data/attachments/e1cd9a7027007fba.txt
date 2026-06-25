@@ -1,0 +1,28 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 352.45ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 25
+[SUCCESS] "Purchase Order Date" set to Day 25 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3152.09ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2326.85ms
+[INFO] Vendor: Derara Guyo
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 3418.34ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 3200.15ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2517.07ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2662.41ms
+[PERFORMANCE] UI - Random Selection: Location: 2321.12ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1891.01ms
+[PERFORMANCE] UI - Random Selection: Tax: 2277.91ms
+[OK] Line item added (Price: 9567)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/25/000234 | Vendor: Derara Guyo
+[API] Advancing purchase-orders "885ffa47-5fa2-4164-9bbe-a4f1974bc6e0"...
+[OK] PO PO/2026/06/25/000234 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/25/000234 via API
+[API] Advancing bills "0009b5f7-cf92-4b6d-974c-ac1c124a9e26"...
+[OK] Linked Bill BILL/2026/06/25/000285 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/25/000285 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/25/000285 is physically present in Derara Guyo's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/25/000234 -> Bill BILL/2026/06/25/000285
