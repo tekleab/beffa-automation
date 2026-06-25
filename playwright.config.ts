@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 // Load env — CI uses process.env directly, local uses .env file (silent mode to suppress verbose logs)
-dotenv.config({ path: path.resolve(__dirname, '.env'), silent: true });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Resolve base URLs safely — guards against http://http/... malformation
 function resolveUrl(raw: string | undefined, fallback: string): string {

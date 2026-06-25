@@ -242,10 +242,89 @@ export class BasePage {
   }
 
   /**
+   * Formats and attaches API failure details (headers, body, duration, and a copy-pasteable curl command)
+   * to the Playwright allure report for deep visibility into backend timeouts and errors.
+   */
+  async attachApiFailureToAllure(
+    method: string,
+    url: string,
+    headers: any,
+    data: any,
+    status: number,
+    text: string,
+    durationMs: number
+  ): Promise<void> {
+    try {
+      const { test } = require('@playwright/test');
+      if (test && typeof test.info === 'function') {
+        const info = test.info();
+        if (info) {
+          // Format headers nicely, masking authorization token for sanity
+          const safeHeaders = { ...headers };
+          if (safeHeaders['Authorization']) {
+            const auth = String(safeHeaders['Authorization']);
+            safeHeaders['Authorization'] = auth.startsWith('Bearer ')
+              ? `Bearer ${auth.slice(7, 22)}... (truncated)`
+              : `${auth.slice(0, 15)}... (truncated)`;
+          }
+
+          // Build copy-pasteable curl command
+          let curlCmd = `curl -i -X ${method} \\\n`;
+          for (const [k, v] of Object.entries(safeHeaders)) {
+            curlCmd += `  -H "${k}: ${v}" \\\n`;
+          }
+          if (data) {
+            const payloadStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            curlCmd += `  -d '${payloadStr.replace(/'/g, "'\\''")}' \\\n`;
+          }
+          curlCmd += `  "${url}"`;
+
+          // Construct markdown report
+          const markdownReport = `### 🚨 API Request Failure Report
+- **Endpoint**: \`${url}\`
+- **Method**: \`${method}\`
+- **Status Code**: \`${status === 0 ? 'TIMEOUT / NETWORK_ERROR' : status}\`
+- **Latency**: \`${durationMs.toFixed(2)}ms\`
+
+#### 📋 Request Details
+**Headers**:
+\`\`\`json
+${JSON.stringify(safeHeaders, null, 2)}
+\`\`\`
+
+${data ? `**Body**:\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\`\n` : ''}
+
+#### 💥 Response Details
+**Response Body**:
+\`\`\`json
+${text || '(No response text or timeout reached)'}
+\`\`\`
+
+#### 💻 Replay with curl
+\`\`\`bash
+${curlCmd}
+\`\`\`
+`;
+          const parsedUrl = new URL(url);
+          const endpointName = parsedUrl.pathname.split('/').pop() || 'request';
+          info.attach(`api-failure-${method.toLowerCase()}-${endpointName}`, {
+            body: markdownReport,
+            contentType: 'text/markdown'
+          });
+        }
+      }
+    } catch (e) {
+      console.log(`[WARN] Could not attach API failure to Allure report: ${e}`);
+    }
+  }
+
+  /**
    * Resilient GET with exponential backoff for 500/503/socket-hang-up.
    */
   async safeGet(url: string, options: { headers: any }, timeoutMs = 30000): Promise<any> {
     let lastError: any = null;
+    const startTime = performance.now();
+
     for (let attempt = 1; attempt <= 4; attempt++) {
       try {
         const response = await this.withTimeout(
@@ -263,6 +342,9 @@ export class BasePage {
           await this.page.waitForTimeout(backoff);
           continue;
         }
+        // Non-retryable error (e.g. 4xx) — attach to Allure and return
+        const duration = performance.now() - startTime;
+        await this.attachApiFailureToAllure('GET', url, options.headers, null, status, text, duration);
         return response; // 4xx — return as-is
       } catch (err: any) {
         if (
@@ -274,13 +356,18 @@ export class BasePage {
         ) {
           const backoff = attempt * attempt * 1500;
           console.log(`[WARN] GET ${url} → ${err.message.split('\n')[0]}. Retry ${attempt}/4 in ${backoff}ms...`);
-          lastError = { status: 0, text: err.message };
+          lastError = { status: err.message?.includes('[TIMEOUT]') ? 408 : 0, text: err.message };
           await this.page.waitForTimeout(backoff);
           continue;
         }
         lastError = { status: 0, text: err.message };
       }
     }
+
+    // All retries failed (timeout, network error, or persistent 5xx)
+    const duration = performance.now() - startTime;
+    await this.attachApiFailureToAllure('GET', url, options.headers, null, lastError?.status ?? 0, lastError?.text ?? '', duration);
+
     return {
       ok: () => false,
       status: () => lastError?.status ?? 0,
@@ -295,6 +382,7 @@ export class BasePage {
    */
   async safePost(url: string, options: { data: any, headers: any, label: string }, timeoutMs = 30000): Promise<any> {
     let lastError: any = null;
+    const startTime = performance.now();
 
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
@@ -318,6 +406,9 @@ export class BasePage {
           continue;
         }
 
+        // Non-retryable error (e.g. 4xx) — attach to Allure and return
+        const duration = performance.now() - startTime;
+        await this.attachApiFailureToAllure('POST', url, options.headers, options.data, status, text, duration);
         return response; // 4xx — return as-is, no retry
 
       } catch (err: any) {
@@ -342,6 +433,10 @@ export class BasePage {
         await this.page.waitForTimeout(attempt * 1000);
       }
     }
+
+    // All retries failed
+    const duration = performance.now() - startTime;
+    await this.attachApiFailureToAllure('POST', url, options.headers, options.data, lastError?.status ?? 0, lastError?.text ?? '', duration);
 
     return {
       ok: () => false,
