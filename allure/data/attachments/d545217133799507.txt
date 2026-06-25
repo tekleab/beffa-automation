@@ -1,0 +1,24 @@
+[PERFORMANCE] API - Auth API Verification: 220.53ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782375231183 (6fddb995-0ec5-4814-b964-fac883217a20) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 264.21ms
+[ATTACK] Injecting Bill with future date: 2028-06-25T00:00:00Z...
+[API] Advancing bills "e51e8189-a3dc-43aa-89a6-5bd008416715"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/06/25/000273                   │
+  │ Bill ID                          │ e51e8189-a3dc-43aa-89a6-5bd008416715     │
+  │ Invoice Date                     │ 2028-06-25T00:00:00Z                     │
+  │ Today                            │ 2026-06-25                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

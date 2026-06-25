@@ -1,0 +1,37 @@
+[PERFORMANCE] API - Auth API Verification: 214.33ms
+[PERFORMANCE] API - Auth API Verification: 249.99ms
+[STEP 1] Creating 3 fresh WAC items...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1782374909521 (5191f9d9-3ef2-4480-b7b3-63524f7fb285) | method=WAC | stock=10@$50 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1782374916277 (980e9b28-2007-4a4d-863e-cfdf52cd42b7) | method=WAC | stock=10@$80 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1782374922422 (4cd90330-81ce-40ed-b7d8-610261c019cb) | method=WAC | stock=10@$120 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ITEM 1] WAC-Item-1782374909521 | stock:10 | cost:$50
+[ITEM 2] WAC-Item-1782374916277 | stock:10 | cost:$80
+[ITEM 3] WAC-Item-1782374922422 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/06/25/000492 (a25e3eab-57e9-4692-86ac-7d4834a6b6b7)
+[API] Advancing invoices "a25e3eab-57e9-4692-86ac-7d4834a6b6b7"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] WAC-Item-1782374909521 | before:10 → after:9 (exp:9)
+[ITEM 2] WAC-Item-1782374916277 | before:10 → after:9 (exp:9)
+[ITEM 3] WAC-Item-1782374922422 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales (Revenue) | Dr:0 Cr:50
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:50 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:50
+[JE] Sales (Revenue) | Dr:0 Cr:80
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:80 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:80
+[JE] Sales (Revenue) | Dr:0 Cr:120
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:120 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:120
+[JE] Accounts Receivable (Trade & Other Receivables) | Dr:250 Cr:0
+[AUDIT] Total Dr: $500 | Total Cr: $500 | Expected COGS: $250
+[PASS] COGS journal balanced — Dr:$500 = Cr:$500
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced
