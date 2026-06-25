@@ -1,0 +1,21 @@
+[PERFORMANCE] API - Auth API Verification: 227.48ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782382219235 (b8e503d7-6735-4d9b-9bc2-3ad957e1a248) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 163.43ms
+[STEP 1] Creating & approving Bill for 3000...
+[API] Advancing bills "4dcc1115-0dd3-46a0-9678-c7193793d69b"...
+[BILL] BILL/2026/06/25/000311 (4dcc1115-0dd3-46a0-9678-c7193793d69b) | Amount: 3000
+[ATTACK] Overpayment of 6000 against bill BILL/2026/06/25/000311 (total: 3000)...
+[ACTION] Creating Bill Payment for 4dcc1115-0dd3-46a0-9678-c7193793d69b via API (CashAcct: eb913a22-1146-48e3-abb4-2148afb10cd9)...
+[SUCCESS] Payment created: PAY/2026/06/25/000025 (ID: db26bf5a-6b1b-4195-b02b-b15f08538012)
+[API] Advancing payments "db26bf5a-6b1b-4195-b02b-b15f08538012"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Advance had no successful steps for payments db26bf5a-6b1b-4195-b02b-b15f08538012.
+[PAYMENT] PAY/2026/06/25/000025 (db26bf5a-6b1b-4195-b02b-b15f08538012) | Amount: 6000
+[RESULT] Bill BILL/2026/06/25/000311 balance after overpayment: 3000 (expected: >= 0)
+[PASS] Balance capped at 0 — overpayment handled correctly.

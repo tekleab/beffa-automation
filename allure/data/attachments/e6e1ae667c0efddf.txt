@@ -1,0 +1,40 @@
+[PERFORMANCE] API - Auth API Verification: 278.40ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782382213435 (71dd776b-ea92-4a10-af89-2aa64c6bc71e) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  WAC-Item-1782382213435 | Stock: 20
+[PLAN]  PO: 10 | Batch1: 4 | Batch2: 6 | Over: 1
+=========================================
+
+[STEP 1] Creating & approving PO for 10 units...
+[API] Advancing purchase-orders "d95a55ef-7481-4160-a4e7-c4ff3413d2dc"...
+[OK] PO PO/2026/06/25/000242 approved (ID: d95a55ef-7481-4160-a4e7-c4ff3413d2dc)
+[STEP 2] Receiving Batch 1: 4 units...
+[API] Advancing bills "88b4f7f1-9636-470c-8ea8-255e04c0fca5"...
+[OK] Batch 1 bill BILL/2026/06/25/000310 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+[API] Advancing bills "c397feb6-52f5-4b0e-b357-a367732b9e19"...
+[OK] Batch 2 bill BILL/2026/06/25/000312 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO    : PO/2026/06/25/000242 (d95a55ef-7481-4160-a4e7-c4ff3413d2dc)
+[DOCUMENT] Bill1 : BILL/2026/06/25/000310 (88b4f7f1-9636-470c-8ea8-255e04c0fca5) — 4 units
+[DOCUMENT] Bill2 : BILL/2026/06/25/000312 (c397feb6-52f5-4b0e-b357-a367732b9e19) — 6 units
+[STOCK] Before: 20 | After: 30 | Expected: 30
+=============================================
+
+[STEP 5] Attempting over-receive (1 unit beyond fully received PO)...
+[API] Advancing bills "08503fc2-908b-4e05-9696-047bf57fcd06"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] Advance had no successful steps for bills 08503fc2-908b-4e05-9696-047bf57fcd06.
+[PASS] Over-receive bill created but approval blocked (status: draft).
+[PASS] Split bill audit complete: 4 + 6 = 10 units received correctly.

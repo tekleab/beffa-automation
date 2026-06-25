@@ -1,0 +1,35 @@
+[PERFORMANCE] API - Auth API Verification: 176.01ms
+[AUTH] Frontend not rendered — skipping company switch (API session active).
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: WAC-Item-1782381997376 (5f8bab7c-c794-4732-9f1d-f32e44e59d42) | method=WAC | stock=30@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 161.55ms
+[STEP 1] Creating PO for 10 units...
+[API] Advancing purchase-orders "bf74fbda-7e52-4ab9-bab5-c1bc8aad77b5"...
+[OK] PO PO/2026/06/25/000240 approved.
+[STEP 2] Receiving only 5 / 10 units via partial PO bill...
+[API] Advancing bills "7216d061-6ed5-49d2-a112-70fc20577343"...
+[OK] Bill BILL/2026/06/25/000305 approved for 5 units.
+[STEP 3] Verifying partial release via bill detail...
+
+  ┌───────────────────────────────────────────────────────────────────┐
+  │ Partial PO Release Audit                                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Ref                       │ PO/2026/06/25/000240             │
+  │ PO ID                        │ bf74fbda-7e52-4ab9-bab5-c1bc8aa… │
+  │ Bill Ref                     │ BILL/2026/06/25/000305           │
+  │ Bill ID                      │ 7216d061-6ed5-49d2-a112-70fc205… │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Qty Authorized            │ 10 units                         │
+  │ Received (this bill)         │ 5 units                          │
+  │ Remaining on PO              │ 5 units                          │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Unit Price                   │ $5000.00                         │
+  │ Bill Amount                  │ $25000.00                        │
+  │ Remaining Liability          │ $25000.00                        │
+  │ PO Total                     │ $50000.00                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Result                       │ ✓ PASS — Partial tracking corre… │
+  └───────────────────────────────────────────────────────────────────┘
+
+[PASS] Partial PO release confirmed: 5 received, 5 remaining.
