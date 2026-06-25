@@ -279,6 +279,14 @@ jobs:
         else
           echo "[INFO] No prior Allure history found — first run or history missing."
         fi
+
+        # Inject failure categories — classifies backend timeouts, network errors,
+        # context-disposed, 5xx, 4xx, UI selector failures as distinct Allure categories
+        if [ -f "allure-categories.json" ]; then
+          cp allure-categories.json allure-results/categories.json
+          echo "[INFO] Injected allure-categories.json → allure-results/categories.json"
+        fi
+
         ls allure-results/ | head -20 || echo "[WARN] allure-results is empty"
         npx allure generate allure-results --clean -o temp-report
         if [ ! -f "temp-report/index.html" ]; then

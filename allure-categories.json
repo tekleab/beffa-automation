@@ -1,0 +1,56 @@
+[
+  {
+    "name": "🔴 Backend Timeout / Deadlock",
+    "description": "API call exceeded the timeout — backend was slow or deadlocked. Not a test logic failure.",
+    "messageRegex": ".*\\[TIMEOUT\\].*|.*backend may be deadlocked.*|.*exceeded \\d+ms.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🔴 Network / Connection Failure",
+    "description": "curl-level network error: ECONNRESET, ECONNREFUSED, socket hang up. Backend unreachable.",
+    "messageRegex": ".*ECONNRESET.*|.*ECONNREFUSED.*|.*socket hang up.*|.*ETIMEDOUT.*|.*network.*error.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🟠 Request Context Disposed",
+    "description": "Playwright request context was closed before the API call completed — test timed out at framework level.",
+    "messageRegex": ".*Request context disposed.*|.*apiRequestContext.*disposed.*|.*Target page.*closed.*|.*context was destroyed.*|.*page has been closed.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🟠 Server-Side Error (5xx)",
+    "description": "Backend returned HTTP 500/503 — server-side failure, not test logic.",
+    "messageRegex": ".*\\[SERVER-ISSUE\\].*|.*HTTP 500.*|.*HTTP 503.*|.*status.*500.*|.*status.*503.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🟡 ERP Validation Error (4xx)",
+    "description": "Backend rejected the request with a 4xx — missing required fields or business rule violation.",
+    "messageRegex": ".*status.*422.*|.*status.*400.*|.*status.*404.*|.*Validation error.*|.*is required.*|.*not found.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🟡 Global Setup / Seeding Failure",
+    "description": "Test failed because global setup or data seeding did not complete correctly.",
+    "messageRegex": ".*globalSetup.*|.*data.seed.*|.*seeding failed.*|.*beforeAll.*timeout.*|.*hook timeout.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🔵 UI / Selector Timeout",
+    "description": "Playwright could not find a UI element within the timeout — likely a rendering or navigation delay.",
+    "messageRegex": ".*waiting for.*|.*locator.*|.*getByRole.*|.*getByText.*|.*Locator.*timeout.*|.*element not found.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "🔵 Assertion / Business Logic Failure",
+    "description": "Test assertion failed — actual ERP behavior did not match expected business logic.",
+    "messageRegex": ".*expect.*received.*|.*Expected.*toBe.*|.*toEqual.*|.*AssertionError.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "⚪ Known Bug / Documented Finding",
+    "description": "Intentionally logged as a known ERP behaviour gap — not a test infrastructure problem.",
+    "messageRegex": ".*\\[KNOWN_BUG\\].*",
+    "matchedStatuses": ["failed", "broken", "passed"]
+  }
+]
