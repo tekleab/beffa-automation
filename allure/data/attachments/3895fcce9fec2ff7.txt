@@ -1,0 +1,19 @@
+[PERFORMANCE] API - Auth API Verification: 331.86ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782735025280 (fd44cb91-01b0-4c77-b0ea-aa70cd012e2e) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[ATTACK] Triggering 2 CONCURRENT adjustments (+10 each) for WAC-Item-1782735025280...
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=20
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=20
+[SUCCESS] Adjustment created via API: ADJ/2026/06/29/000100 (ID: 38477a2e-dd7b-4357-a094-00d3f3255cfe)
+[SUCCESS] Adjustment created via API: ADJ/2026/06/29/000101 (ID: 9037ff53-4619-4cc7-b720-cba9da534bd9)
+[INFO] Adjustment 1 ID: 38477a2e-dd7b-4357-a094-00d3f3255cfe | Adjustment 2 ID: 9037ff53-4619-4cc7-b720-cba9da534bd9
+[API] Advancing inventory-adjustments "38477a2e-dd7b-4357-a094-00d3f3255cfe"...
+[SUCCESS] Advanced Adjustment 1 to approved: 38477a2e-dd7b-4357-a094-00d3f3255cfe
+[API] Advancing inventory-adjustments "9037ff53-4619-4cc7-b720-cba9da534bd9"...
+[SUCCESS] Advanced Adjustment 2 to approved: 9037ff53-4619-4cc7-b720-cba9da534bd9
+[ACTION] Verifying Final Stock Integrity...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 40...
+[SUCCESS] API Confirmed: Stock correctly reached 40.
+[SNAPSHOT] Start: 20 | Final: 40 | Expected: 40
+[PASS] Inventory Concurrency verified. No lost updates detected.

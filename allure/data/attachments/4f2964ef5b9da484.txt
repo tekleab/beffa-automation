@@ -1,0 +1,28 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 300.10ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 29
+[SUCCESS] "Purchase Order Date" set to Day 29 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2649.26ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2276.93ms
+[INFO] Vendor: Pioneer Distributors-9565-Updated
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2085.86ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2088.65ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2037.10ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2282.07ms
+[PERFORMANCE] UI - Random Selection: Location: 2367.52ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2085.35ms
+[PERFORMANCE] UI - Random Selection: Tax: 1993.60ms
+[OK] Line item added (Price: 3384)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/29/000262 | Vendor: Pioneer Distributors-9565-Updated
+[API] Advancing purchase-orders "a993fe16-f193-460e-91f9-7598aab9563a"...
+[OK] PO PO/2026/06/29/000262 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/29/000262 via API
+[API] Advancing bills "68fdbe45-ec8e-4a88-b4b8-58d2e8ba5778"...
+[OK] Linked Bill BILL/2026/06/29/000373 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/29/000373 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/06/29/000373 is physically present in Pioneer Distributors-9565-Updated's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/06/29/000262 -> Bill BILL/2026/06/29/000373

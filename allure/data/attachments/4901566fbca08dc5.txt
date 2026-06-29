@@ -1,0 +1,22 @@
+[PERFORMANCE] API - Auth API Verification: 355.10ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782734954902 (652a6775-3ba4-4e4e-8e3f-8fa9b34ae0a2) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  WAC-Item-1782734954902 | Stock: 20
+[PLAN]  PO: 10 | Batch1: 4 | Batch2: 6 | Over: 1
+=========================================
+
+[STEP 1] Creating & approving PO for 10 units...
+[API] Advancing purchase-orders "023e7469-7f32-44ea-86ae-ad6173d7c768"...
+[OK] PO PO/2026/06/29/000271 approved (ID: 023e7469-7f32-44ea-86ae-ad6173d7c768)
+[STEP 2] Receiving Batch 1: 4 units...
+[API] Advancing bills "2517e91e-bf41-4311-a9bf-2fa2d99c865b"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[OK] Batch 1 bill BILL/2026/06/29/000388 approved.
+[STEP 3] Receiving Batch 2: 6 units...

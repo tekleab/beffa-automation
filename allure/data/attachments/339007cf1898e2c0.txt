@@ -1,0 +1,13 @@
+[PERFORMANCE] API - Auth API Verification: 167.46ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1782734472145 (f3cece7a-e3fc-4003-bc46-7edb75fd38f0) | method=WAC | stock=50@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 189.06ms
+[STEP 1] Creating SO for 10 units...
+[API] Advancing sales-orders "7ad4b9b9-7935-4f6c-a74f-bb9b6acf132d"...
+[ATTACK] Attempting to Invoice 50 units against the 10-unit SO...
+[PASS] Over-Invoicing attempt blocked by API: {
+	"code": 400,
+	"message": "sales order balance already exhausted: sales order item f4e9307d-3cd8-473d-822f-be2ab89a45a0 ordered 10, already released 0, requested 50"
+}
+

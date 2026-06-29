@@ -1,0 +1,60 @@
+[PERFORMANCE] API - Auth API Verification: 149.60ms
+[STEP 1] Discovering metadata...
+[HR] Using job position: "QA" (075fc5b4-7fd7-435f-89e2-610d39b03faf) | dept: 19d2ca3a-dd83-49e4-9dd6-0b7ecae93298
+[HR] Using job position: "QA" (075fc5b4-7fd7-435f-89e2-610d39b03faf) | dept: 19d2ca3a-dd83-49e4-9dd6-0b7ecae93298
+[INFO] dept: ROOT (19d2ca3a-dd83-49e4-9dd6-0b7ecae93298) | job: QA (075fc5b4-7fd7-435f-89e2-610d39b03faf)
+[STEP 2] Creating 3 employees sequentially...
+[PASS] Employee 1: Lifecycle-Emp-1782735206530-1 | id: 4d672163-ed16-4853-bd78-f3fa1c127ccf
+[PASS] Employee 2: Lifecycle-Emp-1782735206530-2 | id: 7a7e03ef-524e-4cf1-bb9c-20dbaa242a3d
+[PASS] Employee 3: Lifecycle-Emp-1782735206530-3 | id: d695bb7b-50f0-428f-912b-dab5693fd96d
+[STEP 3] Creating shared pay component and pay structure...
+[PASS] Pay structure: 6f533138-981e-48c2-b17f-b60fa0791001
+[STEP 4] Assigning pay structure to all 3 employees...
+[PASS] Pay structure assigned to all employees
+[STEP 5] Creating contracts for all 3 employees...
+[WARN] Contract attempt 1 failed for emp 4d672163-ed16-4853-bd78-f3fa1c127ccf: 500 — {
+	"message": "Failed to retrieve created employee contract"
+}
+ — retrying...
+[PASS] Contract 1: 57715d03-b835-4e9a-a440-095ae1388883 | status: draft
+[PASS] Contract 2: 79d51fbf-86ea-4e78-92eb-8ba1042874de | status: draft
+[PASS] Contract 3: 16e8f176-5ab0-4898-85d5-588b9e439b79 | status: draft
+[STEP 6] Approving all 3 contracts...
+[API] Advancing employee-contracts "57715d03-b835-4e9a-a440-095ae1388883"...
+[API] Advancing employee-contracts "79d51fbf-86ea-4e78-92eb-8ba1042874de"...
+[API] Advancing employee-contracts "16e8f176-5ab0-4898-85d5-588b9e439b79"...
+[PASS] All contracts approved
+[STEP 7] Verifying all 3 employees are active...
+[PASS] Employee 2 is active
+[PASS] Employee 3 is active
+[PASS] Employee 1 is active
+[STEP 8] Creating payroll run...
+[PASS] Payroll run: 8a6f7ec0-8b41-4b34-829c-3708e839405e
+[STEP 9] Assigning all 3 employees to payroll run...
+[OK] Assigned emp 4d672163-ed16-4853-bd78-f3fa1c127ccf
+[OK] Assigned emp 7a7e03ef-524e-4cf1-bb9c-20dbaa242a3d
+[OK] Assigned emp d695bb7b-50f0-428f-912b-dab5693fd96d
+[PASS] 3 employees assigned to payroll run
+[STEP 10] Approving payroll run via API...
+[API] Advancing payroll-runs "8a6f7ec0-8b41-4b34-829c-3708e839405e"...
+[ERROR] Advance failed. Status: 500 | Body: {
+	"code": 500,
+	"message": "Something went wrong (E1481)"
+}
+
+[WARN] Advance had no successful steps for payroll-runs 8a6f7ec0-8b41-4b34-829c-3708e839405e.
+[POLL 1/15] Payroll run status: draft
+[POLL 2/15] Payroll run status: draft
+[POLL 3/15] Payroll run status: draft
+[POLL 4/15] Payroll run status: draft
+[POLL 5/15] Payroll run status: draft
+[POLL 6/15] Payroll run status: draft
+[POLL 7/15] Payroll run status: draft
+[POLL 8/15] Payroll run status: draft
+[POLL 9/15] Payroll run status: draft
+[POLL 10/15] Payroll run status: draft
+[POLL 11/15] Payroll run status: draft
+[POLL 12/15] Payroll run status: draft
+[POLL 13/15] Payroll run status: draft
+[POLL 14/15] Payroll run status: draft
+[POLL 15/15] Payroll run status: draft
