@@ -1,29 +1,37 @@
 {
   "total": 162,
-  "passed": 131,
-  "failed": 28,
-  "skipped": 3,
-  "passRate": 80.9,
-  "avgDurationMs": 21929,
-  "lastUpdated": "2026-06-25T10:21:06.289Z",
+  "passed": 124,
+  "failed": 36,
+  "skipped": 2,
+  "passRate": 76.5,
+  "avgDurationMs": 22177,
+  "lastUpdated": "2026-06-29T11:50:49.012Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 131,
-      "failed": 28,
-      "skipped": 3,
+      "passed": 124,
+      "failed": 36,
+      "skipped": 2,
       "trend": [
-        90,
         92,
         70.6,
         72.4,
         70.6,
         70.6,
-        82.4
+        82.4,
+        77.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "541",
+      "commit": "c6a9c82",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "59m 52s",
+      "passRate": 76.5,
+      "status": "failed"
+    },
     {
       "run": "540",
       "commit": "80a7b26",
@@ -95,30 +103,22 @@
       "duration": "51m 47s",
       "passRate": 79.6,
       "status": "failed"
-    },
-    {
-      "run": "509",
-      "commit": "9d875cb",
-      "trigger": "push (smoke)",
-      "duration": "10m 4s",
-      "passRate": 88.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/06/25/000526 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-06-25T09:58:32.465Z",
+      "error": "Error: Invoice INV/2026/06/29/000561 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-06-29T11:28:35.491Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice INV/2026/06/25/000527 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-06-25T09:58:32.460Z",
+      "error": "Error: Invoice INV/2026/06/29/000560 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-06-29T11:28:35.509Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -126,7 +126,7 @@
       "severity": "critical",
       "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
       "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  122 |                 await app.advanceDocumentAPI(body1.id, 'invoices');\n  123 |            ",
-      "firstSeen": "2026-06-25T10:00:39.923Z",
+      "firstSeen": "2026-06-29T11:30:31.165Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,7 +134,7 @@
       "severity": "critical",
       "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
       "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
-      "firstSeen": "2026-06-25T10:02:24.777Z",
+      "firstSeen": "2026-06-29T11:32:20.380Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,23 +142,23 @@
       "severity": "critical",
       "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
       "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
-      "firstSeen": "2026-06-25T10:02:56.915Z",
+      "firstSeen": "2026-06-29T11:32:52.656Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/06/25/00",
-      "firstSeen": "2026-06-25T10:02:59.854Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/06/29/00",
+      "firstSeen": "2026-06-29T11:33:01.232Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/06/25/00",
-      "firstSeen": "2026-06-25T10:03:26.852Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/06/29/00",
+      "firstSeen": "2026-06-29T11:33:28.862Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -166,23 +166,23 @@
       "severity": "critical",
       "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
       "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!\n\n  300 |\n  301 |         if (inv.success) {\n> 302 |             throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-",
-      "firstSeen": "2026-06-25T10:03:12.129Z",
+      "firstSeen": "2026-06-29T11:33:11.378Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Bill A not fully reconciled. Balance: 3000, Expected: 0\n\n  75 |         console.log(`[SNAPSHOT] Bill A final balance: ${finalBalanceA} | Bill B final balance: ${finalBalanc",
+      "firstSeen": "2026-06-29T11:34:29.917Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Guardrail: System must handle concurrent duplicate Bill payments atomically",
-      "error": "Error: [CRITICAL_VULNERABILITY] Double-Payment Bug: ERP approved 2 payments for Bill b714459b\n  Payments : PAY/2026/06/25/000023 + PAY/2026/06/25/000022\n  Overpaid : $1000.00\n  Root Cause: ERP checks ",
-      "firstSeen": "2026-06-25T10:04:30.337Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must reject approval of a future-dated Bill",
-      "error": "Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-06-25T00:00:00Z. Future-period AP liability injection possible — balance sheet manipulation.\n\n  80 |\n  81 |             if (billData.statu",
-      "firstSeen": "2026-06-25T10:05:00.178Z",
+      "error": "Error: [CRITICAL_VULNERABILITY] Double-Payment Bug: ERP approved 2 payments for Bill a31153ac\n  Payments : PAY/2026/06/29/000033 + PAY/2026/06/29/000032\n  Overpaid : $1000.00\n  Root Cause: ERP checks ",
+      "firstSeen": "2026-06-29T11:34:33.478Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
