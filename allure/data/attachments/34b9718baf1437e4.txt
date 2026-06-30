@@ -1,0 +1,29 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 298.69ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 30
+[SUCCESS] "Purchase Order Date" set to Day 30 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 2762.95ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2127.52ms
+[INFO] Vendor: Gentium Concrite Industry
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2092.02ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2246.15ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 1904.82ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 2077.69ms
+[PERFORMANCE] UI - Random Selection: Location: 1912.10ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 1934.30ms
+[PERFORMANCE] UI - Random Selection: Tax: 2143.72ms
+[OK] Line item added (Price: 9461)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/06/30/000278 | Vendor: Gentium Concrite Industry
+[API] Advancing purchase-orders "5f2008d9-5445-456a-8e67-b39a271c2913"...
+[OK] PO PO/2026/06/30/000278 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/06/30/000278 via API
+[API] Advancing bills "578f0bd6-e654-4cfd-83b3-54f2b44e50b9"...
+[OK] Linked Bill BILL/2026/06/30/000410 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/06/30/000410 in vendor profile via API
+[WARN] GET http://168.119.175.142:8001/api/vendor/c3c58537-7c1c-4499-82a8-a0777af960a8/bills?year=2018&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+[WARN] GET http://168.119.175.142:8001/api/vendor/c3c58537-7c1c-4499-82a8-a0777af960a8/bills?year=2018&period=yearly&calendar=ec → 500. Retry 2/4 in 6000ms...
+[WARN] GET http://168.119.175.142:8001/api/vendor/c3c58537-7c1c-4499-82a8-a0777af960a8/bills?year=2018&period=yearly&calendar=ec → apiRequestContext.get: Target page, context or browser has been closed. Retry 3/4 in 13500ms...

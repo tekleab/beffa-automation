@@ -1,0 +1,51 @@
+[PERFORMANCE] API - Auth API Verification: 139.36ms
+[WARN] GET http://168.119.175.142:8001/api/locations?page=1&pageSize=10&year=2018&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782823051509 (b39977bb-a596-401b-8db2-a8439527f63c) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 156.29ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "9cd2b07c-3a93-4923-accc-758abc6a1aa9"...
+[BILL] BILL/2026/06/30/000420 (9cd2b07c-3a93-4923-accc-758abc6a1aa9)
+[COA SNAPSHOT] Cash before: -137031.78000000026 | AP before: 2041400
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║         PAYMENT MISMATCH — SYSTEM RESPONSE SUMMARY       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What we sent:                                           ║
+  ║    • Payment total (header)  : $5000                      ║
+  ║    • Allocated to bill       : $3000                      ║
+  ║    • Gap (unaccounted)        : $2000                      ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response: REJECTED ✓                             ║
+  ║  The API enforces amount == sum(bill_payments).           ║
+  ║  No journal entry was created. Ledger is clean.           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Split Array Mismatch Guardrail                                          │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/06/30/000420               │
+  │ Bill ID                          │ 9cd2b07c-3a93-4923-accc-758abc6a1aa… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Payment Total (header)           │ $5000.00                             │
+  │ Allocated to Bill                │ $3000.00                             │
+  │ Unaccounted Amount               │ $2000.00                             │
+  │ Payment Ref                      │ N/A (blocked)                        │
+  │ Bill Balance After               │ N/A (blocked)                        │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ COA: Cash - Main Office Before   │ $-137031.78                          │
+  │ COA: Cash - Main Office After    │ N/A                                  │
+  │ COA: Cash Movement               │ N/A                                  │
+  │ COA: Accounts Payable Before     │ $2041400.00                          │
+  │ COA: Accounts Payable After      │ N/A                                  │
+  │ COA: AP Movement                 │ N/A                                  │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ Vulnerability Finding            │ HTTP 422 — rejected at creation      │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Mismatch rejected at API l… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Mismatched payment correctly rejected.

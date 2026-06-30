@@ -1,0 +1,38 @@
+[PERFORMANCE] API - Auth API Verification: 164.06ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1782822846108 (c3bdf444-3574-420b-b4e8-f16902d67f42) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : c3bdf444-3574-420b-b4e8-f16902d67f42 (WAC-Item-1782822846108)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "efe16b04-975a-48af-8c91-2462ea57a91b"...
+[OK] SO SO/2026/06/30/000221 approved (ID: efe16b04-975a-48af-8c91-2462ea57a91b)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "a70fbd79-7a2d-4f68-ae08-bab96ee79732"...
+[OK] Batch 1 invoice INV/2026/06/30/000653 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "53c5963f-0109-4b99-829c-80d014f0ead3"...
+[OK] Batch 2 invoice INV/2026/06/30/000654 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/06/30/000221 (ID: efe16b04-975a-48af-8c91-2462ea57a91b)
+[DOCUMENT] Invoice 1    : INV/2026/06/30/000653 (ID: a70fbd79-7a2d-4f68-ae08-bab96ee79732) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/06/30/000654 (ID: 53c5963f-0109-4b99-829c-80d014f0ead3) — 6 units
+[ITEM]     Item         : WAC-Item-1782822846108 (c3bdf444-3574-420b-b4e8-f16902d67f42)
+[STOCK]    Before       : 20
+[STOCK]    After        : 10
+[STOCK]    Expected     : 10
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[PASS] Over-release correctly rejected at invoice creation.
+[PASS] SO split invoice audit complete: 4 + 6 = 10 units correctly released and tracked.

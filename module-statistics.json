@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-06-29T12:19:56.684Z",
+  "timestamp": "2026-06-30T12:50:26.096Z",
   "testType": "full",
-  "totalDuration": 1327712,
+  "totalDuration": 1315981,
   "summary": {
     "totalTests": 162,
     "totalPassed": 129,
@@ -17,218 +17,218 @@
       "failed": 8,
       "skipped": 0,
       "passRate": 77,
-      "avgDuration": 26111,
-      "totalDuration": 913889,
+      "avgDuration": 26753,
+      "totalDuration": 936350,
       "status": "degraded",
       "tests": [
         {
-          "title": "Validate TIN, create customer, edit, remove",
-          "status": "passed",
-          "duration": 50375,
-          "project": "Sales"
-        },
-        {
           "title": "UI Audit: Customer profile shows zero balance after full payment",
           "status": "failed",
-          "duration": 49140,
+          "duration": 44327,
           "project": "Sales"
         },
         {
-          "title": "Create fresh invoice via API, then create receipt and link it",
+          "title": "Validate TIN, create customer, edit, remove",
           "status": "passed",
-          "duration": 73637,
+          "duration": 46192,
           "project": "Sales"
         },
         {
           "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
           "status": "failed",
-          "duration": 73002,
+          "duration": 68931,
+          "project": "Sales"
+        },
+        {
+          "title": "Create fresh invoice via API, then create receipt and link it",
+          "status": "passed",
+          "duration": 72858,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must reject invoicing for more units than the approved SO",
           "status": "passed",
-          "duration": 15196,
+          "duration": 14970,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
           "status": "passed",
-          "duration": 23111,
+          "duration": 22864,
           "project": "Sales"
         },
         {
           "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
           "status": "passed",
-          "duration": 24501,
-          "project": "Sales"
-        },
-        {
-          "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-          "status": "passed",
-          "duration": 32142,
+          "duration": 26822,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
           "status": "passed",
-          "duration": 15400,
+          "duration": 14225,
+          "project": "Sales"
+        },
+        {
+          "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+          "status": "passed",
+          "duration": 34201,
           "project": "Sales"
         },
         {
           "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
           "status": "passed",
-          "duration": 35529,
+          "duration": 37179,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
           "status": "failed",
-          "duration": 13537,
+          "duration": 13450,
           "project": "Sales"
         },
         {
           "title": "Guardrail: Approved SO must be immutable — quantity change rejected",
           "status": "passed",
-          "duration": 11930,
+          "duration": 12512,
           "project": "Sales"
         },
         {
           "title": "Forensic Audit: Invoice Void & Stock Restoration",
           "status": "passed",
-          "duration": 42616,
+          "duration": 45134,
           "project": "Sales"
         },
         {
           "title": "Guardrail: Invoice with past due date must be rejected or flagged",
           "status": "passed",
-          "duration": 4877,
+          "duration": 4928,
           "project": "Sales"
         },
         {
           "title": "Guardrail: Invoice must reject second receipt after full payment",
           "status": "passed",
-          "duration": 34349,
+          "duration": 35788,
           "project": "Sales"
         },
         {
           "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
           "status": "passed",
-          "duration": 40480,
+          "duration": 46984,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
           "status": "passed",
-          "duration": 17309,
+          "duration": 20654,
           "project": "Sales"
         },
         {
           "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
           "status": "passed",
-          "duration": 52158,
+          "duration": 56973,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
           "status": "passed",
-          "duration": 30334,
+          "duration": 31226,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
           "status": "passed",
-          "duration": 14350,
+          "duration": 14620,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must prevent receipts against a voided invoice",
           "status": "passed",
-          "duration": 15080,
+          "duration": 15689,
           "project": "Sales"
         },
         {
           "title": "Audit: Partial SO release correctly tracks remaining unreleased quantity",
           "status": "passed",
-          "duration": 25876,
+          "duration": 25072,
           "project": "Sales"
         },
         {
           "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
           "status": "failed",
-          "duration": 11800,
+          "duration": 12617,
           "project": "Sales"
         },
         {
           "title": "Invoice: Reject future-dated Invoice from next fiscal year (2019)",
           "status": "passed",
-          "duration": 11338,
+          "duration": 12731,
           "project": "Sales"
         },
         {
           "title": "Edge Case: Reject invalid date (Feb 30, 2018)",
           "status": "passed",
-          "duration": 11841,
-          "project": "Sales"
-        },
-        {
-          "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
-          "status": "failed",
-          "duration": 10896,
+          "duration": 11133,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must strictly segregate invoices and receipts by Customer",
           "status": "passed",
-          "duration": 5145,
+          "duration": 4992,
           "project": "Sales"
         },
         {
-          "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+          "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
           "status": "failed",
-          "duration": 24287,
+          "duration": 10910,
           "project": "Sales"
         },
         {
           "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
           "status": "failed",
-          "duration": 12417,
+          "duration": 13074,
+          "project": "Sales"
+        },
+        {
+          "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 25289,
           "project": "Sales"
         },
         {
           "title": "Guardrail: System must explicitly reject historical back-dated invoices",
           "status": "passed",
-          "duration": 13165,
+          "duration": 11827,
           "project": "Sales"
         },
         {
           "title": "Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked",
           "status": "passed",
-          "duration": 19235,
+          "duration": 21919,
           "project": "Sales"
         },
         {
           "title": "Invoice: Reject back-dated Invoice from previous fiscal year (2017)",
           "status": "passed",
-          "duration": 13098,
+          "duration": 15212,
           "project": "Sales"
         },
         {
           "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
           "status": "failed",
-          "duration": 29066,
+          "duration": 28140,
           "project": "Sales"
         },
         {
           "title": "Audit: Invoice with tax must credit tax account in journal entries",
           "status": "passed",
-          "duration": 11740,
+          "duration": 12743,
           "project": "Sales"
         },
         {
           "title": "Audit: SO split into multiple invoices — total must never exceed SO quantity",
           "status": "passed",
-          "duration": 44932,
+          "duration": 50164,
           "project": "Sales"
         }
       ]
@@ -236,240 +236,240 @@
     {
       "module": "Purchase",
       "total": 38,
-      "passed": 22,
-      "failed": 16,
+      "passed": 23,
+      "failed": 15,
       "skipped": 0,
-      "passRate": 58,
-      "avgDuration": 24209,
-      "totalDuration": 919925,
+      "passRate": 61,
+      "avgDuration": 23704,
+      "totalDuration": 900753,
       "status": "critical",
       "tests": [
         {
           "title": "Full cycle: PO → Bill → SO → Invoice → stock reconciled",
           "status": "passed",
-          "duration": 42057,
-          "project": "Purchase"
-        },
-        {
-          "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-          "status": "passed",
-          "duration": 14947,
+          "duration": 44917,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must enforce thread-safe serialization for stock additions",
           "status": "passed",
-          "duration": 10064,
+          "duration": 9898,
+          "project": "Purchase"
+        },
+        {
+          "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+          "status": "failed",
+          "duration": 29560,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must handle concurrent duplicate Bill payments atomically",
-          "status": "failed",
-          "duration": 21948,
+          "status": "passed",
+          "duration": 26926,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject approval of a future-dated Bill",
           "status": "failed",
-          "duration": 9823,
-          "project": "Purchase"
-        },
-        {
-          "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-          "status": "passed",
-          "duration": 78964,
+          "duration": 9763,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject Bill creation with no Vendor",
           "status": "passed",
-          "duration": 11052,
+          "duration": 11093,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: Concurrent identical PO submissions must not create duplicate liability",
           "status": "failed",
-          "duration": 16388,
+          "duration": 16980,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must enforce strict 1:1 reconciliation mapping between Purchase Order and Bill",
           "status": "passed",
-          "duration": 11667,
+          "duration": 10853,
           "project": "Purchase"
         },
         {
-          "title": "Guardrail: System must reject zero and negative Bill amounts",
-          "status": "passed",
-          "duration": 6975,
+          "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
+          "status": "timedOut",
+          "duration": 121252,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject mutation of an approved Bill line item",
           "status": "passed",
-          "duration": 29111,
+          "duration": 9019,
+          "project": "Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject zero and negative Bill amounts",
+          "status": "passed",
+          "duration": 6738,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject bills with zero or negative quantities",
           "status": "passed",
-          "duration": 5964,
+          "duration": 5506,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must enforce mandatory GL account selection for standalone bills",
           "status": "passed",
-          "duration": 5960,
+          "duration": 6200,
           "project": "Purchase"
         },
         {
           "title": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
           "status": "passed",
-          "duration": 23691,
-          "project": "Purchase"
-        },
-        {
-          "title": "Guardrail: System must block billing beyond 100% of PO quantity",
-          "status": "timedOut",
-          "duration": 120963,
+          "duration": 14516,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject approval of a zero-amount payment",
-          "status": "failed",
-          "duration": 26849,
+          "status": "passed",
+          "duration": 14061,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject a negative payment amount",
           "status": "passed",
-          "duration": 68793,
-          "project": "Purchase"
-        },
-        {
-          "title": "PO: Reject back-dated Purchase Order from previous fiscal year (2017)",
-          "status": "failed",
-          "duration": 7880,
+          "duration": 9098,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject payment where split array does not match total",
           "status": "passed",
-          "duration": 9960,
+          "duration": 11037,
+          "project": "Purchase"
+        },
+        {
+          "title": "PO: Reject back-dated Purchase Order from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 7600,
+          "project": "Purchase"
+        },
+        {
+          "title": "Guardrail: System must block billing beyond 100% of PO quantity",
+          "status": "timedOut",
+          "duration": 121004,
           "project": "Purchase"
         },
         {
           "title": "Bill: Reject back-dated Bill from previous fiscal year (2017)",
           "status": "failed",
-          "duration": 13247,
-          "project": "Purchase"
-        },
-        {
-          "title": "Payment: Reject back-dated Payment from previous fiscal year (2017)",
-          "status": "failed",
-          "duration": 15566,
+          "duration": 46436,
           "project": "Purchase"
         },
         {
           "title": "PO: Reject future-dated Purchase Order from next fiscal year (2019)",
           "status": "failed",
-          "duration": 8201,
+          "duration": 7214,
+          "project": "Purchase"
+        },
+        {
+          "title": "Payment: Reject back-dated Payment from previous fiscal year (2017)",
+          "status": "failed",
+          "duration": 15571,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject Billing for more units than the approved PO",
           "status": "passed",
-          "duration": 11549,
+          "duration": 11300,
           "project": "Purchase"
         },
         {
           "title": "Bill: Reject future-dated Bill from next fiscal year (2019)",
           "status": "failed",
-          "duration": 11749,
-          "project": "Purchase"
-        },
-        {
-          "title": "Payment: Reject future-dated Payment from next fiscal year (2019)",
-          "status": "failed",
-          "duration": 14988,
-          "project": "Purchase"
-        },
-        {
-          "title": "Guardrail: System must strictly segregate bills by Vendor (IDOR read-access)",
-          "status": "passed",
-          "duration": 5631,
+          "duration": 15017,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must strictly segregate bills and payments by Vendor",
           "status": "passed",
-          "duration": 5463,
+          "duration": 6198,
+          "project": "Purchase"
+        },
+        {
+          "title": "Guardrail: System must strictly segregate bills by Vendor (IDOR read-access)",
+          "status": "passed",
+          "duration": 6321,
+          "project": "Purchase"
+        },
+        {
+          "title": "Payment: Reject future-dated Payment from next fiscal year (2019)",
+          "status": "failed",
+          "duration": 17118,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must explicitly reject historical back-dated bills",
           "status": "failed",
-          "duration": 13485,
+          "duration": 12951,
           "project": "Purchase"
         },
         {
           "title": "Audit: PO split into multiple bills — total must never exceed PO quantity",
+          "status": "passed",
+          "duration": 32166,
+          "project": "Purchase"
+        },
+        {
+          "title": "Guardrail: System must reject payment against a fully-paid bill",
           "status": "failed",
-          "duration": 26589,
+          "duration": 14811,
           "project": "Purchase"
         },
         {
           "title": "API: Approved bill must post a debit to Accounts Payable",
           "status": "passed",
-          "duration": 14251,
-          "project": "Purchase"
-        },
-        {
-          "title": "Guardrail: System must reject payment against a fully-paid bill",
-          "status": "passed",
-          "duration": 24805,
+          "duration": 16344,
           "project": "Purchase"
         },
         {
           "title": "Audit: Three partial payments must exactly zero out bill balance",
           "status": "passed",
-          "duration": 23406,
+          "duration": 24814,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must reject payment exceeding bill total",
           "status": "failed",
-          "duration": 47767,
-          "project": "Purchase"
-        },
-        {
-          "title": "Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger",
-          "status": "passed",
-          "duration": 12155,
+          "duration": 55061,
           "project": "Purchase"
         },
         {
           "title": "API: Vendor outstanding balance increases after bill approval",
           "status": "passed",
-          "duration": 29653,
+          "duration": 30505,
+          "project": "Purchase"
+        },
+        {
+          "title": "Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger",
+          "status": "passed",
+          "duration": 12157,
           "project": "Purchase"
         },
         {
           "title": "Guardrail: System must prevent double-billing the same PO",
           "status": "failed",
-          "duration": 14084,
+          "duration": 14511,
           "project": "Purchase"
         },
         {
           "title": "Validate TIN, create vendor, edit, remove",
           "status": "passed",
-          "duration": 22594,
+          "duration": 23701,
           "project": "Purchase"
         },
         {
           "title": "Audit: Bill reversal after payment must roll back stock and restore balance",
-          "status": "failed",
-          "duration": 81686,
+          "status": "passed",
+          "duration": 52536,
           "project": "Purchase"
         }
       ]
@@ -477,120 +477,120 @@
     {
       "module": "Inventory",
       "total": 18,
-      "passed": 15,
-      "failed": 3,
+      "passed": 14,
+      "failed": 4,
       "skipped": 0,
-      "passRate": 83,
-      "avgDuration": 23386,
-      "totalDuration": 420947,
+      "passRate": 78,
+      "avgDuration": 26410,
+      "totalDuration": 475381,
       "status": "degraded",
       "tests": [
         {
           "title": "Guardrail: System must handle concurrent stock adjustments atomically",
           "status": "passed",
-          "duration": 17137,
+          "duration": 17932,
           "project": "Inventory"
         },
         {
           "title": "FIFO-A: Approved bill via PO receipt creates correct FIFO layers",
           "status": "passed",
-          "duration": 22739,
+          "duration": 25340,
           "project": "Inventory"
         },
         {
           "title": "FIFO-B: Approved invoice via SO release drains FIFO layers in order",
           "status": "passed",
-          "duration": 29109,
+          "duration": 29140,
           "project": "Inventory"
         },
         {
           "title": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
           "status": "passed",
-          "duration": 15370,
+          "duration": 15688,
           "project": "Inventory"
         },
         {
           "title": "Guardrail: System must reject zero-quantity adjustments",
           "status": "passed",
-          "duration": 12252,
-          "project": "Inventory"
-        },
-        {
-          "title": "Audit: FIFO cost advances correctly through write-downs and multi-stage sales",
-          "status": "passed",
-          "duration": 55344,
+          "duration": 13218,
           "project": "Inventory"
         },
         {
           "title": "TC-01: Source stock must decrease by exact transfer quantity",
           "status": "passed",
-          "duration": 3941,
+          "duration": 3439,
           "project": "Inventory"
         },
         {
           "title": "TC-02: Destination stock must increase by exact transfer quantity",
           "status": "passed",
-          "duration": 225,
-          "project": "Inventory"
-        },
-        {
-          "title": "TC-03: Total stock conservation — sum across locations unchanged",
-          "status": "passed",
-          "duration": 4160,
-          "project": "Inventory"
-        },
-        {
-          "title": "TC-04: Move order with quantity=0 must be rejected",
-          "status": "passed",
-          "duration": 128,
+          "duration": 288,
           "project": "Inventory"
         },
         {
           "title": "Guardrail: Deactivated item must be rejected for new stock adjustments",
           "status": "failed",
-          "duration": 14053,
+          "duration": 13513,
           "project": "Inventory"
         },
         {
           "title": "Guardrail: System must block sales when item stock reaches exact zero",
           "status": "passed",
-          "duration": 22941,
+          "duration": 22459,
+          "project": "Inventory"
+        },
+        {
+          "title": "TC-03: Total stock conservation — sum across locations unchanged",
+          "status": "passed",
+          "duration": 3821,
+          "project": "Inventory"
+        },
+        {
+          "title": "TC-04: Move order with quantity=0 must be rejected",
+          "status": "passed",
+          "duration": 160,
           "project": "Inventory"
         },
         {
           "title": "TC-05: Move order exceeding available stock must be rejected",
           "status": "passed",
-          "duration": 142,
+          "duration": 131,
           "project": "Inventory"
         },
         {
           "title": "Guardrail: System must reject duplicate item_id on creation",
           "status": "passed",
-          "duration": 15925,
+          "duration": 16071,
+          "project": "Inventory"
+        },
+        {
+          "title": "Audit: FIFO cost advances correctly through write-downs and multi-stage sales",
+          "status": "failed",
+          "duration": 104836,
           "project": "Inventory"
         },
         {
           "title": "Guardrail: System must explicitly reject historical back-dated adjustments",
           "status": "failed",
-          "duration": 17219,
+          "duration": 17459,
           "project": "Inventory"
         },
         {
           "title": "Guardrail: System must reject overselling beyond available stock",
           "status": "passed",
-          "duration": 23476,
+          "duration": 23159,
           "project": "Inventory"
         },
         {
           "title": "View: Existing inventory item details render correctly in the UI",
           "status": "passed",
-          "duration": 45135,
+          "duration": 46574,
           "project": "Inventory"
         },
         {
           "title": "Create: New inventory item is created and visible in the system",
           "status": "timedOut",
-          "duration": 121651,
+          "duration": 122153,
           "project": "Inventory"
         }
       ]
@@ -602,146 +602,146 @@
       "failed": 1,
       "skipped": 0,
       "passRate": 96,
-      "avgDuration": 17731,
-      "totalDuration": 407811,
+      "avgDuration": 16760,
+      "totalDuration": 385481,
       "status": "healthy",
       "tests": [
         {
-          "title": "API: Timesheet must be created and advanced through approval",
+          "title": "Guardrail: Duplicate timesheet for same employee+date must be rejected",
           "status": "passed",
-          "duration": 8243,
+          "duration": 7718,
           "project": "HR"
         },
         {
-          "title": "Guardrail: Duplicate timesheet for same employee+date must be rejected",
+          "title": "API: Timesheet must be created and advanced through approval",
           "status": "passed",
-          "duration": 8859,
+          "duration": 9315,
           "project": "HR"
         },
         {
           "title": "API: Employee must be created with all required fields",
           "status": "passed",
-          "duration": 5204,
+          "duration": 6511,
           "project": "HR"
         },
         {
           "title": "API: Employee roster must be non-empty with valid structure",
           "status": "passed",
-          "duration": 4769,
+          "duration": 4824,
           "project": "HR"
         },
         {
           "title": "Guardrail: Employee creation must reject payload missing required fields",
           "status": "passed",
-          "duration": 4532,
+          "duration": 4645,
           "project": "HR"
         },
         {
           "title": "Guardrail: Duplicate employee email must be rejected by the system",
           "status": "passed",
-          "duration": 4923,
+          "duration": 4713,
           "project": "HR"
         },
         {
           "title": "API: Org chart must return company context and department segments",
           "status": "passed",
-          "duration": 4507,
+          "duration": 4634,
           "project": "HR"
         },
         {
           "title": "UI: Timesheets page must load and not show an error state",
           "status": "passed",
-          "duration": 40793,
+          "duration": 41298,
           "project": "HR"
         },
         {
           "title": "UI: Attendances page must load and render the attendance module",
           "status": "passed",
-          "duration": 40873,
+          "duration": 42390,
           "project": "HR"
         },
         {
           "title": "API: Leave applications endpoint must respond with valid pagination",
           "status": "passed",
-          "duration": 4956,
-          "project": "HR"
-        },
-        {
-          "title": "UI: Org Chart page must render the department hierarchy",
-          "status": "passed",
-          "duration": 16585,
+          "duration": 5300,
           "project": "HR"
         },
         {
           "title": "Guardrail: Leave application must reject payload missing leave_type_id and reason",
           "status": "passed",
-          "duration": 6219,
+          "duration": 6374,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Org Chart page must render the department hierarchy",
+          "status": "passed",
+          "duration": 15953,
           "project": "HR"
         },
         {
           "title": "UI: Employees page must load and display employee records",
           "status": "passed",
-          "duration": 39934,
+          "duration": 38773,
           "project": "HR"
         },
         {
           "title": "API: Pay structure must be created with valid name",
           "status": "passed",
-          "duration": 5350,
-          "project": "HR"
-        },
-        {
-          "title": "API: Pay components must have valid type and tax_rule fields",
-          "status": "passed",
-          "duration": 4997,
-          "project": "HR"
-        },
-        {
-          "title": "API: Pay component must be created with correct GL account linkage",
-          "status": "passed",
-          "duration": 6437,
-          "project": "HR"
-        },
-        {
-          "title": "Guardrail: Pay component must reject invalid type and tax_rule values",
-          "status": "passed",
-          "duration": 6164,
-          "project": "HR"
-        },
-        {
-          "title": "API: Payroll run must be created with correct initial draft status",
-          "status": "passed",
-          "duration": 5432,
-          "project": "HR"
-        },
-        {
-          "title": "UI: Leave Applications page must load and render the leave module",
-          "status": "passed",
-          "duration": 40224,
-          "project": "HR"
-        },
-        {
-          "title": "Guardrail: Payroll run advance without active employees must not silently succeed",
-          "status": "passed",
-          "duration": 5429,
+          "duration": 5387,
           "project": "HR"
         },
         {
           "title": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
           "status": "failed",
-          "duration": 58751,
+          "duration": 22871,
           "project": "HR"
         },
         {
-          "title": "UI: Payroll Runs page must load and display run records or empty state",
+          "title": "API: Pay component must be created with correct GL account linkage",
           "status": "passed",
-          "duration": 41311,
+          "duration": 6882,
+          "project": "HR"
+        },
+        {
+          "title": "API: Pay components must have valid type and tax_rule fields",
+          "status": "passed",
+          "duration": 5944,
+          "project": "HR"
+        },
+        {
+          "title": "API: Payroll run must be created with correct initial draft status",
+          "status": "passed",
+          "duration": 6044,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Pay component must reject invalid type and tax_rule values",
+          "status": "passed",
+          "duration": 7340,
+          "project": "HR"
+        },
+        {
+          "title": "Guardrail: Payroll run advance without active employees must not silently succeed",
+          "status": "passed",
+          "duration": 5290,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Leave Applications page must load and render the leave module",
+          "status": "passed",
+          "duration": 43470,
           "project": "HR"
         },
         {
           "title": "UI: Pay Components settings page must render the components list",
           "status": "passed",
-          "duration": 43319,
+          "duration": 44085,
+          "project": "HR"
+        },
+        {
+          "title": "UI: Payroll Runs page must load and display run records or empty state",
+          "status": "passed",
+          "duration": 45720,
           "project": "HR"
         }
       ]
@@ -753,284 +753,284 @@
       "failed": 3,
       "skipped": 0,
       "passRate": 93,
-      "avgDuration": 20748,
-      "totalDuration": 954396,
+      "avgDuration": 20402,
+      "totalDuration": 938475,
       "status": "healthy",
       "tests": [
         {
           "title": "API-01: Create project returns valid id, ref and pending status",
           "status": "passed",
-          "duration": 6489,
+          "duration": 7528,
           "project": "Project-Management"
         },
         {
           "title": "API-02: GET single project returns correct fields",
           "status": "passed",
-          "duration": 5119,
+          "duration": 5665,
           "project": "Project-Management"
         },
         {
           "title": "API-03: remaining_balance = estimated_revenue - estimated_expense",
           "status": "passed",
-          "duration": 5248,
-          "project": "Project-Management"
-        },
-        {
-          "title": "API-05: LIST filter by customer_id returns only matching projects",
-          "status": "passed",
-          "duration": 5729,
+          "duration": 5460,
           "project": "Project-Management"
         },
         {
           "title": "API-04: LIST projects includes newly created project",
           "status": "passed",
-          "duration": 5861,
+          "duration": 5741,
+          "project": "Project-Management"
+        },
+        {
+          "title": "API-05: LIST filter by customer_id returns only matching projects",
+          "status": "passed",
+          "duration": 5529,
           "project": "Project-Management"
         },
         {
           "title": "API-06: LIST filter project_status=pending includes new project",
           "status": "passed",
-          "duration": 5765,
+          "duration": 5812,
           "project": "Project-Management"
         },
         {
           "title": "API-07: LIST search by name fragment finds project",
           "status": "passed",
-          "duration": 5756,
+          "duration": 5621,
           "project": "Project-Management"
         },
         {
           "title": "API-08: PATCH project_name persists",
           "status": "passed",
-          "duration": 5817,
+          "duration": 5773,
           "project": "Project-Management"
         },
         {
           "title": "API-09: PATCH estimated_revenue recalculates remaining_balance",
           "status": "passed",
-          "duration": 5535,
-          "project": "Project-Management"
-        },
-        {
-          "title": "API-11: PATCH percent_complete persists",
-          "status": "passed",
-          "duration": 7733,
+          "duration": 5422,
           "project": "Project-Management"
         },
         {
           "title": "API-10: PATCH estimated_expense recalculates remaining_balance",
           "status": "passed",
-          "duration": 8259,
+          "duration": 5397,
+          "project": "Project-Management"
+        },
+        {
+          "title": "API-11: PATCH percent_complete persists",
+          "status": "passed",
+          "duration": 5468,
           "project": "Project-Management"
         },
         {
           "title": "API-12: Status pending → in-progress is accepted",
           "status": "passed",
-          "duration": 7826,
-          "project": "Project-Management"
-        },
-        {
-          "title": "API-15: completion_method=task_completion accepted, percent stays 0 without tasks",
-          "status": "passed",
-          "duration": 7280,
-          "project": "Project-Management"
-        },
-        {
-          "title": "API-14: Status completed → pending is accepted (reopen)",
-          "status": "passed",
-          "duration": 8059,
+          "duration": 7413,
           "project": "Project-Management"
         },
         {
           "title": "API-13: Status in-progress → completed is accepted",
           "status": "passed",
-          "duration": 8650,
+          "duration": 7375,
           "project": "Project-Management"
         },
         {
-          "title": "API-16: expense > revenue yields negative remaining_balance (no server guard)",
+          "title": "API-14: Status completed → pending is accepted (reopen)",
           "status": "passed",
-          "duration": 8030,
+          "duration": 8342,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-01: Missing customer_id → 422 with \"Customer is required\"",
           "status": "passed",
-          "duration": 7618,
+          "duration": 7450,
           "project": "Project-Management"
         },
         {
-          "title": "GUARD-02: Empty project_name → 422 with \"Project Name is required\"",
+          "title": "API-16: expense > revenue yields negative remaining_balance (no server guard)",
           "status": "passed",
-          "duration": 7049,
+          "duration": 7936,
+          "project": "Project-Management"
+        },
+        {
+          "title": "API-15: completion_method=task_completion accepted, percent stays 0 without tasks",
+          "status": "passed",
+          "duration": 8349,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-03: start_date after end_date → 422 with date validation message",
           "status": "passed",
-          "duration": 7152,
+          "duration": 7452,
           "project": "Project-Management"
         },
         {
-          "title": "GUARD-04: Negative estimated_revenue → 422 \"must be positive\"",
+          "title": "GUARD-02: Empty project_name → 422 with \"Project Name is required\"",
           "status": "passed",
-          "duration": 7838,
+          "duration": 7720,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-05: Invalid project_status value \"approved\" → 400",
           "status": "passed",
-          "duration": 7609,
+          "duration": 7536,
+          "project": "Project-Management"
+        },
+        {
+          "title": "GUARD-04: Negative estimated_revenue → 422 \"must be positive\"",
+          "status": "passed",
+          "duration": 8004,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-06: Non-existent customer_id UUID → 4xx",
           "status": "passed",
-          "duration": 7706,
-          "project": "Project-Management"
-        },
-        {
-          "title": "GUARD-07: PATCH with invalid status \"cancelled\" → 400 \"Invalid project status\"",
-          "status": "passed",
-          "duration": 7776,
+          "duration": 7869,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-08: PATCH non-existent project_id → 4xx",
           "status": "passed",
-          "duration": 7460,
+          "duration": 7782,
+          "project": "Project-Management"
+        },
+        {
+          "title": "GUARD-07: PATCH with invalid status \"cancelled\" → 400 \"Invalid project status\"",
+          "status": "passed",
+          "duration": 8151,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-09: DELETE /projects/:id → 404 (endpoint not implemented)",
           "status": "passed",
-          "duration": 8064,
-          "project": "Project-Management"
-        },
-        {
-          "title": "GUARD-10: Unauthenticated GET /projects → 401",
-          "status": "passed",
-          "duration": 7871,
+          "duration": 7977,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-11: GET non-existent project_id → 4xx",
           "status": "passed",
-          "duration": 7674,
+          "duration": 7349,
+          "project": "Project-Management"
+        },
+        {
+          "title": "GUARD-10: Unauthenticated GET /projects → 401",
+          "status": "passed",
+          "duration": 8296,
           "project": "Project-Management"
         },
         {
           "title": "GUARD-12: remaining_balance is expense-revenue when expense > revenue (no server clamp)",
           "status": "passed",
-          "duration": 7760,
-          "project": "Project-Management"
-        },
-        {
-          "title": "UI-13: Project detail page shows a status indicator",
-          "status": "passed",
-          "duration": 45358,
-          "project": "Project-Management"
-        },
-        {
-          "title": "UI-14: Project detail page shows customer name",
-          "status": "passed",
-          "duration": 47247,
+          "duration": 8142,
           "project": "Project-Management"
         },
         {
           "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
           "status": "failed",
-          "duration": 48262,
-          "project": "Project-Management"
-        },
-        {
-          "title": "UI-15: Direct URL to non-existent project shows error or redirects",
-          "status": "passed",
-          "duration": 46067,
+          "duration": 43910,
           "project": "Project-Management"
         },
         {
           "title": "UI-GUARD-02: Unauthenticated browser access to projects redirects to login",
           "status": "passed",
-          "duration": 7675,
+          "duration": 4644,
+          "project": "Project-Management"
+        },
+        {
+          "title": "UI-15: Direct URL to non-existent project shows error or redirects",
+          "status": "passed",
+          "duration": 42991,
+          "project": "Project-Management"
+        },
+        {
+          "title": "UI-13: Project detail page shows a status indicator",
+          "status": "passed",
+          "duration": 45737,
+          "project": "Project-Management"
+        },
+        {
+          "title": "UI-14: Project detail page shows customer name",
+          "status": "passed",
+          "duration": 46574,
           "project": "Project-Management"
         },
         {
           "title": "UI-GUARD-03: Status filter pill click opens filter options",
           "status": "passed",
-          "duration": 44134,
-          "project": "Project-Management"
-        },
-        {
-          "title": "UI-11: Add Project form has all required inputs",
-          "status": "passed",
-          "duration": 44941,
+          "duration": 44459,
           "project": "Project-Management"
         },
         {
           "title": "UI-10: Add Project button navigates to /projects/new",
           "status": "passed",
-          "duration": 47764,
+          "duration": 46995,
+          "project": "Project-Management"
+        },
+        {
+          "title": "UI-11: Add Project form has all required inputs",
+          "status": "passed",
+          "duration": 46465,
           "project": "Project-Management"
         },
         {
           "title": "UI-GUARD-01: \"Create project\" submit button is disabled on empty form",
           "status": "passed",
-          "duration": 46209,
+          "duration": 46256,
           "project": "Project-Management"
         },
         {
           "title": "UI-02: Filter pills (Workspace, Workflow, Status, Budget) are visible",
           "status": "passed",
-          "duration": 44043,
+          "duration": 43731,
           "project": "Project-Management"
         },
         {
           "title": "UI-04: Advanced filters and Command filters links are present",
           "status": "passed",
-          "duration": 44027,
+          "duration": 44480,
           "project": "Project-Management"
         },
         {
           "title": "UI-01: Projects list page loads with all key table columns",
           "status": "failed",
-          "duration": 53658,
-          "project": "Project-Management"
-        },
-        {
-          "title": "UI-05: Add Project button and Export button are visible",
-          "status": "passed",
-          "duration": 11660,
+          "duration": 53774,
           "project": "Project-Management"
         },
         {
           "title": "UI-03: Sort and View buttons are visible in toolbar",
           "status": "failed",
-          "duration": 51245,
+          "duration": 50839,
+          "project": "Project-Management"
+        },
+        {
+          "title": "UI-05: Add Project button and Export button are visible",
+          "status": "passed",
+          "duration": 41826,
           "project": "Project-Management"
         },
         {
           "title": "UI-06: Search input is present and accepts text",
           "status": "passed",
-          "duration": 42878,
+          "duration": 42814,
           "project": "Project-Management"
         },
         {
           "title": "UI-07: Pagination shows rows-per-page and page count",
           "status": "passed",
-          "duration": 43279,
-          "project": "Project-Management"
-        },
-        {
-          "title": "UI-08: Project created via API appears in the list",
-          "status": "passed",
-          "duration": 44349,
+          "duration": 42129,
           "project": "Project-Management"
         },
         {
           "title": "UI-09: Clicking project row navigates to detail view",
           "status": "passed",
-          "duration": 42867,
+          "duration": 11414,
+          "project": "Project-Management"
+        },
+        {
+          "title": "UI-08: Project created via API appears in the list",
+          "status": "passed",
+          "duration": 42878,
           "project": "Project-Management"
         }
       ]
@@ -1042,20 +1042,20 @@
       "failed": 2,
       "skipped": 0,
       "passRate": 0,
-      "avgDuration": 68655,
-      "totalDuration": 137310,
+      "avgDuration": 72992,
+      "totalDuration": 145984,
       "status": "critical",
       "tests": [
         {
           "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
           "status": "failed",
-          "duration": 58264,
+          "duration": 61838,
           "project": "Cross-Module"
         },
         {
           "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
           "status": "failed",
-          "duration": 79046,
+          "duration": 84146,
           "project": "Cross-Module"
         }
       ]
