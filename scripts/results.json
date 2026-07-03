@@ -1,29 +1,37 @@
 {
-  "total": 162,
-  "passed": 128,
-  "failed": 34,
+  "total": 17,
+  "passed": 11,
+  "failed": 6,
   "skipped": 0,
-  "passRate": 79,
-  "avgDurationMs": 23257,
-  "lastUpdated": "2026-07-03T06:06:11.338Z",
+  "passRate": 64.7,
+  "avgDurationMs": 41885,
+  "lastUpdated": "2026-07-03T06:36:57.632Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 128,
-      "failed": 34,
+      "passed": 11,
+      "failed": 6,
       "skipped": 0,
       "trend": [
-        70.6,
         70.6,
         82.4,
         77.5,
         79.6,
         79.6,
-        79
+        79,
+        64.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "545",
+      "commit": "e2bb69d",
+      "trigger": "push (smoke)",
+      "duration": "11m 52s",
+      "passRate": 64.7,
+      "status": "failed"
+    },
     {
       "run": "544",
       "commit": "5969855",
@@ -95,94 +103,54 @@
       "duration": "11m 32s",
       "passRate": 70.6,
       "status": "failed"
-    },
-    {
-      "run": "535",
-      "commit": "edc6c98",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/07/03/000660 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-07-03T05:44:05.277Z",
+      "error": "Error: Invoice INV/2026/07/03/000695 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-07-03T06:32:34.087Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice INV/2026/07/03/000661 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-07-03T05:44:05.289Z",
+      "error": "Error: Invoice INV/2026/07/03/000694 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
+      "firstSeen": "2026-07-03T06:32:34.077Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  122 |                 await app.advanceDocumentAPI(body1.id, 'invoices');\n  123 |            ",
-      "firstSeen": "2026-07-03T05:46:06.807Z",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Kebede-1783060378220-Updated').first()\nExpected: visible\nTimeout: 15000ms\nError: element(",
+      "firstSeen": "2026-07-03T06:32:34.083Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: AR must be credited on receipt RCPT/2026/07/03/000103\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  117 |\n  118 |         const arCreditE",
-      "firstSeen": "2026-07-03T05:46:53.407Z",
+      "title": "Guardrail: Duplicate employee email must be rejected by the system",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1783060478577\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create empl",
+      "firstSeen": "2026-07-03T06:34:32.989Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
-      "firstSeen": "2026-07-03T05:47:55.360Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
-      "firstSeen": "2026-07-03T05:48:30.933Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/07/03/00",
-      "firstSeen": "2026-07-03T05:48:44.493Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/07/03/00",
-      "firstSeen": "2026-07-03T05:49:11.449Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!\n\n  300 |\n  301 |         if (inv.success) {\n> 302 |             throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-",
-      "firstSeen": "2026-07-03T05:48:44.741Z",
+      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/100/i).first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n",
+      "firstSeen": "2026-07-03T06:34:54.170Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Audit: Invoice with tax must credit tax account in journal entries",
-      "error": "Error: [VULNERABILITY] Tax GL Entry Missing — Invoice: INV/2026/07/03/000687, Tax: Turnover Tax @ 2%, Expected credit: 20\n\n  94 |\n  95 |         if (!taxEntry) {\n> 96 |             throw new Error(`[V",
-      "firstSeen": "2026-07-03T05:49:36.523Z",
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  117 |         console.log(`[STEP 4] Navigatin",
+      "firstSeen": "2026-07-03T06:35:01.467Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
