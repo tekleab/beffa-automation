@@ -1,0 +1,28 @@
+[STEP] Phase 1: Login & PO Creation
+[PERFORMANCE] API - Auth API Verification: 372.42ms
+[ACTION] Picking date: "Purchase Order Date" -> Targeting Day 3
+[SUCCESS] "Purchase Order Date" set to Day 3 (Calendar match).
+[PERFORMANCE] UI - Pick Date: Purchase Order Date: 3150.01ms
+[OK] Order date set
+[PERFORMANCE] UI - Random Selection: Vendor: 2221.15ms
+[INFO] Vendor: MIDROC S.C
+[INFO] No quotes available
+[PERFORMANCE] UI - Random Selection: Accounts Payable: 2341.22ms
+[PERFORMANCE] UI - Random Selection: Purchase Type: 2555.19ms
+[STEP] Adding line item
+[PERFORMANCE] UI - Random Selection: Item: 2933.29ms
+[PERFORMANCE] UI - Random Selection: Warehouse: 3448.28ms
+[PERFORMANCE] UI - Random Selection: Location: 2498.63ms
+[PERFORMANCE] UI - Random Selection: G/L Account: 2893.02ms
+[PERFORMANCE] UI - Random Selection: Tax: 2154.54ms
+[OK] Line item added (Price: 4836)
+[STEP] Submitting PO
+[OK] PO created: PO/2026/07/03/000329 | Vendor: MIDROC S.C
+[API] Advancing purchase-orders "f1007cd0-fced-4e98-b549-1e49f53c20c8"...
+[OK] PO PO/2026/07/03/000329 approved via Fast-API
+[STEP] Phase 2: Generating linked Bill for PO PO/2026/07/03/000329 via API
+[API] Advancing bills "d1598ea0-09c7-4b6a-b4c8-bb0e13a8eeb5"...
+[OK] Linked Bill BILL/2026/07/03/000533 successfully generated and officially approved instantly via Fast-API!
+[STEP] Phase 3: Verifying BILL/2026/07/03/000533 in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/07/03/000533 is physically present in MIDROC S.C's ledger.
+[RESULT] Purchase to Bill: PASSED — PO PO/2026/07/03/000329 -> Bill BILL/2026/07/03/000533
