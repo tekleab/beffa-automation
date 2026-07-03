@@ -1,0 +1,53 @@
+[PERFORMANCE] API - Auth API Verification: 199.62ms
+[AUTH] Frontend not rendered — skipping company switch (API session active).
+[WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2018&period=yearly&calendar=ec → [TIMEOUT] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2018&period=yearly&calendar=ec exceeded 30000ms — backend may be deadlocked. Retry 1/4 in 1500ms...
+[WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2018&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 2/4 in 6000ms...
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1783061808566 (71ad9b92-d766-4b7f-9650-387194761d34) | method=WAC | stock=20@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 186.70ms
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "3c6aa7c4-c8c9-4a09-a4dc-d80db7a933e5"...
+[BILL] BILL/2026/07/03/000503 (3c6aa7c4-c8c9-4a09-a4dc-d80db7a933e5)
+[COA SNAPSHOT] Cash before: -196409.06000000145 | AP before: 2296500
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║         PAYMENT MISMATCH — SYSTEM RESPONSE SUMMARY       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What we sent:                                           ║
+  ║    • Payment total (header)  : $5000                      ║
+  ║    • Allocated to bill       : $3000                      ║
+  ║    • Gap (unaccounted)        : $2000                      ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response: REJECTED ✓                             ║
+  ║  The API enforces amount == sum(bill_payments).           ║
+  ║  No journal entry was created. Ledger is clean.           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Split Array Mismatch Guardrail                                          │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/07/03/000503               │
+  │ Bill ID                          │ 3c6aa7c4-c8c9-4a09-a4dc-d80db7a933e… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Payment Total (header)           │ $5000.00                             │
+  │ Allocated to Bill                │ $3000.00                             │
+  │ Unaccounted Amount               │ $2000.00                             │
+  │ Payment Ref                      │ N/A (blocked)                        │
+  │ Bill Balance After               │ N/A (blocked)                        │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ COA: Cash - Main Office Before   │ $-196409.06                          │
+  │ COA: Cash - Main Office After    │ N/A                                  │
+  │ COA: Cash Movement               │ N/A                                  │
+  │ COA: Accounts Payable Before     │ $2296500.00                          │
+  │ COA: Accounts Payable After      │ N/A                                  │
+  │ COA: AP Movement                 │ N/A                                  │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ Vulnerability Finding            │ HTTP 422 — rejected at creation      │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Mismatch rejected at API l… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Mismatched payment correctly rejected.
