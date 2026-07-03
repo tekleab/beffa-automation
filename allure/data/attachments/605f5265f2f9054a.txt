@@ -1,0 +1,27 @@
+[PERFORMANCE] API - Auth API Verification: 159.88ms
+[ACTION] API Polling: Waiting for stock at location 2c758659-10e1-4b83-a02a-17bcf00f9372 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1783057895858 (147adf86-cecd-46c1-a61d-a8c2d2ea46a4) | method=WAC | stock=50@$100 | loc=2c758659-10e1-4b83-a02a-17bcf00f9372
+[PERFORMANCE] API - Auth API Verification: 159.76ms
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
