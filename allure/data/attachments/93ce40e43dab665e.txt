@@ -1,0 +1,24 @@
+[PERFORMANCE] API - Auth API Verification: 466.15ms
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[SELF-HEALING] No usable location found — creating default warehouse + location...
+[SELF-HEALING] Created warehouse: Transfer Destination Warehouse (ae638681-f2ae-492a-898e-edab3be6186b)
+[SELF-HEALING] Created location: Transfer Destination Location (322dd6e4-d744-4197-aa9c-426e34ac192c)
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785153772564 (28edc55b-a087-4972-9afd-054d8fd9e5e9) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[OK] Created fresh item: "WAC-Item-1785153772564" | Stock: 20
+[API] Advancing sales-orders "74df8cc1-b9b3-4f7b-a9bc-b7ed99ae40bb"...
+[OK] Sales Order SO/2026/07/27/000001 approved via API
+[API] Advancing invoices "c026f06e-85d2-4510-9030-db00a498adf3"...
+[OK] Invoice INV/2026/07/27/000001 approved via API
+[INFO] Document Setup Complete: INV/2026/07/27/000001 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT] amount=102 | invoice=c026f06e...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/07/27/000001
+[OK] Receipt created via API: RCPT/2026/07/27/000001
+[STEP] Phase 3: Approval flow
+[API] Advancing receipts "f5a379ab-edb4-4d17-bf3c-e48b0887a564"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/07/27/000001 in customer profile

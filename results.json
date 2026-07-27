@@ -1,29 +1,37 @@
 {
   "total": 189,
-  "passed": 1,
-  "failed": 148,
+  "passed": 61,
+  "failed": 88,
   "skipped": 40,
-  "passRate": 0.5,
-  "avgDurationMs": 33085,
-  "lastUpdated": "2026-07-27T06:36:21.812Z",
+  "passRate": 32.3,
+  "avgDurationMs": 9964,
+  "lastUpdated": "2026-07-27T12:14:16.238Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 1,
-      "failed": 148,
+      "passed": 61,
+      "failed": 88,
       "skipped": 40,
       "trend": [
-        79.6,
         79,
         64.7,
         74.5,
         64.7,
         70.6,
-        0.7
+        0.7,
+        40.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "550",
+      "commit": "d7cb8c4",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "31m 23s",
+      "passRate": 32.3,
+      "status": "failed"
+    },
     {
       "run": "549",
       "commit": "d00eafc",
@@ -95,94 +103,86 @@
       "duration": "59m 52s",
       "passRate": 76.5,
       "status": "failed"
-    },
-    {
-      "run": "540",
-      "commit": "80a7b26",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "59m 12s",
-      "passRate": 80.9,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:53:40.011Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:02:41.531Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:53:40.027Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:02:41.597Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
       "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:53:39.970Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Kebede-1785153770068-Updated').first()\nExpected: visible\nTimeout: 15000ms\nError: element(",
+      "firstSeen": "2026-07-27T12:02:41.584Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:53:40.043Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/27/000001').first()\nExpected: visible\nTimeout: 30000ms\nErro",
+      "firstSeen": "2026-07-27T12:02:41.557Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: System must reject invoicing for more units than the approved SO",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:54:51.731Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:02:54.307Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:54:52.107Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:02:54.385Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:54:52.262Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:03:03.979Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:54:52.688Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:03:04.088Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:56:00.066Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:03:13.159Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
-      "firstSeen": "2026-07-27T05:56:01.910Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-27T12:03:13.800Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
