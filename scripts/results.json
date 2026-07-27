@@ -1,29 +1,37 @@
 {
-  "total": 17,
-  "passed": 12,
-  "failed": 5,
-  "skipped": 0,
-  "passRate": 70.6,
-  "avgDurationMs": 43218,
-  "lastUpdated": "2026-07-03T08:16:12.927Z",
+  "total": 189,
+  "passed": 1,
+  "failed": 148,
+  "skipped": 40,
+  "passRate": 0.5,
+  "avgDurationMs": 33085,
+  "lastUpdated": "2026-07-27T06:36:21.812Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 12,
-      "failed": 5,
-      "skipped": 0,
+      "passed": 1,
+      "failed": 148,
+      "skipped": 40,
       "trend": [
-        79.6,
         79.6,
         79,
         64.7,
         74.5,
         64.7,
-        70.6
+        70.6,
+        0.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "549",
+      "commit": "d00eafc",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "104m 13s",
+      "passRate": 0.5,
+      "status": "failed"
+    },
     {
       "run": "548",
       "commit": "0042518",
@@ -95,54 +103,86 @@
       "duration": "59m 12s",
       "passRate": 80.9,
       "status": "success"
-    },
-    {
-      "run": "539",
-      "commit": "7c109ca",
-      "trigger": "push (smoke)",
-      "duration": "11m 12s",
-      "passRate": 70.6,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/07/03/000741 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-07-03T08:11:39.604Z",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:53:40.011Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice INV/2026/07/03/000740 must be visible on its detail page\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mt",
-      "firstSeen": "2026-07-03T08:11:39.587Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test timeout of 120000ms exceeded.\n\n   at ../lib/base-page.ts:360\n\n  358 |           console.log(`[WARN] GET ${url} → ${err.mes",
-      "firstSeen": "2026-07-03T08:12:34.903Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/100/i).first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n",
-      "firstSeen": "2026-07-03T08:13:53.414Z",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:53:40.027Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  117 |         console.log(`[STEP 4] Navigatin",
-      "firstSeen": "2026-07-03T08:14:06.920Z",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:53:39.970Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:53:40.043Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:54:51.731Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:54:52.107Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:54:52.262Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:54:52.688Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:56:00.066Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-07-27T05:56:01.910Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
