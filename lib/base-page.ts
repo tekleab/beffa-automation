@@ -748,10 +748,8 @@ ${curlCmd}
   }
 
   async pickDate(label: string, dayNum?: number): Promise<void> {
-    const targetDay = dayNum || await this.getActiveCalendarDay();
-    console.log(`[ACTION] Picking date: "${label}" -> Targeting Day ${targetDay}`);
-
-    await this.startTacticalTimer(); // Start Tactical UI Timer
+    console.log(`[ACTION] Picking date: "${label}"`);
+    await this.startTacticalTimer();
 
     let container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
       .filter({ has: this.page.getByText(new RegExp(`^${label}\\s*\\*?$`, 'i')) })
@@ -770,17 +768,33 @@ ${curlCmd}
     await this.page.waitForTimeout(1000);
 
     const popover = this.page.locator('[role="dialog"], [data-slot="popover-content"], [id^="radix-"], .chakra-popover__content').filter({ visible: true }).last();
-    const dayBtn = popover.locator('button').filter({ hasText: new RegExp(`^${targetDay}$`) }).first();
 
-    if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await dayBtn.click({ force: true });
-      console.log(`[SUCCESS] "${label}" set to Day ${targetDay} (Calendar match).`);
+    if (dayNum) {
+      // Explicit day requested — click it directly
+      const dayBtn = popover.locator('button').filter({ hasText: new RegExp(`^${dayNum}$`) }).first();
+      if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await dayBtn.click({ force: true });
+        console.log(`[SUCCESS] "${label}" set to Day ${dayNum}.`);
+      } else {
+        await this.page.keyboard.type(String(dayNum));
+        await this.page.keyboard.press('Enter');
+        await this.page.keyboard.press('Tab');
+      }
     } else {
-      console.log(`[WARN] Could not find day ${targetDay}. Fallback to direct key press.`);
-      await this.page.keyboard.type(String(targetDay));
-      await this.page.keyboard.press('Enter');
-      await this.page.keyboard.press('Tab');
+      // No day specified — pick the first ENABLED day in the calendar (within open period)
+      const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
+      const firstEnabled = enabledDays.first();
+      if (await firstEnabled.isVisible({ timeout: 5000 }).catch(() => false)) {
+        const dayText = await firstEnabled.textContent();
+        await firstEnabled.click({ force: true });
+        console.log(`[SUCCESS] "${label}" set to first enabled day: ${dayText?.trim()}.`);
+      } else {
+        // Last resort: press Enter to accept whatever is pre-selected
+        await this.page.keyboard.press('Enter');
+        console.log(`[WARN] "${label}" — no enabled days found, pressed Enter.`);
+      }
     }
+
     await this.page.waitForTimeout(1000);
     await this.stopTacticalTimer(`Pick Date: ${label}`, 'UI');
   }

@@ -156,7 +156,7 @@ async function seedDemoData(frontendUrl: string, company: string): Promise<boole
         console.log(`[SEED] Company ID: ${companyId}`);
 
         // Navigate to data-seeding page with injected session
-        await page.goto(frontendUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+        await page.goto(frontendUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
         await page.evaluate(({ jwt, comp }: { jwt: string; comp: string }) => {
             localStorage.setItem('auth-token', jwt);
             localStorage.setItem('token', jwt);
@@ -169,7 +169,7 @@ async function seedDemoData(frontendUrl: string, company: string): Promise<boole
 
         const seedUrl = `${frontendUrl}/company/${companyId}/data-seeding`;
         console.log(`[SEED] Navigating to: ${seedUrl}`);
-        await page.goto(seedUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+        await page.goto(seedUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
         await page.waitForTimeout(2000);
 
         // Click each button ONLY if it is enabled (not disabled)
