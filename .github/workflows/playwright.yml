@@ -84,7 +84,7 @@ jobs:
 
     - name: Install Playwright Browsers & Deps
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npx playwright install chromium --with-deps
+      run: npx playwright install chromium ffmpeg --with-deps
 
     - name: Install Playwright OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit == 'true'
