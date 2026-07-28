@@ -37,7 +37,10 @@ export class AuthManager extends BasePage {
 
     try {
       // 1. Attempt API Login
-      const loginUrl = `${this.apiBase}/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+      const year = process.env.BEFFA_YEAR || '2019';
+      const period = process.env.BEFFA_PERIOD || 'yearly';
+      const calendar = process.env.BEFFA_CALENDAR || 'ec';
+      const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
       await this.startTacticalTimer();
       const response = await this.page.request.post(loginUrl, {
         data: { email: cleanEmail, password: cleanPass },
@@ -67,7 +70,7 @@ export class AuthManager extends BasePage {
         localStorage.setItem('token-expiration', tokenExp);
 
         // Crucial Fiscal & Role Metadata
-        localStorage.setItem('selectedYear', '2018');
+        localStorage.setItem('selectedYear', process.env.BEFFA_YEAR || '2019');
         localStorage.setItem('calendar', 'EC');
         localStorage.setItem('period', 'yearly');
         localStorage.setItem('selected-role', 'IT Administrator / User Manager');
@@ -107,6 +110,7 @@ export class AuthManager extends BasePage {
     const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false);
     if (uiReady && companyName) {
       await this.switchCompany(companyName);
+      await this.switchYear(process.env.BEFFA_YEAR || '2019');
     } else if (!uiReady) {
       console.log('[AUTH] Frontend not rendered — skipping company switch (API session active).');
     }
@@ -160,6 +164,36 @@ export class AuthManager extends BasePage {
     } else {
       console.log(`[WARN] Company option "${cleanTarget}" not found in menu. Staying on "${currentName}"`);
       await this.page.keyboard.press('Escape');
+    }
+  }
+
+  async switchYear(targetYear: string): Promise<void> {
+    if (!targetYear) return;
+    const yearBtn = this.page.locator('button, [role="button"]')
+      .filter({ hasText: new RegExp(`^\\d{4}$`) })
+      .first();
+    const visible = await yearBtn.isVisible({ timeout: 5000 }).catch(() => false);
+    if (!visible) {
+      console.log(`[AUTH] Year switcher not visible — skipping year switch to ${targetYear}.`);
+      return;
+    }
+    const currentYear = (await yearBtn.textContent())?.trim();
+    if (currentYear === targetYear) {
+      console.log(`[AUTH] Year already set to ${targetYear}.`);
+      return;
+    }
+    await yearBtn.click();
+    await this.page.waitForTimeout(500);
+    const option = this.page.locator('[role="menuitem"], [role="option"], .chakra-menu__menuitem, button')
+      .filter({ hasText: new RegExp(`^${targetYear}$`) })
+      .first();
+    if (await option.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await option.click();
+      await this.page.waitForTimeout(1000);
+      console.log(`[AUTH] Switched fiscal year to ${targetYear}.`);
+    } else {
+      await this.page.keyboard.press('Escape');
+      console.log(`[AUTH] Year option ${targetYear} not found in dropdown — staying on ${currentYear}.`);
     }
   }
 }

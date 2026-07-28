@@ -56,7 +56,7 @@ function httpPost(url: string, data: any, headers: any = {}, timeoutMs = 10000):
 // ─────────────────────────────────────────────────────────────────────────────
 async function isEnvironmentClean(apiUrl: string, company: string): Promise<boolean> {
     try {
-        const loginUrl = `${apiUrl}/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+        const loginUrl = `${apiUrl}/api/users/login?year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
         const loginRes = await httpPost(loginUrl, {
             email: process.env.BEFFA_USER,
             password: process.env.BEFFA_PASS
@@ -69,7 +69,7 @@ async function isEnvironmentClean(apiUrl: string, company: string): Promise<bool
 
         // Check account count — Seed Basic Data populates 100 accounts.
         // If < 10 accounts exist, basic data has not been seeded yet.
-        const checkUrl = `${apiUrl}/api/accounts?page=1&pageSize=1&year=2018&period=yearly&calendar=ec`;
+        const checkUrl = `${apiUrl}/api/accounts?page=1&pageSize=1&year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
         const res = await new Promise<{ status: number; body: any }>((resolve) => {
             const lib = checkUrl.startsWith('https') ? https : http;
             const req = lib.get(checkUrl, {
@@ -114,7 +114,7 @@ async function seedDemoData(frontendUrl: string, company: string): Promise<boole
         page = await context.newPage();
 
         // Login via API to get token, then inject into localStorage
-        const loginUrl = `${frontendUrl.replace(':4173', ':8001')}/api/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+        const loginUrl = `${frontendUrl.replace(':4173', ':8001')}/api/users/login?year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
         const loginRes = await httpPost(loginUrl, {
             email: process.env.BEFFA_USER,
             password: process.env.BEFFA_PASS
@@ -160,7 +160,7 @@ async function seedDemoData(frontendUrl: string, company: string): Promise<boole
         await page.evaluate(({ jwt, comp }: { jwt: string; comp: string }) => {
             localStorage.setItem('auth-token', jwt);
             localStorage.setItem('token', jwt);
-            localStorage.setItem('selectedYear', '2018');
+            localStorage.setItem('selectedYear', process.env.BEFFA_YEAR || '2019');
             localStorage.setItem('calendar', 'EC');
             localStorage.setItem('period', 'yearly');
             localStorage.setItem('selected-role', 'IT Administrator / User Manager');
@@ -269,7 +269,7 @@ async function globalSetup() {
     // ── 2. Log active configuration for audit trail ───────────────────────────
     console.log('[SETUP] ── Active Configuration ──────────────────────────');
     console.log(`[SETUP]   Company  : ${process.env.BEFFA_COMPANY  || '(not set — defaults to sample)'}`);
-    console.log(`[SETUP]   Year     : ${process.env.BEFFA_YEAR     || '2018 (default)'}`);
+    console.log(`[SETUP]   Year     : ${process.env.BEFFA_YEAR     || '2019 (default)'}`);
     console.log(`[SETUP]   Period   : ${process.env.BEFFA_PERIOD   || 'yearly (default)'}`);
     console.log(`[SETUP]   Calendar : ${process.env.BEFFA_CALENDAR || 'ec (default)'}`);
     console.log(`[SETUP]   TestType : ${process.env.TEST_TYPE      || 'full (default)'}`);
