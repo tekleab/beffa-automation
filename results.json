@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 13,
-  "failed": 4,
+  "passed": 14,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 76.5,
-  "avgDurationMs": 29594,
-  "lastUpdated": "2026-07-28T06:52:01.608Z",
+  "passRate": 82.4,
+  "avgDurationMs": 34415,
+  "lastUpdated": "2026-07-28T07:02:34.196Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 13,
-      "failed": 4,
+      "passed": 14,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        64.7,
         70.6,
         0.7,
         40.9,
         40.9,
         52.9,
-        76.5
+        76.5,
+        82.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "554",
+      "commit": "ef88ec8",
+      "trigger": "push (smoke)",
+      "duration": "9m 45s",
+      "passRate": 82.4,
+      "status": "success"
+    },
     {
       "run": "553",
       "commit": "4c63db8",
@@ -95,30 +103,14 @@
       "duration": "11m 52s",
       "passRate": 64.7,
       "status": "failed"
-    },
-    {
-      "run": "544",
-      "commit": "5969855",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "62m 47s",
-      "passRate": 79,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:590\n\n  588 |     }\n ",
-      "firstSeen": "2026-07-28T06:48:12.606Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/28/000002').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-07-28T06:48:12.625Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/28/000004').first()\nExpected: visible\nTimeout: 30000ms\nErro",
+      "firstSeen": "2026-07-28T06:58:24.502Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -126,15 +118,15 @@
       "severity": "critical",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Add Now' }).first()\nExpected: enabled\nReceived: disabled\nTimeout:  150",
-      "firstSeen": "2026-07-28T06:48:45.191Z",
+      "firstSeen": "2026-07-28T06:59:16.342Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill BILL/2026/07/28/000007 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
-      "firstSeen": "2026-07-28T06:50:03.713Z",
+      "error": "Error: Bill BILL/2026/07/28/000011 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
+      "firstSeen": "2026-07-28T07:00:33.069Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
