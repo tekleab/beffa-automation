@@ -1,0 +1,36 @@
+[PERFORMANCE] API - Auth API Verification: 237.20ms
+[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined
+    at eval (eval at evaluate (:302:30), <anonymous>:16:46)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785237109158 (7c83f57c-1b6b-4cfc-912c-fea3717fb0d6) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[PERFORMANCE] API - Auth API Verification: 222.71ms
+[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined
+    at eval (eval at evaluate (:302:30), <anonymous>:16:46)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "bf70fcee-7da9-4963-b308-a193bdf5e7e4"...
+[BILL] BILL/2026/07/28/000093 (bf70fcee-7da9-4963-b308-a193bdf5e7e4)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for bf70fcee-7da9-4963-b308-a193bdf5e7e4 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/07/28/000093               │
+  │ Bill ID                          │ bf70fcee-7da9-4963-b308-a193bdf5e7e… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.

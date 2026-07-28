@@ -1,0 +1,38 @@
+[PERFORMANCE] API - Auth API Verification: 437.29ms
+[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined
+    at eval (eval at evaluate (:302:30), <anonymous>:16:46)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785237295142 (85ea597d-95ed-4d5b-9774-95936c31de94) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[ATTACK] Triggering 2 CONCURRENT adjustments (+10 each) for WAC-Item-1785237295142...
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=20
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=20
+[SUCCESS] Adjustment created via API: ADJ/2026/07/28/000011 (ID: ba86ef80-2bd3-4c6d-ad63-2e08c74c4e44)
+[SUCCESS] Adjustment created via API: ADJ/2026/07/28/000012 (ID: 9ee964d7-7df9-481b-9896-92e63bb68349)
+[INFO] Adjustment 1 ID: ba86ef80-2bd3-4c6d-ad63-2e08c74c4e44 | Adjustment 2 ID: 9ee964d7-7df9-481b-9896-92e63bb68349
+[API] Advancing inventory-adjustments "ba86ef80-2bd3-4c6d-ad63-2e08c74c4e44"...
+[ERROR] Advance failed. Status: 403 | Body: {
+	"code": 403,
+	"message": "User does not have the required amount to approve the adjustment"
+}
+
+[WARN] Advance had no successful steps for inventory-adjustments ba86ef80-2bd3-4c6d-ad63-2e08c74c4e44.
+[SUCCESS] Advanced Adjustment 1 to approved: ba86ef80-2bd3-4c6d-ad63-2e08c74c4e44
+[API] Advancing inventory-adjustments "9ee964d7-7df9-481b-9896-92e63bb68349"...
+[ERROR] Advance failed. Status: 403 | Body: {
+	"code": 403,
+	"message": "User does not have the required amount to approve the adjustment"
+}
+
+[WARN] Advance had no successful steps for inventory-adjustments 9ee964d7-7df9-481b-9896-92e63bb68349.
+[SUCCESS] Advanced Adjustment 2 to approved: 9ee964d7-7df9-481b-9896-92e63bb68349
+[ACTION] Verifying Final Stock Integrity...
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 40...
+[INFO] Attempt 1: Stock is 20. Retrying in 2s...
+[INFO] Attempt 2: Stock is 20. Retrying in 2s...
+[INFO] Attempt 3: Stock is 20. Retrying in 2s...
+[INFO] Attempt 4: Stock is 20. Retrying in 2s...
+[SNAPSHOT] Start: 20 | Final: 0 | Expected: 40

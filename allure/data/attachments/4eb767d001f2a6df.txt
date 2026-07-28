@@ -1,0 +1,47 @@
+[PERFORMANCE] API - Auth API Verification: 479.94ms
+[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined
+    at eval (eval at evaluate (:302:30), <anonymous>:16:46)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[PERFORMANCE] API - Auth API Verification: 220.36ms
+[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined
+    at eval (eval at evaluate (:302:30), <anonymous>:16:46)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[STEP 1] Creating 3 fresh WAC items...
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1785236731248 (2519bfb6-cb8f-4d1a-95dd-6984a1a897fb) | method=WAC | stock=10@$50 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1785236733392 (336ea9a4-ce78-4b03-b416-2135ed1d2770) | method=WAC | stock=10@$80 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1785236735557 (1187c120-9be7-4726-888b-044f66538eb8) | method=WAC | stock=10@$120 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[ITEM 1] WAC-Item-1785236731248 | stock:10 | cost:$50
+[ITEM 2] WAC-Item-1785236733392 | stock:10 | cost:$80
+[ITEM 3] WAC-Item-1785236735557 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/07/28/000097 (6e9bb228-3481-4b58-8cba-78675122a6f3)
+[API] Advancing invoices "6e9bb228-3481-4b58-8cba-78675122a6f3"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] WAC-Item-1785236731248 | before:10 → after:9 (exp:9)
+[ITEM 2] WAC-Item-1785236733392 | before:10 → after:9 (exp:9)
+[ITEM 3] WAC-Item-1785236735557 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales (Revenue) | Dr:0 Cr:50
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:50 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:50
+[JE] Sales (Revenue) | Dr:0 Cr:80
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:80 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:80
+[JE] Sales (Revenue) | Dr:0 Cr:120
+[JE] Cash - Main Office (Cash & Cash Equivalents) | Dr:120 Cr:0
+[JE] Inventory (Inventories) | Dr:0 Cr:120
+[JE] Accounts Receivable (Trade & Other Receivables) | Dr:250 Cr:0
+[AUDIT] Total Dr: $500 | Total Cr: $500 | Expected COGS: $250
+[PASS] COGS journal balanced — Dr:$500 = Cr:$500
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced
