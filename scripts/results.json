@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 9,
-  "failed": 8,
+  "passed": 13,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 52.9,
-  "avgDurationMs": 16566,
-  "lastUpdated": "2026-07-28T06:34:48.466Z",
+  "passRate": 76.5,
+  "avgDurationMs": 29594,
+  "lastUpdated": "2026-07-28T06:52:01.608Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 9,
-      "failed": 8,
+      "passed": 13,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        74.5,
         64.7,
         70.6,
         0.7,
         40.9,
         40.9,
-        52.9
+        52.9,
+        76.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "553",
+      "commit": "4c63db8",
+      "trigger": "push (smoke)",
+      "duration": "8m 23s",
+      "passRate": 76.5,
+      "status": "failed"
+    },
     {
       "run": "552",
       "commit": "a27e1bc",
@@ -95,38 +103,22 @@
       "duration": "62m 47s",
       "passRate": 79,
       "status": "failed"
-    },
-    {
-      "run": "543",
-      "commit": "89f3145",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "63m 2s",
-      "passRate": 79.6,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:32:08.148Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
+      "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:32:08.164Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:590\n\n  588 |     }\n ",
+      "firstSeen": "2026-07-28T06:48:12.606Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:32:08.168Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/28/000002').first()\nExpected: visible\nTimeout: 30000ms\nErro",
+      "firstSeen": "2026-07-28T06:48:12.625Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,39 +126,15 @@
       "severity": "critical",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Add Now' }).first()\nExpected: enabled\nReceived: disabled\nTimeout:  150",
-      "firstSeen": "2026-07-28T06:32:27.342Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:32:28.805Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:32:29.773Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:33:05.482Z",
+      "firstSeen": "2026-07-28T06:48:45.191Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-28T06:33:15.207Z",
+      "error": "Error: Bill BILL/2026/07/28/000007 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
+      "firstSeen": "2026-07-28T06:50:03.713Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
