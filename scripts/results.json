@@ -1,29 +1,37 @@
 {
   "total": 17,
-  "passed": 14,
-  "failed": 3,
-  "skipped": 0,
-  "passRate": 82.4,
-  "avgDurationMs": 35462,
-  "lastUpdated": "2026-07-28T07:29:04.477Z",
+  "passed": 12,
+  "failed": 4,
+  "skipped": 1,
+  "passRate": 70.6,
+  "avgDurationMs": 41385,
+  "lastUpdated": "2026-07-28T08:13:36.435Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 14,
-      "failed": 3,
-      "skipped": 0,
+      "passed": 12,
+      "failed": 4,
+      "skipped": 1,
       "trend": [
-        40.9,
         40.9,
         52.9,
         76.5,
         82.4,
         82.4,
-        82.4
+        82.4,
+        75
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "559",
+      "commit": "0de20b3",
+      "trigger": "push (smoke)",
+      "duration": "11m 43s",
+      "passRate": 70.6,
+      "status": "failed"
+    },
     {
       "run": "556",
       "commit": "736ca7c",
@@ -95,22 +103,22 @@
       "duration": "12m 14s",
       "passRate": 70.6,
       "status": "failed"
-    },
-    {
-      "run": "547",
-      "commit": "189266e",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "11m 42s",
-      "passRate": 64.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: Receipt RCPT/2026/07/28/000008 should be visible in customer profile\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[",
-      "firstSeen": "2026-07-28T07:24:34.963Z",
+      "severity": "critical",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:590\n\n  588 |     }\n ",
+      "firstSeen": "2026-07-28T08:08:12.624Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Kebede-1785226123602-Updated').first()\nExpected: visible\nTimeout: 15000ms\nError: element(",
+      "firstSeen": "2026-07-28T08:08:12.619Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,15 +126,15 @@
       "severity": "high",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
       "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForURL: Test timeout of 120000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"",
-      "firstSeen": "2026-07-28T07:25:26.560Z",
+      "firstSeen": "2026-07-28T08:09:26.543Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill BILL/2026/07/28/000017 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
-      "firstSeen": "2026-07-28T07:26:33.279Z",
+      "error": "Error: Bill BILL/2026/07/28/000050 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
+      "firstSeen": "2026-07-28T08:10:43.012Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
