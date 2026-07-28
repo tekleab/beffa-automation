@@ -1,0 +1,68 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/warehouses?year=2018&period=yearly&calendar=ec`
+- **Method**: `POST`
+- **Status Code**: `422`
+- **Latency**: `250.11ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "Content-Type": "application/json",
+  "x-role": "IT Administrator / User Manager"
+}
+```
+
+**Body**:
+```json
+{
+  "name": "Transfer Destination Warehouse",
+  "status": "Active",
+  "max_capacity": 500,
+  "address": {
+    "region": "Addis Ababa City Administration",
+    "zone": "Bole Subcity",
+    "woreda": "Woreda 2",
+    "kebele": "1"
+  }
+}
+```
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 422,
+	"details": {
+		"name": [
+			"Name is already taken by another warehouse."
+		]
+	},
+	"message": "Validation error when creating warehouse"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X POST \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "Content-Type: application/json" \
+  -H "x-role: IT Administrator / User Manager" \
+  -d '{
+  "name": "Transfer Destination Warehouse",
+  "status": "Active",
+  "max_capacity": 500,
+  "address": {
+    "region": "Addis Ababa City Administration",
+    "zone": "Bole Subcity",
+    "woreda": "Woreda 2",
+    "kebele": "1"
+  }
+}' \
+  "http://168.119.175.142:8001/api/warehouses?year=2018&period=yearly&calendar=ec"
+```

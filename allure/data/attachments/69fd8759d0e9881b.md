@@ -1,0 +1,367 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/cross-module-ui-flows.spec.ts >> Cross-Module UI Flow Audits @sales @purchase @smoke @full >> Sales UI: Partial payment updates invoice Amount Due correctly
+- Location: tests/cross-module/cross-module-ui-flows.spec.ts:14:9
+
+# Error details
+
+```
+Error: [SELF-HEALING] Warehouse creation failed: {
+	"code": 422,
+	"details": {
+		"name": [
+			"Name is already taken by another warehouse."
+		]
+	},
+	"message": "Validation error when creating warehouse"
+}
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - img "BM Tech" [ref=e10]: BT
+        - generic [ref=e11]:
+          - button "BM Tech" [ref=e12] [cursor=pointer]:
+            - generic: BM Tech
+            - img [ref=e14]
+          - generic [ref=e16] [cursor=pointer]:
+            - button "Company Detail" [ref=e17]:
+              - img [ref=e18]
+            - button "Edit Company" [ref=e21]:
+              - img [ref=e22]
+            - button "Company Detail" [ref=e25]:
+              - img [ref=e26]
+      - generic [ref=e29]:
+        - button "New" [ref=e30] [cursor=pointer]:
+          - text: New
+          - img [ref=e32]
+        - generic [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: "3"
+          - img "Notifications" [ref=e38]
+        - button "EC" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+          - paragraph [ref=e44]: EC
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+        - generic [ref=e49] [cursor=pointer]:
+          - img "System" [ref=e51]: S
+          - generic [ref=e52]:
+            - generic [ref=e53]: System
+            - paragraph [ref=e54]: IT Administrator / User Manager
+    - generic [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - img "BM Tech" [ref=e62]: BT
+          - paragraph [ref=e63]: Welcome, System
+        - paragraph [ref=e65]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+        - generic [ref=e66]:
+          - link "Dashboard" [ref=e67] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Settings" [ref=e68] [cursor=pointer]:
+            - /url: /settings/company/details
+        - generic [ref=e69]:
+          - link "Add Customer" [ref=e70] [cursor=pointer]:
+            - /url: /receivables/customers/new
+            - img [ref=e73]
+            - text: Add Customer
+          - link "Add Invoice" [ref=e74] [cursor=pointer]:
+            - /url: /receivables/invoices/new
+            - img [ref=e77]
+            - text: Add Invoice
+          - link "Add Receipt" [ref=e78] [cursor=pointer]:
+            - /url: /receivables/receipts/new
+            - img [ref=e81]
+            - text: Add Receipt
+          - link "Add Sales Order" [ref=e82] [cursor=pointer]:
+            - /url: /receivables/sale-orders/new
+            - img [ref=e85]
+            - text: Add Sales Order
+        - paragraph [ref=e87]: Quick Access
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - link "Sales Sales" [ref=e91] [cursor=pointer]:
+              - /url: /receivables/overview/
+              - button "Sales Sales" [ref=e92]:
+                - generic [ref=e93]:
+                  - img "Sales" [ref=e94]
+                  - paragraph [ref=e95]: Sales
+            - link "Purchase Purchase" [ref=e97] [cursor=pointer]:
+              - /url: /payables/overview/
+              - button "Purchase Purchase" [ref=e98]:
+                - generic [ref=e99]:
+                  - img "Purchase" [ref=e100]
+                  - paragraph [ref=e101]: Purchase
+            - link "Accounting Accounting" [ref=e103] [cursor=pointer]:
+              - /url: /accounting/overview
+              - button "Accounting Accounting" [ref=e104]:
+                - generic [ref=e105]:
+                  - img "Accounting" [ref=e106]
+                  - paragraph [ref=e107]: Accounting
+            - link "Leases Leases" [ref=e109] [cursor=pointer]:
+              - /url: /leases/leases/?page=1&pageSize=15
+              - button "Leases Leases" [ref=e110]:
+                - generic [ref=e111]:
+                  - img "Leases" [ref=e112]
+                  - paragraph [ref=e113]: Leases
+            - link "Assets Assets" [ref=e115] [cursor=pointer]:
+              - /url: /assets/overview
+              - button "Assets Assets" [ref=e116]:
+                - generic [ref=e117]:
+                  - img "Assets" [ref=e118]
+                  - paragraph [ref=e119]: Assets
+            - link "Budgets Budgets" [ref=e121] [cursor=pointer]:
+              - /url: /public-sector-budgets/overview
+              - button "Budgets Budgets" [ref=e122]:
+                - generic [ref=e123]:
+                  - img "Budgets" [ref=e124]
+                  - paragraph [ref=e125]: Budgets
+            - link "Payroll Payroll" [ref=e127] [cursor=pointer]:
+              - /url: /payrolls
+              - button "Payroll Payroll" [ref=e128]:
+                - generic [ref=e129]:
+                  - img "Payroll" [ref=e130]
+                  - paragraph [ref=e131]: Payroll
+            - link "Report Report" [ref=e133] [cursor=pointer]:
+              - /url: /reports
+              - button "Report Report" [ref=e134]:
+                - generic [ref=e135]:
+                  - img "Report" [ref=e136]
+                  - paragraph [ref=e137]: Report
+          - button "View All" [ref=e138] [cursor=pointer]:
+            - text: View All
+            - img [ref=e140]
+      - img "Floating Icon" [ref=e143]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  746 |     });
+  747 |     if (!createResp.ok()) throw new Error(`[MOVE ORDER] Create failed: ${createResp.status()} - ${await createResp.text()}`);
+  748 |     const order = await createResp.json();
+  749 |     console.log(`[MOVE ORDER] Created: ${order.id} (status: ${order.status})`);
+  750 | 
+  751 |     await this.advanceDocumentAPI(order.id, 'move-orders');
+  752 |     return { id: order.id, ref: order.ref, status: 'approved', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
+  753 |   }
+  754 | 
+  755 |   async ensureTransferDestinationAPI(fromLocationId: string, itemId?: string): Promise<{ locationId: string; warehouseId: string }> {
+  756 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+  757 |     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  758 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  759 |     const token = await this._getAuthToken();
+  760 |     const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+  761 |     const headers = {
+  762 |       'x-company': process.env.BEFFA_COMPANY as string,
+  763 |       'Authorization': `Bearer ${token}`,
+  764 |       'Content-Type': 'application/json',
+  765 |       'x-role': 'IT Administrator / User Manager'
+  766 |     };
+  767 | 
+  768 |     // Priority 1: another location the item is already registered at
+  769 |     if (itemId) {
+  770 |       const itemResp = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
+  771 |       if (itemResp.ok()) {
+  772 |         const itemData = await itemResp.json();
+  773 |         const otherLoc = (itemData.inventory_item_locations || [])
+  774 |           .find((l: any) => l.location_id !== fromLocationId && (l.warehouse_id || l.warehouse?.id));
+  775 |         if (otherLoc) {
+  776 |           console.log(`[DEST] Using existing item location: ${otherLoc.location_id}`);
+  777 |           return { locationId: otherLoc.location_id, warehouseId: otherLoc.warehouse_id || otherLoc.warehouse?.id };
+  778 |         }
+  779 |       }
+  780 |     }
+  781 | 
+  782 |     // Priority 2: any other system location
+  783 |     const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers });
+  784 |     if (locResp.ok()) {
+  785 |       const locData = await locResp.json();
+  786 |       const allLocs = locData.items || locData.data || [];
+  787 |       const dest = allLocs.find((l: any) => l.id !== fromLocationId && (l.warehouse_id || l.warehouse?.id));
+  788 |       if (dest) {
+  789 |         console.log(`[DEST] Using system location: ${dest.id}`);
+  790 |         return { locationId: dest.id, warehouseId: dest.warehouse_id || dest.warehouse?.id };
+  791 |       }
+  792 | 
+  793 |       // Priority 3: only one location exists — create a second one inside the SAME warehouse
+  794 |       // (locations don't require an address — only warehouses do)
+  795 |       const srcLoc = allLocs.find((l: any) => l.id === fromLocationId) || allLocs[0];
+  796 |       const warehouseId = srcLoc?.warehouse_id || srcLoc?.warehouse?.id;
+  797 |       if (warehouseId) {
+  798 |         console.log(`[SELF-HEALING] Only one location found. Creating a second location in warehouse ${warehouseId}...`);
+  799 |         const createResp = await this.safePost(`${apiBase}/locations?${params}`, {
+  800 |           data: {
+  801 |             name: `Transfer Dest ${Date.now().toString().slice(-5)}`,
+  802 |             warehouse_id: warehouseId,
+  803 |             type: 'Section',
+  804 |             max_capacity: 100,
+  805 |             ref: `xfer-dest-${Date.now().toString().slice(-5)}`,
+  806 |             description: 'Auto-created for E2E transfer tests'
+  807 |           },
+  808 |           headers,
+  809 |           label: 'Create Dest Location'
+  810 |         });
+  811 |         if (createResp.ok()) {
+  812 |           const newLoc = await createResp.json();
+  813 |           if (newLoc?.id) {
+  814 |             console.log(`[SELF-HEALING] Created location: ${newLoc.name} (${newLoc.id})`);
+  815 |             return { locationId: newLoc.id, warehouseId };
+  816 |           }
+  817 |         }
+  818 |         const errText = await createResp.text().catch(() => '(unreadable)');
+  819 |         console.log(`[SELF-HEALING] Location creation failed (${createResp.status()}): ${errText.substring(0, 120)}`);
+  820 |       }
+  821 |     }
+  822 | 
+  823 |     throw new Error('[SETUP] Could not resolve or create a second location. Ensure the environment has at least 2 locations, or that the API allows location creation.');
+  824 |   }
+  825 | 
+  826 |   async ensureTransferLocationAPI(
+  827 |     apiBase: string,
+  828 |     params: string,
+  829 |     headers: Record<string, string>
+  830 |   ): Promise<{ id: string; warehouse_id: string }> {
+  831 |     // 1. Fetch existing warehouse to reuse its address fields
+  832 |     const whResp = await this.safeGet(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
+  833 |     let address = { region: 'Addis Ababa City Administration', zone: 'Bole Subcity', woreda: 'Woreda 2', kebele: '1' };
+  834 |     if (whResp.ok()) {
+  835 |       const whData = await whResp.json();
+  836 |       const existing = (whData.items || whData.data || [])[0];
+  837 |       if (existing?.address) address = { ...address, ...existing.address };
+  838 |     }
+  839 | 
+  840 |     // 2. Create destination warehouse
+  841 |     const whCreateResp = await this.safePost(`${apiBase}/warehouses?${params}`, {
+  842 |       data: { name: 'Transfer Destination Warehouse', status: 'Active', max_capacity: 500, address },
+  843 |       headers,
+  844 |       label: 'Create Transfer Warehouse'
+  845 |     });
+> 846 |     if (!whCreateResp.ok()) throw new Error(`[SELF-HEALING] Warehouse creation failed: ${await whCreateResp.text()}`);
+      |                                   ^ Error: [SELF-HEALING] Warehouse creation failed: {
+  847 |     const newWarehouse = await whCreateResp.json();
+  848 |     console.log(`[SELF-HEALING] Created warehouse: ${newWarehouse.name} (${newWarehouse.id})`);
+  849 | 
+  850 |     // 3. Create location inside the new warehouse
+  851 |     const locCreateResp = await this.safePost(`${apiBase}/locations?${params}`, {
+  852 |       data: {
+  853 |         name: 'Transfer Destination Location',
+  854 |         warehouse_id: newWarehouse.id,
+  855 |         type: 'Section',
+  856 |         max_capacity: 100,
+  857 |         description: 'Auto-created for E2E transfer tests',
+  858 |         ref: `transfer-dest-${Date.now().toString().slice(-5)}`
+  859 |       },
+  860 |       headers,
+  861 |       label: 'Create Transfer Location'
+  862 |     });
+  863 |     if (!locCreateResp.ok()) throw new Error(`[SELF-HEALING] Location creation failed: ${await locCreateResp.text()}`);
+  864 |     const newLocation = await locCreateResp.json();
+  865 |     console.log(`[SELF-HEALING] Created location: ${newLocation.name} (${newLocation.id})`);
+  866 | 
+  867 |     return { id: newLocation.id, warehouse_id: newWarehouse.id };
+  868 |   }
+  869 | 
+  870 |   async executeTransferAPI(data: {
+  871 |     itemId: string;
+  872 |     quantity: number;
+  873 |     fromLocationId: string;
+  874 |     fromWarehouseId: string;
+  875 |     toLocationId?: string;   // auto-discovered if omitted
+  876 |     toWarehouseId?: string;
+  877 |   }): Promise<{ outRef: string; inRef: string; fromLocationId: string; toLocationId: string; sourceItemId: string; destItemId: string }> {
+  878 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  879 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  880 |     const token = await this._getAuthToken();
+  881 |     const year     = process.env.BEFFA_YEAR     || '2018';
+  882 |     const period   = process.env.BEFFA_PERIOD   || 'yearly';
+  883 |     const calendar = process.env.BEFFA_CALENDAR || 'ec';
+  884 |     const params   = `year=${year}&period=${period}&calendar=${calendar}`;
+  885 |     const headers  = {
+  886 |       'x-company': process.env.BEFFA_COMPANY as string,
+  887 |       'Authorization': `Bearer ${token}`,
+  888 |       'Content-Type': 'application/json',
+  889 |       'x-role': 'IT Administrator / User Manager'
+  890 |     };
+  891 | 
+  892 |     // 1. Discover adjustment account
+  893 |     let adjAccountId: string | undefined;
+  894 |     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+  895 |     if (acctResp.ok()) {
+  896 |       const acctData = await acctResp.json();
+  897 |       const accounts = acctData.items || acctData.data || [];
+  898 |       adjAccountId = accounts.find((a: any) => a.account_type?.toLowerCase().includes('expense'))?.id || accounts[0]?.id;
+  899 |     }
+  900 | 
+  901 |     // 2. Discover destination location (different from source), self-healing if only one exists
+  902 |     let toLocationId  = data.toLocationId;
+  903 |     let toWarehouseId = data.toWarehouseId;
+  904 |     if (!toLocationId) {
+  905 |       const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=20&${params}`, { headers });
+  906 |       if (locResp.ok()) {
+  907 |         const locData = await locResp.json();
+  908 |         const locs = locData.items || locData.data || [];
+  909 |         let dest = locs.find((l: any) => l.id !== data.fromLocationId);
+  910 |         if (!dest) {
+  911 |           console.log('[SELF-HEALING] Only one location found. Creating a second warehouse + location for transfer destination...');
+  912 |           dest = await this.ensureTransferLocationAPI(apiBase, params, headers);
+  913 |         }
+  914 |         toLocationId  = dest.id;
+  915 |         toWarehouseId = dest.warehouse_id || dest.warehouse?.id;
+  916 |       }
+  917 |     }
+  918 |     if (!toLocationId) throw new Error('[TRANSFER] No destination location resolved.');
+  919 | 
+  920 |     console.log(`[TRANSFER] OUT: ${data.fromLocationId} → IN: ${toLocationId} | Qty: ${data.quantity}`);
+  921 | 
+  922 |     // 3. Resolve the actual itemId to use — must be registered at BOTH locations.
+  923 |     //    If the source item is not registered at destination, create a dedicated transfer item
+  924 |     //    that has the destination as its default_location_id (only way to register it there).
+  925 |     let sourceItemId = data.itemId;
+  926 |     let destItemId   = data.itemId;
+  927 | 
+  928 |     // Check if item is actually registered at destination by inspecting its location list directly
+  929 |     const srcItemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+  930 |     const srcItemData = srcItemResp.ok() ? await srcItemResp.json() : {};
+  931 |     const registeredAtDest = (srcItemData.inventory_item_locations || []).some((l: any) => l.location_id === toLocationId);
+  932 | 
+  933 |     if (!registeredAtDest) {
+  934 |       console.log(`[TRANSFER] Item not registered at destination. Creating a dedicated transfer item pre-stocked at both locations...`);
+  935 | 
+  936 |       // srcItemData already fetched above for the location check
+  937 |       const srcItem = srcItemData;
+  938 | 
+  939 |       // Create item with destination as default → registers it at destination
+  940 |       const transferItemResp = await this.safePost(`${apiBase}/inventory-items?${params}`, {
+  941 |         data: {
+  942 |           name: `Transfer Test Item ${Date.now().toString().slice(-6)}`,
+  943 |           type: 'inventory',
+  944 |           category: srcItem.category || 'Raw Materials',
+  945 |           cost_method_code: srcItem.cost_method_code || 'FIFO',
+  946 |           item_class: srcItem.item_class || 'MER',
+```
