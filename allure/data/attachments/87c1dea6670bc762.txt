@@ -1,0 +1,37 @@
+[PERFORMANCE] API - Auth API Verification: 304.69ms
+[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined
+    at eval (eval at evaluate (:302:30), <anonymous>:16:46)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[PHASE 1] Discovering item for E2E cycle...
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785231585059 (e91be891-4d61-41dc-9a34-0bcd8b445dfb) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[OK] Item: "WAC-Item-1785231585059" | Stock Before: 20
+[PHASE 2] Creating & approving Bill via API...
+[API] Advancing bills "fd198f96-73ef-425f-a247-0daba476eb79"...
+[OK] Bill BILL/2026/07/28/000055 approved.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 25...
+[SUCCESS] API Confirmed: Stock correctly reached 25.
+[AUDIT] Stock after purchase: 25 (Expected: 25)
+[PHASE 3] Creating & approving SO via API...
+[API] Advancing sales-orders "31ed4f9f-42b8-4514-8f11-77d9f8bf5d32"...
+[OK] SO SO/2026/07/28/000030 approved.
+[PHASE 3] Creating & approving Invoice via API...
+[API] Advancing invoices "b7fe4d94-deda-4ebb-8380-9d58ac33e61e"...
+[OK] Invoice INV/2026/07/28/000083 approved.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 23...
+[SUCCESS] API Confirmed: Stock correctly reached 23.
+
+========== E2E CYCLE AUDIT REPORT ==========
+[ITEM]    WAC-Item-1785231585059 (e91be891-4d61-41dc-9a34-0bcd8b445dfb)
+[BILL]    BILL/2026/07/28/000055 — purchased 5 units
+[SO]      SO/2026/07/28/000030 — sold 2 units
+[INVOICE] INV/2026/07/28/000083
+[STOCK]   Before Purchase : 20
+[STOCK]   After Purchase  : 25
+[STOCK]   After Sale      : 23 (Expected: 23)
+============================================
+
+[PASS] E2E Purchase to Sale cycle complete. Inventory correctly reconciled.
