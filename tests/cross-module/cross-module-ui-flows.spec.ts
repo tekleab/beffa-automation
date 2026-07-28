@@ -122,13 +122,22 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         await page.waitForTimeout(3000);
 
         console.log(`[STEP 5] Asserting bill ${bill.ref} is visible in vendor profile...`);
-        // Poll: bill may be on any page; scroll/search if not immediately visible
+        // Poll: bill may be on any page; indexing lag up to 30s under parallel load
         let billVisible = false;
-        for (let attempt = 0; attempt < 5; attempt++) {
-            billVisible = await page.getByText(bill.ref).first().isVisible({ timeout: 8000 }).catch(() => false);
+        for (let attempt = 0; attempt < 10; attempt++) {
+            billVisible = await page.getByText(bill.ref).first().isVisible({ timeout: 5000 }).catch(() => false);
             if (billVisible) break;
-            console.log(`[POLL ${attempt + 1}/5] Bill not yet visible, waiting...`);
+            console.log(`[POLL ${attempt + 1}/10] Bill not yet visible, waiting...`);
             await page.waitForTimeout(3000);
+            if (attempt % 3 === 2) {
+                // Reload every 3rd attempt to force fresh data
+                await page.reload({ waitUntil: 'domcontentloaded' });
+                await page.waitForTimeout(2000);
+                const bt = page.getByRole('tab', { name: /Bills/i }).first();
+                await bt.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+                await bt.click().catch(() => {});
+                await page.waitForTimeout(2000);
+            }
         }
         expect(billVisible, `Bill ${bill.ref} should be visible in vendor profile Bills tab`).toBe(true);
 
