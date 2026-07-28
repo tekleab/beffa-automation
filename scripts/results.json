@@ -4,8 +4,8 @@
   "failed": 88,
   "skipped": 40,
   "passRate": 32.3,
-  "avgDurationMs": 9964,
-  "lastUpdated": "2026-07-27T12:14:16.238Z",
+  "avgDurationMs": 9283,
+  "lastUpdated": "2026-07-28T06:29:34.535Z",
   "moduleBreakdown": [
     {
       "module": "Other",
@@ -13,17 +13,25 @@
       "failed": 88,
       "skipped": 40,
       "trend": [
-        79,
         64.7,
         74.5,
         64.7,
         70.6,
         0.7,
+        40.9,
         40.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "551",
+      "commit": "8caa8e9",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "29m 14s",
+      "passRate": 32.3,
+      "status": "failed"
+    },
     {
       "run": "550",
       "commit": "d7cb8c4",
@@ -95,14 +103,6 @@
       "duration": "62m 34s",
       "passRate": 79.6,
       "status": "failed"
-    },
-    {
-      "run": "541",
-      "commit": "c6a9c82",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "59m 52s",
-      "passRate": 76.5,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:02:41.531Z",
+      "firstSeen": "2026-07-28T06:18:27.642Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,23 +118,15 @@
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:02:41.597Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Kebede-1785153770068-Updated').first()\nExpected: visible\nTimeout: 15000ms\nError: element(",
-      "firstSeen": "2026-07-27T12:02:41.584Z",
+      "firstSeen": "2026-07-28T06:18:27.592Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/27/000001').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-07-27T12:02:41.557Z",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-28T06:18:27.613Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +134,7 @@
       "severity": "medium",
       "title": "Guardrail: System must reject invoicing for more units than the approved SO",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:02:54.307Z",
+      "firstSeen": "2026-07-28T06:18:50.768Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -150,7 +142,7 @@
       "severity": "medium",
       "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:02:54.385Z",
+      "firstSeen": "2026-07-28T06:18:51.984Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -158,7 +150,7 @@
       "severity": "medium",
       "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:03:03.979Z",
+      "firstSeen": "2026-07-28T06:18:52.300Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -166,7 +158,7 @@
       "severity": "medium",
       "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:03:04.088Z",
+      "firstSeen": "2026-07-28T06:19:01.066Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -174,7 +166,7 @@
       "severity": "medium",
       "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:03:13.159Z",
+      "firstSeen": "2026-07-28T06:19:02.424Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -182,7 +174,15 @@
       "severity": "medium",
       "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
       "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
-      "firstSeen": "2026-07-27T12:03:13.800Z",
+      "firstSeen": "2026-07-28T06:19:02.860Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [SELF-HEALING] Warehouse creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"name\": [\n\t\t\t\"Name is already taken by another warehouse.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating warehous",
+      "firstSeen": "2026-07-28T06:19:09.785Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
