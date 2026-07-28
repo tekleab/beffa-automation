@@ -169,10 +169,19 @@ export class InventoryAPI extends BasePage {
     if (locResp.ok()) {
       const locJson = await locResp.json();
       const locs = locJson.items || locJson.data || [];
+      // Prefer a location with warehouse_id, but fall back to any location
       const loc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
-      const warehouseId = loc?.warehouse_id || loc?.warehouse?.id;
-      if (loc?.id && warehouseId) {
-        return { locationId: loc.id, warehouseId };
+      if (loc?.id) {
+        // If warehouse_id is missing on the location object, fetch it from the warehouses list
+        let warehouseId = loc.warehouse_id || loc.warehouse?.id;
+        if (!warehouseId) {
+          const whResp = await this.safeGet(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
+          if (whResp.ok()) {
+            const whJson = await whResp.json();
+            warehouseId = (whJson.items || whJson.data || [])[0]?.id;
+          }
+        }
+        if (warehouseId) return { locationId: loc.id, warehouseId };
       }
     }
 
@@ -828,7 +837,53 @@ export class InventoryAPI extends BasePage {
     params: string,
     headers: Record<string, string>
   ): Promise<{ id: string; warehouse_id: string }> {
-    // 1. Fetch existing warehouse to reuse its address fields
+    const TRANSFER_WH_NAME = 'Transfer Destination Warehouse';
+    const TRANSFER_LOC_NAME = 'Transfer Destination Location';
+
+    // 1. Check if warehouse + location already exist — reuse them
+    const whListResp = await this.safeGet(`${apiBase}/warehouses?page=1&pageSize=100&${params}`, { headers });
+    if (whListResp.ok()) {
+      const whData = await whListResp.json();
+      const existingWh = (whData.items || whData.data || []).find((w: any) => w.name === TRANSFER_WH_NAME);
+      if (existingWh) {
+        const locListResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers });
+        const locData = locListResp.ok() ? await locListResp.json() : { items: [] };
+        const allLocs = locData.items || locData.data || [];
+        const existingLoc = allLocs.find(
+          (l: any) => l.name === TRANSFER_LOC_NAME && (l.warehouse_id === existingWh.id || l.warehouse?.id === existingWh.id)
+        );
+        if (existingLoc) {
+          console.log(`[SELF-HEALING] Reusing existing warehouse+location: ${existingWh.name} / ${existingLoc.name}`);
+          return { id: existingLoc.id, warehouse_id: existingWh.id };
+        }
+        // Warehouse exists but location is missing — search all locations for one in this warehouse
+        const anyLoc = allLocs.find(
+          (l: any) => l.warehouse_id === existingWh.id || l.warehouse?.id === existingWh.id
+        );
+        if (anyLoc) {
+          console.log(`[SELF-HEALING] Reusing existing location in warehouse: ${anyLoc.name} (${anyLoc.id})`);
+          return { id: anyLoc.id, warehouse_id: existingWh.id };
+        }
+        const locCreateResp = await this.safePost(`${apiBase}/locations?${params}`, {
+          data: {
+            name: `${TRANSFER_LOC_NAME}-${Date.now().toString().slice(-6)}`,
+            warehouse_id: existingWh.id,
+            type: 'Section',
+            max_capacity: 100,
+            description: 'Auto-created for E2E transfer tests',
+            ref: `transfer-dest-${Date.now().toString().slice(-5)}`
+          },
+          headers,
+          label: 'Create Transfer Location'
+        });
+        if (!locCreateResp.ok()) throw new Error(`[SELF-HEALING] Location creation failed: ${await locCreateResp.text()}`);
+        const newLoc = await locCreateResp.json();
+        console.log(`[SELF-HEALING] Created location in existing warehouse: ${newLoc.name} (${newLoc.id})`);
+        return { id: newLoc.id, warehouse_id: existingWh.id };
+      }
+    }
+
+    // 2. Neither exists — fetch address from first warehouse to reuse
     const whResp = await this.safeGet(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
     let address = { region: 'Addis Ababa City Administration', zone: 'Bole Subcity', woreda: 'Woreda 2', kebele: '1' };
     if (whResp.ok()) {
@@ -837,9 +892,9 @@ export class InventoryAPI extends BasePage {
       if (existing?.address) address = { ...address, ...existing.address };
     }
 
-    // 2. Create destination warehouse
+    // 3. Create destination warehouse
     const whCreateResp = await this.safePost(`${apiBase}/warehouses?${params}`, {
-      data: { name: 'Transfer Destination Warehouse', status: 'Active', max_capacity: 500, address },
+      data: { name: TRANSFER_WH_NAME, status: 'Active', max_capacity: 500, address },
       headers,
       label: 'Create Transfer Warehouse'
     });
@@ -847,10 +902,10 @@ export class InventoryAPI extends BasePage {
     const newWarehouse = await whCreateResp.json();
     console.log(`[SELF-HEALING] Created warehouse: ${newWarehouse.name} (${newWarehouse.id})`);
 
-    // 3. Create location inside the new warehouse
+    // 4. Create location inside the new warehouse
     const locCreateResp = await this.safePost(`${apiBase}/locations?${params}`, {
       data: {
-        name: 'Transfer Destination Location',
+        name: TRANSFER_LOC_NAME,
         warehouse_id: newWarehouse.id,
         type: 'Section',
         max_capacity: 100,
