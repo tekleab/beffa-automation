@@ -4,8 +4,8 @@
   "failed": 3,
   "skipped": 0,
   "passRate": 82.4,
-  "avgDurationMs": 38046,
-  "lastUpdated": "2026-07-28T07:12:18.632Z",
+  "avgDurationMs": 35462,
+  "lastUpdated": "2026-07-28T07:29:04.477Z",
   "moduleBreakdown": [
     {
       "module": "Other",
@@ -13,17 +13,25 @@
       "failed": 3,
       "skipped": 0,
       "trend": [
-        0.7,
         40.9,
         40.9,
         52.9,
         76.5,
+        82.4,
         82.4,
         82.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "556",
+      "commit": "736ca7c",
+      "trigger": "push (smoke)",
+      "duration": "10m 2s",
+      "passRate": 82.4,
+      "status": "success"
+    },
     {
       "run": "555",
       "commit": "5479653",
@@ -95,22 +103,14 @@
       "duration": "11m 42s",
       "passRate": 64.7,
       "status": "failed"
-    },
-    {
-      "run": "546",
-      "commit": "e8f9813",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "90m 37s",
-      "passRate": 74.1,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: Receipt RCPT/2026/07/28/000006 should be visible in customer profile\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[",
-      "firstSeen": "2026-07-28T07:07:25.497Z",
+      "error": "Error: Receipt RCPT/2026/07/28/000008 should be visible in customer profile\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[",
+      "firstSeen": "2026-07-28T07:24:34.963Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,15 +118,15 @@
       "severity": "high",
       "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
       "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForURL: Test timeout of 120000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"",
-      "firstSeen": "2026-07-28T07:08:20.940Z",
+      "firstSeen": "2026-07-28T07:25:26.560Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill BILL/2026/07/28/000014 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
-      "firstSeen": "2026-07-28T07:09:35.093Z",
+      "error": "Error: Bill BILL/2026/07/28/000017 should be visible in vendor profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
+      "firstSeen": "2026-07-28T07:26:33.279Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
