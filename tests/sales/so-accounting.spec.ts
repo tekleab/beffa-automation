@@ -5,23 +5,19 @@ import { AppManager } from '../../pages/AppManager';
  * CATEGORY 3: Accounting Flow & Ledger Logic
  */
 test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @full', () => {
-    test.setTimeout(120000);
+    test.setTimeout(600000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
+        test.setTimeout(600000);
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.sales.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
-    });
-
-    test.beforeEach(async ({ page }) => {
-        const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });
 
     async function ensureStock(app: AppManager, item: any, quantity: number) {

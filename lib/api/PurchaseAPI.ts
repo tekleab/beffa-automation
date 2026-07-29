@@ -540,7 +540,7 @@ export class PurchaseAPI extends BasePage {
 
       console.log(`[CASH_TOPUP] ${label}: insufficient balance (attempt ${attempt + 1}/${maxTopUpAttempts}) — topping up ${topUp}...`);
       await this.seedCashBalanceAPI(topUp, cashAccountId);
-      await this.page.waitForTimeout(3000);
+      await this.page.waitForTimeout(6000);
 
       response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers });
     }

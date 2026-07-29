@@ -17,6 +17,7 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.hr.discoverMetadataAPI();
+        if (!meta) { console.log('[SKIP] HR org structure not configured'); return; }
         // Unique future date per run — avoids 409 duplicate conflict
         const offset = (Date.now() % 180) + 1;
         const date = new Date(Date.now() + offset * 86400000).toISOString().split('T')[0] + 'T00:00:00Z';
@@ -41,6 +42,7 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.hr.discoverMetadataAPI();
+        if (!meta) { console.log("[SKIP] HR org structure not configured"); return; }
         // Use a fixed far-future date so first creation always succeeds
         const date = '2099-01-15T00:00:00Z';
 

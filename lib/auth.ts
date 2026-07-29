@@ -61,7 +61,7 @@ export class AuthManager extends BasePage {
       await this.page.goto('/users/login', { waitUntil: 'commit' });
 
       // 3. Inject the EXACT keys the frontend requires to "wake up" authenticated
-      await this.page.evaluate(({ jwt, exp, company }: { jwt: string; exp: string; company: string }) => {
+      await this.page.evaluate(({ jwt, exp, company, year }: { jwt: string; exp: string; company: string; year: string }) => {
         localStorage.setItem('auth-token', jwt);
         localStorage.setItem('token', jwt); // fallback
 
@@ -70,14 +70,14 @@ export class AuthManager extends BasePage {
         localStorage.setItem('token-expiration', tokenExp);
 
         // Crucial Fiscal & Role Metadata
-        localStorage.setItem('selectedYear', process.env.BEFFA_YEAR || '2019');
+        localStorage.setItem('selectedYear', year);
         localStorage.setItem('calendar', 'EC');
         localStorage.setItem('period', 'yearly');
         localStorage.setItem('selected-role', 'IT Administrator / User Manager');
-        localStorage.setItem('currentCompany', company || process.env.BEFFA_COMPANY as string);
+        localStorage.setItem('currentCompany', company);
 
         localStorage.setItem('lastUserActivity', new Date().toISOString());
-      }, { jwt: token, exp: expiry, company: companyName });
+      }, { jwt: token, exp: expiry, company: companyName, year: process.env.BEFFA_YEAR || '2019' });
 
       // 4. Set HTTP cookies for backend persistence
       const domain = new URL(this.page.url()).hostname;

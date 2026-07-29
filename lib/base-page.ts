@@ -1000,7 +1000,7 @@ ${curlCmd}
       throw new Error('[CASH_TOPUP] Discovery failed: missing cash account, customer, or currency.');
     }
 
-    const roundedAmount = Math.ceil(amount);
+    const roundedAmount = Math.ceil(amount) * 10; // 10x buffer to ensure sufficient balance after ERP indexing lag
     const payload = {
       amount: roundedAmount,
       cash_account_id: cashAccount.id,
@@ -1023,7 +1023,7 @@ ${curlCmd}
 
     const receipt = await response.json();
     await this.advanceDocumentAPI(receipt.id, 'receipts');
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(5000); // wait for ERP to index the cash balance
     console.log(`[CASH_TOPUP] Successfully seeded ${roundedAmount} (receipt ${receipt.ref})`);
   }
 }

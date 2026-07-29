@@ -159,18 +159,10 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
         await page.goto('/human-resources/employees', { waitUntil: 'domcontentloaded' });
         await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
 
-        // Broad selector: table row OR any named employee text OR list item
         const content = page.locator(
             'table tbody tr, [role="row"], [role="listitem"], .chakra-text, td, li'
         ).first();
-        let visible = await content.isVisible({ timeout: 20000 }).catch(() => false);
-
-        // Reload once if page didn't render (API-auth race condition)
-        if (!visible) {
-            await page.reload({ waitUntil: 'networkidle' });
-            await page.waitForTimeout(3000);
-            visible = await content.isVisible({ timeout: 15000 }).catch(() => false);
-        }
+        const visible = await content.isVisible({ timeout: 25000 }).catch(() => false);
 
         expect(visible, 'Employees page must render content').toBe(true);
         expect(page.url()).toMatch(/employee/);
