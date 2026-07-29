@@ -83,7 +83,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
         const BASE_PRICE = 5000;
         const ATTACK_PRICE = 50;
 
-        const so = await app.api.sales.createSalesOrderAPI({ itemId: item.itemId, quantity: 1, unitPrice: BASE_PRICE });
+        const so = await app.api.sales.createSalesOrderAPI({ itemId: item.itemId, quantity: 1, unitPrice: BASE_PRICE, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(so.id, 'sales-orders');
 
         console.log(`[ATTACK] Injecting malicious price: ${ATTACK_PRICE} (SO Price: ${BASE_PRICE})...`);

@@ -142,11 +142,15 @@ export class SalesAPI extends BasePage {
     let locationId = data.locationId;
     let warehouseId = data.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
+      // Fall back to meta values first
+      locationId = locationId || meta.locationId;
+      warehouseId = warehouseId || meta.warehouseId;
+    }
+    if (!locationId || !warehouseId) {
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers }, 10000);
       if (locResp.ok()) {
         const locData = await locResp.json();
         const locs = locData.items || locData.data || [];
-        // Prefer a location that has a warehouse already attached
         const bestLoc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
         if (bestLoc) {
           locationId = locationId || bestLoc.id;
