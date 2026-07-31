@@ -1,29 +1,37 @@
 {
-  "total": 19,
-  "passed": 16,
-  "failed": 3,
-  "skipped": 0,
-  "passRate": 84.2,
-  "avgDurationMs": 35404,
-  "lastUpdated": "2026-07-31T08:17:44.391Z",
+  "total": 191,
+  "passed": 122,
+  "failed": 65,
+  "skipped": 4,
+  "passRate": 63.9,
+  "avgDurationMs": 32576,
+  "lastUpdated": "2026-07-31T09:03:20.721Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 3,
-      "skipped": 0,
+      "passed": 122,
+      "failed": 65,
+      "skipped": 4,
       "trend": [
-        75,
         81.3,
         59.5,
         61.7,
         73.7,
         68.4,
-        84.2
+        84.2,
+        65.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "566",
+      "commit": "3dae302",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "103m 42s",
+      "passRate": 63.9,
+      "status": "failed"
+    },
     {
       "run": "565",
       "commit": "d0ff60b",
@@ -95,38 +103,86 @@
       "duration": "10m 46s",
       "passRate": 82.4,
       "status": "success"
-    },
-    {
-      "run": "554",
-      "commit": "ef88ec8",
-      "trigger": "push (smoke)",
-      "duration": "9m 45s",
-      "passRate": 82.4,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/31/000040').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-07-31T08:12:10.690Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/07/31/000042').first()\nExpected: visible\nTimeout: 30000ms\nErro",
+      "firstSeen": "2026-07-31T08:27:34.350Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "high",
-      "title": "Create PO via UI, approve, create linked bill, verify in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForURL: Test timeout of 120000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"",
-      "firstSeen": "2026-07-31T08:13:11.891Z",
+      "severity": "medium",
+      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-07-31T08:28:35.389Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "high",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  137 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
-      "firstSeen": "2026-07-31T08:14:13.065Z",
+      "severity": "medium",
+      "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-07-31T08:28:41.793Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-07-31T08:28:44.933Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-07-31T08:28:46.825Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  122 |                 await app.advanceDocumentAPI(body1.id, 'invoices');\n  123 |            ",
+      "firstSeen": "2026-07-31T08:28:57.319Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n\n  62 |             try {\n  63 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 64",
+      "firstSeen": "2026-07-31T08:30:12.510Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  93 |             try {\n  94 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 95 |             ",
+      "firstSeen": "2026-07-31T08:30:32.394Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/07/31/00",
+      "firstSeen": "2026-07-31T08:30:28.871Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/07/31/00",
+      "firstSeen": "2026-07-31T08:30:50.400Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
