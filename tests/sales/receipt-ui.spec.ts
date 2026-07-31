@@ -124,21 +124,12 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
         await page.waitForURL(url => url.href.includes('/detail'), { timeout: 10000 });
 
         await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
-        await page.waitForTimeout(2000);
+        await page.reload();
+        await page.waitForTimeout(3000);
+        await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
 
-        // Poll for receipt to appear — indexing lag up to 15s
         const rcptLocator = page.locator('table').getByText(capturedReceiptNumber);
-        let rcptVisible = false;
-        for (let i = 0; i < 8; i++) {
-            rcptVisible = await rcptLocator.first().isVisible({ timeout: 5000 }).catch(() => false);
-            if (rcptVisible) break;
-            console.log(`[POLL ${i+1}/8] Receipt not yet visible, reloading...`);
-            await page.reload({ waitUntil: 'domcontentloaded' });
-            await page.waitForTimeout(2000);
-            await page.getByRole('tab', { name: /Receipts|Transactions/i }).click();
-            await page.waitForTimeout(2000);
-        }
-        expect(rcptVisible, `Receipt ${capturedReceiptNumber} should be visible in customer profile`).toBe(true);
+        await expect(rcptLocator.first()).toBeVisible({ timeout: 30000 });
 
         console.log(`[RESULT] Sales Receipt: PASSED — ${capturedReceiptNumber} verified in profile`);
         await page.close();
