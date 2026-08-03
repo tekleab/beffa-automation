@@ -45,8 +45,8 @@ test.describe('Procurement Ledger & Payment Audits @purchase @logic @regression 
         // 2. Verify both bills have non-zero balances
         const billAData = await app.api.purchase.getBillAPI(billA.id);
         const billBData = await app.api.purchase.getBillAPI(billB.id);
-        const amountA = parseFloat(billAData.balance ?? billAData.amount_due ?? billAData.unpaid_amount ?? 3000);
-        const amountB = parseFloat(billBData.balance ?? billBData.amount_due ?? billBData.unpaid_amount ?? 2000);
+        const amountA = parseFloat(billAData.unpaid_amount ?? billAData.amount_due ?? billAData.balance ?? 3000);
+        const amountB = parseFloat(billBData.unpaid_amount ?? billBData.amount_due ?? billBData.balance ?? 2000);
         console.log(`[SNAPSHOT] Bill A balance: ${amountA} | Bill B balance: ${amountB}`);
         expect(amountA).toBeGreaterThan(0);
         expect(amountB).toBeGreaterThan(0);
@@ -69,8 +69,8 @@ test.describe('Procurement Ledger & Payment Audits @purchase @logic @regression 
         console.log(`[AUDIT] Verifying both bills are fully reconciled...`);
         const finalBillA = await app.api.purchase.getBillAPI(billA.id);
         const finalBillB = await app.api.purchase.getBillAPI(billB.id);
-        const finalBalanceA = parseFloat(finalBillA.balance ?? finalBillA.amount_due ?? finalBillA.unpaid_amount ?? -1);
-        const finalBalanceB = parseFloat(finalBillB.balance ?? finalBillB.amount_due ?? finalBillB.unpaid_amount ?? -1);
+        const finalBalanceA = parseFloat(finalBillA.unpaid_amount ?? finalBillA.balance ?? finalBillA.amount_due ?? -1);
+        const finalBalanceB = parseFloat(finalBillB.unpaid_amount ?? finalBillB.balance ?? finalBillB.amount_due ?? -1);
 
         console.log(`[SNAPSHOT] Bill A final balance: ${finalBalanceA} | Bill B final balance: ${finalBalanceB}`);
 

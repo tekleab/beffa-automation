@@ -35,15 +35,21 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
         const { project } = await createProject(app, meta);
         await page.goto(`/project-management/projects/${project.id}`);
         await page.waitForLoadState('networkidle');
-        
-        // Try multiple selector strategies for financial data
+
+        // Click the "Financial Information" tab to expose financial fields
+        const finTab = page.getByRole('tab', { name: /financial/i }).or(page.getByText(/financial information/i)).first();
+        if (await finTab.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await finTab.click();
+            await page.waitForTimeout(800);
+        }
+
         const financialSelectors = [
             page.getByText(/budget|revenue|expense|balance/i).first(),
             page.locator('[class*="budget"], [class*="revenue"], [class*="expense"], [class*="balance"]').first(),
             page.getByText(new RegExp((project as any).estimated_revenue || '200000', 'i')).first(),
             page.getByText(new RegExp((project as any).estimated_expense || '80000', 'i')).first(),
         ];
-        
+
         let financialVisible = false;
         for (const selector of financialSelectors) {
             if (await selector.isVisible({ timeout: 5000 }).catch(() => false)) {
@@ -52,7 +58,7 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
                 break;
             }
         }
-        
+
         expect(financialVisible).toBe(true);
     });
 

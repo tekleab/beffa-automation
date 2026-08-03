@@ -69,7 +69,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
             await app.advanceDocumentAPI(zeroPayment.id, 'payments');
 
             const billData = await app.api.purchase.getBillAPI(bill.id);
-            balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? -1);
+            balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? -1);
             console.log(`[RESULT] Bill balance after 0.00 payment: ${balance}`);
 
             if (balance === BILL_AMOUNT) {
@@ -123,7 +123,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
             await app.advanceDocumentAPI(negPayment.id, 'payments');
 
             const billData = await app.api.purchase.getBillAPI(bill.id);
-            balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? -1);
+            balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? -1);
             console.log(`[RESULT] Bill balance after ${ATTACK_AMOUNT} payment: ${balance}`);
 
             if (balance > BILL_AMOUNT) {
@@ -235,7 +235,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
 
             // Bill balance check
             const billData = await app.api.purchase.getBillAPI(bill.id);
-            balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? -1);
+            balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? -1);
             console.log(`[RESULT] Bill balance after mismatch payment: ${balance}`);
 
             // COA snapshot AFTER — re-fetch the same two accounts

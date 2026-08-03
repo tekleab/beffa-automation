@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "projects": [
@@ -20,7 +20,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Sales",
         "name": "Sales",
@@ -36,7 +36,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Purchase",
         "name": "Purchase",
@@ -52,7 +52,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Inventory",
         "name": "Inventory",
@@ -68,7 +68,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "HR",
         "name": "HR",
@@ -84,7 +84,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Project-Management",
         "name": "Project-Management",
@@ -100,7 +100,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Cross-Module",
         "name": "Cross-Module",
@@ -115,7 +115,7 @@
     "quiet": false,
     "reporter": [
       [
-        "line",
+        "list",
         null
       ],
       [
@@ -185,276 +185,105 @@
   },
   "suites": [
     {
-      "title": "sales/so-accounting.spec.ts",
-      "file": "sales/so-accounting.spec.ts",
+      "title": "project/project-ui-detail.spec.ts",
+      "file": "project/project-ui-detail.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Accounting & Ledger Flow Logic Audits @sales @logic @regression @full",
-          "file": "sales/so-accounting.spec.ts",
-          "line": 7,
+          "title": "Project Management: UI Detail & Guardrails @project @ui @smoke @regression @full",
+          "file": "project/project-ui-detail.spec.ts",
+          "line": 10,
           "column": 6,
           "specs": [
             {
-              "title": "Guardrail: System must reject invoicing for more units than the approved SO",
+              "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
               "ok": false,
               "tags": [
-                "sales",
-                "logic",
+                "project",
+                "ui",
+                "smoke",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 600000,
+                  "timeout": 120000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|1261.40"
+                      "description": "API|Auth API Verification|419.58"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
+                  "projectId": "Project-Management",
+                  "projectName": "Project-Management",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 7,
+                      "status": "timedOut",
+                      "duration": 130913,
                       "error": {
-                        "message": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/users/login\", waiting until \"load\"\u001b[22m\n",
-                        "stack": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/users/login\", waiting until \"load\"\u001b[22m\n\n    at AuthManager.login (/home/teklish/beffa-automation/lib/auth.ts:99:23)\n    at AppManager.login (/home/teklish/beffa-automation/pages/AppManager.ts:115:67)\n    at /home/teklish/beffa-automation/tests/sales/so-accounting.spec.ts:17:9",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/lib/auth.ts",
-                          "column": 23,
-                          "line": 99
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m../lib/auth.ts:99\n\n\u001b[0m \u001b[90m  97 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error\u001b[33m:\u001b[39m any) {\n \u001b[90m  98 |\u001b[39m       console\u001b[33m.\u001b[39mlog(\u001b[32m`[WARN] API Login failed (${error.message}). Falling back to UI Login...`\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgoto(\u001b[32m'/users/login'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mfill(cleanEmail)\u001b[33m;\u001b[39m\n \u001b[90m 102 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpasswordInput\u001b[33m.\u001b[39mfill(cleanPass)\u001b[33m;\u001b[39m\u001b[0m"
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
                       },
                       "errors": [
                         {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                        },
+                        {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/lib/auth.ts",
-                            "column": 23,
-                            "line": 99
+                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
+                            "column": 20,
+                            "line": 36
                           },
-                          "message": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/users/login\", waiting until \"load\"\u001b[22m\n\n\n\u001b[90m   at \u001b[39m../lib/auth.ts:99\n\n\u001b[0m \u001b[90m  97 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error\u001b[33m:\u001b[39m any) {\n \u001b[90m  98 |\u001b[39m       console\u001b[33m.\u001b[39mlog(\u001b[32m`[WARN] API Login failed (${error.message}). Falling back to UI Login...`\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgoto(\u001b[32m'/users/login'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mfill(cleanEmail)\u001b[33m;\u001b[39m\n \u001b[90m 102 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpasswordInput\u001b[33m.\u001b[39mfill(cleanPass)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at AuthManager.login (/home/teklish/beffa-automation/lib/auth.ts:99:23)\u001b[22m\n\u001b[2m    at AppManager.login (/home/teklish/beffa-automation/pages/AppManager.ts:115:67)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-accounting.spec.ts:17:9\u001b[22m"
+                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects/ecc60f7e-ab30-4e09-95ab-54431dbd2950\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 34 |\u001b[39m         \u001b[36mconst\u001b[39m { app\u001b[33m,\u001b[39m meta } \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m setup(page)\u001b[33m;\u001b[39m\n \u001b[90m 35 |\u001b[39m         \u001b[36mconst\u001b[39m { project } \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m createProject(app\u001b[33m,\u001b[39m meta)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 36 |\u001b[39m         \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m`/project-management/projects/${project.id}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 37 |\u001b[39m         \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 38 |\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[90m// Click the \"Financial Information\" tab to expose financial fields\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:36:20\u001b[22m"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 1261.40ms\n"
+                          "text": "[PERFORMANCE] API - Auth API Verification: 419.58ms\n"
                         },
                         {
-                          "text": "[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined\n    at eval (eval at evaluate (:302:30), <anonymous>:16:46)\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...\n"
+                          "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-07-29T06:10:07.505Z",
+                      "startTime": "2026-08-03T11:32:33.070Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|1261.40"
+                          "description": "API|Auth API Verification|419.58"
                         }
                       ],
                       "attachments": [
                         {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/video.webm"
+                        },
+                        {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-accounting-Accoun-83e26--units-than-the-approved-SO-Sales/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-accounting-Accoun-83e26--units-than-the-approved-SO-Sales/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/trace.zip"
                         }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/lib/auth.ts",
-                        "column": 23,
-                        "line": 99
-                      }
+                      ]
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "785647392cc530d39727-7adbbbe45812ebf674d7",
-              "file": "sales/so-accounting.spec.ts",
-              "line": 31,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
-              "ok": true,
-              "tags": [
-                "sales",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-07-29T06:13:32.482Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "785647392cc530d39727-734da2a28468757bff6d",
-              "file": "sales/so-accounting.spec.ts",
-              "line": 72,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-              "ok": false,
-              "tags": [
-                "sales",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|1076.70"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 14,
-                      "error": {
-                        "message": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/users/login\", waiting until \"load\"\u001b[22m\n",
-                        "stack": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/users/login\", waiting until \"load\"\u001b[22m\n\n    at AuthManager.login (/home/teklish/beffa-automation/lib/auth.ts:99:23)\n    at AppManager.login (/home/teklish/beffa-automation/pages/AppManager.ts:115:67)\n    at /home/teklish/beffa-automation/tests/sales/so-accounting.spec.ts:17:9",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/lib/auth.ts",
-                          "column": 23,
-                          "line": 99
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m../lib/auth.ts:99\n\n\u001b[0m \u001b[90m  97 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error\u001b[33m:\u001b[39m any) {\n \u001b[90m  98 |\u001b[39m       console\u001b[33m.\u001b[39mlog(\u001b[32m`[WARN] API Login failed (${error.message}). Falling back to UI Login...`\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgoto(\u001b[32m'/users/login'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mfill(cleanEmail)\u001b[33m;\u001b[39m\n \u001b[90m 102 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpasswordInput\u001b[33m.\u001b[39mfill(cleanPass)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/lib/auth.ts",
-                            "column": 23,
-                            "line": 99
-                          },
-                          "message": "TimeoutError: page.goto: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/users/login\", waiting until \"load\"\u001b[22m\n\n\n\u001b[90m   at \u001b[39m../lib/auth.ts:99\n\n\u001b[0m \u001b[90m  97 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error\u001b[33m:\u001b[39m any) {\n \u001b[90m  98 |\u001b[39m       console\u001b[33m.\u001b[39mlog(\u001b[32m`[WARN] API Login failed (${error.message}). Falling back to UI Login...`\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgoto(\u001b[32m'/users/login'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39memailInput\u001b[33m.\u001b[39mfill(cleanEmail)\u001b[33m;\u001b[39m\n \u001b[90m 102 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpasswordInput\u001b[33m.\u001b[39mfill(cleanPass)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at AuthManager.login (/home/teklish/beffa-automation/lib/auth.ts:99:23)\u001b[22m\n\u001b[2m    at AppManager.login (/home/teklish/beffa-automation/pages/AppManager.ts:115:67)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-accounting.spec.ts:17:9\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 1076.70ms\n"
-                        },
-                        {
-                          "text": "[WARN] API Login failed (page.evaluate: ReferenceError: process is not defined\n    at eval (eval at evaluate (:302:30), <anonymous>:16:46)\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)). Falling back to UI Login...\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-07-29T06:10:07.164Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|1076.70"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-accounting-Accoun-96eec--across-multi-link-receipts-Sales/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-accounting-Accoun-96eec--across-multi-link-receipts-Sales/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/lib/auth.ts",
-                        "column": 23,
-                        "line": 99
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "785647392cc530d39727-03d88fc0fb3159fe58f0",
-              "file": "sales/so-accounting.spec.ts",
-              "line": 113,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
-              "ok": true,
-              "tags": [
-                "sales",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-07-29T06:13:30.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "785647392cc530d39727-8c7e16034902fd3ec079",
-              "file": "sales/so-accounting.spec.ts",
-              "line": 140,
+              "id": "7edff9a93a69a426f48f-a499952baf1606c70b93",
+              "file": "project/project-ui-detail.spec.ts",
+              "line": 33,
               "column": 9
             }
           ]
@@ -464,11 +293,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-07-29T06:09:21.031Z",
-    "duration": 263219.82700000005,
+    "startTime": "2026-08-03T11:32:11.866Z",
+    "duration": 170504.076,
     "expected": 0,
-    "skipped": 2,
-    "unexpected": 2,
+    "skipped": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

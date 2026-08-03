@@ -124,10 +124,15 @@ export class InventoryAPI extends BasePage {
         quantity: typeof data === 'string' ? 0 : (data.quantity || 0)
     };
 
-    const resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload });
-    if (!resp.ok()) {
-      // Re-auth once on 401 then retry
-      if (resp.status() === 401) {
+    // Retry up to 3x for 500/503 (transient backend errors) and re-auth on 401
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload });
+      if (resp.ok()) {
+        const json = await resp.json();
+        return { itemName: json.name, id: json.id };
+      }
+      const status = resp.status();
+      if (status === 401) {
         const loginResp = await this.page.request.post(`${apiBase}/users/login?${params}&month=6`, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
           headers: { 'Content-Type': 'application/json' }
@@ -137,17 +142,19 @@ export class InventoryAPI extends BasePage {
           if (newToken) {
             await this.page.evaluate((t) => { localStorage.setItem('token', t); localStorage.setItem('auth-token', t); }, newToken);
             headers['Authorization'] = `Bearer ${newToken}`;
-            const retry = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload });
-            if (!retry.ok()) throw new Error(`Item Creation API Failed: ${retry.status()} - ${await retry.text()}`);
-            const retryJson = await retry.json();
-            return { itemName: retryJson.name, id: retryJson.id };
+            continue;
           }
         }
+        throw new Error(`Item Creation API Failed: 401 Unauthorized`);
       }
-      throw new Error(`Item Creation API Failed: ${resp.status()} - ${await resp.text()}`);
+      if ((status === 500 || status === 503) && attempt < 3) {
+        console.log(`[RETRY] Item creation ${status} on attempt ${attempt} — retrying in ${attempt * 2}s...`);
+        await this.page.waitForTimeout(attempt * 2000);
+        continue;
+      }
+      throw new Error(`Item Creation API Failed: ${status} - ${await resp.text()}`);
     }
-    const json = await resp.json();
-    return { itemName: json.name, id: json.id };
+    throw new Error('Item Creation API Failed: exhausted retries');
   }
 
   async ensureDefaultLocationAPI(): Promise<{ locationId: string; warehouseId: string }> {
@@ -438,32 +445,17 @@ export class InventoryAPI extends BasePage {
       const warehouseId = loc.warehouse_id || loc.warehouse?.id || '';
 
       try {
-        // Create a stock adjustment to add 100 units
-        const adjPayload = {
-          adjustment_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-          adjustment_items: [{
-            item_id: candidate.id,
-            quantity: 100,
-            unit_cost: candidate.unit_cost || 10,
-            location_id: locationId,
-            warehouse_id: warehouseId
-          }]
-        };
-        const adjResp = await this.page.request.post(
-          `${apiBase}/inventory-adjustments?year=${year}&period=${period}&calendar=${calendar}`,
-          { data: adjPayload, headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
-        );
-
-        if (adjResp.ok()) {
-          const adj = await adjResp.json();
-          // Advance the adjustment to approved
-          const advResp = await this.page.request.patch(
-            `${apiBase}/inventory-adjustments/${adj.id}/advance?year=${year}&period=${period}&calendar=${calendar}`,
-            { data: {}, headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` } }
-          );
-          if (advResp.ok()) {
-            console.log(`[SELF-HEALING] Stocked 100 units on "${candidate.name}" via adjustment.`);
-          }
+        const adjResult = await this.createInventoryAdjustmentAPI({
+          itemId: candidate.id,
+          quantity: 100,
+          cost: candidate.unit_cost || 10,
+          locationId,
+          warehouseId,
+          adjusted_by: 'quantity'
+        });
+        if (adjResult.success && adjResult.id) {
+          await this.advanceDocumentAPI(adjResult.id, 'inventory-adjustments');
+          console.log(`[SELF-HEALING] Stocked 100 units on "${candidate.name}" via adjustment.`);
         }
 
         return {

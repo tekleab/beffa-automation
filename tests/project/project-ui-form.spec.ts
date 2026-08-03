@@ -39,8 +39,10 @@ test.describe('Project Management: UI Form @project @ui @smoke @regression @full
         const addBtn = page.getByRole('link', { name: /Add Project/i })
             .or(page.getByRole('button', { name: /Add Project/i })).first();
         await addBtn.click();
-        await page.waitForURL('**/projects/new', { timeout: 10000 });
-        expect(page.url()).toContain('/projects/new');
+        // URL may be /project-management/projects/new — match any path ending in /projects/new
+        await page.waitForURL(url => url.href.includes('/projects/new'), { timeout: 10000 })
+            .catch(() => {});
+        expect(page.url()).toMatch(/\/projects\/new/);
     });
 
     test('UI-11: Add Project form has all required inputs', async ({ page }) => {

@@ -20,6 +20,11 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
         await page.close();
     });
 
+    test.beforeEach(async ({ page }) => {
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+    });
+
     async function ensureStock(app: AppManager, item: any, quantity: number) {
         if (Number(item.currentStock) < quantity) {
             console.log(`[SEED] Low stock (${item.currentStock}). Seeding ${quantity * 2} units via Bill...`);
@@ -38,6 +43,9 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
         const SO_QTY = 2;
         const OVER_QTY = 6;
 
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        const dateIso = (await DateHelper.resolve(page)).iso;
+
         console.log(`[STEP 1] Creating Sales Order for ${SO_QTY} units...`);
         const so = await app.api.sales.createSalesOrderAPI({ itemId: item.itemId, quantity: SO_QTY, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(so.id, 'sales-orders');
@@ -48,7 +56,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
                 accounts_receivable_id: meta.arAccountId,
                 currency_id: meta.currencyId,
                 customer_id: meta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: dateIso,
                 released_sales_order_items: [{ so_item_id: so.soItemId, released_quantity: OVER_QTY, warehouse_id: item.warehouseId, location_id: item.locationId }],
                 status: 'draft'
             },
@@ -79,6 +87,9 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
         const BASE_PRICE = 5000;
         const ATTACK_PRICE = 50;
 
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        const dateIso = (await DateHelper.resolve(page)).iso;
+
         const so = await app.api.sales.createSalesOrderAPI({ itemId: item.itemId, quantity: 1, unitPrice: BASE_PRICE, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(so.id, 'sales-orders');
 
@@ -88,7 +99,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
                 accounts_receivable_id: meta.arAccountId,
                 currency_id: meta.currencyId,
                 customer_id: meta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: dateIso,
                 released_sales_order_items: [{ so_item_id: so.soItemId, released_quantity: 1, warehouse_id: item.warehouseId, location_id: item.locationId, unit_price: ATTACK_PRICE, amount: ATTACK_PRICE }],
                 status: 'draft'
             },

@@ -268,26 +268,27 @@ export class HrAPI extends BasePage {
       `${this.apiBase}/job-positions?page=1&pageSize=100&${this.params}`, { headers: h });
     if (listResp.ok()) {
       const all = (await listResp.json()).data || [];
-      // Only use job positions that belong to this exact department
       const deptJobs = all.filter((j: any) => j.department_id === departmentId && j.id);
       if (deptJobs.length > 0) {
-        const match = deptJobs.find((j: any) => j.title?.toLowerCase().includes(title.toLowerCase())) || deptJobs[0];
-        const filled = match.filled_slots ?? 0;
-        const slots = match.slot_count ?? 0;
-        if (slots === 0 || slots === 1 || filled >= slots) {
-          console.log(`[HR] Job "${match.title}" slots exhausted (${filled}/${slots}). Expanding...`);
-          await this.page.request.patch(
-            `${this.apiBase}/job-positions/${match.id}?${this.params}`,
-            { headers: h, data: { slot_count: filled + 100 } }
-          );
+        // Find a position with available capacity
+        const available = deptJobs.find((j: any) => {
+          const filled = j.filled_slots ?? 0;
+          const slots = j.slot_count ?? 0;
+          return slots > 0 && filled < slots;
+        });
+
+        if (available) {
+          console.log(`[HR] Using job position: "${available.title}" (${available.id}) | filled: ${available.filled_slots}/${available.slot_count}`);
+          return { id: available.id, title: available.title };
         }
-        console.log(`[HR] Using job position: "${match.title}" (${match.id}) | dept: ${departmentId}`);
-        return { id: match.id, title: match.title };
+
+        // All existing positions are full (filled >= 100) — fall through to create a new one
+        console.log(`[HR] All job positions for dept ${departmentId} are full. Creating new one...`);
       }
     }
 
     // None found for this department — create one
-    const ts = Date.now().toString().slice(-6);
+    const ts = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const createResp = await this.page.request.post(
       `${this.apiBase}/job-positions?${this.params}`,
       { headers: h, data: {
@@ -304,14 +305,27 @@ export class HrAPI extends BasePage {
         pay_grade: 'E0'
       }}
     );
-    if (!createResp.ok()) {
-      const errText = await createResp.text();
-      throw new Error(`Failed to create job position for dept ${departmentId}: ${createResp.status()} - ${errText.slice(0, 200)}`);
+    if (createResp.ok()) {
+      const created = await createResp.json();
+      if (!created.id) throw new Error(`Job position created but no ID returned: ${JSON.stringify(created).slice(0, 200)}`);
+      console.log(`[HR] Created job position: "${created.title}" (${created.id}) | dept: ${departmentId}`);
+      return { id: created.id, title: created.title };
     }
-    const created = await createResp.json();
-    if (!created.id) throw new Error(`Job position created but no ID returned: ${JSON.stringify(created).slice(0, 200)}`);
-    console.log(`[HR] Created job position: "${created.title}" (${created.id}) | dept: ${departmentId}`);
-    return { id: created.id, title: created.title };
+    // 409 = another worker just created one — re-fetch and use it
+    if (createResp.status() === 409) {
+      const retry = await this.safeGet(`${this.apiBase}/job-positions?page=1&pageSize=100&${this.params}`, { headers: h });
+      if (retry.ok()) {
+        const all = (await retry.json()).data || [];
+        const fresh = all.filter((j: any) => j.department_id === departmentId && j.id)
+          .find((j: any) => (j.filled_slots ?? 0) < (j.slot_count ?? 0));
+        if (fresh) {
+          console.log(`[HR] Using freshly created job position: "${fresh.title}" (${fresh.id})`);
+          return { id: fresh.id, title: fresh.title };
+        }
+      }
+    }
+    const errText = await createResp.text();
+    throw new Error(`Failed to create job position for dept ${departmentId}: ${createResp.status()} - ${errText.slice(0, 200)}`);
   }
 
   async discoverMetadataAPI(): Promise<{ employeeId: string; glAccountId: string; departmentId: string; departmentName: string; jobPositionId: string; jobPositionTitle: string } | null> {

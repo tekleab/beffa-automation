@@ -196,7 +196,7 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
 
         // If still not visible, reload once
         if (!contentVisible) {
-            await page.reload({ waitUntil: 'networkidle' });
+            await page.reload({ waitUntil: 'commit' });
             await page.waitForTimeout(4000);
         }
 

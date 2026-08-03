@@ -55,7 +55,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         console.log(`[PAYMENT] ${payment.ref} (${payment.id}) | Amount: ${overpayAmount}`);
 
         const billData = await app.api.purchase.getBillAPI(bill.id);
-        const balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? 0);
+        const balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? 0);
         console.log(`[RESULT] Bill ${bill.ref} balance after overpayment: ${balance} (expected: >= 0)`);
 
         expect.soft(balance, `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Overpayment of ${overpayAmount} on ${billAmount} bill created negative balance=${balance}. Vendor credit injection possible.`).toBeGreaterThanOrEqual(0);
@@ -109,7 +109,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         console.log(`[PAYMENT] ${payment.ref} (${payment.id}) | Amount: ${billAmount}`);
 
         const billData = await app.api.purchase.getBillAPI(bill.id);
-        const balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? 0);
+        const balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? 0);
         console.log(`[AUDIT] Bill ${bill.ref} balance after full payment: ${balance}`);
         expect(balance).toBe(0);
 
@@ -148,7 +148,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
 
         console.log(`[STEP 2] Paying bill ${bill.ref}...`);
         const billData = await app.api.purchase.getBillAPI(bill.id);
-        const billAmount = parseFloat(billData.balance ?? billData.total ?? 3000);
+        const billAmount = parseFloat(billData.unpaid_amount ?? billData.net_due ?? billData.total ?? 3000);
         const payment = await app.api.purchase.createBillPaymentAPI({ amount: billAmount, billId: bill.id, vendorId: meta.vendorId });
         await app.advanceDocumentAPI(payment.id, 'payments');
         console.log(`[PAYMENT] ${payment.ref} (${payment.id}) | Amount: ${billAmount}`);
@@ -199,7 +199,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
 
             expectedBalance -= partials[i];
             const billData = await app.api.purchase.getBillAPI(bill.id);
-            const balance = parseFloat(billData.balance ?? billData.amount_due ?? billData.unpaid_amount ?? -1);
+            const balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? -1);
             console.log(`[AUDIT] Bill ${bill.ref} balance after payment ${i + 1}: ${balance} (expected: ${expectedBalance})`);
 
             expect.soft(
@@ -210,7 +210,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         }
 
         const finalBill = await app.api.purchase.getBillAPI(bill.id);
-        const finalBalance = parseFloat(finalBill.balance ?? finalBill.amount_due ?? finalBill.unpaid_amount ?? -1);
+        const finalBalance = parseFloat(finalBill.unpaid_amount ?? finalBill.balance ?? finalBill.amount_due ?? -1);
         console.log(`[AUDIT] Bill ${bill.ref} final balance after 3 partial payments: ${finalBalance} (expected: 0)`);
         expect(Math.abs(finalBalance)).toBeLessThanOrEqual(0.01);
         console.log(`[PASS] Bill ${bill.ref} partial payment sequence correctly zeroed balance.`);

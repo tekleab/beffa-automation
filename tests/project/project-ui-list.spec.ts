@@ -34,8 +34,15 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
         await page.waitForLoadState('networkidle');
+        // Scope to table header to avoid matching sidebar nav items (e.g. "Customers")
+        const thead = page.locator('table thead, thead, [role="columnheader"]');
         for (const col of ['Project Name', 'Customer', 'Status', 'Budget', 'Tasks', 'Start Date', 'End Date']) {
-            await expect(page.getByText(col, { exact: false }).first()).toBeVisible({ timeout: 10000 });
+            const inHeader = thead.getByText(col, { exact: false }).first();
+            const inPage = page.getByText(col, { exact: true }).first();
+            const visible =
+                await inHeader.isVisible({ timeout: 8000 }).catch(() => false) ||
+                await inPage.isVisible({ timeout: 3000 }).catch(() => false);
+            expect(visible, `Column "${col}" not visible`).toBe(true);
         }
     });
 

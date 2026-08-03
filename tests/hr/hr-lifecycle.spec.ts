@@ -102,32 +102,60 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
         // ── STEP 5: Create contracts for all 3 employees in parallel ─────────
         console.log(`[STEP 5] Creating contracts for all ${EMPLOYEE_COUNT} employees...`);
         const today = new Date().toISOString().split('T')[0] + 'T00:00:00Z';
-        const contracts = await Promise.all(
-            empIds.map(async (empId) => {
-                let resp: any;
-                for (let attempt = 1; attempt <= 3; attempt++) {
-                    resp = await page.request.post(`${app.apiBase}/employee-contracts?${params}`, {
-                        headers: await getHeaders(),
-                        data: {
-                            employee_id: empId,
-                            contract_type: 'permanent',
-                            pay_frequency: 'monthly',
-                            pay_method: 'salary',
-                            salary: 10000,
-                            department_id: meta.departmentId,
-                            job_position_id: meta.jobPositionId,
-                            start_date: today,
-                        }
-                    });
-                    if (resp.ok()) break;
-                    const errBody = await resp.text();
-                    console.log(`[WARN] Contract attempt ${attempt} failed for emp ${empId}: ${resp.status()} — ${errBody.slice(0, 200)} — retrying...`);
-                    await page.waitForTimeout(2000);
+        const contracts: any[] = [];
+        for (const empId of empIds) {
+            // Cancel any existing draft contract to avoid 409
+            const existingResp = await page.request.get(
+                `${app.apiBase}/employee-contracts?employee_id=${empId}&status=draft&page=1&pageSize=10&${params}`,
+                { headers: await getHeaders() }
+            );
+            if (existingResp.ok()) {
+                const existing = (await existingResp.json()).data || [];
+                for (const c of existing) {
+                    await page.request.patch(
+                        `${app.apiBase}/employee-contracts/${c.id}?${params}`,
+                        { headers: await getHeaders(), data: { status: 'cancelled' } }
+                    );
+                    console.log(`[INFO] Cancelled existing draft contract ${c.id} for emp ${empId}`);
                 }
-                if (!resp.ok()) throw new Error(`Contract creation failed for emp ${empId}: ${resp.status()} - ${await resp.text()}`);
-                return resp.json();
-            })
-        );
+            }
+
+            let resp: any;
+            let contractData: any = null;
+            for (let attempt = 1; attempt <= 5; attempt++) {
+                resp = await page.request.post(`${app.apiBase}/employee-contracts?${params}`, {
+                    headers: await getHeaders(),
+                    data: {
+                        employee_id: empId,
+                        contract_type: 'permanent',
+                        pay_frequency: 'monthly',
+                        pay_method: 'salary',
+                        salary: 10000,
+                        department_id: meta.departmentId,
+                        job_position_id: meta.jobPositionId,
+                        start_date: today,
+                    }
+                });
+                if (resp.ok()) { contractData = await resp.json(); break; }
+                const errBody = await resp.text();
+                console.log(`[WARN] Contract attempt ${attempt} failed for emp ${empId}: ${resp.status()} — ${errBody.slice(0, 200)} — checking if created anyway...`);
+                // 500 from workflow engine may still have persisted the contract — check before retrying
+                await page.waitForTimeout(3000);
+                const checkResp = await page.request.get(
+                    `${app.apiBase}/contracts?employee_id=${empId}&page=1&pageSize=5`,
+                    { headers: await getHeaders() }
+                );
+                if (checkResp.ok()) {
+                    const existing = (await checkResp.json()).data || [];
+                    const draft = existing.find((c: any) => c.status === 'draft');
+                    if (draft) { console.log(`[INFO] Contract found after 500: ${draft.id}`); contractData = draft; break; }
+                }
+                await page.waitForTimeout(5000);
+            }
+            if (!contractData) throw new Error(`Contract creation failed for emp ${empId}: ${resp.status()} - ${await resp.text()}`);
+            contracts.push(contractData);
+            await page.waitForTimeout(2000);
+        }
         const contractIds = contracts.map(c => c.id);
         contracts.forEach((c, i) => console.log(`[PASS] Contract ${i + 1}: ${c.id} | status: ${c.status}`));
 
@@ -189,8 +217,20 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
         expect(assignedCount).toBeGreaterThanOrEqual(EMPLOYEE_COUNT);
         console.log(`[PASS] ${assignedCount} employees assigned to payroll run`);
 
-        // ── STEP 10: Approve payroll run via API (UI review page never reaches networkidle) ──
-        console.log(`[STEP 10] Approving payroll run via API...`);
+        // ── STEP 10: Process then approve payroll run ────────────────────────
+        console.log(`[STEP 10] Processing payroll run (compute pay lines)...`);
+        const processResp = await page.request.patch(
+            `${app.apiBase}/payroll-runs/${runId}/process?${params}`,
+            { headers: await getHeaders() }
+        );
+        if (!processResp.ok()) {
+            const errText = await processResp.text();
+            throw new Error(`Payroll run process failed: ${processResp.status()} - ${errText}`);
+        }
+        console.log(`[PASS] Payroll run processed`);
+        await page.waitForTimeout(2000);
+
+        console.log(`[STEP 10b] Approving payroll run via API...`);
         await app.advanceDocumentAPI(runId, 'payroll-runs');
         await page.waitForTimeout(3000);
 

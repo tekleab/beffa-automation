@@ -164,11 +164,13 @@ export class SalesAPI extends BasePage {
     const unitPrice = data.unitPrice || 10993.05;
     const amount = quantity * unitPrice;
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
       currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId || meta.customerId,
-      so_date: data.soDate || new Date().toISOString().split('T')[0] + 'T00:00:00Z', // 📅 CUSTOMIZABLE FIELD
+      so_date: data.soDate || _dateIso,
       so_items: [{
         amount,
         item_id: data.itemId, // REQUIRED: must pass the item UUID
@@ -210,16 +212,18 @@ export class SalesAPI extends BasePage {
     // Discover live company environment
     const meta = await this.discoverMetadataAPI();
 
-    const now = new Date();
-    const dueDate = new Date();
-    dueDate.setDate(now.getDate() + 30);
+    const { DateHelper } = require('../utils/DateHelper');
+    const resolvedDate = await DateHelper.resolve(this.page);
+    const dueDate = new Date(resolvedDate.gcDate);
+    dueDate.setUTCDate(resolvedDate.gcDate.getUTCDate() + 30);
+    const dueDateIso = dueDate.toISOString().split('T')[0] + 'T00:00:00Z';
 
     const payload = {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
       currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId, // REQUIRED: must match the SO customer
-      invoice_date: data.invoiceDate || now.toISOString().split('T')[0] + 'T00:00:00Z',
-      due_date: data.dueDate || dueDate.toISOString().split('T')[0] + 'T00:00:00Z',
+      invoice_date: data.invoiceDate || resolvedDate.iso,
+      due_date: data.dueDate || dueDateIso,
       released_sales_order_items: [{
         so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
         released_quantity: data.releasedQuantity || 1,
@@ -261,11 +265,13 @@ export class SalesAPI extends BasePage {
     const q = data.quantity || 1;
     const amount = q * unitPrice;
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload: Record<string, any> = {
       accounts_receivable_id: meta.arAccountId,
       customer_id: custId,
-      invoice_date: data.invoiceDate || new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-      due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] + 'T00:00:00Z',
+      invoice_date: data.invoiceDate || _dateIso,
+      due_date: _dateIso,
       currency_id: meta.currencyId,
       items: [{
         amount: amount,
@@ -520,11 +526,13 @@ export class SalesAPI extends BasePage {
       }
     }
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       amount: Math.round(data.amount * 100) / 100, // Round to 2 decimal places
       cash_account_id: cashAccountId,
       customer_id: data.customerId, // MUST match the invoice customer
-      date: data.receiptDate || new Date().toISOString(),
+      date: data.receiptDate || _dateIso,
       payment_method: data.payment_method || 'cash',
       currency_id: currencyId,
       invoice_receipts: [{

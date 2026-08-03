@@ -190,10 +190,12 @@ export class PurchaseAPI extends BasePage {
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = (currData.items || currData.data || [])[0];
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       accounts_payable_id: apAccount?.id,
       currency_id: currency?.id,
-      po_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      po_date: _dateIso,
       po_items: [{
         item_id: itemData.itemId,
         general_ledger_account_id: glAccount?.id,
@@ -280,11 +282,13 @@ export class PurchaseAPI extends BasePage {
       }
     }
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       accounts_payable_id: apAccountId || discoveredAp?.id,
       currency_id: currency?.id,
-      invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-      due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      invoice_date: _dateIso,
+      due_date: _dateIso,
       items: [{
         item_id: itemData.itemId || itemData.id,
         general_ledger_account_id: resolvedGlAccount?.id || null,
@@ -347,11 +351,13 @@ export class PurchaseAPI extends BasePage {
 
     if (receivedItems.length === 0) throw new Error(`PO ${poId} lacks interactable line-items.`);
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       accounts_payable_id: apAccount?.id,
       currency_id: poData.currency_id || poData.currency?.id,
-      due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-      invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      due_date: _dateIso,
+      invoice_date: _dateIso,
       items: [], // MUST be completely empty for a linked PO bill
       purchase_order_id: poId,
       vendor_id: poData.vendor_id || poData.vendor?.id,
@@ -444,11 +450,13 @@ export class PurchaseAPI extends BasePage {
     const allAccounts = acctData.items || acctData.data || [];
     const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       accounts_payable_id: apAccount?.id,
       currency_id: poData.currency_id || poData.currency?.id,
-      due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-      invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+      due_date: _dateIso,
+      invoice_date: _dateIso,
       items: [],
       purchase_order_id: poId,
       vendor_id: poData.vendor_id || poData.vendor?.id,
@@ -561,8 +569,9 @@ export class PurchaseAPI extends BasePage {
       if (byName) return byName.id;
     }
     if (preferredId && accounts.some((a: any) => a.id === preferredId)) return preferredId;
+    const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
     const cashAccount = accounts.find((a: any) =>
-      a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+      typeOf(a).includes('cash') || typeOf(a).includes('bank')
     ) || accounts[0];
     return cashAccount?.id;
   }
@@ -588,7 +597,7 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    const cashAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')) || allAccounts[0];
+    const cashAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('cash') || (a.type || a.account_type || '').toLowerCase().includes('bank')) || allAccounts[0];
 
     // 2. Discover Currency
     const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
@@ -602,11 +611,13 @@ export class PurchaseAPI extends BasePage {
       resolvedCashAccountId = null;
     }
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       amount: data.amount,
       cash_account_id: resolvedCashAccountId,
       vendor_id: data.vendorId, // Tests usually supply this
-      date: new Date().toISOString(),
+      date: _dateIso,
       payment_method: 'cash',
       currency_id: currency?.id,
       bill_payments: [{
@@ -641,18 +652,20 @@ export class PurchaseAPI extends BasePage {
     const acctData = await acctResp.json();
     const allAccounts = acctData.items || acctData.data || [];
     const cashAccount = allAccounts.find((a: any) =>
-      a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+      (a.type || a.account_type || '').toLowerCase().includes('cash') || (a.type || a.account_type || '').toLowerCase().includes('bank')
     ) || allAccounts[0];
 
     const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await currResp.json();
     const currency = currData.items?.[0] || currData.data?.[0];
 
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       amount: data.amount,
       cash_account_id: data.cashAccountId || cashAccount?.id,
       vendor_id: data.vendorId,
-      date: new Date().toISOString(),
+      date: _dateIso,
       payment_method: 'cash',
       currency_id: currency?.id,
       bill_payments: data.billPayments

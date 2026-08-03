@@ -213,7 +213,19 @@ export class BasePage {
    * Eliminates the repeated apiBase + headers construction block across test files.
    */
   async buildApiContext(): Promise<{ apiBase: string; headers: Record<string, string>; qs: string }> {
-    const token = await this._getAuthToken();
+    // _getAuthToken uses page.evaluate(localStorage) which fails on about:blank.
+    // Fall back to env-based re-login if no token is available from the page context.
+    let token = await this._getAuthToken().catch(() => null);
+    if (!token) {
+      const loginUrl = `${this.apiBase}/users/login?year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
+      try {
+        const r = await this.page.request.post(loginUrl, {
+          data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (r.ok()) { const d = await r.json(); token = d.auth_token || d.token || null; }
+      } catch { /* ignore */ }
+    }
     const company = process.env.BEFFA_COMPANY as string;
     const year = process.env.BEFFA_YEAR || '2018';
     const period = process.env.BEFFA_PERIOD || 'yearly';
@@ -747,55 +759,160 @@ ${curlCmd}
     await this.stopTacticalTimer(`Fill Date: ${labelOrIndex}`, 'UI');
   }
 
+  /**
+   * Queries the API for the open fiscal period's end date (ISO string).
+   * Used by pickDate to guarantee the selected date is within the legal period.
+   */
+  async getOpenPeriodEndDateAPI(): Promise<string | null> {
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const company = process.env.BEFFA_COMPANY as string;
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'x-company': company,
+      'x-role': 'IT Administrator / User Manager'
+    };
+    // Try /periods endpoint first, then /fiscal-periods
+    for (const endpoint of ['periods', 'fiscal-periods', 'accounting-periods']) {
+      const resp = await this.safeGet(`${this.apiBase}/${endpoint}?${params}`, { headers });
+      if (!resp.ok()) continue;
+      const data = await resp.json();
+      const list: any[] = data.items || data.data || (Array.isArray(data) ? data : []);
+      // Find the open/active period
+      const open = list.find((p: any) =>
+        (p.status?.toLowerCase() === 'open' || p.is_open === true || p.is_active === true) &&
+        (p.end_date || p.period_end || p.to_date)
+      );
+      if (open) {
+        const endDate = open.end_date || open.period_end || open.to_date;
+        console.log(`[PERIOD] Open period end date: ${endDate}`);
+        return endDate;
+      }
+    }
+    return null;
+  }
+
   async pickDate(label: string, dayNum?: number): Promise<void> {
-    console.log(`[ACTION] Picking date: "${label}"`);
+    const { DateHelper } = require('./utils/DateHelper');
+    const resolved = await DateHelper.resolve(this.page);
+    const targetDay = dayNum ?? resolved.dayNumber;
+    const targetMonth = resolved.gcDate.getUTCMonth();
+    const targetYear = resolved.gcDate.getUTCFullYear();
+
+    console.log(`[ACTION] Picking date: "${label}" → target ${targetYear}-${targetMonth + 1}-${targetDay}`);
     await this.startTacticalTimer();
 
-    let container = this.page.locator('.chakra-form-control, [role="group"], .flex-col, div')
-      .filter({ has: this.page.getByText(new RegExp(`^${label}\\s*\\*?$`, 'i')) })
-      .filter({ has: this.page.locator('button') })
-      .last();
+    // Strategy: find the label text, then locate the nearest date-trigger button.
+    // The ERP renders date fields as: <label>Sale Order Date</label> + <button> (calendar icon)
+    // We use a broad regex so "Sale Order Date" and "Sales Order Date" both match.
+    const labelRegex = new RegExp(label.replace(/s?\s+/gi, '.?\\s*'), 'i');
 
-    if (!(await container.isVisible().catch(() => false))) {
-      container = this.page.locator('.chakra-form-control, [role="group"], div')
-        .filter({ has: this.page.getByText(new RegExp(`${label}`, 'i')) })
+    // Wait for the page to render the form (any input or button visible)
+    await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 45000 });
+
+    // Try multiple selector strategies to find the date button
+    let btn: Locator | null = null;
+
+    // Strategy 1: container has label text + has button
+    for (const containerSel of [
+      '.chakra-form-control',
+      '[role="group"]',
+      '.flex-col',
+      'div'
+    ]) {
+      const container = this.page.locator(containerSel)
+        .filter({ has: this.page.getByText(labelRegex) })
         .filter({ has: this.page.locator('button') })
         .last();
+      if (await container.isVisible({ timeout: 2000 }).catch(() => false)) {
+        btn = container.locator('button').first();
+        break;
+      }
     }
 
-    const btn = container.locator('button').first();
+    // Strategy 2: find label element, then look for adjacent button in parent
+    if (!btn) {
+      const labelEl = this.page.getByText(labelRegex).first();
+      if (await labelEl.isVisible({ timeout: 3000 }).catch(() => false)) {
+        // Walk up to find a parent that contains a button
+        for (const ancestor of ['xpath=..', 'xpath=../..', 'xpath=../../..']) {
+          const parent = labelEl.locator(ancestor);
+          const parentBtn = parent.locator('button').first();
+          if (await parentBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+            btn = parentBtn;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!btn) {
+      throw new Error(`[pickDate] Could not find date trigger button for label "${label}"`);
+    }
+
+    await btn.waitFor({ state: 'visible', timeout: 15000 });
     await btn.click({ force: true });
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(800);
 
     const popover = this.page.locator('[role="dialog"], [data-slot="popover-content"], [id^="radix-"], .chakra-popover__content').filter({ visible: true }).last();
 
-    if (dayNum) {
-      // Explicit day requested — click it directly
-      const dayBtn = popover.locator('button').filter({ hasText: new RegExp(`^${dayNum}$`) }).first();
-      if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await dayBtn.click({ force: true });
-        console.log(`[SUCCESS] "${label}" set to Day ${dayNum}.`);
+    // Navigate the calendar to the correct month/year
+    const headerBtns = popover.locator('button').filter({ hasNotText: /^\d{1,2}$/ });
+    const prevBtn = headerBtns.first();
+    const nextBtn = headerBtns.last();
+
+    const getDisplayedYearMonth = async (): Promise<{ year: number; month: number } | null> => {
+      try {
+        const headerText = await popover.evaluate((el: HTMLElement) => el.textContent || '').catch(() => '');
+        const yearMatch = headerText.match(/(\d{4})/);
+        if (!yearMatch) return null;
+        const year = parseInt(yearMatch[1]);
+        const monthNames = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec',
+                            'መስ','ጥቅ','ህዳ','ታህ','ጥር','የካ','መጋ','ሚያ','ግን','ሰኔ','ሐም','ነሐ'];
+        const lower = headerText.toLowerCase();
+        const month = monthNames.findIndex(m => lower.includes(m));
+        return { year, month: month >= 12 ? month - 12 : month };
+      } catch { return null; }
+    };
+
+    for (let step = 0; step < 24; step++) {
+      const current = await getDisplayedYearMonth();
+      if (current) {
+        const monthDiff = (targetYear - current.year) * 12 + (targetMonth - current.month);
+        if (monthDiff === 0) break;
+        const navBtn = monthDiff > 0 ? nextBtn : prevBtn;
+        if (!await navBtn.isVisible({ timeout: 500 }).catch(() => false)) break;
+        await navBtn.click({ force: true });
+        await this.page.waitForTimeout(300);
       } else {
-        await this.page.keyboard.type(String(dayNum));
-        await this.page.keyboard.press('Enter');
-        await this.page.keyboard.press('Tab');
+        break;
       }
+    }
+
+    // Click the target day
+    const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: new RegExp(`^${targetDay}$`) });
+    if (await enabledDays.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+      await enabledDays.first().click({ force: true });
+      console.log(`[SUCCESS] "${label}" set to day ${targetDay}.`);
     } else {
-      // No day specified — pick the first ENABLED day in the calendar (within open period)
-      const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
-      const firstEnabled = enabledDays.first();
-      if (await firstEnabled.isVisible({ timeout: 5000 }).catch(() => false)) {
-        const dayText = await firstEnabled.textContent();
-        await firstEnabled.click({ force: true });
-        console.log(`[SUCCESS] "${label}" set to first enabled day: ${dayText?.trim()}.`);
+      // Fallback: pick last enabled day in whatever month is showing
+      const anyEnabled = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
+      const count = await anyEnabled.count();
+      if (count > 0) {
+        const last = anyEnabled.nth(count - 1);
+        const dayText = await last.textContent();
+        await last.click({ force: true });
+        console.log(`[WARN] "${label}" — target day ${targetDay} not found, picked last enabled: ${dayText?.trim()}.`);
       } else {
-        // Last resort: press Enter to accept whatever is pre-selected
         await this.page.keyboard.press('Enter');
         console.log(`[WARN] "${label}" — no enabled days found, pressed Enter.`);
       }
     }
 
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(800);
     await this.stopTacticalTimer(`Pick Date: ${label}`, 'UI');
   }
 
@@ -810,6 +927,8 @@ ${curlCmd}
         await selector.click({ timeout: 5000 });
         await this.page.waitForTimeout(1500);
         const options = this.page.locator(optionSelector).filter({ visible: true });
+        // Wait for at least one option to appear before counting
+        await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
         const count = await options.count();
         if (count > 0) {
           const randomIndex = Math.floor(Math.random() * count);
@@ -822,8 +941,13 @@ ${curlCmd}
           await this.page.keyboard.press('Escape');
           if (isOptional) return 0;
         }
-      } catch (e) {
-        await this.page.keyboard.press('Escape');
+      } catch (e: any) {
+        await this.page.keyboard.press('Escape').catch(() => {});
+        if (
+          e.message?.includes('Target page') ||
+          e.message?.includes('page has been closed') ||
+          e.message?.includes('context was destroyed')
+        ) throw e;
       }
     }
     if (!isOptional) throw new Error(`[ERROR] Failed selection for ${labelName}`);
@@ -831,26 +955,44 @@ ${curlCmd}
   }
 
   getTransactionDates(): { soDate: string; invoiceDate: string; dueDate: string } {
-    const today = new Date();
-    const due = new Date();
-    due.setDate(today.getDate() + 30);
+    // Use DateHelper cached value if available, otherwise fall back to today.
+    // For a fully async version call getTransactionDatesAsync().
+    const { DateHelper } = require('./utils/DateHelper');
+    const cached = (DateHelper as any)['_cached'] as { gcDate: Date } | null;
+    const today = cached?.gcDate ?? new Date();
+    const due = new Date(today);
+    due.setUTCDate(today.getUTCDate() + 30);
     const fmt = (d: Date) => {
-      const dd = String(d.getDate()).padStart(2, '0');
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const yyyy = d.getFullYear();
-      return `${dd}/${mm}/${yyyy}`;
+      const dd = String(d.getUTCDate()).padStart(2, '0');
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+      return `${dd}/${mm}/${d.getUTCFullYear()}`;
     };
     return { soDate: fmt(today), invoiceDate: fmt(today), dueDate: fmt(due) };
   }
 
-  getInvoiceDates(): { invoiceDate: string; dueDate: string } {
-    const today = new Date();
-    const due = new Date();
-    due.setDate(today.getDate() + 30);
+  async getTransactionDatesAsync(): Promise<{ soDate: string; invoiceDate: string; dueDate: string; isoDate: string }> {
+    const { DateHelper } = require('./utils/DateHelper');
+    const resolved = await DateHelper.resolve(this.page);
+    const due = new Date(resolved.gcDate);
+    due.setUTCDate(resolved.gcDate.getUTCDate() + 30);
     const fmt = (d: Date) => {
-      const dd = String(d.getDate()).padStart(2, '0');
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      return `${dd}/${mm}/${d.getFullYear()}`;
+      const dd = String(d.getUTCDate()).padStart(2, '0');
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+      return `${dd}/${mm}/${d.getUTCFullYear()}`;
+    };
+    return { soDate: fmt(resolved.gcDate), invoiceDate: fmt(resolved.gcDate), dueDate: fmt(due), isoDate: resolved.iso };
+  }
+
+  getInvoiceDates(): { invoiceDate: string; dueDate: string } {
+    const { DateHelper } = require('./utils/DateHelper');
+    const cached = (DateHelper as any)['_cached'] as { gcDate: Date } | null;
+    const today = cached?.gcDate ?? new Date();
+    const due = new Date(today);
+    due.setUTCDate(today.getUTCDate() + 30);
+    const fmt = (d: Date) => {
+      const dd = String(d.getUTCDate()).padStart(2, '0');
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+      return `${dd}/${mm}/${d.getUTCFullYear()}`;
     };
     return { invoiceDate: fmt(today), dueDate: fmt(due) };
   }
@@ -965,7 +1107,16 @@ ${curlCmd}
     return Math.ceil(required - available + 1000);
   }
 
-  /** Inject cash into a cash/bank account via an approved standalone receipt. */
+  /**
+   * Inject cash into a specific cash/bank account via an approved miscellaneous receipt.
+   *
+   * Accounting logic (double-entry):
+   *   Dr  Cash Account (the account the payment will draw from)   +amount
+   *   Cr  Revenue/Income GL account                               +amount
+   *
+   * The cashAccountId MUST be the same account the payment will use — otherwise
+   * the balance lands in the wrong account and the payment still fails with 422.
+   */
   async seedCashBalanceAPI(amount: number, cashAccountId?: string): Promise<void> {
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
@@ -975,18 +1126,32 @@ ${curlCmd}
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-    const acctResp = await this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+    const acctResp = await this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });
     const acctData = await acctResp.json();
-    const allAccounts = acctData.items || acctData.data || [];
+    const allAccounts: any[] = acctData.items || acctData.data || [];
+
+    // Target: the exact cash account the payment will draw from
+    // API returns "type" field, not "account_type"
+    const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
     const cashAccount = cashAccountId
       ? allAccounts.find((a: any) => a.id === cashAccountId)
-      : allAccounts.find((a: any) =>
-          a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
-        ) || allAccounts[0];
+      : allAccounts.find((a: any) => typeOf(a).includes('cash'))
+        ?? allAccounts.find((a: any) => typeOf(a).includes('bank'))
+        ?? allAccounts[0];
 
-    const glAccount = allAccounts.find((a: any) =>
-      a.account_type?.toLowerCase().includes('receivable')
-    ) || allAccounts[1] || allAccounts[0];
+    // Offset: revenue account (Cr side of the receipt journal entry)
+    const revenueAccount =
+      allAccounts.find((a: any) => typeOf(a) === 'revenue') ??
+      allAccounts.find((a: any) => typeOf(a).includes('revenue')) ??
+      allAccounts.find((a: any) => typeOf(a).includes('income')) ??
+      allAccounts.find((a: any) => typeOf(a).includes('sales')) ??
+      allAccounts.find((a: any) => typeOf(a).includes('equity')) ??
+      allAccounts.find((a: any) =>
+        !typeOf(a).includes('cash') &&
+        !typeOf(a).includes('bank') &&
+        !typeOf(a).includes('payable') &&
+        !typeOf(a).includes('receivable')
+      ) ?? allAccounts[1] ?? allAccounts[0];
 
     const custResp = await this.page.request.get(`${this.apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
     const custData = await custResp.json();
@@ -996,34 +1161,41 @@ ${curlCmd}
     const currData = await currResp.json();
     const currency = currData.items?.[0] || currData.data?.[0];
 
-    if (!cashAccount || !customer || !currency) {
-      throw new Error('[CASH_TOPUP] Discovery failed: missing cash account, customer, or currency.');
+    if (!cashAccount || !revenueAccount || !customer || !currency) {
+      throw new Error(`[CASH_TOPUP] Discovery failed — cashAccount:${!!cashAccount} revenueAccount:${!!revenueAccount} customer:${!!customer} currency:${!!currency}`);
     }
 
-    const roundedAmount = Math.ceil(amount) * 10; // 10x buffer to ensure sufficient balance after ERP indexing lag
+    // 10x buffer so a single seed covers multiple payment retries without re-seeding
+    const seedAmount = Math.ceil(amount) * 10;
+    const { DateHelper: _SeedDH } = require('./utils/DateHelper');
+    const _seedDateIso = (await _SeedDH.resolve(this.page)).iso;
+
     const payload = {
-      amount: roundedAmount,
-      cash_account_id: cashAccount.id,
+      amount: seedAmount,
+      cash_account_id: cashAccount.id,   // Dr: cash lands HERE — must match payment's cash_account_id
       customer_id: customer.id,
-      date: new Date().toISOString(),
+      date: _seedDateIso,
       payment_method: 'cash',
       currency_id: currency.id,
       receipt_items: [{
-        amount: roundedAmount,
-        general_ledger_account_id: glAccount.id,
-        unit_price: roundedAmount,
+        amount: seedAmount,
+        general_ledger_account_id: revenueAccount.id,  // Cr: revenue offset
+        unit_price: seedAmount,
         quantity: 1,
         description: 'E2E Cash Balance Top-Up'
       }]
     };
 
-    console.log(`[CASH_TOPUP] Seeding ${roundedAmount} into ${cashAccount.name || cashAccount.id}...`);
+    console.log(`[CASH_TOPUP] Seeding ${seedAmount} → Dr "${cashAccount.name}" / Cr "${revenueAccount.name}"`);
     const response = await this.page.request.post(`${this.apiBase}/receipts?${params}`, { data: payload, headers });
-    if (!response.ok()) throw new Error(`[CASH_TOPUP] Receipt creation failed: ${response.status()} - ${await response.text()}`);
+    if (!response.ok()) {
+      const errText = await response.text();
+      throw new Error(`[CASH_TOPUP] Receipt creation failed: ${response.status()} - ${errText}`);
+    }
 
     const receipt = await response.json();
     await this.advanceDocumentAPI(receipt.id, 'receipts');
-    await this.page.waitForTimeout(5000); // wait for ERP to index the cash balance
-    console.log(`[CASH_TOPUP] Successfully seeded ${roundedAmount} (receipt ${receipt.ref})`);
+    await this.page.waitForTimeout(5000); // allow ERP to index the new cash balance
+    console.log(`[CASH_TOPUP] Seeded ${seedAmount} into "${cashAccount.name}" (receipt ${receipt.ref ?? receipt.id})`);
   }
 }

@@ -86,11 +86,9 @@ export class AuthManager extends BasePage {
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
-      // 5. Navigate home to activate the authenticated session in the browser context.
-      // Use 'commit' (not 'domcontentloaded') so we don't block on a slow frontend —
-      // cookies and localStorage are already set; the session is live from here.
-      await this.page.goto('/', { waitUntil: 'commit', timeout: 15000 }).catch(() => {
-        // Frontend unreachable is non-fatal — API session (token + cookies) is already established.
+      // 5. Navigate home. Use 'commit' so we don't block on the slow bundle download —
+      // the companyBtn.waitFor below will block until React actually mounts.
+      await this.page.goto('/', { waitUntil: 'commit', timeout: 30000 }).catch(() => {
         console.log('[AUTH] Frontend navigation skipped (unreachable) — API session active.');
       });
 
@@ -105,32 +103,50 @@ export class AuthManager extends BasePage {
       await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
     }
 
-    // Wait for company switcher — confirms the app is fully mounted & authenticated
-    // Use a short timeout; if the frontend is slow/unreachable the API session is still valid.
-    const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false);
+    // Wait for company switcher — confirms the app is fully mounted & authenticated.
+    // If the bundle is slow (known infra issue), skip UI setup — API session is already valid.
+    const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false);
     if (uiReady && companyName) {
       await this.switchCompany(companyName);
       await this.switchYear(process.env.BEFFA_YEAR || '2019');
-    } else if (!uiReady) {
-      console.log('[AUTH] Frontend not rendered — skipping company switch (API session active).');
+    } else {
+      console.log('[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.');
     }
   }
 
   async _getAuthToken(): Promise<string | null> {
     if (this.cachedToken) return this.cachedToken;
-    return await this.page.evaluate(() => {
-      const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
-      for (const key of keys) {
-        const val = localStorage.getItem(key) || sessionStorage.getItem(key);
-        if (val && val.length > 50) return val;
+    try {
+      const token = await this.page.evaluate(() => {
+        const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
+        for (const key of keys) {
+          const val = localStorage.getItem(key) || sessionStorage.getItem(key);
+          if (val && val.length > 50) return val;
+        }
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i)!;
+          const v = localStorage.getItem(k);
+          if (v && v.startsWith('ey')) return v;
+        }
+        return null;
+      });
+      if (token) { this.cachedToken = token; return token; }
+    } catch { /* page on about:blank or cross-origin — fall through to API login */ }
+    // Re-login via API to get a fresh token (handles about:blank and cross-origin pages)
+    try {
+      const year = process.env.BEFFA_YEAR || '2019';
+      const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
+      const r = await this.page.request.post(loginUrl, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (r.ok()) {
+        const d = await r.json();
+        const t = d.auth_token || d.token;
+        if (t) { this.cachedToken = t; return t; }
       }
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i)!;
-        const v = localStorage.getItem(k);
-        if (v && v.startsWith('ey')) return v;
-      }
-      return null;
-    });
+    } catch { /* ignore */ }
+    return null;
   }
 
   async switchCompany(targetName: string): Promise<void> {
@@ -157,10 +173,11 @@ export class AuthManager extends BasePage {
     if (await option.isVisible({ timeout: 5000 }).catch(() => false)) {
       await this.startTacticalTimer();
       await option.click();
-      // Reload is usually automatic on company change in this ERP
-      await this.page.waitForURL('**/', { waitUntil: 'load', timeout: 60000 });
+      // Use 'commit' — avoids blocking on the 7.9MB JS bundle re-download
+      await this.page.waitForURL('**/', { waitUntil: 'commit', timeout: 30000 }).catch(() => {});
       await this.stopTacticalTimer(`${cleanTarget} Context Mount`, 'UI');
-      await this.page.waitForTimeout(2000);
+      // Wait for company button to re-render (React mount) instead of fixed delay
+      await this.companyBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     } else {
       console.log(`[WARN] Company option "${cleanTarget}" not found in menu. Staying on "${currentName}"`);
       await this.page.keyboard.press('Escape');

@@ -66,7 +66,7 @@ test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        await page.goto('/human-resources/leave/leave-applications', { waitUntil: 'networkidle' });
+        await page.goto('/human-resources/leave/leave-applications', { waitUntil: 'commit' });
 
         const hasError = await page.locator('text=/error|failed|something went wrong/i').first()
             .isVisible({ timeout: 5000 }).catch(() => false);

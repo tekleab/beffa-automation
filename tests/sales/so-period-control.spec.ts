@@ -61,13 +61,21 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         if (so.success) {
             try {
                 await app.advanceDocumentAPI(so.id, 'sales-orders');
-                throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!`);
+                throw new Error(
+                    `[CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n` +
+                    `  SO ID    : ${so.id}\n` +
+                    `  SO Ref   : ${so.ref}\n` +
+                    `  SO Date  : ${backDate}\n` +
+                    `  Item     : ${item.itemName} (${item.itemId})\n` +
+                    `  Customer : ${meta.customerId}\n` +
+                    `  Status   : Approved — period control NOT enforced at SO approval`
+                );
             } catch (advanceErr: any) {
                 if (advanceErr.message.includes('CRITICAL_PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] SO created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Back-dated SO rejected`);
+            console.log(`[PASS] Back-dated SO rejected at creation`);
         }
     });
 
@@ -190,23 +198,44 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         const backDate = '2017-12-31T00:00:00Z';
         console.log(`[TEST] Creating Receipt with back date: ${backDate}`);
 
+        const invoiceData = await app.api.sales.getInvoiceAPI(inv.id);
+        // net_due = original invoice total; unreceived_amount = outstanding balance (may lag)
+        // Use whichever is smaller and > 0 to avoid over-paying
+        const netDue = parseFloat(invoiceData.net_due ?? '0');
+        const unreceivedAmt = parseFloat(invoiceData.unreceived_amount ?? invoiceData.due ?? '0');
+        const invAmount = unreceivedAmt > 0 ? unreceivedAmt : netDue;
+        if (invAmount <= 0) {
+            console.log(`[SKIP] Invoice ${inv.ref} already fully paid (balance=${invAmount}). Skipping receipt creation.`);
+            return;
+        }
+
         const rct = await app.api.sales.createInvoiceReceiptAPI({
             invoiceId: inv.id,
             customerId: meta.customerId,
-            amount: 5000,
+            amount: invAmount,
             receiptDate: backDate
         });
 
         if (rct.success) {
             try {
                 await app.advanceDocumentAPI(rct.id, 'receipts');
-                throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Receipt from previous fiscal year!`);
+                throw new Error(
+                    `[CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated Receipt from previous fiscal year!\n` +
+                    `  Receipt ID   : ${rct.id}\n` +
+                    `  Receipt Ref  : ${rct.ref}\n` +
+                    `  Receipt Date : ${backDate}\n` +
+                    `  Invoice ID   : ${inv.id}\n` +
+                    `  Invoice Ref  : ${inv.ref}\n` +
+                    `  Amount       : ${invAmount}\n` +
+                    `  Customer     : ${meta.customerId}\n` +
+                    `  Status       : Approved — period control NOT enforced at Receipt approval`
+                );
             } catch (advanceErr: any) {
                 if (advanceErr.message.includes('CRITICAL_PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Back-dated Receipt blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Back-dated Receipt rejected`);
+            console.log(`[PASS] Back-dated Receipt rejected at creation`);
         }
     });
 

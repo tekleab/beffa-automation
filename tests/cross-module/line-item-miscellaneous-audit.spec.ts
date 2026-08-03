@@ -86,7 +86,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('SO-UI-01: Add inventory Line Item via modal → SO created and approved', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -107,7 +107,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('SO-UI-02: Add Miscellaneous Line Item via modal → SO created and approved', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -135,7 +135,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -264,7 +264,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('INV-UI-01: Add inventory Line Item via modal → Invoice created and approved', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
@@ -286,7 +286,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
@@ -313,7 +313,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
@@ -427,7 +427,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
-        await page.goto('/receivables/receipts/new', { waitUntil: 'networkidle' });
+        await page.goto('/receivables/receipts/new', { waitUntil: 'commit' });
 
         await app.pickDate('Receipt Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -518,7 +518,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('PO-UI-01: Add inventory Line Item via modal → PO created and approved', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'networkidle' });
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -540,7 +540,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('PO-UI-02: Add Miscellaneous Line Item via modal → PO total reflects it', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'networkidle' });
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -568,7 +568,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'networkidle' });
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -681,7 +681,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('BILL-UI-01: Add inventory Line Item via modal → Bill created and approved', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/payables/bills/new', { waitUntil: 'networkidle' });
+        await page.goto('/payables/bills/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -702,7 +702,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('BILL-UI-02: Add Miscellaneous line via modal → Bill total reflects it', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/payables/bills/new', { waitUntil: 'networkidle' });
+        await page.goto('/payables/bills/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -728,7 +728,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP', async ({ page }) => {
         const app = new AppManager(page);
-        await page.goto('/payables/bills/new', { waitUntil: 'networkidle' });
+        await page.goto('/payables/bills/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -844,7 +844,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await page.waitForTimeout(3000);
         const billData = await app.api.purchase.getBillAPI(bill.id);
-        const remaining = parseFloat(billData.balance ?? billData.net_due ?? billData.unpaid_amount ?? '999');
+        const remaining = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.net_due ?? '999');
         console.log(`[AUDIT] Bill $${TOTAL} | Payment $${TOTAL} | Remaining: $${remaining}`);
         expect(remaining).toBeLessThan(1);
         console.log('[PASS] Full payment settles bill to zero');
@@ -875,8 +875,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             app.api.purchase.getBillAPI(billA.id),
             app.api.purchase.getBillAPI(billB.id),
         ]);
-        const remA = parseFloat(dataA.balance ?? dataA.unpaid_amount ?? '999');
-        const remB = parseFloat(dataB.balance ?? dataB.unpaid_amount ?? '999');
+        const remA = parseFloat(dataA.unpaid_amount ?? dataA.balance ?? '999');
+        const remB = parseFloat(dataB.unpaid_amount ?? dataB.balance ?? '999');
         console.log(`[AUDIT] Bill A remaining: $${remA} | Bill B remaining: $${remB}`);
         expect(remA).toBeLessThan(1);
         expect(remB).toBeLessThan(1);
@@ -900,7 +900,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await page.waitForTimeout(3000);
         const billData = await app.api.purchase.getBillAPI(bill.id);
-        const remaining = parseFloat(billData.balance ?? billData.net_due ?? billData.unpaid_amount ?? '999');
+        const remaining = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.net_due ?? '999');
         console.log(`[AUDIT] Bill $${TOTAL} | Paid $${PARTIAL} | Remaining $${remaining} | Expected $${TOTAL - PARTIAL}`);
         expect(remaining).toBeCloseTo(TOTAL - PARTIAL, 1);
         console.log('[PASS] Partial payment reduces bill balance correctly');

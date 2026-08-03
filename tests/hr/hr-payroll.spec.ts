@@ -203,7 +203,7 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        await page.goto('/payrolls/payroll-runs', { waitUntil: 'networkidle' });
+        await page.goto('/payrolls/payroll-runs', { waitUntil: 'commit' });
 
         const hasError = await page.locator('text=/error|failed|something went wrong/i').first()
             .isVisible({ timeout: 5000 }).catch(() => false);
@@ -221,7 +221,7 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        await page.goto('/payrolls/settings/pay-components', { waitUntil: 'networkidle' });
+        await page.goto('/payrolls/settings/pay-components', { waitUntil: 'commit' });
 
         const hasError = await page.locator('text=/error|failed|something went wrong/i').first()
             .isVisible({ timeout: 5000 }).catch(() => false);

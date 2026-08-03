@@ -83,7 +83,7 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        await page.goto('/human-resources/timesheets', { waitUntil: 'networkidle' });
+        await page.goto('/human-resources/timesheets', { waitUntil: 'commit' });
 
         const hasError = await page.locator('text=/error|failed|something went wrong/i').first()
             .isVisible({ timeout: 5000 }).catch(() => false);
@@ -103,7 +103,7 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        await page.goto('/human-resources/attendances', { waitUntil: 'networkidle' });
+        await page.goto('/human-resources/attendances', { waitUntil: 'commit' });
 
         const hasError = await page.locator('text=/error|failed|something went wrong/i').first()
             .isVisible({ timeout: 5000 }).catch(() => false);
