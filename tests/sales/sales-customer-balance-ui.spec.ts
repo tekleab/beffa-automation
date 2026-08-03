@@ -60,7 +60,9 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
 
         if (!isVisible) {
             const rowCount = await page.locator('table tbody tr').count();
-            console.log(`[DEBUG] Rows in table: ${rowCount}`);
+            const tableText = await page.locator('table tbody').textContent().catch(() => '');
+            console.log(`[DEBUG] Rows in Invoices tab: ${rowCount}`);
+            console.log(`[DEBUG] Table content: ${tableText?.substring(0, 500)}`);
             console.log(`[KNOWN_BUG] Invoice ${inv.ref} not visible in customer profile Invoices tab (${rowCount} rows). ERP UI indexing lag under parallel load — invoice approved and balance confirmed via API.`);
             return;
         }
