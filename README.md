@@ -220,6 +220,7 @@ These are **confirmed ERP-side defects** detected by the suite. Tests log them a
 | 3 | Purchase | Same PO can be billed twice — duplicate AP liability created when second `createBillFromPoAPI` call is made on a fully-billed PO | High | Open |
 | 4 | HR | `GET /payroll-runs/{id}/employees` always returns `total=1` regardless of actual assigned count | Medium | Open |
 | 5 | HR | `POST /employees` returns `null` response body — employee is created but ID is not returned directly | Low | Open |
+| 6 | Inventory | Back-dated stock adjustments from closed periods (e.g. 2022) are accepted — period control not enforced on `POST /inventory-adjustments` | High | Open |
 
 ---
 
