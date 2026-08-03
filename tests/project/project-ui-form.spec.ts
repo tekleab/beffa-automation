@@ -34,23 +34,20 @@ test.describe('Project Management: UI Form @project @ui @smoke @regression @full
 
     test('UI-10: Add Project button navigates to /projects/new', async ({ page }) => {
         const { app } = await setup(page);
-        await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.goto('/project-management/projects', { waitUntil: 'commit' });
         const addBtn = page.getByRole('link', { name: /Add Project/i })
             .or(page.getByRole('button', { name: /Add Project/i })).first();
+        await addBtn.waitFor({ state: 'visible', timeout: 30000 });
         await addBtn.click();
-        // URL may be /project-management/projects/new — match any path ending in /projects/new
-        await page.waitForURL(url => url.href.includes('/projects/new'), { timeout: 10000 })
-            .catch(() => {});
+        await page.waitForURL(url => url.href.includes('/projects/new'), { timeout: 15000 });
         expect(page.url()).toMatch(/\/projects\/new/);
     });
 
     test('UI-11: Add Project form has all required inputs', async ({ page }) => {
         const { app } = await setup(page);
-        await page.goto('/project-management/projects/new');
-        await page.waitForLoadState('networkidle');
+        await page.goto('/project-management/projects/new', { waitUntil: 'commit' });
         // Text inputs & selects
-        await expect(page.locator('input#project_name')).toBeVisible({ timeout: 8000 });
+        await expect(page.locator('input#project_name')).toBeVisible({ timeout: 30000 });
         await expect(page.locator('input#ref')).toBeVisible();
         await expect(page.locator('select#project_status')).toBeVisible();
         await expect(page.locator('input#percent_complete')).toBeVisible();
@@ -87,8 +84,7 @@ test.describe('Project Management: UI Form @project @ui @smoke @regression @full
 
     test('UI-GUARD-01: "Create project" submit button is disabled on empty form', async ({ page }) => {
         const { app } = await setup(page);
-        await page.goto('/project-management/projects/new');
-        await page.waitForLoadState('networkidle');
+        await page.goto('/project-management/projects/new', { waitUntil: 'commit' });
 
         // Probe confirmed: BTN[71] "Create project" type="submit" disabled=true on empty form
         const saveBtn = page.locator('button[type="submit"]').filter({ hasText: /Create project/i });

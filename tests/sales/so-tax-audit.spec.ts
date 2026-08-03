@@ -45,12 +45,14 @@ test.describe('Sales Tax GL Audit @sales @logic @regression @full', () => {
         console.log(`[TAX] ${tax.name} @ ${taxRate}% | Expected tax amount: ${expectedTaxAmount}`);
 
         console.log(`[STEP 2] Creating invoice with tax...`);
+        const { DateHelper: _TaxDH } = require('../../lib/utils/DateHelper');
+        const _taxDateIso = (await _TaxDH.resolve(page)).iso;
         const resp = await page.request.post(`${apiBase}/invoices?${qs}`, {
             data: {
                 accounts_receivable_id: meta.arAccountId,
                 customer_id: meta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: _taxDateIso,
+                due_date: _taxDateIso,
                 currency_id: meta.currencyId,
                 items: [{ item_id: item.itemId, quantity: 1, unit_price: UNIT_PRICE, amount: UNIT_PRICE, general_ledger_account_id: meta.salesAccountId, location_id: item.locationId, warehouse_id: item.warehouseId, tax_id: tax.id }],
                 released_sales_order_items: []

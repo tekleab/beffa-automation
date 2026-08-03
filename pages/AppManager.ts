@@ -132,6 +132,8 @@ export class AppManager {
   async handleSOReleasedTab(...args: Parameters<SalesPage['handleSOReleasedTab']>) { return await this.ui.sales.handleSOReleasedTab(...args); }
   getInvoiceDates(...args: Parameters<BasePage['getInvoiceDates']>) { return this.base.getInvoiceDates(...args); }
   async captureRandomItemDataAPI(...args: Parameters<InventoryAPI['captureRandomItemDataAPI']>) { return await this.api.inventory.captureRandomItemDataAPI(...args); }
+  async discoverMetadataAPI() { return await this.api.purchase.discoverMetadataAPI(); }
+  async discoverRandomVendorAPI() { return await this.api.purchase.discoverRandomVendorAPI(); }
   async createFreshItemWithStockAPI(...args: Parameters<InventoryAPI['createFreshItemWithStockAPI']>) { return await this.api.inventory.createFreshItemWithStockAPI(...args); }
   async captureRandomItemDetails() {
     const target = await this.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });

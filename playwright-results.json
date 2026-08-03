@@ -185,95 +185,180 @@
   },
   "suites": [
     {
-      "title": "project/project-ui-detail.spec.ts",
-      "file": "project/project-ui-detail.spec.ts",
+      "title": "cross-module/line-item-miscellaneous-audit.spec.ts",
+      "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Project Management: UI Detail & Guardrails @project @ui @smoke @regression @full",
-          "file": "project/project-ui-detail.spec.ts",
-          "line": 10,
+          "title": "Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full",
+          "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+          "line": 20,
           "column": 6,
           "specs": [
             {
-              "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+              "title": "INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it",
               "ok": false,
               "tags": [
-                "project",
-                "ui",
-                "smoke",
+                "sales",
+                "purchase",
+                "logic",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 300000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|419.58"
+                      "description": "API|Auth API Verification|466.89"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|255.16"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Pick Date: Invoice Date|176758.98"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Pick Date: Due Date|25693.35"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Customer|6996.20"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
+                  "projectId": "Cross-Module",
+                  "projectName": "Cross-Module",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "timedOut",
-                      "duration": 130913,
+                      "duration": 330296,
                       "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                        "message": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m"
                       },
                       "errors": [
                         {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                          "message": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m"
                         },
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                            "column": 20,
-                            "line": 36
+                            "file": "/home/teklish/beffa-automation/lib/base-page.ts",
+                            "column": 24,
+                            "line": 949
                           },
-                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects/ecc60f7e-ab30-4e09-95ab-54431dbd2950\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 34 |\u001b[39m         \u001b[36mconst\u001b[39m { app\u001b[33m,\u001b[39m meta } \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m setup(page)\u001b[33m;\u001b[39m\n \u001b[90m 35 |\u001b[39m         \u001b[36mconst\u001b[39m { project } \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m createProject(app\u001b[33m,\u001b[39m meta)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 36 |\u001b[39m         \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m`/project-management/projects/${project.id}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 37 |\u001b[39m         \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 38 |\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[90m// Click the \"Financial Information\" tab to expose financial fields\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:36:20\u001b[22m"
+                          "message": "Error: locator.scrollIntoViewIfNeeded: Target page, context or browser has been closed\n\n   at ../lib/base-page.ts:949\n\n  947 |     for (let i = 0; i < 3; i++) {\n  948 |       try {\n> 949 |         await selector.scrollIntoViewIfNeeded();\n      |                        ^\n  950 |         await selector.click({ timeout: 5000 });\n  951 |         await this.page.waitForTimeout(1500);\n  952 |         const options = this.page.locator(optionSelector).filter({ visible: true });\n    at BasePage.selectRandomOption (/home/teklish/beffa-automation/lib/base-page.ts:949:24)\n    at AppManager.selectRandomOption (/home/teklish/beffa-automation/pages/AppManager.ts:126:90)\n    at /home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:296:9"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[PERFORMANCE] API - Auth API Verification: 419.58ms\n"
+                          "text": "\u001b[33m13:22:27 [PERFORMANCE]\u001b[0m API - Auth API Verification: 466.89ms\n"
                         },
                         {
                           "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 50...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1785763364801 (ada19d0a-d0c0-4030-bb5b-f4680764875d) | method=WAC | stock=50@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 50...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1785763369174 (6c277423-ba9f-48f0-be88-0bb75cbd3d7e) | method=WAC | stock=50@$80 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c\n"
+                        },
+                        {
+                          "text": "\u001b[33m13:22:59 [PERFORMANCE]\u001b[0m API - Auth API Verification: 255.16ms\n"
+                        },
+                        {
+                          "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
+                        },
+                        {
+                          "text": "[DateHelper] Resolved in-period date: 2027-03-01T00:00:00Z (day=1)\n"
+                        },
+                        {
+                          "text": "\u001b[36m13:23:11 [INFO]\u001b[0m Picking date: \"Invoice Date\" → target 2027-3-1\n"
+                        },
+                        {
+                          "text": "\u001b[32m13:26:07 [PASS]\u001b[0m \"Invoice Date\" set to day 1.\n"
+                        },
+                        {
+                          "text": "\u001b[33m13:26:08 [PERFORMANCE]\u001b[0m UI - Pick Date: Invoice Date: 176758.98ms\n"
+                        },
+                        {
+                          "text": "\u001b[36m13:26:08 [INFO]\u001b[0m Picking date: \"Due Date\" → target 2027-3-1\n"
+                        },
+                        {
+                          "text": "\u001b[32m13:26:33 [PASS]\u001b[0m \"Due Date\" set to day 1.\n"
+                        },
+                        {
+                          "text": "\u001b[33m13:26:34 [PERFORMANCE]\u001b[0m UI - Pick Date: Due Date: 25693.35ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m13:26:41 [PERFORMANCE]\u001b[0m UI - Random Selection: Customer: 6996.20ms\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-03T11:32:33.070Z",
+                      "startTime": "2026-08-03T13:22:26.422Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|419.58"
+                          "description": "API|Auth API Verification|466.89"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|255.16"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Pick Date: Invoice Date|176758.98"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Pick Date: Due Date|25693.35"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Customer|6996.20"
                         }
                       ],
                       "attachments": [
                         {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-cb58b-→-Invoice-total-reflects-it-Cross-Module/test-failed-1.png"
+                        },
+                        {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/video.webm"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-cb58b-→-Invoice-total-reflects-it-Cross-Module/video.webm"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-cb58b-→-Invoice-total-reflects-it-Cross-Module/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-cb58b-→-Invoice-total-reflects-it-Cross-Module/trace.zip"
                         }
                       ]
                     }
@@ -281,9 +366,9 @@
                   "status": "unexpected"
                 }
               ],
-              "id": "7edff9a93a69a426f48f-a499952baf1606c70b93",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 33,
+              "id": "5dc60173c5454776a922-bc9273b8d3a310a5cf53",
+              "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+              "line": 289,
               "column": 9
             }
           ]
@@ -293,8 +378,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-03T11:32:11.866Z",
-    "duration": 170504.076,
+    "startTime": "2026-08-03T13:22:03.352Z",
+    "duration": 435396.352,
     "expected": 0,
     "skipped": 0,
     "unexpected": 1,

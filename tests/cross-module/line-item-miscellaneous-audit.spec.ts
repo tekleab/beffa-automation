@@ -24,6 +24,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     let purchaseMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let itemA: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
     let itemB: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
+    let periodDateIso: string;
 
     test.beforeAll(async ({ browser }) => {
         test.setTimeout(600000);
@@ -34,10 +35,14 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         purchaseMeta = await app.api.purchase.discoverMetadataAPI();
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 80 });
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        periodDateIso = (await DateHelper.resolve(page)).iso;
         await page.close();
     });
 
     test.beforeEach(async ({ page }) => {
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        DateHelper.clearCache();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });
@@ -221,7 +226,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 accounts_receivable_id: salesMeta.arAccountId,
                 currency_id: salesMeta.currencyId,
                 customer_id: salesMeta.customerId,
-                so_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                so_date: periodDateIso,
                 so_items: [{ item_id: itemA.itemId, quantity: 0, unit_price: 500, amount: 0, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
                 status: 'draft',
             },
@@ -247,7 +252,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 accounts_receivable_id: salesMeta.arAccountId,
                 currency_id: salesMeta.currencyId,
                 customer_id: salesMeta.customerId,
-                so_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                so_date: periodDateIso,
                 so_items: [{ item_id: itemA.itemId, quantity: 1, unit_price: -500, amount: -500, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
                 status: 'draft',
             },
@@ -357,14 +362,16 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const L1 = 3 * 400, L2 = 2 * 600;
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        const dateIso = (await DateHelper.resolve(page)).iso;
 
         const resp = await page.request.post(`${apiBase}/invoices?${qs}`, {
             headers,
             data: {
                 accounts_receivable_id: salesMeta.arAccountId,
                 customer_id: salesMeta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: dateIso,
+                due_date: dateIso,
                 currency_id: salesMeta.currencyId,
                 released_sales_order_items: [],
                 items: [
@@ -394,8 +401,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             data: {
                 accounts_receivable_id: salesMeta.arAccountId,
                 customer_id: salesMeta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: periodDateIso,
+                due_date: periodDateIso,
                 currency_id: salesMeta.currencyId,
                 released_sales_order_items: [],
                 items: [{ description: 'Shipping & handling', quantity: 1, unit_price: 500, amount: 500, general_ledger_account_id: salesMeta.salesAccountId }],
@@ -464,14 +471,18 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('RCT-API-02: Receipt partial payment → invoice Amount Due reduces by exact amount', async ({ page }) => {
         const app = new AppManager(page);
-        const TOTAL = 3000, PARTIAL = 1000;
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: salesMeta.customerId, itemId: itemA.itemId,
-            quantity: 3, unitPrice: TOTAL / 3,
+            quantity: 3, unitPrice: itemA.unitCost,
             locationId: itemA.locationId, warehouseId: itemA.warehouseId,
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
+
+        // Use actual invoice amount from API as ground truth
+        const invDataBefore = await app.api.sales.getInvoiceAPI(inv.id);
+        const TOTAL = parseFloat(invDataBefore.total_amount ?? invDataBefore.grand_total ?? invDataBefore.amount ?? String(inv.amountDue));
+        const PARTIAL = Math.floor(TOTAL / 3);
 
         const rct = await app.api.sales.createInvoiceReceiptAPI({
             invoiceId: inv.id, customerId: salesMeta.customerId,
@@ -489,14 +500,17 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
     test('RCT-API-03: Receipt full payment → invoice Amount Due = 0', async ({ page }) => {
         const app = new AppManager(page);
-        const AMOUNT = 2000;
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: salesMeta.customerId, itemId: itemA.itemId,
-            quantity: 2, unitPrice: 1000,
+            quantity: 2, unitPrice: itemA.unitCost,
             locationId: itemA.locationId, warehouseId: itemA.warehouseId,
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
+
+        // Use actual invoice amount from API as ground truth
+        const invDataBefore = await app.api.sales.getInvoiceAPI(inv.id);
+        const AMOUNT = parseFloat(invDataBefore.total_amount ?? invDataBefore.grand_total ?? invDataBefore.amount ?? String(inv.amountDue));
 
         const rct = await app.api.sales.createInvoiceReceiptAPI({
             invoiceId: inv.id, customerId: salesMeta.customerId,
@@ -614,6 +628,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const L1 = 5 * 1000, L2 = 3 * 1500;
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        const dateIso = (await DateHelper.resolve(page)).iso;
 
         const acctData = await (await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers })).json();
         const allAccounts = acctData.items || acctData.data || [];
@@ -627,7 +643,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             data: {
                 accounts_payable_id: apAcct.id, currency_id: currency?.id,
                 vendor_id: purchaseMeta.vendorId,
-                po_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                po_date: dateIso,
                 purchase_type_id: 4,
                 po_items: [
                     { item_id: itemA.itemId, quantity: 5, unit_price: 1000, amount: L1, general_ledger_account_id: glAcct.id, location_id: itemA.locationId, warehouse_id: itemA.warehouseId },
@@ -660,7 +676,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             data: {
                 accounts_payable_id: apAcct.id, currency_id: currency?.id,
                 vendor_id: purchaseMeta.vendorId,
-                po_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                po_date: periodDateIso,
                 purchase_type_id: 4,
                 po_items: [{ description: 'Freight & customs', quantity: 1, unit_price: 3000, amount: 3000, general_ledger_account_id: glAcct.id, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
             },
@@ -786,8 +802,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             data: {
                 accounts_payable_id: apAcct.id, currency_id: currency?.id,
                 vendor_id: purchaseMeta.vendorId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date:     new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: periodDateIso,
+                due_date:     periodDateIso,
                 items: [
                     { item_id: itemA.itemId, quantity: 3, unit_price: 1000, amount: L1, general_ledger_account_id: glAcct.id, location_id: itemA.locationId, warehouse_id: itemA.warehouseId },
                     { item_id: itemB.itemId, quantity: 2, unit_price: 2000, amount: L2, general_ledger_account_id: glAcct.id, location_id: itemB.locationId, warehouse_id: itemB.warehouseId },

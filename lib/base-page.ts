@@ -91,9 +91,10 @@ export class BasePage {
    */
   async stopTacticalTimer(label: string, category: 'API' | 'UI' = 'API') {
     const duration = performance.now() - this.startTime;
-    console.log(`[PERFORMANCE] ${category} - ${this.sanitizeLog(label)}: ${duration.toFixed(2)}ms`);
+    const safeLabel = Logger.sanitize(label);
+    const safeCategory = Logger.sanitize(category);
+    Logger.performance(`${safeCategory} - ${safeLabel}: ${duration.toFixed(2)}ms`);
 
-    // Attach to Playwright annotations for Allure consumption
     try {
       const { test } = require('@playwright/test');
       if (test && typeof test.info === 'function') {
@@ -101,7 +102,7 @@ export class BasePage {
         if (info) {
           info.annotations.push({
             type: 'tactical-perf',
-            description: `${category}|${label}|${duration.toFixed(2)}`
+            description: `${safeCategory}|${safeLabel}|${duration.toFixed(2)}`
           });
         }
       }
@@ -137,7 +138,7 @@ export class BasePage {
       'x-role': 'IT Administrator / User Manager'
     };
 
-    console.log(`[API] Advancing ${this.sanitizeLog(docType)} "${this.sanitizeLog(docId)}"...`);
+    Logger.info(`Advancing ${Logger.sanitize(docType)} "${Logger.sanitize(docId)}"...`);
 
     // Fetch current user once before the loop
     let submittedTo: string | undefined;
@@ -167,7 +168,7 @@ export class BasePage {
         break;
       } else if (status === 401) {
         // Token expired mid-test — re-authenticate once and retry
-        console.log(`[AUTH] 401 on advance — re-authenticating and retrying...`);
+        Logger.warn('401 on advance — re-authenticating and retrying...');
         try {
           const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
           const loginResp = await this.page.request.post(loginUrl, {
@@ -179,16 +180,17 @@ export class BasePage {
             const newToken = session.auth_token;
             if (newToken) {
               await this.page.evaluate((t) => {
+                // nosec CWE-79 — test automation framework; token stored in ERP's own localStorage schema
                 localStorage.setItem('token', t);
                 localStorage.setItem('auth-token', t);
               }, newToken);
               headers['Authorization'] = `Bearer ${newToken}`;
-              console.log(`[AUTH] Re-authenticated successfully — retrying advance...`);
+              Logger.info('Re-authenticated successfully — retrying advance...');
               continue;
             }
           }
         } catch (e: any) {
-          console.log(`[AUTH] Re-auth failed: ${this.sanitizeLog(e.message)}`);
+          Logger.warn(`Re-auth failed: ${Logger.sanitize(e.message)}`);
         }
         throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${this.sanitizeLog(company)}" is invalid or expired.`);
       } else if (status === 422) {
@@ -197,17 +199,17 @@ export class BasePage {
         throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
       } else {
         const errBody = await resp.text().catch(() => '(unreadable)');
-        console.log(`[ERROR] Advance failed. Status: ${status} | Body: ${this.sanitizeLog(errBody)}`);
+        Logger.error(`Advance failed. Status: ${status} | Body: ${Logger.sanitize(errBody)}`);
         // For employee-contracts, a 500/E1481 may mean already at final state — check current status
         if (docType === 'employee-contracts' && status === 500) {
-          console.log(`[INFO] employee-contracts advance returned 500 (E1481) — checking if contract is already approved...`);
+          Logger.info('employee-contracts advance returned 500 (E1481) — checking if contract is already approved...');
           break;
         }
         break;
       }
     }
 
-    if (!success) console.log(`[WARN] Advance had no successful steps for ${this.sanitizeLog(docType)} ${this.sanitizeLog(docId)}.`);
+    if (!success) Logger.warn(`Advance had no successful steps for ${Logger.sanitize(docType)} ${Logger.sanitize(docId)}.`);
   }
 
   /**
@@ -331,7 +333,7 @@ ${curlCmd}
         }
       }
     } catch (e) {
-      console.log(`[WARN] Could not attach API failure to Allure report: ${e}`);
+      Logger.warn(`Could not attach API failure to Allure report: ${Logger.sanitize(String(e))}`);
     }
   }
 
@@ -355,7 +357,7 @@ ${curlCmd}
         lastError = { status, text };
         if (status === 500 || status === 503) {
           const backoff = attempt * attempt * 1500;
-          console.log(`[WARN] GET ${this.sanitizeLog(url)} → ${status}. Retry ${attempt}/4 in ${backoff}ms...`);
+          Logger.warn(`GET ${Logger.sanitize(url)} → ${status}. Retry ${attempt}/4 in ${backoff}ms...`);
           await this.page.waitForTimeout(backoff);
           continue;
         }
@@ -372,7 +374,7 @@ ${curlCmd}
           err.message?.includes('[TIMEOUT]')
         ) {
           const backoff = attempt * attempt * 1500;
-          console.log(`[WARN] GET ${this.sanitizeLog(url)} → ${this.sanitizeLog(err.message.split('\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`);
+          Logger.warn(`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.message.split('\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`);
           lastError = { status: err.message?.includes('[TIMEOUT]') ? 408 : 0, text: err.message };
           await this.page.waitForTimeout(backoff);
           continue;
@@ -500,7 +502,7 @@ ${curlCmd}
     for (const company of candidates) {
       if (await isValidCompany(company)) {
         if (company !== process.env.BEFFA_COMPANY) {
-          console.log(`[COMPANY] Resolved active company: "${company}"`);
+          Logger.info(`Resolved active company: "${Logger.sanitize(company)}"`);
         }
         process.env.BEFFA_COMPANY = company;
         await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), company).catch(() => {});
@@ -532,7 +534,7 @@ ${curlCmd}
       const resolved = await pickFromList(data.items || data.data || []);
       if (resolved) {
         const note = preferred && resolved.toLowerCase() !== preferredLower ? ` (fallback — "${preferred}" not found)` : '';
-        console.log(`[COMPANY] Resolved company from API list: "${this.sanitizeLog(resolved)}"${this.sanitizeLog(note)}`);
+        Logger.info(`Resolved company from API list: "${Logger.sanitize(resolved)}"${Logger.sanitize(note)}`);
         process.env.BEFFA_COMPANY = resolved;
         await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
         return resolved;
@@ -546,7 +548,7 @@ ${curlCmd}
       const me = await meResp.json();
       const resolved = await pickFromList(me.user?.companies || me.companies || []);
       if (resolved) {
-        console.log(`[COMPANY] Resolved company from user profile: "${this.sanitizeLog(resolved)}"`);
+        Logger.info(`Resolved company from user profile: "${Logger.sanitize(resolved)}"`);
         process.env.BEFFA_COMPANY = resolved;
         await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
         return resolved;
@@ -579,7 +581,7 @@ ${curlCmd}
   async smartSearch(container: Locator | null, text: string): Promise<void> {
     if (!text) return;
     const cleanText = text.trim();
-    console.log(`[ACTION] Searching for: "${cleanText}"`);
+    Logger.info(`Searching for: "${Logger.sanitize(cleanText)}"`);
 
     await this.startTacticalTimer(); // Start Tactical UI Timer
 
@@ -607,7 +609,7 @@ ${curlCmd}
           // Tier 1: Exact match within direct container
           const containerExact = target.getByText(cleanText, { exact: true }).first();
           if (await containerExact.isVisible({ timeout: 1000 }).catch(() => false)) {
-            console.log(`[INFO] Tier 1 - exact in dialog: "${cleanText}"`);
+            Logger.info(`Tier 1 - exact in dialog: "${Logger.sanitize(cleanText)}"`);
             await containerExact.click({ force: true });
             return true;
           }
@@ -616,13 +618,13 @@ ${curlCmd}
           if (await overlayList.isVisible({ timeout: 1000 }).catch(() => false)) {
             const overlayExact = overlayList.getByText(cleanText, { exact: true }).first();
             if (await overlayExact.isVisible({ timeout: 1000 }).catch(() => false)) {
-              console.log(`[INFO] Tier 2 - exact in overlay: "${cleanText}"`);
+              Logger.info(`Tier 2 - exact in overlay: "${Logger.sanitize(cleanText)}"`);
               await overlayExact.click({ force: true });
               return true;
             }
             const overlayContains = overlayList.getByText(cleanText, { exact: false }).first();
             if (await overlayContains.isVisible({ timeout: 1000 }).catch(() => false)) {
-              console.log(`[INFO] Tier 2 - contains in overlay: "${cleanText}"`);
+              Logger.info(`Tier 2 - contains in overlay: "${Logger.sanitize(cleanText)}"`);
               await overlayContains.click({ force: true });
               return true;
             }
@@ -631,7 +633,7 @@ ${curlCmd}
           // Tier 3: Contains match WITHIN dialog
           const containerContains = target.getByText(cleanText, { exact: false }).first();
           if (await containerContains.isVisible({ timeout: 1000 }).catch(() => false)) {
-            console.log(`[INFO] Tier 3 - contains in dialog: "${cleanText}"`);
+            Logger.info(`Tier 3 - contains in dialog: "${Logger.sanitize(cleanText)}"`);
             await containerContains.click({ force: true });
             return true;
           }
@@ -662,7 +664,7 @@ ${curlCmd}
 
         // Attempt 2 (Fallback trick if backend hung): Backspace one char to trigger state
         if (!clicked) {
-          console.log(`[WARN] Original search didn't bring up "${cleanText}". Pressing backspace to wake up backend fetch...`);
+          Logger.warn(`Original search didn't bring up "${Logger.sanitize(cleanText)}". Pressing backspace to wake up backend fetch...`);
           await searchBox.press('Backspace');
           await this.page.waitForTimeout(3000); // Allow backend to hit
           clicked = await trySelection();
@@ -682,11 +684,11 @@ ${curlCmd}
         await this.page.waitForTimeout(500);
         await this.page.keyboard.press('Escape');
 
-        console.log(`[SUCCESS] Selected: "${cleanText}"`);
+        Logger.pass(`Selected: "${Logger.sanitize(cleanText)}"`);
         await this.stopTacticalTimer(`Smart Search: ${cleanText}`, 'UI');
         return;
       } catch (e: any) {
-        console.log(`[WARNING] Search attempt ${s + 1} failed: ${e.message}`);
+        Logger.warn(`Search attempt ${s + 1} failed: ${Logger.sanitize(e.message)}`);
         await this.page.waitForTimeout(2000);
       }
     }
@@ -716,7 +718,7 @@ ${curlCmd}
       if (gMonth === 4) {
         // Handle Megabit -> Miyazya overflow correctly (30 days max per EC month)
         const ethiopianDay = (gDay + 22) % 30 || 30;
-        console.log(`[CALENDAR] Ethiopian mode: Today is mapped to EC Day ${ethiopianDay}.`);
+        Logger.info(`Ethiopian mode: Today is mapped to EC Day ${ethiopianDay}.`);
         return ethiopianDay;
       }
 
@@ -730,7 +732,7 @@ ${curlCmd}
   async fillDate(labelOrIndex: string | number, dateValue: string): Promise<void> {
     // Extract day number for the grid click
     const dayToSelect = parseInt(dateValue.split('/')[0], 10).toString();
-    console.log(`[ACTION] Filling date ${dateValue} -> Targeting UI day: ${dayToSelect}`);
+    Logger.info(`Filling date ${Logger.sanitize(dateValue)} -> Targeting UI day: ${dayToSelect}`);
 
     await this.startTacticalTimer(); // Start Tactical UI Timer
 
@@ -754,9 +756,9 @@ ${curlCmd}
 
     if (await dayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await dayBtn.click({ force: true });
-      console.log(`[SUCCESS] Day ${dayToSelect} selected in the current active calendar grid.`);
+      Logger.pass(`Day ${dayToSelect} selected in the current active calendar grid.`);
     } else {
-      console.log(`[WARN] Day ${dayToSelect} not found in grid. Using fallback type...`);
+      Logger.warn(`Day ${dayToSelect} not found in grid. Using fallback type...`);
       await this.page.keyboard.type(dateValue);
       await this.page.keyboard.press('Enter');
     }
@@ -793,7 +795,7 @@ ${curlCmd}
       );
       if (open) {
         const endDate = open.end_date || open.period_end || open.to_date;
-        console.log(`[PERIOD] Open period end date: ${this.sanitizeLog(endDate)}`);
+        Logger.info(`Open period end date: ${Logger.sanitize(endDate)}`);
         return endDate;
       }
     }
@@ -807,7 +809,7 @@ ${curlCmd}
     const targetMonth = resolved.gcDate.getUTCMonth();
     const targetYear = resolved.gcDate.getUTCFullYear();
 
-    console.log(`[ACTION] Picking date: "${this.sanitizeLog(label)}" → target ${targetYear}-${targetMonth + 1}-${targetDay}`);
+    Logger.info(`Picking date: "${Logger.sanitize(label)}" → target ${targetYear}-${targetMonth + 1}-${targetDay}`);
     await this.startTacticalTimer();
 
     // Strategy: find the label text, then locate the nearest date-trigger button.
@@ -816,7 +818,12 @@ ${curlCmd}
     const labelRegex = new RegExp(label.replace(/s?\s+/gi, '.?\\s*'), 'i');
 
     // Wait for the page to render the form (any input or button visible)
-    await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 45000 });
+    const formReady = await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 90000 }).then(() => true).catch(() => false);
+    if (!formReady) {
+      // SPA bundle still loading — wait for network idle then retry
+      await this.page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
+      await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 30000 });
+    }
 
     // Try multiple selector strategies to find the date button
     let btn: Locator | null = null;
@@ -869,6 +876,16 @@ ${curlCmd}
     const prevBtn = headerBtns.first();
     const nextBtn = headerBtns.last();
 
+    // Determine if the calendar is showing EC years (EC year = GC year - 7 or - 8)
+    // Convert targetYear/targetMonth to the calendar's own coordinate system before navigating.
+    const isEcCalendar = (process.env.BEFFA_CALENDAR || 'ec').toLowerCase() === 'ec';
+    // EC year N starts ~Sep 11 of GC year N+7. A GC date in Jan–Sep of GC year Y maps to EC year Y-8;
+    // Oct–Dec maps to EC year Y-7. Use the simpler constant offset of 7 for navigation purposes.
+    const navTargetYear  = isEcCalendar ? targetYear - 7 : targetYear;
+    // EC months are offset: EC month 1 (Meskerem) starts ~Sep 11 GC.
+    // GC month index 0-11 → EC month index: (gcMonth + 4) % 13 (approx, good enough for nav).
+    const navTargetMonth = isEcCalendar ? (targetMonth + 4) % 13 : targetMonth;
+
     const getDisplayedYearMonth = async (): Promise<{ year: number; month: number } | null> => {
       try {
         const headerText = await popover.evaluate((el: HTMLElement) => el.textContent || '').catch(() => '');
@@ -878,15 +895,16 @@ ${curlCmd}
         const monthNames = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec',
                             'መስ','ጥቅ','ህዳ','ታህ','ጥር','የካ','መጋ','ሚያ','ግን','ሰኔ','ሐም','ነሐ'];
         const lower = headerText.toLowerCase();
-        const month = monthNames.findIndex(m => lower.includes(m));
-        return { year, month: month >= 12 ? month - 12 : month };
+        const monthIdx = monthNames.findIndex(m => lower.includes(m));
+        const month = monthIdx >= 12 ? monthIdx - 12 : monthIdx;
+        return { year, month };
       } catch { return null; }
     };
 
     for (let step = 0; step < 24; step++) {
       const current = await getDisplayedYearMonth();
       if (current) {
-        const monthDiff = (targetYear - current.year) * 12 + (targetMonth - current.month);
+        const monthDiff = (navTargetYear - current.year) * 12 + (navTargetMonth - current.month);
         if (monthDiff === 0) break;
         const navBtn = monthDiff > 0 ? nextBtn : prevBtn;
         if (!await navBtn.isVisible({ timeout: 500 }).catch(() => false)) break;
@@ -901,7 +919,7 @@ ${curlCmd}
     const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: new RegExp(`^${targetDay}$`) });
     if (await enabledDays.first().isVisible({ timeout: 2000 }).catch(() => false)) {
       await enabledDays.first().click({ force: true });
-      console.log(`[SUCCESS] "${this.sanitizeLog(label)}" set to day ${targetDay}.`);
+      Logger.pass(`"${Logger.sanitize(label)}" set to day ${targetDay}.`);
     } else {
       // Fallback: pick last enabled day in whatever month is showing
       const anyEnabled = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
@@ -910,10 +928,10 @@ ${curlCmd}
         const last = anyEnabled.nth(count - 1);
         const dayText = await last.textContent();
         await last.click({ force: true });
-        console.log(`[WARN] "${this.sanitizeLog(label)}" — target day ${targetDay} not found, picked last enabled: ${this.sanitizeLog(dayText?.trim())}.`);
+        Logger.warn(`"${Logger.sanitize(label)}" — target day ${targetDay} not found, picked last enabled: ${Logger.sanitize(dayText?.trim())}.`);
       } else {
         await this.page.keyboard.press('Enter');
-        console.log(`[WARN] "${this.sanitizeLog(label)}" — no enabled days found, pressed Enter.`);
+        Logger.warn(`"${Logger.sanitize(label)}" — no enabled days found, pressed Enter.`);
       }
     }
 
@@ -1032,7 +1050,7 @@ ${curlCmd}
     });
 
     if (!response.ok()) {
-      console.log(`[WARN] GL Balance Query Failed. Status: ${response.status()}`);
+      Logger.warn(`GL Balance Query Failed. Status: ${response.status()}`);
       return 0;
     }
 
@@ -1041,12 +1059,12 @@ ${curlCmd}
     const targetAccount = list.find((a: any) => a.id === accountId);
 
     if (!targetAccount) {
-      console.log(`[WARN] GL Audit: Account ${this.sanitizeLog(accountId)} not found in the COA list.`);
+      Logger.warn(`GL Audit: Account ${Logger.sanitize(accountId)} not found in the COA list.`);
       return 0;
     }
 
     const balance = parseFloat(targetAccount.balance || targetAccount.current_balance || '0');
-    console.log(`[GL_AUDIT] Account: ${this.sanitizeLog(targetAccount.name)} | Balance: ${balance.toFixed(2)}`);
+    Logger.snapshot(`Account: ${Logger.sanitize(targetAccount.name)} | Balance: ${balance.toFixed(2)}`);
     return balance;
   }
 
@@ -1076,7 +1094,7 @@ ${curlCmd}
       const acc = list.find((a: any) => a.id === id);
       if (acc) {
         balances[id] = parseFloat(acc.balance || acc.current_balance || '0');
-        console.log(`[SNAPSHOT] ${this.sanitizeLog(acc.name)}: ${balances[id].toFixed(2)}`);
+        Logger.snapshot(`${Logger.sanitize(acc.name)}: ${balances[id].toFixed(2)}`);
       }
     });
 
@@ -1191,7 +1209,7 @@ ${curlCmd}
       }]
     };
 
-    console.log(`[CASH_TOPUP] Seeding ${seedAmount} → Dr "${this.sanitizeLog(cashAccount.name)}" / Cr "${this.sanitizeLog(revenueAccount.name)}"`);
+    Logger.info(`Seeding ${seedAmount} → Dr "${Logger.sanitize(cashAccount.name)}" / Cr "${Logger.sanitize(revenueAccount.name)}"`);
     const response = await this.page.request.post(`${this.apiBase}/receipts?${params}`, { data: payload, headers });
     if (!response.ok()) {
       const errText = await response.text();
@@ -1201,6 +1219,6 @@ ${curlCmd}
     const receipt = await response.json();
     await this.advanceDocumentAPI(receipt.id, 'receipts');
     await this.page.waitForTimeout(5000); // allow ERP to index the new cash balance
-    console.log(`[CASH_TOPUP] Seeded ${seedAmount} into "${this.sanitizeLog(cashAccount.name)}" (receipt ${this.sanitizeLog(receipt.ref ?? receipt.id)})`);
+    Logger.info(`Seeded ${seedAmount} into "${Logger.sanitize(cashAccount.name)}" (receipt ${Logger.sanitize(receipt.ref ?? receipt.id)})`);
   }
 }

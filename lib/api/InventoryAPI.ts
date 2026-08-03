@@ -682,8 +682,8 @@ export class InventoryAPI extends BasePage {
     // immediately without a separate adjustment (avoids approval-limit 403 errors)
     const item = await this.createInventoryItemAPI({
       name,
-      item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-6)}`,
-      part_number: `PN-${ts.toString().slice(-5)}`,
+      item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-9)}`,
+      part_number: `PN-${ts.toString().slice(-7)}`,
       cost_method_code: opts.cost_method_code,
       quantity: opts.quantity,
       unit_cost: opts.unit_cost,

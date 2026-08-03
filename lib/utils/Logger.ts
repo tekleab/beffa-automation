@@ -41,18 +41,18 @@ export class Logger {
     return now.toISOString().split('T')[1].split('.')[0]; // HH:MM:SS
   }
 
-  private static log(level: LogLevel, message: string, data?: any): void {
-    // Gate DEBUG logs unless DEBUG=true is set
-    if (level === LogLevel.DEBUG && !this.isDebugEnabled) {
-      return;
-    }
+  /** CWE-117: Strip newlines/CR/tab from any string to prevent log injection. */
+  static sanitize(value: unknown): string {
+    return String(value ?? '').replace(/[\r\n\t]/g, ' ').substring(0, 2000);
+  }
 
+  private static log(level: LogLevel, message: string, data?: any): void {
+    if (level === LogLevel.DEBUG && !this.isDebugEnabled) return;
     const color = this.colors[level] || this.colors.INFO;
     const timestamp = this.getTimestamp();
-    const prefix = `[${level}]`;
-    
-    const logMessage = `${color}${timestamp} ${prefix}${this.colors.reset} ${message}`;
-    
+    // CWE-117: sanitize message at the output boundary
+    const safeMsg = Logger.sanitize(message);
+    const logMessage = `${color}${timestamp} [${level}]${this.colors.reset} ${safeMsg}`;
     if (data !== undefined) {
       console.log(logMessage, data);
     } else {

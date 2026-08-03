@@ -71,7 +71,8 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
         const r = await (app as any).page.request.get(`${apiBase}/receipt/${receiptId}?${qs}`, { headers });
         if (!r.ok()) { console.log(`[WARN] receipt journal fetch ${r.status()}`); return []; }
         const json = await r.json();
-        return json.cash_disbursement_journal?.journal_entries || [];
+        return json.cash_receipt_journal?.journal_entries ||
+               json.cash_disbursement_journal?.journal_entries || [];
     }
 
     test('Audit: Full cycle GL — AR debited on invoice, cleared on receipt', async ({ page }) => {
