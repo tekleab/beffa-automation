@@ -17,6 +17,7 @@ export interface ResolvedDate {
   iso: string;       // "YYYY-MM-DDT00:00:00Z" — for API payloads
   gcDate: Date;      // JS Date object
   dayNumber: number; // UTC day-of-month for UI calendar grid click
+  ecYear: number;    // EC fiscal year this date belongs to
 }
 
 let _cached: ResolvedDate | null = null;
@@ -141,7 +142,7 @@ export class DateHelper {
         // Use period start if it's today or future; otherwise use today (we're mid-period)
         const useDate = periodStart > now ? periodStart : now;
         console.log(`[DateHelper] Period bounds (year=${year}): ${match[0]} → using ${useDate.toISOString().slice(0, 10)}`);
-        return DateHelper._fromDate(useDate);
+        return DateHelper._fromDate(useDate, year);
       }
 
       return null;
@@ -163,20 +164,21 @@ export class DateHelper {
       if (periodEnd < now) continue;
       const useDate = periodStart > now ? periodStart : now;
       console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
-      return DateHelper._fromDate(useDate);
+      return DateHelper._fromDate(useDate, ecYear);
     }
     return null;
   }
 
   // ── Strategy 3: today ────────────────────────────────────────────────────────
   private static _today(): ResolvedDate {
-    return DateHelper._fromDate(new Date());
+    const baseYear = parseInt(process.env.BEFFA_YEAR || '2018', 10);
+    return DateHelper._fromDate(new Date(), baseYear);
   }
 
-  private static _fromDate(d: Date): ResolvedDate {
+  private static _fromDate(d: Date, ecYear: number): ResolvedDate {
     const yyyy = d.getUTCFullYear();
     const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
     const dd = String(d.getUTCDate()).padStart(2, '0');
-    return { iso: `${yyyy}-${mm}-${dd}T00:00:00Z`, gcDate: d, dayNumber: d.getUTCDate() };
+    return { iso: `${yyyy}-${mm}-${dd}T00:00:00Z`, gcDate: d, dayNumber: d.getUTCDate(), ecYear };
   }
 }

@@ -192,7 +192,9 @@ export class PurchaseAPI extends BasePage {
     const currency = (currData.items || currData.data || [])[0];
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
-    const _dateIso = (await _DH.resolve(this.page)).iso;
+    const _resolved = await _DH.resolve(this.page);
+    const _dateIso = _resolved.iso;
+    const _year = String(_resolved.ecYear);
     const payload = {
       accounts_payable_id: apAccount?.id,
       currency_id: currency?.id,
@@ -211,7 +213,7 @@ export class PurchaseAPI extends BasePage {
       vendor_id: resolvedVendorId
     };
 
-    const response = await this.safePost(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
+    const response = await this.safePost(`${apiBase}/purchase-orders?year=${_year}&period=${period}&calendar=${calendar}`, {
       data: payload,
       headers,
       label: 'Create Purchase Order'

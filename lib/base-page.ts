@@ -126,7 +126,9 @@ export class BasePage {
         localStorage.getItem('company');
     }) || process.env.BEFFA_COMPANY || 'sample';
 
-    const year = process.env.BEFFA_YEAR || '2018';
+    const { DateHelper: _AdvDH } = require('./utils/DateHelper');
+    const _advResolved = await _AdvDH.resolve(this.page);
+    const year = String(_advResolved.ecYear);
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 
@@ -172,7 +174,6 @@ export class BasePage {
         try {
           const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
           const loginResp = await this.page.request.post(loginUrl, {
-            data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
             headers: { 'Content-Type': 'application/json' }
           });
           if (loginResp.ok()) {
