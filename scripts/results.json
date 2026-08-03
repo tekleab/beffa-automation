@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 14,
-  "failed": 5,
+  "passed": 12,
+  "failed": 7,
   "skipped": 0,
-  "passRate": 73.7,
-  "avgDurationMs": 29379,
-  "lastUpdated": "2026-08-03T14:35:48.546Z",
+  "passRate": 63.2,
+  "avgDurationMs": 34218,
+  "lastUpdated": "2026-08-03T14:54:44.900Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 14,
-      "failed": 5,
+      "passed": 12,
+      "failed": 7,
       "skipped": 0,
       "trend": [
-        68.4,
         78.9,
         69.3,
         68.4,
         69.7,
         47.4,
-        73.7
+        73.7,
+        63.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "576",
+      "commit": "05a36e6",
+      "trigger": "push (smoke)",
+      "duration": "10m 50s",
+      "passRate": 63.2,
+      "status": "failed"
+    },
     {
       "run": "575",
       "commit": "1fde5e4",
@@ -95,38 +103,30 @@
       "duration": "11m 12s",
       "passRate": 84.2,
       "status": "success"
-    },
-    {
-      "run": "564",
-      "commit": "31e9202",
-      "trigger": "push (smoke)",
-      "duration": "14m 58s",
-      "passRate": 68.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:602\n\n  600 |     }\n ",
-      "firstSeen": "2026-08-03T14:30:14.677Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Kebede-1785767430591-Updated').first()\nExpected: visible\nTimeout: 15000ms\nError: element(",
-      "firstSeen": "2026-08-03T14:30:14.628Z",
+      "severity": "medium",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/08/03/000135').first()\nExpected: visible\nTimeout: 30000ms\nErro",
+      "firstSeen": "2026-08-03T14:48:35.911Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/08/03/000133').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-08-03T14:30:14.642Z",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: Invoice INV/2026/08/03/000321 not found in customer profile UI. Customer: 243b9845-e056-48ce-924d-6f233d99c574\n\n  65 |             const rowCount = await page.locator('table tbody tr').count();",
+      "firstSeen": "2026-08-03T14:49:26.345Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('RCPT/2026/08/03/000136').first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not",
+      "firstSeen": "2026-08-03T14:49:37.155Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,7 +134,23 @@
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-08-03T14:31:03.543Z",
+      "firstSeen": "2026-08-03T14:49:44.598Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: Create employee: could not retrieve created employee \"Audit-Emp-1785768605916\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create em",
+      "firstSeen": "2026-08-03T14:49:58.901Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Duplicate employee email must be rejected by the system",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785768635210\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create empl",
+      "firstSeen": "2026-08-03T14:50:27.103Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +158,7 @@
       "severity": "high",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  137 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
-      "firstSeen": "2026-08-03T14:31:56.312Z",
+      "firstSeen": "2026-08-03T14:50:48.552Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
