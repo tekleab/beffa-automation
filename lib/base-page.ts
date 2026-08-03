@@ -73,6 +73,11 @@ export class BasePage {
     this.companyBtn = page.locator('header button.chakra-menu__menu-button, .chakra-stack button.chakra-menu__menu-button').first();
   }
 
+  /** Strip newlines/CR from any value before logging to prevent CWE-117 log injection. */
+  private sanitizeLog(value: unknown): string {
+    return String(value ?? '').replace(/[\r\n\t]/g, ' ').substring(0, 500);
+  }
+
   /**
    * Starts a high-resolution timer for tactical performance sync.
    */
@@ -86,7 +91,7 @@ export class BasePage {
    */
   async stopTacticalTimer(label: string, category: 'API' | 'UI' = 'API') {
     const duration = performance.now() - this.startTime;
-    console.log(`[PERFORMANCE] ${category} - ${label}: ${duration.toFixed(2)}ms`);
+    console.log(`[PERFORMANCE] ${category} - ${this.sanitizeLog(label)}: ${duration.toFixed(2)}ms`);
 
     // Attach to Playwright annotations for Allure consumption
     try {
@@ -132,7 +137,7 @@ export class BasePage {
       'x-role': 'IT Administrator / User Manager'
     };
 
-    console.log(`[API] Advancing ${docType} "${docId}"...`);
+    console.log(`[API] Advancing ${this.sanitizeLog(docType)} "${this.sanitizeLog(docId)}"...`);
 
     // Fetch current user once before the loop
     let submittedTo: string | undefined;
@@ -183,16 +188,16 @@ export class BasePage {
             }
           }
         } catch (e: any) {
-          console.log(`[AUTH] Re-auth failed: ${e.message}`);
+          console.log(`[AUTH] Re-auth failed: ${this.sanitizeLog(e.message)}`);
         }
-        throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${company}" is invalid or expired.`);
+        throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${this.sanitizeLog(company)}" is invalid or expired.`);
       } else if (status === 422) {
         if (success) break;
         const text = await resp.text();
         throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
       } else {
         const errBody = await resp.text().catch(() => '(unreadable)');
-        console.log(`[ERROR] Advance failed. Status: ${status} | Body: ${errBody.substring(0, 200)}`);
+        console.log(`[ERROR] Advance failed. Status: ${status} | Body: ${this.sanitizeLog(errBody)}`);
         // For employee-contracts, a 500/E1481 may mean already at final state — check current status
         if (docType === 'employee-contracts' && status === 500) {
           console.log(`[INFO] employee-contracts advance returned 500 (E1481) — checking if contract is already approved...`);
@@ -202,7 +207,7 @@ export class BasePage {
       }
     }
 
-    if (!success) console.log(`[WARN] Advance had no successful steps for ${docType} ${docId}.`);
+    if (!success) console.log(`[WARN] Advance had no successful steps for ${this.sanitizeLog(docType)} ${this.sanitizeLog(docId)}.`);
   }
 
   /**
@@ -350,7 +355,7 @@ ${curlCmd}
         lastError = { status, text };
         if (status === 500 || status === 503) {
           const backoff = attempt * attempt * 1500;
-          console.log(`[WARN] GET ${url} → ${status}. Retry ${attempt}/4 in ${backoff}ms...`);
+          console.log(`[WARN] GET ${this.sanitizeLog(url)} → ${status}. Retry ${attempt}/4 in ${backoff}ms...`);
           await this.page.waitForTimeout(backoff);
           continue;
         }
@@ -367,7 +372,7 @@ ${curlCmd}
           err.message?.includes('[TIMEOUT]')
         ) {
           const backoff = attempt * attempt * 1500;
-          console.log(`[WARN] GET ${url} → ${err.message.split('\n')[0]}. Retry ${attempt}/4 in ${backoff}ms...`);
+          console.log(`[WARN] GET ${this.sanitizeLog(url)} → ${this.sanitizeLog(err.message.split('\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`);
           lastError = { status: err.message?.includes('[TIMEOUT]') ? 408 : 0, text: err.message };
           await this.page.waitForTimeout(backoff);
           continue;
@@ -527,7 +532,7 @@ ${curlCmd}
       const resolved = await pickFromList(data.items || data.data || []);
       if (resolved) {
         const note = preferred && resolved.toLowerCase() !== preferredLower ? ` (fallback — "${preferred}" not found)` : '';
-        console.log(`[COMPANY] Resolved company from API list: "${resolved}"${note}`);
+        console.log(`[COMPANY] Resolved company from API list: "${this.sanitizeLog(resolved)}"${this.sanitizeLog(note)}`);
         process.env.BEFFA_COMPANY = resolved;
         await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
         return resolved;
@@ -541,14 +546,14 @@ ${curlCmd}
       const me = await meResp.json();
       const resolved = await pickFromList(me.user?.companies || me.companies || []);
       if (resolved) {
-        console.log(`[COMPANY] Resolved company from user profile: "${resolved}"`);
+        console.log(`[COMPANY] Resolved company from user profile: "${this.sanitizeLog(resolved)}"`);
         process.env.BEFFA_COMPANY = resolved;
         await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
         return resolved;
       }
     }
 
-    throw new Error(`[COMPANY] Could not resolve a valid company. Tried: ${[...candidates].join(', ') || '(none)'}`);
+    throw new Error(`[COMPANY] Could not resolve a valid company. Tried: ${this.sanitizeLog([...candidates].join(', ') || '(none)')}`);
   }
 
   /**
@@ -788,7 +793,7 @@ ${curlCmd}
       );
       if (open) {
         const endDate = open.end_date || open.period_end || open.to_date;
-        console.log(`[PERIOD] Open period end date: ${endDate}`);
+        console.log(`[PERIOD] Open period end date: ${this.sanitizeLog(endDate)}`);
         return endDate;
       }
     }
@@ -802,7 +807,7 @@ ${curlCmd}
     const targetMonth = resolved.gcDate.getUTCMonth();
     const targetYear = resolved.gcDate.getUTCFullYear();
 
-    console.log(`[ACTION] Picking date: "${label}" → target ${targetYear}-${targetMonth + 1}-${targetDay}`);
+    console.log(`[ACTION] Picking date: "${this.sanitizeLog(label)}" → target ${targetYear}-${targetMonth + 1}-${targetDay}`);
     await this.startTacticalTimer();
 
     // Strategy: find the label text, then locate the nearest date-trigger button.
@@ -896,7 +901,7 @@ ${curlCmd}
     const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: new RegExp(`^${targetDay}$`) });
     if (await enabledDays.first().isVisible({ timeout: 2000 }).catch(() => false)) {
       await enabledDays.first().click({ force: true });
-      console.log(`[SUCCESS] "${label}" set to day ${targetDay}.`);
+      console.log(`[SUCCESS] "${this.sanitizeLog(label)}" set to day ${targetDay}.`);
     } else {
       // Fallback: pick last enabled day in whatever month is showing
       const anyEnabled = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
@@ -905,10 +910,10 @@ ${curlCmd}
         const last = anyEnabled.nth(count - 1);
         const dayText = await last.textContent();
         await last.click({ force: true });
-        console.log(`[WARN] "${label}" — target day ${targetDay} not found, picked last enabled: ${dayText?.trim()}.`);
+        console.log(`[WARN] "${this.sanitizeLog(label)}" — target day ${targetDay} not found, picked last enabled: ${this.sanitizeLog(dayText?.trim())}.`);
       } else {
         await this.page.keyboard.press('Enter');
-        console.log(`[WARN] "${label}" — no enabled days found, pressed Enter.`);
+        console.log(`[WARN] "${this.sanitizeLog(label)}" — no enabled days found, pressed Enter.`);
       }
     }
 
@@ -1036,12 +1041,12 @@ ${curlCmd}
     const targetAccount = list.find((a: any) => a.id === accountId);
 
     if (!targetAccount) {
-      console.log(`[WARN] GL Audit: Account ${accountId} not found in the COA list.`);
+      console.log(`[WARN] GL Audit: Account ${this.sanitizeLog(accountId)} not found in the COA list.`);
       return 0;
     }
 
     const balance = parseFloat(targetAccount.balance || targetAccount.current_balance || '0');
-    console.log(`[GL_AUDIT] Account: ${targetAccount.name} | Balance: ${balance.toFixed(2)}`);
+    console.log(`[GL_AUDIT] Account: ${this.sanitizeLog(targetAccount.name)} | Balance: ${balance.toFixed(2)}`);
     return balance;
   }
 
@@ -1071,7 +1076,7 @@ ${curlCmd}
       const acc = list.find((a: any) => a.id === id);
       if (acc) {
         balances[id] = parseFloat(acc.balance || acc.current_balance || '0');
-        console.log(`[SNAPSHOT] ${acc.name}: ${balances[id].toFixed(2)}`);
+        console.log(`[SNAPSHOT] ${this.sanitizeLog(acc.name)}: ${balances[id].toFixed(2)}`);
       }
     });
 
@@ -1186,7 +1191,7 @@ ${curlCmd}
       }]
     };
 
-    console.log(`[CASH_TOPUP] Seeding ${seedAmount} → Dr "${cashAccount.name}" / Cr "${revenueAccount.name}"`);
+    console.log(`[CASH_TOPUP] Seeding ${seedAmount} → Dr "${this.sanitizeLog(cashAccount.name)}" / Cr "${this.sanitizeLog(revenueAccount.name)}"`);
     const response = await this.page.request.post(`${this.apiBase}/receipts?${params}`, { data: payload, headers });
     if (!response.ok()) {
       const errText = await response.text();
@@ -1196,6 +1201,6 @@ ${curlCmd}
     const receipt = await response.json();
     await this.advanceDocumentAPI(receipt.id, 'receipts');
     await this.page.waitForTimeout(5000); // allow ERP to index the new cash balance
-    console.log(`[CASH_TOPUP] Seeded ${seedAmount} into "${cashAccount.name}" (receipt ${receipt.ref ?? receipt.id})`);
+    console.log(`[CASH_TOPUP] Seeded ${seedAmount} into "${this.sanitizeLog(cashAccount.name)}" (receipt ${this.sanitizeLog(receipt.ref ?? receipt.id)})`);
   }
 }
