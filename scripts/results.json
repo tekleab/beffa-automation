@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 13,
-  "failed": 6,
+  "passed": 14,
+  "failed": 5,
   "skipped": 0,
-  "passRate": 68.4,
-  "avgDurationMs": 39539,
-  "lastUpdated": "2026-08-03T17:36:16.804Z",
+  "passRate": 73.7,
+  "avgDurationMs": 34824,
+  "lastUpdated": "2026-08-03T17:51:44.608Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 13,
-      "failed": 6,
+      "passed": 14,
+      "failed": 5,
       "skipped": 0,
       "trend": [
-        69.7,
         47.4,
         73.7,
         63.2,
         78.9,
         78.9,
-        68.4
+        68.4,
+        73.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "581",
+      "commit": "f742b97",
+      "trigger": "push (smoke)",
+      "duration": "11m 1s",
+      "passRate": 73.7,
+      "status": "failed"
+    },
     {
       "run": "580",
       "commit": "265e1af",
@@ -95,38 +103,30 @@
       "duration": "67m 3s",
       "passRate": 63.9,
       "status": "failed"
-    },
-    {
-      "run": "568",
-      "commit": "3614cfc",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "10m 26s",
-      "passRate": 78.9,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:199\n\n  197 |         if (success) break;\n  198 |",
-      "firstSeen": "2026-08-03T17:29:47.019Z",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:200\n\n  198 |         if (success) break;\n  199 |",
+      "firstSeen": "2026-08-03T17:45:47.279Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:199\n\n  197 |         if (success) break;\n  198 |",
-      "firstSeen": "2026-08-03T17:29:47.055Z",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:200\n\n  198 |         if (success) break;\n  199 |",
+      "firstSeen": "2026-08-03T17:45:47.320Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-08-03T17:30:33.833Z",
+      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/03/000300 never appeared in \"Gentium Concrite Industry\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:529\n\n  527 |     }\n  528 |\n> 529 |     throw ",
+      "firstSeen": "2026-08-03T17:46:27.737Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,15 +134,7 @@
       "severity": "medium",
       "title": "Validate TIN, create vendor, edit, remove",
       "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
-      "firstSeen": "2026-08-03T17:30:53.878Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785778289534\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:107\n\n  105 |       await this.page.waitForTimeout(3000);\n  106 |     }\n",
-      "firstSeen": "2026-08-03T17:31:18.985Z",
+      "firstSeen": "2026-08-03T17:46:46.478Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -150,7 +142,7 @@
       "severity": "high",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  111 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
-      "firstSeen": "2026-08-03T17:32:02.081Z",
+      "firstSeen": "2026-08-03T17:47:42.835Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
