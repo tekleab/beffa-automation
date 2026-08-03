@@ -35,6 +35,8 @@ export class DateHelper {
   }
 
   // ── Strategy 1: probe API with sentinel date, parse period bounds from 422 ──
+  // Tries env year first; if the resolved period start is in the past, increments
+  // year until a current/future period is found (handles stale BEFFA_YEAR env).
   private static async _probeAPI(page: Page): Promise<ResolvedDate | null> {
     try {
       let base = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
@@ -42,9 +44,10 @@ export class DateHelper {
       if (!base.startsWith('http')) base = 'http://' + base;
       if (!base.endsWith('/api')) base += '/api';
 
-      const year = process.env.BEFFA_YEAR || '2019';
-      const qs = `year=${year}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-      const company = process.env.BEFFA_COMPANY || '';
+      const period   = process.env.BEFFA_PERIOD   || 'yearly';
+      const calendar = process.env.BEFFA_CALENDAR || 'ec';
+      const company  = process.env.BEFFA_COMPANY  || '';
+      const baseYear = parseInt(process.env.BEFFA_YEAR || '2018', 10);
 
       const token = await page.evaluate(() => {
         for (const k of ['token', 'auth-token', 'jwt', 'access_token']) {
@@ -66,47 +69,66 @@ export class DateHelper {
         'Content-Type': 'application/json'
       };
 
-      // Discover vendor + account + currency (needed for a valid PO shape)
-      const [vendorResp, acctResp, currResp] = await Promise.all([
-        page.request.get(`${base}/vendors?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
-        page.request.get(`${base}/accounts?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
-        page.request.get(`${base}/currency?${qs}`, { headers }).catch(() => null),
-      ]);
+      const now = new Date();
 
-      const vendorId = ((await vendorResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
-        ?? ((await vendorResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
-      const acctId = ((await acctResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
-        ?? ((await acctResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
-      const currId = ((await currResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
-        ?? ((await currResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
+      // Try env year, then env+1, then env+2 — stops as soon as period end is in the future
+      for (let yearOffset = 0; yearOffset <= 2; yearOffset++) {
+        const year = baseYear + yearOffset;
+        const qs = `year=${year}&period=${period}&calendar=${calendar}`;
 
-      if (!vendorId || !acctId || !currId) return null;
+        // Discover vendor + account + currency for this year's context
+        const [vendorResp, acctResp, currResp] = await Promise.all([
+          page.request.get(`${base}/vendors?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
+          page.request.get(`${base}/accounts?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
+          page.request.get(`${base}/currency?${qs}`, { headers }).catch(() => null),
+        ]);
 
-      // POST with sentinel date 2099-01-01 — guaranteed out of period → 422 with bounds
-      const probeResp = await page.request.post(`${base}/purchase-orders?${qs}`, {
-        headers,
-        data: {
-          vendor_id: vendorId,
-          accounts_payable_id: acctId,
-          currency_id: currId,
-          po_date: '2099-01-01T00:00:00Z',
-          purchase_type_id: 4,
-          po_items: []
+        const vendorId = ((await vendorResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
+          ?? ((await vendorResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
+        const acctId = ((await acctResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
+          ?? ((await acctResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
+        const currId = ((await currResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
+          ?? ((await currResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
+
+        if (!vendorId || !acctId || !currId) continue;
+
+        // POST with sentinel date 2099-01-01 — guaranteed out of period → 422 with bounds
+        const probeResp = await page.request.post(`${base}/purchase-orders?${qs}`, {
+          headers,
+          data: {
+            vendor_id: vendorId,
+            accounts_payable_id: acctId,
+            currency_id: currId,
+            po_date: '2099-01-01T00:00:00Z',
+            purchase_type_id: 4,
+            po_items: []
+          }
+        }).catch(() => null);
+
+        if (!probeResp) continue;
+
+        const errText = await probeResp.text().catch(() => '');
+        // Parse "between DD/MM/YYYY and DD/MM/YYYY"
+        const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
+        if (!match) continue;
+
+        const [, d1, m1, y1, d2, m2, y2] = match;
+        const periodStart = new Date(`${y1}-${m1}-${d1}T00:00:00Z`);
+        const periodEnd   = new Date(`${y2}-${m2}-${d2}T00:00:00Z`);
+
+        // Skip if this period has already ended — try next year
+        if (periodEnd < now) {
+          console.log(`[DateHelper] Year ${year} period ended ${y2}-${m2}-${d2} — trying year ${year + 1}`);
+          continue;
         }
-      }).catch(() => null);
 
-      if (!probeResp) return null;
+        // Use period start if it's today or future; otherwise use today (we're mid-period)
+        const useDate = periodStart > now ? periodStart : now;
+        console.log(`[DateHelper] Period bounds (year=${year}): ${match[0]} → using ${useDate.toISOString().slice(0, 10)}`);
+        return DateHelper._fromDate(useDate);
+      }
 
-      const errText = await probeResp.text().catch(() => '');
-      // Parse "between DD/MM/YYYY and DD/MM/YYYY"
-      const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
-      if (!match) return null;
-
-      // Use period start date (first bound) — always valid
-      const [, d1, m1, y1] = match;
-      const periodStart = new Date(`${y1}-${m1}-${d1}T00:00:00Z`);
-      console.log(`[DateHelper] Period bounds from API: ${match[0]} → using start ${y1}-${m1}-${d1}`);
-      return DateHelper._fromDate(periodStart);
+      return null;
     } catch { return null; }
   }
 
