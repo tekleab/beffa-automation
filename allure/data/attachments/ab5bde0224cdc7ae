@@ -1,0 +1,88 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/bills?year=2018&period=yearly&calendar=ec`
+- **Method**: `POST`
+- **Status Code**: `422`
+- **Latency**: `159.64ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "Content-Type": "application/json"
+}
+```
+
+**Body**:
+```json
+{
+  "accounts_payable_id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+  "currency_id": "ffbf8ef2-bffe-4c52-b588-17472d6baeb3",
+  "invoice_date": "2026-08-03T00:00:00Z",
+  "due_date": "2026-08-03T00:00:00Z",
+  "items": [
+    {
+      "item_id": "3b5c2230-092c-4ae3-93f8-4e89aacfe9e4",
+      "general_ledger_account_id": "b2fd8a4b-199a-417b-92d8-a8e4ec7151ba",
+      "location_id": "322dd6e4-d744-4197-aa9c-426e34ac192c",
+      "quantity": 1,
+      "tax_id": null,
+      "unit_price": -5000,
+      "warehouse_id": "ae638681-f2ae-492a-898e-edab3be6186b",
+      "description": "Audit Bill of WAC-Item-1785760147989",
+      "amount": -5000,
+      "discount_amount": 0
+    }
+  ],
+  "vendor_id": "8c8b8d32-3171-4290-ae83-17e58ccaf323",
+  "status": "draft"
+}
+```
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X POST \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "accounts_payable_id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+  "currency_id": "ffbf8ef2-bffe-4c52-b588-17472d6baeb3",
+  "invoice_date": "2026-08-03T00:00:00Z",
+  "due_date": "2026-08-03T00:00:00Z",
+  "items": [
+    {
+      "item_id": "3b5c2230-092c-4ae3-93f8-4e89aacfe9e4",
+      "general_ledger_account_id": "b2fd8a4b-199a-417b-92d8-a8e4ec7151ba",
+      "location_id": "322dd6e4-d744-4197-aa9c-426e34ac192c",
+      "quantity": 1,
+      "tax_id": null,
+      "unit_price": -5000,
+      "warehouse_id": "ae638681-f2ae-492a-898e-edab3be6186b",
+      "description": "Audit Bill of WAC-Item-1785760147989",
+      "amount": -5000,
+      "discount_amount": 0
+    }
+  ],
+  "vendor_id": "8c8b8d32-3171-4290-ae83-17e58ccaf323",
+  "status": "draft"
+}' \
+  "http://168.119.175.142:8001/api/bills?year=2018&period=yearly&calendar=ec"
+```

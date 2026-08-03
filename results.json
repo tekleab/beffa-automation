@@ -1,29 +1,37 @@
 {
-  "total": 19,
-  "passed": 13,
-  "failed": 6,
-  "skipped": 0,
-  "passRate": 68.4,
-  "avgDurationMs": 46360,
-  "lastUpdated": "2026-08-03T11:51:02.633Z",
+  "total": 191,
+  "passed": 131,
+  "failed": 57,
+  "skipped": 3,
+  "passRate": 68.6,
+  "avgDurationMs": 25858,
+  "lastUpdated": "2026-08-03T12:54:06.600Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 13,
-      "failed": 6,
-      "skipped": 0,
+      "passed": 131,
+      "failed": 57,
+      "skipped": 3,
       "trend": [
-        68.4,
         84.2,
         65.2,
         68.4,
         78.9,
         69.3,
-        68.4
+        68.4,
+        69.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "573",
+      "commit": "8bf1526",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "82m 18s",
+      "passRate": 68.6,
+      "status": "failed"
+    },
     {
       "run": "570",
       "commit": "2bd2165",
@@ -95,22 +103,70 @@
       "duration": "108m 22s",
       "passRate": 59.8,
       "status": "failed"
-    },
-    {
-      "run": "561",
-      "commit": "be7cf16",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "95m 24s",
-      "passRate": 58.2,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/08/03/000092').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-08-03T11:44:20.703Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/08/03/000113').first()\nExpected: visible\nTimeout: 30000ms\nErro",
+      "firstSeen": "2026-08-03T12:24:20.303Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "error": "Error: AR must be credited on receipt RCPT/2026/08/03/000116\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  117 |\n  118 |         const arCreditE",
+      "firstSeen": "2026-08-03T12:26:24.484Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n  SO ID    : aebfd39a-71fe-425b-bc0a-ce0ebe33f6e5\n  SO Ref   : SO/2026/08/03/000116\n  SO Date  : 2017-12-3",
+      "firstSeen": "2026-08-03T12:27:04.012Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved SO from next fiscal year!\n\n  101 |             try {\n  102 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 103 |          ",
+      "firstSeen": "2026-08-03T12:27:21.727Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:602\n\n  600 |     }\n ",
+      "firstSeen": "2026-08-03T12:27:22.637Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/03/00",
+      "firstSeen": "2026-08-03T12:28:29.313Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-epoch date!\n\n  329 |\n  330 |         if (inv.success) {\n> 331 |             throw new Error(`[CRITICAL_PERIOD_CONTROL_BUG] System accepted pre-",
+      "firstSeen": "2026-08-03T12:27:28.016Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Invoice with tax must credit tax account in journal entries",
+      "error": "Error: Item Creation API Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"item_id\": [\n\t\t\t\"Item ID already taken.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating Inventory Item.\"\n}\n\n\n   at ../lib/ap",
+      "firstSeen": "2026-08-03T12:27:56.495Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,39 +174,15 @@
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "TypeError: app.discoverMetadataAPI is not a function\n\n  12 |\n  13 |         console.log('[STEP] Phase 1: Create PO via API');\n> 14 |         const meta = await app.discoverMetadataAPI();\n     |       ",
-      "firstSeen": "2026-08-03T11:45:20.363Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "TimeoutError: apiRequestContext.get: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/vendor/8c8b8d32-3171-4290-ae83-17e58ccaf323?year=2018&period=yearly&calendar=ec\u001b[",
-      "firstSeen": "2026-08-03T11:45:26.799Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /remove|delete/i }).first() to be visible\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.",
-      "firstSeen": "2026-08-03T11:45:30.667Z",
+      "firstSeen": "2026-08-03T12:28:05.371Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/HrAPI.ts:67\n\n  65 |     );\n  66 |     const text = await resp.text();\n> 67 |     if (!resp",
-      "firstSeen": "2026-08-03T11:45:46.921Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test timeout of 120000ms exceeded.\n\n  129 |             if (billVisible) break;\n  130 |             console.log(`[POLL ${attemp",
-      "firstSeen": "2026-08-03T11:47:29.518Z",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: [CASH_TOPUP] Receipt creation failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/base-page.ts:1198\n\n  1196 |     if (!response.ok()) {\n  1197 |       const errTe",
+      "firstSeen": "2026-08-03T12:28:11.479Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }

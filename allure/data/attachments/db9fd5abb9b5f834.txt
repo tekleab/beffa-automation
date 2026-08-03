@@ -1,0 +1,28 @@
+[PERFORMANCE] API - Auth API Verification: 169.88ms
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785760177034 (98a8f309-8a3f-4559-a5ef-cafa5dc32328) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[PERFORMANCE] API - Auth API Verification: 163.90ms
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[STEP 1] Creating & approving Bill for 5000...
+[API] Advancing bills "3f5f1b4f-2170-4db7-9c1e-dc766dd9c164"...
+[BILL] BILL/2026/08/03/000258 (3f5f1b4f-2170-4db7-9c1e-dc766dd9c164)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for 3f5f1b4f-2170-4db7-9c1e-dc766dd9c164 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/03/000258               │
+  │ Bill ID                          │ 3f5f1b4f-2170-4db7-9c1e-dc766dd9c16… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.

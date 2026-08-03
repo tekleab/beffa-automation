@@ -1,0 +1,39 @@
+[PERFORMANCE] API - Auth API Verification: 176.83ms
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785760080273 (cdb95ba6-cd08-40c3-930e-d3763d5e1c43) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : cdb95ba6-cd08-40c3-930e-d3763d5e1c43 (WAC-Item-1785760080273)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+[API] Advancing sales-orders "1c8e2eb2-742e-4e3a-afc8-0139b082be3f"...
+[OK] SO SO/2026/08/03/000119 approved (ID: 1c8e2eb2-742e-4e3a-afc8-0139b082be3f)
+[STEP 2] Releasing Batch 1: 4 units...
+[API] Advancing invoices "a275d0fb-ee9a-4a5a-8d50-cc6acd57041f"...
+[OK] Batch 1 invoice INV/2026/08/03/000299 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+[API] Advancing invoices "9aeadf88-69f8-494c-8412-e8cddda1b461"...
+[OK] Batch 2 invoice INV/2026/08/03/000300 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/08/03/000119 (ID: 1c8e2eb2-742e-4e3a-afc8-0139b082be3f)
+[DOCUMENT] Invoice 1    : INV/2026/08/03/000299 (ID: a275d0fb-ee9a-4a5a-8d50-cc6acd57041f) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/08/03/000300 (ID: 9aeadf88-69f8-494c-8412-e8cddda1b461) — 6 units
+[ITEM]     Item         : WAC-Item-1785760080273 (cdb95ba6-cd08-40c3-930e-d3763d5e1c43)
+[STOCK]    Before       : 20
+[STOCK]    After        : 10
+[STOCK]    Expected     : 10
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[PASS] Over-release correctly rejected at invoice creation.
+[PASS] SO split invoice audit complete: 4 + 6 = 10 units correctly released and tracked.
