@@ -159,7 +159,7 @@ export class PurchaseAPI extends BasePage {
     // 1. Discover Vendor
     let resolvedVendorId = vendorId;
     if (!resolvedVendorId) {
-      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10`, { headers });
+      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10&${params}`, { headers });
       const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
       const vendor = vendorData.items?.[0] || vendorData.data?.[0];
       if (!vendor) throw new Error('PO Discovery Failed: No vendors found.');
@@ -167,7 +167,7 @@ export class PurchaseAPI extends BasePage {
     }
 
     // 2. Discover Accounts (AP + GL)
-    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50`, { headers });
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
     const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
@@ -178,7 +178,7 @@ export class PurchaseAPI extends BasePage {
     let locationId = itemData.locationId;
     let warehouseId = itemData.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
       const locData = await safeJson(locResp, 'Location Discovery');
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
@@ -187,7 +187,7 @@ export class PurchaseAPI extends BasePage {
       }
     }
     // 5. Discover Currency if missing
-    const currResp = await this.safeGet(`${apiBase}/currency?page=1&pageSize=5`, { headers });
+    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await safeJson(currResp, 'Currency Discovery');
     const currency = (currData.items || currData.data || [])[0];
 

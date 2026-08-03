@@ -77,8 +77,9 @@ export class HrAPI extends BasePage {
     // Fallback: search by email with retries — backend may not index instantly
     const email = data.email as string;
     const name = data.name as string;
+    // Initial wait — backend creates the record async after returning null
+    await this.page.waitForTimeout(4000);
     for (let attempt = 0; attempt < 7; attempt++) {
-      await this.page.waitForTimeout(3000);
       const listResp = await this.safeGet(
         `${this.apiBase}/employees?page=1&pageSize=100&sort=created_at:desc&${this.params}`, { headers: h });
       if (listResp.ok()) {
@@ -89,6 +90,7 @@ export class HrAPI extends BasePage {
             || (e.name || '').toLowerCase().includes(name.toLowerCase()));
         if (found) return found;
       }
+      await this.page.waitForTimeout(3000);
     }
     throw new Error(`Create employee: could not retrieve created employee "${name}" - response: ${text.slice(0, 200)}`);
   }
