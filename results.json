@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 12,
-  "failed": 7,
+  "passed": 15,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 63.2,
-  "avgDurationMs": 34218,
-  "lastUpdated": "2026-08-03T14:54:44.900Z",
+  "passRate": 78.9,
+  "avgDurationMs": 34756,
+  "lastUpdated": "2026-08-03T16:41:27.046Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 12,
-      "failed": 7,
+      "passed": 15,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        78.9,
         69.3,
         68.4,
         69.7,
         47.4,
         73.7,
-        63.2
+        63.2,
+        78.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "577",
+      "commit": "81bd28a",
+      "trigger": "push (smoke)",
+      "duration": "11m 0s",
+      "passRate": 78.9,
+      "status": "failed"
+    },
     {
       "run": "576",
       "commit": "05a36e6",
@@ -95,70 +103,38 @@
       "duration": "103m 42s",
       "passRate": 63.9,
       "status": "failed"
-    },
-    {
-      "run": "565",
-      "commit": "d0ff60b",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "11m 12s",
-      "passRate": 84.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table').getByText('RCPT/2026/08/03/000135').first()\nExpected: visible\nTimeout: 30000ms\nErro",
-      "firstSeen": "2026-08-03T14:48:35.911Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/08/03/000321 not found in customer profile UI. Customer: 243b9845-e056-48ce-924d-6f233d99c574\n\n  65 |             const rowCount = await page.locator('table tbody tr').count();",
-      "firstSeen": "2026-08-03T14:49:26.345Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('RCPT/2026/08/03/000136').first()\nExpected: visible\nTimeout: 15000ms\nError: element(s) not",
-      "firstSeen": "2026-08-03T14:49:37.155Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-08-03T14:49:44.598Z",
+      "firstSeen": "2026-08-03T16:37:16.494Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "Error: Create employee: could not retrieve created employee \"Audit-Emp-1785768605916\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create em",
-      "firstSeen": "2026-08-03T14:49:58.901Z",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
+      "firstSeen": "2026-08-03T16:37:30.244Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785768635210\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:91\n\n  89 |       }\n  90 |     }\n> 91 |     throw new Error(`Create empl",
-      "firstSeen": "2026-08-03T14:50:27.103Z",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785775082227\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:93\n\n  91 |       }\n  92 |     }\n> 93 |     throw new Error(`Create empl",
+      "firstSeen": "2026-08-03T16:37:56.055Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "high",
+      "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  137 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
-      "firstSeen": "2026-08-03T14:50:48.552Z",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  94 |         console.log(`[STEP 4] Navigating",
+      "firstSeen": "2026-08-03T16:38:29.527Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }

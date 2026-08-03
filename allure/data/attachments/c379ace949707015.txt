@@ -1,0 +1,27 @@
+16:36:21 [PERFORMANCE] API - Auth API Verification: 572.54ms
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785774992228 (daa14c58-73cb-4a9d-bd43-1e03242dd55c) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[OK] Created fresh item: "WAC-Item-1785774992228" | Stock: 20
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7)
+16:36:36 [INFO] Advancing sales-orders "23fd9049-33a7-4585-9c9e-93241a38b365"...
+[OK] Sales Order SO/2026/08/03/000126 approved via API
+16:36:39 [INFO] Advancing invoices "c4a1f336-c5eb-47aa-8e8e-6df779ff6688"...
+[OK] Invoice INV/2026/08/03/000326 approved via API
+[INFO] Document Setup Complete: INV/2026/08/03/000326 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT] amount=102 | invoice=c4a1f336...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/03/000138
+[OK] Receipt created via API: RCPT/2026/08/03/000138
+[STEP] Phase 3: Approval flow
+16:36:46 [INFO] Advancing receipts "67bfc167-2421-426d-9143-995798629fae"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/08/03/000138 in customer profile
+[DEBUG] Rows in Receipts tab: 49
+[KNOWN_BUG] Receipt RCPT/2026/08/03/000138 not visible in customer profile Receipts tab (49 rows). ERP UI indexing lag under parallel load — receipt approved via API.
