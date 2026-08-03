@@ -1,0 +1,30 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2018&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `408`
+- **Latency**: `165071.05ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+[TIMEOUT] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2018&period=yearly&calendar=ec exceeded 30000ms — backend may be deadlocked
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  "http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2018&period=yearly&calendar=ec"
+```

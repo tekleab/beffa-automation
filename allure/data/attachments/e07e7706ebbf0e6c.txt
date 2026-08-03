@@ -1,0 +1,27 @@
+[PERFORMANCE] API - Auth API Verification: 230.97ms
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[STEP 1] Discovering metadata...
+[HR] Using job position: "Audit Engineer" (8f3e8cb0-8b63-4611-b347-f2d3eb29283b) | dept: 13d20b07-8042-435a-a405-a9108d45b6af
+[HR] Using job position: "Audit Engineer" (8f3e8cb0-8b63-4611-b347-f2d3eb29283b) | dept: 13d20b07-8042-435a-a405-a9108d45b6af
+[INFO] dept: ROOT (13d20b07-8042-435a-a405-a9108d45b6af) | job: Audit Engineer (8f3e8cb0-8b63-4611-b347-f2d3eb29283b)
+[STEP 2] Creating 3 employees sequentially...
+[PASS] Employee 1: Lifecycle-Emp-1785740418705-1 | id: a28b734a-ce55-4fcf-b4aa-cdd6ea71c9ad
+[PASS] Employee 2: Lifecycle-Emp-1785740418705-2 | id: dc669cc8-943a-4bde-b5b9-486138be8f9f
+[PASS] Employee 3: Lifecycle-Emp-1785740418705-3 | id: 5d5b92f5-0d80-4109-bb06-2370054a129e
+[STEP 3] Creating shared pay component and pay structure...
+[PASS] Pay structure: 9a31d167-9a68-43f0-8489-928933e2f214
+[STEP 4] Assigning pay structure to all 3 employees...
+[PASS] Pay structure assigned to all employees
+[STEP 5] Creating contracts for all 3 employees...
+[WARN] Contract attempt 1 failed for emp dc669cc8-943a-4bde-b5b9-486138be8f9f: 500 — {
+	"message": "Failed to retrieve created employee contract"
+}
+ — retrying...
+[WARN] Contract attempt 2 failed for emp dc669cc8-943a-4bde-b5b9-486138be8f9f: 409 — {
+	"message": "Employee already has a draft contract. Please complete or cancel the existing contract before creating a new one."
+}
+ — retrying...
+[WARN] Contract attempt 3 failed for emp dc669cc8-943a-4bde-b5b9-486138be8f9f: 409 — {
+	"message": "Employee already has a draft contract. Please complete or cancel the existing contract before creating a new one."
+}
+ — retrying...
