@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 15,
-  "failed": 4,
+  "passed": 13,
+  "failed": 6,
   "skipped": 0,
-  "passRate": 78.9,
-  "avgDurationMs": 35299,
-  "lastUpdated": "2026-08-03T17:11:05.581Z",
+  "passRate": 68.4,
+  "avgDurationMs": 39539,
+  "lastUpdated": "2026-08-03T17:36:16.804Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 15,
-      "failed": 4,
+      "passed": 13,
+      "failed": 6,
       "skipped": 0,
       "trend": [
-        68.4,
         69.7,
         47.4,
         73.7,
         63.2,
         78.9,
-        78.9
+        78.9,
+        68.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "580",
+      "commit": "265e1af",
+      "trigger": "push (smoke)",
+      "duration": "12m 31s",
+      "passRate": 68.4,
+      "status": "failed"
+    },
     {
       "run": "579",
       "commit": "9b7e612",
@@ -95,38 +103,46 @@
       "duration": "10m 26s",
       "passRate": 78.9,
       "status": "failed"
-    },
-    {
-      "run": "567",
-      "commit": "c22d4fc",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "18m 8s",
-      "passRate": 68.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-08-03T17:05:45.506Z",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:199\n\n  197 |         if (success) break;\n  198 |",
+      "firstSeen": "2026-08-03T17:29:47.019Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Employee must be created with all required fields",
-      "error": "Error: Create employee: could not retrieve created employee \"Audit-Emp-1785776775894\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:95\n\n  93 |       await this.page.waitForTimeout(3000);\n  94 |     }\n>",
-      "firstSeen": "2026-08-03T17:06:09.788Z",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:199\n\n  197 |         if (success) break;\n  198 |",
+      "firstSeen": "2026-08-03T17:29:47.055Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-08-03T17:30:33.833Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
+      "firstSeen": "2026-08-03T17:30:53.878Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785776794311\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:95\n\n  93 |       await this.page.waitForTimeout(3000);\n  94 |     }\n> 9",
-      "firstSeen": "2026-08-03T17:06:27.972Z",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785778289534\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:107\n\n  105 |       await this.page.waitForTimeout(3000);\n  106 |     }\n",
+      "firstSeen": "2026-08-03T17:31:18.985Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,7 +150,7 @@
       "severity": "high",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  111 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
-      "firstSeen": "2026-08-03T17:06:53.101Z",
+      "firstSeen": "2026-08-03T17:32:02.081Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
