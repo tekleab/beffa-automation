@@ -244,7 +244,7 @@ export class SharedUI {
     const href = await link.getAttribute('href');
     if (href) {
       console.log(`[ACTION] Navigating to detail: ${href}`);
-      await this.page.goto(href, { waitUntil: 'networkidle' });
+      await this.page.goto(href, { waitUntil: 'commit' });
     } else {
       await link.click({ force: true });
     }

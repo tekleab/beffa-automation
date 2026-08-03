@@ -35,7 +35,7 @@ export class InventoryPage {
   }
 
   async captureItemDetails(itemName: string): Promise<{ itemName: string; itemId: string | null; currentStock: number; unitCost: number; salesAccountCode: string; costAccountCode: string; inventoryAccountCode: string }> {
-    await this.page.goto('/inventories/items/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    await this.page.goto('/inventories/items/?page=1&pageSize=30', { waitUntil: 'commit' });
     const searchBox = this.page.getByPlaceholder('Search for inventory...').filter({ visible: true }).first();
     await searchBox.fill(itemName);
     await this.page.keyboard.press('Enter');

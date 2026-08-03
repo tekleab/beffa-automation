@@ -76,12 +76,10 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
         // 3. Create PO: 5 units @ $25
         const poResp = await page.request.post(`${app.apiBase}/purchase-orders?${p}`, {
             headers: h,
-            data: {
-                vendor_id: vendor.id,
+            data: {                vendor_id: vendor.id,
                 accounts_payable_id: apAccount?.id,
-                currency_id: currencyId,
-                po_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                delivery_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                currency_id: currencyId,                po_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+                delivery_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 status: 'draft',
                 purchase_type_id: 4,
                 po_items: [{
@@ -113,8 +111,8 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
                 accounts_payable_id: apAccount?.id,
                 currency_id: currencyId,
                 purchase_order_id: poId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+                due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 status: 'draft',
                 items: [{
                     item_id: itemId,
@@ -209,8 +207,8 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
                 customer_id: salesMeta.customerId,
                 accounts_receivable_id: salesMeta.arAccountId,
                 currency_id: salesMeta.currencyId,
-                so_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                delivery_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                so_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+                delivery_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 status: 'draft',
                 so_items: [{
                     item_id: itemId,
@@ -240,7 +238,7 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
                 customer_id: salesMeta.customerId,
                 accounts_receivable_id: salesMeta.arAccountId,
                 currency_id: salesMeta.currencyId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 due_date: new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0] + 'T00:00:00Z',
                 status: 'draft',
                 items: [{

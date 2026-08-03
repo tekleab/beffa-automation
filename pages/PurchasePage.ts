@@ -128,7 +128,7 @@ export class PurchasePage extends BasePage {
   }
 
   async captureRandomVendorDetails(): Promise<{ vendorName: string; vendorId: string | undefined }> {
-    await this.page.goto('/contacts/vendors/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    await this.page.goto('/contacts/vendors/?page=1&pageSize=30', { waitUntil: 'commit' });
     const rows = this.page.locator('table tbody tr');
     await rows.first().waitFor({ state: 'visible', timeout: 30000 });
     const count = await rows.count();

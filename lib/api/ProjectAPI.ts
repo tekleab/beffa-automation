@@ -86,8 +86,10 @@ export class ProjectAPI extends BasePage {
         description?: string;
     }): Promise<ProjectRecord> {
         const headers = await this.h();
-        const today = new Date().toISOString().split('T')[0] + 'T00:00:00Z';
-        const nextYear = new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0] + 'T00:00:00Z';
+        const { DateHelper: _DH } = require('../utils/DateHelper');
+        const _cached = _DH._cached?.iso || new Date().toISOString().split('T')[0] + 'T00:00:00Z';
+        const today = _cached;
+        const nextYear = new Date(new Date(_cached).getTime() + 365 * 86400000).toISOString().split('T')[0] + 'T00:00:00Z';
 
         const payload = {
             project_name: data.name,

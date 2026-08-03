@@ -101,7 +101,9 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
 
         // ── STEP 5: Create contracts for all 3 employees in parallel ─────────
         console.log(`[STEP 5] Creating contracts for all ${EMPLOYEE_COUNT} employees...`);
-        const today = new Date().toISOString().split('T')[0] + 'T00:00:00Z';
+        const { DateHelper: _DH } = require('../../lib/utils/DateHelper');
+        const _dateIso = (await _DH.resolve(page)).iso;
+        const today = _dateIso;
         const contracts: any[] = [];
         for (const empId of empIds) {
             // Cancel any existing draft contract to avoid 409
@@ -185,7 +187,7 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
 
         // ── STEP 8: Create payroll run ────────────────────────────────────────
         console.log(`[STEP 8] Creating payroll run...`);
-        const now = new Date();
+        const now = new Date(_dateIso);
         const periodStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0] + 'T00:00:00Z';
         const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0] + 'T00:00:00Z';
         const run = await app.api.hr.createPayrollRun(

@@ -52,12 +52,10 @@ test.describe('FIFO Write-Down & Sell-Through Audit @inventory @costing @regress
     const addPoReceiptLayer = async (itemId: string, qty: number, unitPrice: number): Promise<void> => {
       const poResp = await page.request.post(`${app.apiBase}/purchase-orders?${p}`, {
         headers: h,
-        data: {
-          vendor_id: vendor.id,
+        data: {          vendor_id: vendor.id,
           accounts_payable_id: apAccount?.id,
-          currency_id: purchMeta.currencyId,
-          po_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-          delivery_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+          currency_id: purchMeta.currencyId,          po_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+          delivery_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
           status: 'draft',
           purchase_type_id: 4,
           po_items: [{
@@ -87,8 +85,8 @@ test.describe('FIFO Write-Down & Sell-Through Audit @inventory @costing @regress
           accounts_payable_id: apAccount?.id,
           currency_id: purchMeta.currencyId,
           purchase_order_id: poId,
-          invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-          due_date:     new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+          invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+          due_date:     (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
           status: 'draft',
           items: [],
           received_purchase_order_items: [{ po_item_id: poItemId, received_quantity: qty, received_unit_price: unitPrice }],

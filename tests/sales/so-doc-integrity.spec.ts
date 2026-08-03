@@ -86,8 +86,7 @@ test.describe('Sales Document Integrity Guardrails @sales @logic @security @regr
             const body = await editResp.json();
             const modifiedQty = body.so_items?.[0]?.quantity;
             if (modifiedQty === 999) {
-                throw new Error(`[VULNERABILITY] Approved SO ${so.ref} was modified! Quantity changed to 999. Document immutability is broken.`);
-            }
+                throw new Error(`[VULNERABILITY] Approved SO ${so.ref} was modified! Quantity changed to 999. Document immutability is broken.`);            }
             console.log(`[PASS] PATCH accepted but quantity was not changed (${modifiedQty}).`);
         } else {
             console.log(`[PASS] SO modification correctly rejected with status ${editResp.status()}.`);
@@ -105,10 +104,8 @@ test.describe('Sales Document Integrity Guardrails @sales @logic @security @regr
         console.log(`[ATTACK] Creating invoice with past due date: ${pastDueDate}...`);
 
         const resp = await page.request.post(`${apiBase}/invoices?${qs}`, {
-            data: {
-                accounts_receivable_id: meta.arAccountId,
-                customer_id: meta.customerId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+            data: {                accounts_receivable_id: meta.arAccountId,
+                customer_id: meta.customerId,                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 due_date: pastDueDate,
                 currency_id: meta.currencyId,
                 items: [{ amount: 500, general_ledger_account_id: meta.salesAccountId, item_id: item.itemId, location_id: item.locationId, quantity: 1, unit_price: 500, warehouse_id: item.warehouseId }],

@@ -8,7 +8,7 @@ export class ProjectPage extends BasePage {
 
   async navigateToProjects() {
     await this.page.goto('/project-management/projects');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickAddProject() {
@@ -17,7 +17,7 @@ export class ProjectPage extends BasePage {
     await addBtn.waitFor({ state: 'visible', timeout: 10000 });
     await addBtn.click();
     await this.page.waitForURL('**/projects/new', { timeout: 10000 });
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   // Popover structure (confirmed from browser console):
@@ -144,6 +144,6 @@ export class ProjectPage extends BasePage {
     await this.page.waitForTimeout(800);
     await this.page.locator('[role="option"], [role="menuitem"], li, button')
       .filter({ hasText: new RegExp(status, 'i') }).first().click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 }

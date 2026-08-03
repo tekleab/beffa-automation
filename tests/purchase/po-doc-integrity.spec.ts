@@ -242,12 +242,10 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         if (mutateResp.ok()) {
             const mutated = await app.api.purchase.getBillAPI(bill.id);
             if (mutated.items?.[0]?.quantity === 999) {
-                throw new Error(`[CRITICAL_LOGIC_BUG] Approved bill ${bill.ref} line item mutated to qty=999.`);
-            }
+                throw new Error(`[CRITICAL_LOGIC_BUG] Approved bill ${bill.ref} line item mutated to qty=999.`);            }
             console.log(`[PASS] PATCH accepted but quantity not mutated.`);
         } else {
-            console.log(`[PASS] Mutation of approved bill correctly rejected: HTTP ${mutateResp.status()}`);
-        }
+            console.log(`[PASS] Mutation of approved bill correctly rejected: HTTP ${mutateResp.status()}`);        }
     });
 
     // ── 5. BILL WITH NO VENDOR ────────────────────────────────────────────────
@@ -261,10 +259,8 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         console.log(`[ATTACK] Attempting to create Bill with vendor_id=null...`);
         const resp = await page.request.post(`${apiBase}/bills?${qs}`, {
             headers,
-            data: {
-                accounts_payable_id: sharedMeta.apAccountId, currency_id: sharedMeta.currencyId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+            data: {                accounts_payable_id: sharedMeta.apAccountId, currency_id: sharedMeta.currencyId,                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+                due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 vendor_id: null,
                 items: [{ item_id: item.itemId, quantity: 1, unit_price: 5000, amount: 5000, location_id: loc?.id, warehouse_id: loc?.warehouse_id }],
                 status: 'draft'

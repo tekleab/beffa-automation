@@ -7,7 +7,7 @@ export class SalesPage extends BasePage {
   }
 
   async captureRandomCustomerDetails(): Promise<{ customerName: string; customerId: string | undefined }> {
-    await this.page.goto('/receivables/customers/?page=1&pageSize=30', { waitUntil: 'networkidle' });
+    await this.page.goto('/receivables/customers/?page=1&pageSize=30', { waitUntil: 'commit' });
     const rows = this.page.locator('table tbody tr');
     await rows.first().waitFor({ state: 'visible', timeout: 30000 });
     const count = await rows.count();
@@ -201,7 +201,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifySuccessMessage() {
@@ -224,7 +224,7 @@ export class SalesPage extends BasePage {
   async navigateToSOList() {
     console.log(`[UI] Navigating to Sales Orders list`);
     await this.page.goto('/receivables/sale-orders');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickAddSalesOrder() {
@@ -232,7 +232,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add Sales Order' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickLineItemButtonSO() {
@@ -240,7 +240,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Line Item' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickItemTypeButton() {
@@ -248,7 +248,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Item' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickSubmitSO() {
@@ -256,7 +256,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickViewSO() {
@@ -264,7 +264,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'view' }).first();
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifySOFields() {
@@ -286,7 +286,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   // ============================================================================
@@ -296,7 +296,7 @@ export class SalesPage extends BasePage {
   async navigateToInvoiceList() {
     console.log(`[UI] Navigating to Invoices list`);
     await this.page.goto('/receivables/invoices');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickAddInvoice() {
@@ -304,7 +304,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add Invoice' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async fillInvoiceNumber(invoiceNumber: string) {
@@ -341,7 +341,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Line Item' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickSubmitInvoice() {
@@ -349,7 +349,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickViewInvoice() {
@@ -357,7 +357,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'view' }).first();
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifyInvoiceFields() {
@@ -382,7 +382,7 @@ export class SalesPage extends BasePage {
   async navigateToReceiptList() {
     console.log(`[UI] Navigating to Receipts list`);
     await this.page.goto('/receivables/receipts');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickAddReceipt() {
@@ -390,7 +390,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add Receipt' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async fillReceiptRef(ref: string) {
@@ -437,7 +437,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Line Item' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickSubmitReceipt() {
@@ -445,7 +445,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'Add' });
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async clickViewReceipt() {
@@ -453,7 +453,7 @@ export class SalesPage extends BasePage {
     const button = this.page.getByRole('button', { name: 'view' }).first();
     await button.waitFor({ state: 'visible', timeout: 10000 });
     await button.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifyReceiptFields() {

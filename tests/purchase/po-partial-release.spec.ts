@@ -55,13 +55,11 @@ test.describe('Procurement Partial PO Release Audit @purchase @logic @regression
 
         const createBillResp = await page.request.post(`${apiBase}/bills?${qs}`, {
             headers,
-            data: {
-                purchase_order_id: po.poId,
+            data: {                purchase_order_id: po.poId,
                 vendor_id: meta.vendorId,
                 accounts_payable_id: meta.apAccountId,
-                currency_id: meta.currencyId,
-                invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
-                due_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+                currency_id: meta.currencyId,                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+                due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 items: [],
                 received_purchase_order_items: [{
                     po_item_id: poItemId,

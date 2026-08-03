@@ -85,8 +85,7 @@ test.describe('Concurrency & Race Condition Audits @sales @concurrency @security
             }
             console.log(`[PASS] At least one approval layer blocked the duplication. Approved: ${approvedCount}`);
         } else {
-            console.log('[PASS] Concurrent receipt duplication handled at API layer.');
-        }
+            console.log('[PASS] Concurrent receipt duplication handled at API layer.');        }
     });
 
     test('Guardrail: System must enforce thread-safe serialization for stock reduction limits', async ({ page, request }) => {
@@ -99,10 +98,9 @@ test.describe('Concurrency & Race Condition Audits @sales @concurrency @security
         const bill = await app.createBillAPI({ itemData: { ...seedItem }, quantity: 5, unitPrice: 1500 });
         await app.advanceDocumentAPI(bill.id, 'bills');
 
-        const buildRacePayload = () => ({
-            accounts_receivable_id: meta.arAccountId,
-            customer_id: meta.customerId,
-            invoice_date: new Date().toISOString().split('T')[0] + 'T00:00:00Z',
+        const _dateIso = (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso;
+        const buildRacePayload = () => ({            accounts_receivable_id: meta.arAccountId,
+            customer_id: meta.customerId,            invoice_date: _dateIso,
             currency_id: meta.currencyId,
             items: [{ amount: 3000, general_ledger_account_id: meta.salesAccountId, item_id: seedItem.itemId, location_id: seedItem.locationId, quantity: 1, unit_price: 3000, warehouse_id: seedItem.warehouseId }],
             released_sales_order_items: [],

@@ -33,7 +33,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-01: Projects list page loads with all key table columns', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         // Scope to table header to avoid matching sidebar nav items (e.g. "Customers")
         const thead = page.locator('table thead, thead, [role="columnheader"]');
         for (const col of ['Project Name', 'Customer', 'Status', 'Budget', 'Tasks', 'Start Date', 'End Date']) {
@@ -49,7 +49,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-02: Filter pills (Workspace, Workflow, Status, Budget) are visible', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         for (const pill of ['Workspace', 'Workflow', 'Status', 'Budget']) {
             await expect(page.getByRole('button', { name: new RegExp(pill, 'i') }).first()).toBeVisible({ timeout: 8000 });
         }
@@ -58,7 +58,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-03: Sort and View buttons are visible in toolbar', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await expect(page.getByRole('button', { name: /Sort/i }).first()).toBeVisible({ timeout: 8000 });
         const viewBtn = page.getByRole('button', { name: /View/i }).first();
         const viewVisible = await viewBtn.isVisible({ timeout: 5000 }).catch(() => false);
@@ -70,7 +70,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-04: Advanced filters and Command filters links are present', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await expect(page.getByText(/Advanced filters/i).first()).toBeVisible({ timeout: 8000 });
         await expect(page.getByText(/Command filters/i).first()).toBeVisible({ timeout: 8000 });
     });
@@ -78,7 +78,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-05: Add Project button and Export button are visible', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         const addProjectEl = page.getByRole('link', { name: /Add Project/i }).or(page.getByRole('button', { name: /Add Project/i })).first();
         await expect(addProjectEl).toBeVisible({ timeout: 8000 });
         await expect(page.getByRole('button', { name: /Export/i })).toBeVisible({ timeout: 8000 });
@@ -87,7 +87,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-06: Search input is present and accepts text', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         const search = page.getByPlaceholder(/Search/i).first();
         await expect(search).toBeVisible({ timeout: 8000 });
         await search.fill('test');
@@ -98,7 +98,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-07: Pagination shows rows-per-page and page count', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await expect(page.getByText(/Rows per page/i).first()).toBeVisible({ timeout: 8000 });
         await expect(page.getByText(/Page [0-9]+ of [0-9]+/i).first()).toBeVisible({ timeout: 8000 });
     });
@@ -107,7 +107,7 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await expect(page.getByText(project.ref, { exact: false }).first()).toBeVisible({ timeout: 15000 });
     });
 
@@ -115,9 +115,9 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await page.getByText(project.ref, { exact: false }).first().click();
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         expect(page.url()).toContain('project');
         await expect(page.getByText(project.ref, { exact: false }).first()).toBeVisible({ timeout: 10000 });
     });

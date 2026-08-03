@@ -34,7 +34,7 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
         await page.goto(`/project-management/projects/${project.id}`);
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
 
         // Click the "Financial Information" tab to expose financial fields
         const finTab = page.getByRole('tab', { name: /financial/i }).or(page.getByText(/financial information/i)).first();
@@ -66,7 +66,7 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
         await page.goto(`/project-management/projects/${project.id}`);
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         
         // Try multiple selector strategies for status indicator
         const statusSelectors = [
@@ -93,14 +93,14 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
         await page.goto(`/project-management/projects/${project.id}`);
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await expect(page.getByText(meta.customerName, { exact: false }).first()).toBeVisible({ timeout: 10000 });
     });
 
     test('UI-15: Direct URL to non-existent project shows error or redirects', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects/00000000-0000-0000-0000-000000000000');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         const errorOrRedirect = await page.getByText(/not found|error|no results/i).first()
             .isVisible({ timeout: 8000 }).catch(() => false)
             || !page.url().includes('00000000-0000-0000-0000-000000000000');
@@ -113,7 +113,7 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
         const ctx = await browser.newContext({ storageState: undefined });
         const page = await ctx.newPage();
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         expect(page.url()).toContain('login');
         await ctx.close();
     });
@@ -121,7 +121,7 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
     test('UI-GUARD-03: Status filter pill click opens filter options', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         const statusBtn = page.getByRole('button', { name: /Status/i }).first();
         if (await statusBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
             await statusBtn.click();
