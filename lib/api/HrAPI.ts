@@ -77,14 +77,16 @@ export class HrAPI extends BasePage {
     // Fallback: search by email with retries — backend may not index instantly
     const email = data.email as string;
     const name = data.name as string;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      await this.page.waitForTimeout(2000);
+    for (let attempt = 0; attempt < 7; attempt++) {
+      await this.page.waitForTimeout(3000);
       const listResp = await this.safeGet(
         `${this.apiBase}/employees?page=1&pageSize=100&sort=created_at:desc&${this.params}`, { headers: h });
       if (listResp.ok()) {
         const list = (await listResp.json()).data || [];
         const found = list.find((e: any) => e.email === email)
-          || list.find((e: any) => e.name === name || e.full_name === name);
+          || list.find((e: any) => e.name === name || e.full_name === name
+            || (e.full_name || '').toLowerCase().includes(name.toLowerCase())
+            || (e.name || '').toLowerCase().includes(name.toLowerCase()));
         if (found) return found;
       }
     }

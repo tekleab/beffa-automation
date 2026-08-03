@@ -83,10 +83,10 @@ export class PurchaseAPI extends BasePage {
     // Improved AP discovery logic
     const apAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
-      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
       allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('payable')) ||
-      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('liability')) ||
+      allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('liability')) ||
       allAccounts[1] || allAccounts[0];
 
     // Discovery Withholding Account (Prioritize Payable for Purchases)
@@ -170,8 +170,9 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
-    const glAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
+    const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+    const apAccount = allAccounts.find((a: any) => typeOf(a).includes('payable')) || allAccounts[0];
+    const glAccount = allAccounts.find((a: any) => typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0];
 
     // 4. Discover Locations if missing
     let locationId = itemData.locationId;
@@ -257,12 +258,13 @@ export class PurchaseAPI extends BasePage {
     const allAccounts = acctData.items || acctData.data || [];
 
     // Improved strict AP discovery
+    const _typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
     const discoveredAp =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
-      allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => _typeOf(a).includes('payable')) ||
       allAccounts[0];
 
-    const resolvedGlAccount = glAccountId !== undefined ? { id: glAccountId } : (allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0]);
+    const resolvedGlAccount = glAccountId !== undefined ? { id: glAccountId } : (allAccounts.find((a: any) => _typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0]);
 
     // 3. Discover Currency
     const currResp = await this.safeGet(`${apiBase}/currency?${qs}`, { headers });
@@ -340,7 +342,7 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
+    const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
 
     // 3. Map strictly into `received_purchase_order_items`
     const receivedItems = (poData.po_items || []).map((item: any) => ({
@@ -448,7 +450,7 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await acctResp.json();
     const allAccounts = acctData.items || acctData.data || [];
-    const apAccount = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
+    const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
