@@ -4,8 +4,8 @@
   "failed": 4,
   "skipped": 0,
   "passRate": 78.9,
-  "avgDurationMs": 34756,
-  "lastUpdated": "2026-08-03T16:41:27.046Z",
+  "avgDurationMs": 35299,
+  "lastUpdated": "2026-08-03T17:11:05.581Z",
   "moduleBreakdown": [
     {
       "module": "Other",
@@ -13,17 +13,25 @@
       "failed": 4,
       "skipped": 0,
       "trend": [
-        69.3,
         68.4,
         69.7,
         47.4,
         73.7,
         63.2,
+        78.9,
         78.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "579",
+      "commit": "9b7e612",
+      "trigger": "push (smoke)",
+      "duration": "11m 10s",
+      "passRate": 78.9,
+      "status": "failed"
+    },
     {
       "run": "577",
       "commit": "81bd28a",
@@ -95,14 +103,6 @@
       "duration": "18m 8s",
       "passRate": 68.4,
       "status": "failed"
-    },
-    {
-      "run": "566",
-      "commit": "3dae302",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "103m 42s",
-      "passRate": 63.9,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,31 +110,31 @@
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-08-03T16:37:16.494Z",
+      "firstSeen": "2026-08-03T17:05:45.506Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
-      "firstSeen": "2026-08-03T16:37:30.244Z",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: Create employee: could not retrieve created employee \"Audit-Emp-1785776775894\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:95\n\n  93 |       await this.page.waitForTimeout(3000);\n  94 |     }\n>",
+      "firstSeen": "2026-08-03T17:06:09.788Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785775082227\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:93\n\n  91 |       }\n  92 |     }\n> 93 |     throw new Error(`Create empl",
-      "firstSeen": "2026-08-03T16:37:56.055Z",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785776794311\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:95\n\n  93 |       await this.page.waitForTimeout(3000);\n  94 |     }\n> 9",
+      "firstSeen": "2026-08-03T17:06:27.972Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
+      "severity": "high",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  94 |         console.log(`[STEP 4] Navigating",
-      "firstSeen": "2026-08-03T16:38:29.527Z",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  111 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
+      "firstSeen": "2026-08-03T17:06:53.101Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
