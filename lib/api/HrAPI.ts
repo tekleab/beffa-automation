@@ -80,10 +80,22 @@ export class HrAPI extends BasePage {
     // Initial wait — backend creates the record async after returning null
     await this.page.waitForTimeout(4000);
     for (let attempt = 0; attempt < 7; attempt++) {
+      // Try direct email search first (faster than full list scan)
+      const emailResp = await this.safeGet(
+        `${this.apiBase}/employees?page=1&pageSize=10&search=${encodeURIComponent(email)}&${this.params}`, { headers: h });
+      if (emailResp.ok()) {
+        const emailList = (await emailResp.json()).data || [];
+        const byEmail = emailList.find((e: any) => e.email === email);
+        if (byEmail) return byEmail;
+      }
+      // Fallback: full list scan
       const listResp = await this.safeGet(
         `${this.apiBase}/employees?page=1&pageSize=100&sort=created_at:desc&${this.params}`, { headers: h });
       if (listResp.ok()) {
-        const list = (await listResp.json()).data || [];
+        const listJson = await listResp.json();
+        const list = listJson.data || [];
+        console.log(`[HR] Attempt ${attempt + 1}: list total=${listJson.total ?? listJson.count ?? '?'} | checking ${list.length} rows for email=${email}`);
+        if (attempt === 0) console.log(`[HR] Sample emails: ${list.slice(0, 5).map((e: any) => e.email).join(', ')}`);
         const found = list.find((e: any) => e.email === email)
           || list.find((e: any) => e.name === name || e.full_name === name
             || (e.full_name || '').toLowerCase().includes(name.toLowerCase())

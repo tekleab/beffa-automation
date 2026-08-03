@@ -61,11 +61,27 @@ export class DateHelper {
         return null;
       }).catch(() => null);
 
-      if (!token) return null;
+      // If localStorage is empty (blank page / API-only test), try a login probe
+      let resolvedToken = token;
+      if (!resolvedToken) {
+        try {
+          const loginResp = await page.request.post(
+            `${base}/users/login?year=${baseYear}&period=${period}&calendar=${calendar}&month=6`,
+            { data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+              headers: { 'Content-Type': 'application/json' } }
+          );
+          if (loginResp.ok()) {
+            const d = await loginResp.json();
+            resolvedToken = d.auth_token || d.token || null;
+          }
+        } catch { /* ignore */ }
+      }
+
+      if (!resolvedToken) return null;
 
       const headers = {
         'x-company': company,
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${resolvedToken}`,
         'Content-Type': 'application/json'
       };
 
@@ -133,18 +149,23 @@ export class DateHelper {
   }
 
   // ── Strategy 2: derive from BEFFA_YEAR (EC year N starts ~Aug 7 of GC N+7) ──
+  // Walks years until it finds one whose period end is in the future.
   private static _fromEnv(): ResolvedDate | null {
-    const ecYear = parseInt(process.env.BEFFA_YEAR || '', 10);
-    if (!ecYear || isNaN(ecYear)) return null;
-    // EC year N: Meskerem 1 = ~Sep 11 of GC year (N+7), ends ~Sep 10 of GC year (N+8)
-    // Use Sep 15 of GC year (N+7) as a safe mid-start date
-    const gcYear = ecYear + 7;
-    const safeStart = new Date(`${gcYear}-09-15T00:00:00Z`);
-    const today = new Date();
-    const ecStart = new Date(`${gcYear}-09-11T00:00:00Z`);
-    const ecEnd = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
-    const useDate = today >= ecStart && today <= ecEnd ? today : safeStart;
-    return DateHelper._fromDate(useDate);
+    const baseYear = parseInt(process.env.BEFFA_YEAR || '', 10);
+    if (!baseYear || isNaN(baseYear)) return null;
+    const now = new Date();
+    for (let offset = 0; offset <= 3; offset++) {
+      const ecYear = baseYear + offset;
+      // EC year N: Hamle 1 (Jul 8) of GC year N+7 to Sene 30 (Jul 7) of GC year N+8
+      const gcYear = ecYear + 7;
+      const periodStart = new Date(`${gcYear}-07-08T00:00:00Z`);
+      const periodEnd   = new Date(`${gcYear + 1}-07-07T00:00:00Z`);
+      if (periodEnd < now) continue;
+      const useDate = periodStart > now ? periodStart : now;
+      console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
+      return DateHelper._fromDate(useDate);
+    }
+    return null;
   }
 
   // ── Strategy 3: today ────────────────────────────────────────────────────────
