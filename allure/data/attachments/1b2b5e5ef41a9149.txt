@@ -1,0 +1,33 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+06:43:22 [PERFORMANCE] API - Auth API Verification: 234.40ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1785825811246 (4a240047-0c30-44a0-9e98-29703097bc92) | method=WAC | stock=50@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+06:43:33 [PERFORMANCE] API - Auth API Verification: 277.00ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

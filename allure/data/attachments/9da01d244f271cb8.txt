@@ -1,0 +1,17 @@
+06:47:49 [PERFORMANCE] API - Auth API Verification: 289.05ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Discovering item with known stock...
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785826077035 (15ea7fa3-fcf0-4dd2-8eac-b2a2789c169c) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[ATTACK] Attempting to invoice 10019 units of "WAC-Item-1785826077035" (available: 20)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 20, required: 10019.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+

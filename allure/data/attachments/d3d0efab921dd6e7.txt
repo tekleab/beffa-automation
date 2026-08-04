@@ -1,0 +1,19 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+06:46:55 [PERFORMANCE] API - Auth API Verification: 255.35ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 100...
+[SUCCESS] API Confirmed: Stock correctly reached 100.
+[FRESH ITEM] Created: WAC-Item-1785826022346 (47996bfb-7a3d-4292-a0e2-cb49039c9c90) | method=WAC | stock=100@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[STEP 1] Creating negative adjustment (-50) for: WAC-Item-1785826022346 | Stock before: 100
+[ADJ] quantity | qty=-50 @ $100 | current=100 loc=100
+[SUCCESS] Adjustment created via API: ADJ/2026/08/04/000038 (ID: dd364c29-61ba-4e29-8b68-cdd1ddd2c5cc)
+[STEP 2] Adjustment created: ADJ/2026/08/04/000038 | Approving...
+06:47:03 [INFO] Advancing inventory-adjustments "dd364c29-61ba-4e29-8b68-cdd1ddd2c5cc"...
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[AUDIT] Stock before: 100 | Adjustment: -50 | Expected: 50 | Final: 50
+[PASS] Negative adjustment applied correctly — stock reduced from 100 to 50.

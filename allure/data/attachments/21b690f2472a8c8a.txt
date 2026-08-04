@@ -1,0 +1,37 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+06:41:59 [PERFORMANCE] API - Auth API Verification: 267.98ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[PHASE 1] Discovering item for E2E cycle...
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785825726554 (50398dfd-717a-4efb-9f4c-e40ff51a74e2) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[OK] Item: "WAC-Item-1785825726554" | Stock Before: 20
+[PHASE 2] Creating & approving Bill via API...
+06:42:08 [INFO] Advancing bills "488df4b1-3546-4460-bd1d-58e4c01076dd"...
+[OK] Bill BILL/2026/08/04/000315 approved.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 25...
+[SUCCESS] API Confirmed: Stock correctly reached 25.
+[AUDIT] Stock after purchase: 25 (Expected: 25)
+[PHASE 3] Creating & approving SO via API...
+06:42:17 [INFO] Advancing sales-orders "55d69903-4423-4c1f-932d-13bff66beb4c"...
+[OK] SO SO/2026/08/04/000144 approved.
+[PHASE 3] Creating & approving Invoice via API...
+06:42:20 [INFO] Advancing invoices "6be6c2d2-3545-4523-95d3-db29cb6b8b5f"...
+[OK] Invoice INV/2026/08/04/000398 approved.
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 23...
+[SUCCESS] API Confirmed: Stock correctly reached 23.
+
+========== E2E CYCLE AUDIT REPORT ==========
+[ITEM]    WAC-Item-1785825726554 (50398dfd-717a-4efb-9f4c-e40ff51a74e2)
+[BILL]    BILL/2026/08/04/000315 — purchased 5 units
+[SO]      SO/2026/08/04/000144 — sold 2 units
+[INVOICE] INV/2026/08/04/000398
+[STOCK]   Before Purchase : 20
+[STOCK]   After Purchase  : 25
+[STOCK]   After Sale      : 23 (Expected: 23)
+============================================
+
+[PASS] E2E Purchase to Sale cycle complete. Inventory correctly reconciled.
