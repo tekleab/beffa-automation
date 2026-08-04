@@ -168,7 +168,7 @@ export class DateHelper {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '', 10);
     if (!baseYear || isNaN(baseYear)) return null;
     const now = new Date();
-    for (let offset = 0; offset <= 3; offset++) {
+    for (let offset = -1; offset <= 3; offset++) {
       const ecYear = baseYear + offset;
       // EC year N: Hamle 1 (Jul 8) of GC year N+7 to Sene 30 (Jul 7) of GC year N+8
       const gcYear = ecYear + 7;
