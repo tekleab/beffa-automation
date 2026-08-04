@@ -91,8 +91,9 @@ export class DateHelper {
 
       const now = new Date();
 
-      // Try env year, then env+1, then env+2 — stops as soon as period end is in the future
-      for (let yearOffset = 0; yearOffset <= 2; yearOffset++) {
+      // Try env year ± offsets — stops as soon as period end is in the future.
+      // Include -1 to handle cases where the open period is one EC year below BEFFA_YEAR.
+      for (let yearOffset = -1; yearOffset <= 3; yearOffset++) {
         const year = baseYear + yearOffset;
         const qs = `year=${year}&period=${period}&calendar=${calendar}`;
 

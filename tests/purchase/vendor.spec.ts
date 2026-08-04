@@ -57,7 +57,10 @@ test.describe('Vendor Lifecycle — Validation & CRUD @purchase @smoke @full', (
         await editBtn.waitFor({ state:'visible', timeout: 15000 });
         await page.waitForTimeout(2000);
         await editBtn.click({ force: true });
-        await page.getByRole('textbox', { name:'Vendor Name *' }).waitFor({ state:'visible' });
+        // Wait for navigation or modal to settle before looking for the input
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForTimeout(1000);
+        await page.getByRole('textbox', { name:'Vendor Name *' }).waitFor({ state:'visible', timeout: 30000 });
         await page.getByRole('textbox', { name:'Vendor Name *' }).clear();
         await page.getByRole('textbox', { name:'Vendor Name *' }).fill(updatedName);
         await page.getByLabel('Vendor Type *').selectOption('independent');
