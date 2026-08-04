@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 16,
-  "failed": 3,
+  "passed": 15,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 84.2,
-  "avgDurationMs": 32568,
-  "lastUpdated": "2026-08-04T05:53:02.341Z",
+  "passRate": 78.9,
+  "avgDurationMs": 30654,
+  "lastUpdated": "2026-08-04T06:13:01.895Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 3,
+      "passed": 15,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        73.7,
         63.2,
         78.9,
         78.9,
         68.4,
         73.7,
-        84.2
+        84.2,
+        78.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "583",
+      "commit": "3ff6a5c",
+      "trigger": "push (smoke)",
+      "duration": "9m 42s",
+      "passRate": 78.9,
+      "status": "failed"
+    },
     {
       "run": "582",
       "commit": "477d611",
@@ -95,38 +103,38 @@
       "duration": "82m 18s",
       "passRate": 68.6,
       "status": "failed"
-    },
-    {
-      "run": "570",
-      "commit": "2bd2165",
-      "trigger": "push (smoke)",
-      "duration": "14m 40s",
-      "passRate": 68.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:202\n\n  200 |         if (success) break;\n  201 |",
+      "firstSeen": "2026-08-04T06:07:02.870Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-08-04T05:48:57.136Z",
+      "firstSeen": "2026-08-04T06:07:53.211Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
-      "firstSeen": "2026-08-04T05:49:10.047Z",
+      "severity": "critical",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: Create employee failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/HrAPI.ts:67\n\n  65 |     );\n  66 |     const text = await resp.text();\n> 67 |     if (!resp",
+      "firstSeen": "2026-08-04T06:08:14.451Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
+      "severity": "high",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  94 |         console.log(`[STEP 4] Navigating",
-      "firstSeen": "2026-08-04T05:50:00.145Z",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  128 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
+      "firstSeen": "2026-08-04T06:08:54.730Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
