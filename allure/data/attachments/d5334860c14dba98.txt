@@ -1,0 +1,20 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+06:28:35 [PERFORMANCE] API - Auth API Verification: 247.58ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP] Phase 1: Create PO via API
+[ACTION] API Polling: Waiting for stock at location 322dd6e4-d744-4197-aa9c-426e34ac192c to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1785824924715 (75dd9097-e1b7-4e5c-8444-d2a14835a709) | method=WAC | stock=20@$500 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[OK] PO created: PO/2026/08/04/000013
+06:28:46 [INFO] Advancing purchase-orders "32d0405d-9855-473d-9824-0db78e6a8162"...
+[OK] PO PO/2026/08/04/000013 approved
+[STEP] Phase 2: Create linked Bill via API
+06:28:49 [INFO] Advancing bills "f1b5e138-4b5f-4987-9fcb-ce052cc77060"...
+[OK] Bill BILL/2026/08/04/000312 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+06:29:07 [WARN] GET http://168.119.175.142:8001/api/vendor/8c8b8d32-3171-4290-ae83-17e58ccaf323/bills?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+06:29:24 [WARN] GET http://168.119.175.142:8001/api/vendor/8c8b8d32-3171-4290-ae83-17e58ccaf323/bills?year=2019&period=yearly&calendar=ec → 500. Retry 2/4 in 6000ms...
+06:29:32 [WARN] GET http://168.119.175.142:8001/api/vendor/8c8b8d32-3171-4290-ae83-17e58ccaf323/bills?year=2019&period=yearly&calendar=ec → apiRequestContext.get: Target page, context or browser has been closed. Retry 3/4 in 13500ms...
