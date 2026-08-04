@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 14,
-  "failed": 5,
+  "passed": 16,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 73.7,
-  "avgDurationMs": 34824,
-  "lastUpdated": "2026-08-03T17:51:44.608Z",
+  "passRate": 84.2,
+  "avgDurationMs": 32568,
+  "lastUpdated": "2026-08-04T05:53:02.341Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 14,
-      "failed": 5,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        47.4,
         73.7,
         63.2,
         78.9,
         78.9,
         68.4,
-        73.7
+        73.7,
+        84.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "582",
+      "commit": "477d611",
+      "trigger": "push (smoke)",
+      "duration": "10m 18s",
+      "passRate": 84.2,
+      "status": "success"
+    },
     {
       "run": "581",
       "commit": "f742b97",
@@ -95,38 +103,14 @@
       "duration": "14m 40s",
       "passRate": 68.4,
       "status": "failed"
-    },
-    {
-      "run": "569",
-      "commit": "e29d25b",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "67m 3s",
-      "passRate": 63.9,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:200\n\n  198 |         if (success) break;\n  199 |",
-      "firstSeen": "2026-08-03T17:45:47.279Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-08-07 falls in a closed or missin\n\n   at ../lib/base-page.ts:200\n\n  198 |         if (success) break;\n  199 |",
-      "firstSeen": "2026-08-03T17:45:47.320Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/03/000300 never appeared in \"Gentium Concrite Industry\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:529\n\n  527 |     }\n  528 |\n> 529 |     throw ",
-      "firstSeen": "2026-08-03T17:46:27.737Z",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-08-04T05:48:57.136Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,15 +118,15 @@
       "severity": "medium",
       "title": "Validate TIN, create vendor, edit, remove",
       "error": "TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  58 |         await page.waitForTimeout(200",
-      "firstSeen": "2026-08-03T17:46:46.478Z",
+      "firstSeen": "2026-08-04T05:49:10.047Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "high",
+      "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Target page, context or browser has been closed\n\n  111 |                 await bt.waitFor({ state: 'visible', timeout: 10000 })",
-      "firstSeen": "2026-08-03T17:47:42.835Z",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Bills/i }).first() to be visible\u001b[22m\n\n\n  94 |         console.log(`[STEP 4] Navigating",
+      "firstSeen": "2026-08-04T05:50:00.145Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
