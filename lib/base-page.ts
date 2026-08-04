@@ -126,9 +126,11 @@ export class BasePage {
         localStorage.getItem('company');
     }) || process.env.BEFFA_COMPANY || 'sample';
 
+    // Always use the DateHelper-resolved fiscal year so the advance URL matches
+    // the journal date of the document being advanced (prevents 422 "closed period").
     const { DateHelper: _AdvDH } = require('./utils/DateHelper');
-    const _advResolved = await _AdvDH.resolve(this.page);
-    const year = String(_advResolved.ecYear);
+    const _advResolved = await _AdvDH.resolve(this.page).catch(() => null);
+    const year = _advResolved ? String(_advResolved.ecYear) : (process.env.BEFFA_YEAR || '2018');
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 

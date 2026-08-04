@@ -194,7 +194,6 @@ export class PurchaseAPI extends BasePage {
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _resolved = await _DH.resolve(this.page);
     const _dateIso = _resolved.iso;
-    const _year = String(_resolved.ecYear);
     const payload = {
       accounts_payable_id: apAccount?.id,
       currency_id: currency?.id,
@@ -213,7 +212,7 @@ export class PurchaseAPI extends BasePage {
       vendor_id: resolvedVendorId
     };
 
-    const response = await this.safePost(`${apiBase}/purchase-orders?year=${_year}&period=${period}&calendar=${calendar}`, {
+    const response = await this.safePost(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
       data: payload,
       headers,
       label: 'Create Purchase Order'
@@ -481,7 +480,10 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    // Use DateHelper-resolved year so the ledger query matches the bill's fiscal year
+    const { DateHelper: _VDH } = require('../utils/DateHelper');
+    const _vResolved = await _VDH.resolve(this.page).catch(() => null);
+    const year = _vResolved ? String(_vResolved.ecYear) : (process.env.BEFFA_YEAR || '2018');
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;

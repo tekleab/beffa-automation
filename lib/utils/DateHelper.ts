@@ -31,7 +31,10 @@ export class DateHelper {
       ?? DateHelper._fromEnv()
       ?? DateHelper._today();
     _cached = result;
-    console.log(`[DateHelper] Resolved in-period date: ${result.iso} (day=${result.dayNumber})`);
+    // Write resolved year back to env so all existing process.env.BEFFA_YEAR
+    // references across API files automatically use the correct fiscal year.
+    process.env.BEFFA_YEAR = String(result.ecYear);
+    console.log(`[DateHelper] Resolved in-period date: ${result.iso} (day=${result.dayNumber}, ecYear=${result.ecYear})`);
     return result;
   }
 
@@ -109,14 +112,15 @@ export class DateHelper {
 
         if (!vendorId || !acctId || !currId) continue;
 
-        // POST with sentinel date 2099-01-01 — guaranteed out of period → 422 with bounds
+        // POST with sentinel date far in the past — guaranteed out of period → 422 with bounds
+        // Using past date (not future) because empty po_items with future date may return 200
         const probeResp = await page.request.post(`${base}/purchase-orders?${qs}`, {
           headers,
           data: {
             vendor_id: vendorId,
             accounts_payable_id: acctId,
             currency_id: currId,
-            po_date: '2099-01-01T00:00:00Z',
+            po_date: '2000-01-01T00:00:00Z',
             purchase_type_id: 4,
             po_items: []
           }
@@ -127,7 +131,15 @@ export class DateHelper {
         const errText = await probeResp.text().catch(() => '');
         // Parse "between DD/MM/YYYY and DD/MM/YYYY"
         const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
-        if (!match) continue;
+        if (!match) {
+          // If no date error, this year's period is open and accepts any date — use today
+          if (probeResp.status() === 200 || probeResp.status() === 201) {
+            const useDate = now;
+            console.log(`[DateHelper] Year ${year}: probe returned ${probeResp.status()} (open period) → using today ${useDate.toISOString().slice(0, 10)}`);
+            return DateHelper._fromDate(useDate, year);
+          }
+          continue;
+        }
 
         const [, d1, m1, y1, d2, m2, y2] = match;
         const periodStart = new Date(`${y1}-${m1}-${d1}T00:00:00Z`);
