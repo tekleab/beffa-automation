@@ -152,8 +152,22 @@ export class DateHelper {
           continue;
         }
 
-        // Use period start if it's today or future; otherwise use today (we're mid-period)
-        const useDate = periodStart > now ? periodStart : now;
+        // Pick a date that is:
+        //   (a) within the API period (>= periodStart)
+        //   (b) unambiguously within the EC calendar year shown in the UI
+        // The EC new year starts ~Sep 11 GC. Dates before Sep 11 in the first GC year
+        // of the period still belong to the previous EC year in the UI calendar.
+        // To avoid UI date-picker rejection, advance to Sep 15 of the period's GC start year
+        // (= safely inside EC year N Meskerem) when today is before that date.
+        const ecNewYearGC = new Date(`${parseInt(y1)}-09-15T00:00:00Z`); // Sep 15 = Meskerem ~5
+        let useDate: Date;
+        if (now >= periodStart && now <= periodEnd) {
+          // We are mid-period — use today if it's past the EC new year, else use Sep 15
+          useDate = now >= ecNewYearGC ? now : ecNewYearGC;
+        } else {
+          // Period hasn't started yet or we're before it — use Sep 15 of start year
+          useDate = ecNewYearGC > periodStart ? ecNewYearGC : periodStart;
+        }
         console.log(`[DateHelper] Period bounds (year=${year}): ${match[0]} → using ${useDate.toISOString().slice(0, 10)}`);
         return DateHelper._fromDate(useDate, year);
       }
@@ -162,20 +176,22 @@ export class DateHelper {
     } catch { return null; }
   }
 
-  // ── Strategy 2: derive from BEFFA_YEAR (EC year N starts ~Aug 7 of GC N+7) ──
-  // Walks years until it finds one whose period end is in the future.
+  // ── Strategy 2: derive from BEFFA_YEAR (EC year N starts Sep 11 of GC year N+7) ──
+  // Uses Sep 15 (Meskerem ~5) as the safe UI-compatible date within the EC year.
   private static _fromEnv(): ResolvedDate | null {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '', 10);
     if (!baseYear || isNaN(baseYear)) return null;
     const now = new Date();
     for (let offset = -1; offset <= 3; offset++) {
       const ecYear = baseYear + offset;
-      // EC year N: Hamle 1 (Jul 8) of GC year N+7 to Sene 30 (Jul 7) of GC year N+8
+      // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
       const gcYear = ecYear + 7;
-      const periodStart = new Date(`${gcYear}-07-08T00:00:00Z`);
-      const periodEnd   = new Date(`${gcYear + 1}-07-07T00:00:00Z`);
+      const periodStart = new Date(`${gcYear}-09-11T00:00:00Z`);
+      const periodEnd   = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
       if (periodEnd < now) continue;
-      const useDate = periodStart > now ? periodStart : now;
+      // Use Sep 15 of the GC start year as the safe EC-calendar-aligned date
+      const safeDate = new Date(`${gcYear}-09-15T00:00:00Z`);
+      const useDate = safeDate > periodEnd ? periodStart : (safeDate < now ? now : safeDate);
       console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
       return DateHelper._fromDate(useDate, ecYear);
     }

@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * PROCUREMENT CONCURRENCY & RACE CONDITIONS
  *
@@ -21,18 +36,18 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
-    test.beforeAll(async ({ browser }) => {
+    test.beforeAll(async ({ browser, request }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
-    test('Guardrail: System must handle concurrent duplicate Bill payments atomically', async ({ page }) => {
+    test('Guardrail: System must handle concurrent duplicate Bill payments atomically', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -112,9 +127,9 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
         console.log(`[PASS] Integrity Guardrail: System blocked duplicate payment approval.`);
     });
 
-    test('Guardrail: System must enforce thread-safe serialization for stock additions', async ({ page }) => {
+    test('Guardrail: System must enforce thread-safe serialization for stock additions', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
         const meta = sharedMeta;
         const item = sharedItem;
 

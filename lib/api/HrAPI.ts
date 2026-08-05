@@ -327,8 +327,9 @@ export class HrAPI extends BasePage {
       console.log(`[HR] Created job position: "${created.title}" (${created.id}) | dept: ${departmentId}`);
       return { id: created.id, title: created.title };
     }
-    // 409 = another worker just created one — re-fetch and use it
+    // 409 = another worker just created one — re-fetch and use it (check BEFORE consuming body)
     if (createResp.status() === 409) {
+      console.log(`[HR] Job position 409 conflict — re-fetching existing positions for dept ${departmentId}`);
       const retry = await this.safeGet(`${this.apiBase}/job-positions?page=1&pageSize=100&${this.params}`, { headers: h });
       if (retry.ok()) {
         const all = (await retry.json()).data || [];
@@ -337,6 +338,12 @@ export class HrAPI extends BasePage {
         if (fresh) {
           console.log(`[HR] Using freshly created job position: "${fresh.title}" (${fresh.id})`);
           return { id: fresh.id, title: fresh.title };
+        }
+        // All positions full or none match dept — return any available position
+        const any = all.find((j: any) => j.id);
+        if (any) {
+          console.log(`[HR] Fallback: using any job position "${any.title}" (${any.id})`);
+          return { id: any.id, title: any.title };
         }
       }
     }

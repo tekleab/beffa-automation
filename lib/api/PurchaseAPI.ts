@@ -339,6 +339,11 @@ export class PurchaseAPI extends BasePage {
     const poResp = await this.safeGet(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     const poData = await safeJson(poResp, `Fetch PO ${poId}`);
 
+    // 1b. Fetch PO line items from the dedicated sub-resource endpoint
+    const poItemsResp = await this.safeGet(`${apiBase}/purchase-orders/${poId}/items?${params}`, { headers });
+    const poItemsData = poItemsResp.ok() ? await poItemsResp.json() : {};
+    const poLineItems = poItemsData.data || poItemsData.items || [];
+
     // 2. Discover Accounts Payable ID for validation overlay
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
@@ -346,13 +351,14 @@ export class PurchaseAPI extends BasePage {
     const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
 
     // 3. Map strictly into `received_purchase_order_items`
-    const receivedItems = (poData.po_items || []).map((item: any) => ({
+    const rawItems = poData.po_items || poData.items || poData.purchase_order_items || [];
+    const receivedItems = rawItems.map((item: any) => ({
       po_item_id: item.id,
       received_quantity: item.quantity,
       received_unit_price: item.unit_price
     }));
 
-    if (receivedItems.length === 0) throw new Error(`PO ${poId} lacks interactable line-items.`);
+    if (receivedItems.length === 0) throw new Error(`PO ${poId} lacks interactable line-items. PO keys: ${Object.keys(poData).join(', ')}`);
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;

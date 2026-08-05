@@ -2,6 +2,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * FIFO Layer Integrity Audit
  *
@@ -142,9 +157,9 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
     // ─────────────────────────────────────────────────────────────────────────
     // SCENARIO A: Received PO → FIFO layer accumulation
     // ─────────────────────────────────────────────────────────────────────────
-    test('FIFO-A: Approved bill via PO receipt creates correct FIFO layers', async ({ page }) => {
+    test('FIFO-A: Approved bill via PO receipt creates correct FIFO layers', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const { itemId, envMeta, h, p } = await buildThreeLayerItem(page, app, 'A');
 
@@ -193,9 +208,9 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
     // ─────────────────────────────────────────────────────────────────────────
     // SCENARIO B: Released SO → FIFO layer consumption
     // ─────────────────────────────────────────────────────────────────────────
-    test('FIFO-B: Approved invoice via SO release drains FIFO layers in order', async ({ page }) => {
+    test('FIFO-B: Approved invoice via SO release drains FIFO layers in order', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const { itemId, envMeta, salesMeta, h, p } = await buildThreeLayerItem(page, app, 'B');
 

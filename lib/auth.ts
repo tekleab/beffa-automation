@@ -38,6 +38,7 @@ export class AuthManager extends BasePage {
     // is accurate for all subsequent query strings in this worker.
     try {
       const { DateHelper } = require('./utils/DateHelper');
+      DateHelper.clearCache(); // force fresh probe on every login so date is always current
       await DateHelper.resolve(this.page);
     } catch { /* ignore — DateHelper will retry on first API call */ }
 
@@ -92,11 +93,14 @@ export class AuthManager extends BasePage {
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
-      // 5. Navigate home. Use 'commit' so we don't block on the slow bundle download —
-      // the companyBtn.waitFor below will block until React actually mounts.
-      await this.page.goto('/', { waitUntil: 'commit', timeout: 30000 }).catch(() => {
+      // 5. Navigate home and wait for the JS bundle to fully load (populates browser cache).
+      // This is intentionally slow on first load (~150s on this infra) but makes all
+      // subsequent page.goto calls in the same test instant via browser cache.
+      await this.page.goto('/', { waitUntil: 'load', timeout: 150000 }).catch(() => {
         console.log('[AUTH] Frontend navigation skipped (unreachable) — API session active.');
       });
+      // #loading-screen hides once React has mounted — wait for it as the true ready signal
+      await this.page.locator('#loading-screen').waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
 
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
@@ -109,9 +113,8 @@ export class AuthManager extends BasePage {
       await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
     }
 
-    // Wait for company switcher — confirms the app is fully mounted & authenticated.
-    // If the bundle is slow (known infra issue), skip UI setup — API session is already valid.
-    const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false);
+    // React is now mounted (bundle loaded + #loading-screen hidden above).
+    const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 }).then(() => true).catch(() => false);
     if (uiReady && companyName) {
       await this.switchCompany(companyName);
       await this.switchYear(process.env.BEFFA_YEAR || '2018');

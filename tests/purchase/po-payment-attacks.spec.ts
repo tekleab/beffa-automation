@@ -1,6 +1,21 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * PROCUREMENT PAYMENT ATTACK VECTORS
  *
@@ -31,22 +46,22 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
         console.log(`  └${line}┘\n`);
     };
 
-    test.beforeAll(async ({ browser }) => {
+    test.beforeAll(async ({ browser, request }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
     });
 
     // ── 1. ZERO-AMOUNT PAYMENT APPROVAL ──────────────────────────────────────
-    test('Guardrail: System must reject approval of a zero-amount payment', async ({ page }) => {
+    test('Guardrail: System must reject approval of a zero-amount payment', async ({ page , request }) => {
         const app = new AppManager(page);
         const meta = sharedMeta;
         const item = sharedItem;
@@ -100,7 +115,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
     });
 
     // ── 2. NEGATIVE PAYMENT AMOUNT ────────────────────────────────────────────
-    test('Guardrail: System must reject a negative payment amount', async ({ page }) => {
+    test('Guardrail: System must reject a negative payment amount', async ({ page , request }) => {
         const app = new AppManager(page);
         const meta = sharedMeta;
         const item = sharedItem;
@@ -152,7 +167,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
     });
 
     // ── 3. PAYMENT SPLIT ARRAY MISMATCH ──────────────────────────────────────
-    test('Guardrail: System must reject payment where split array does not match total', async ({ page }) => {
+    test('Guardrail: System must reject payment where split array does not match total', async ({ page , request }) => {
         const app = new AppManager(page);
         const meta = sharedMeta;
         const item = sharedItem;

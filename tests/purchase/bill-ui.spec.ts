@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 test.describe('Purchase to Bill Flow @purchase @smoke @full', () => {
+    test.setTimeout(300000);
 
     test('Create PO via API, approve, create linked bill, verify in vendor profile', async ({ page }) => {
-        test.setTimeout(60000);
         const app = new AppManager(page);
 
         // API-only login — no page load needed, just token injection

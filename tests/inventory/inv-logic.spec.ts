@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * LOCATION TRANSFER (MOVE ORDER) AUDITS
  *
@@ -24,10 +39,10 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
     let srcStockBefore: number;
     let destStockBefore: number;
 
-    test.beforeAll(async ({ browser }) => {
+    test.beforeAll(async ({ browser, request }) => {
         const page = await browser.newPage();
         app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 30, unit_cost: 100 });
         if (!item) throw new Error('[SETUP] No item with minStock=10 found.');

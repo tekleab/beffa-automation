@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * HR: Timesheets & Attendances
  * Happy path: create timesheet → advance through approval
@@ -12,9 +27,9 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // HAPPY PATH: Timesheet creation and approval flow
     // -------------------------------------------------------------------------
-    test('API: Timesheet must be created and advanced through approval', async ({ page }) => {
+    test('API: Timesheet must be created and advanced through approval', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const meta = await app.api.hr.discoverMetadataAPI();
         if (!meta) { console.log('[SKIP] HR org structure not configured'); return; }
@@ -37,9 +52,9 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // EDGE CASE: Duplicate date must return 409
     // -------------------------------------------------------------------------
-    test('Guardrail: Duplicate timesheet for same employee+date must be rejected', async ({ page }) => {
+    test('Guardrail: Duplicate timesheet for same employee+date must be rejected', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const meta = await app.api.hr.discoverMetadataAPI();
         if (!meta) { console.log("[SKIP] HR org structure not configured"); return; }
@@ -79,9 +94,9 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // UI: Timesheets page loads without error
     // -------------------------------------------------------------------------
-    test('UI: Timesheets page must load and not show an error state', async ({ page }) => {
+    test('UI: Timesheets page must load and not show an error state', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         await page.goto('/human-resources/timesheets', { waitUntil: 'commit' });
 
@@ -99,9 +114,9 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // UI: Attendances page loads (no API route — UI-only module)
     // -------------------------------------------------------------------------
-    test('UI: Attendances page must load and render the attendance module', async ({ page }) => {
+    test('UI: Attendances page must load and render the attendance module', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         await page.goto('/human-resources/attendances', { waitUntil: 'commit' });
 

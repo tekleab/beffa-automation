@@ -1,6 +1,21 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * SALES RETURN & STOCK RECOVERY AUDIT
  * 
@@ -12,12 +27,12 @@ import { AppManager } from'../../pages/AppManager';
 
 test.describe('Sales Return & Stock Recovery @sales @regression @full', () => {
 
-    test('Forensic Audit: Invoice Void & Stock Restoration', async ({ page }) => {
+    test('Forensic Audit: Invoice Void & Stock Restoration', async ({ page , request }) => {
         test.setTimeout(120000);
         const app = new AppManager(page);
 
         // --- STAGE 0: SETUP & BASELINE ---
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
         
         console.log('[ACTION] Discovering environment metadata...');
         const meta = await app.api.sales.discoverMetadataAPI();

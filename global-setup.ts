@@ -2,9 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as https from 'https';
 import * as http from 'http';
-import { chromium, Browser, Page, BrowserContext } from '@playwright/test';
 
-// Trigger dynamic CI/CD workflow execution
 // ─────────────────────────────────────────────────────────────────────────────
 // Utility: lightweight HTTP GET with a timeout (no external deps)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -49,170 +47,6 @@ function httpPost(url: string, data: any, headers: any = {}, timeoutMs = 10000):
         req.write(postData);
         req.end();
     });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Check if environment is clean (no data)
-// ─────────────────────────────────────────────────────────────────────────────
-async function isEnvironmentClean(apiUrl: string, company: string): Promise<boolean> {
-    try {
-        const loginUrl = `${apiUrl}/api/users/login?year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
-        const loginRes = await httpPost(loginUrl, {
-            email: process.env.BEFFA_USER,
-            password: process.env.BEFFA_PASS
-        });
-        if (![200, 201].includes(loginRes.status) || !loginRes.body?.auth_token) {
-            console.log(`[SEED] ⚠ Could not login to check environment (status=${loginRes.status} user=${process.env.BEFFA_USER})`);
-            return false;
-        }
-        const token = loginRes.body.auth_token;
-
-        // Check account count — Seed Basic Data populates 100 accounts.
-        // If < 10 accounts exist, basic data has not been seeded yet.
-        const checkUrl = `${apiUrl}/api/accounts?page=1&pageSize=1&year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-        const res = await new Promise<{ status: number; body: any }>((resolve) => {
-            const lib = checkUrl.startsWith('https') ? https : http;
-            const req = lib.get(checkUrl, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'x-company': company
-                }
-            }, (r) => {
-                let body = '';
-                r.on('data', (c) => body += c);
-                r.on('end', () => {
-                    try { resolve({ status: r.statusCode || 0, body: JSON.parse(body) }); }
-                    catch { resolve({ status: r.statusCode || 0, body: null }); }
-                });
-            });
-            req.on('error', () => resolve({ status: 0, body: null }));
-        });
-
-        if (res.status !== 200 || !res.body) return false;
-        const count = res.body.total ?? res.body.count ?? (res.body.items || res.body.data || []).length;
-        const isClean = Number(count) < 10;
-        console.log(`[SEED] Chart of Accounts count: ${count} → ${isClean ? 'not seeded (needs seeding)' : 'already seeded'}`);
-        return isClean;
-    } catch (error) {
-        console.log('[SEED] ⚠ Error checking environment:', error);
-        return false;
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Seed demo data via data-seeding page
-// ─────────────────────────────────────────────────────────────────────────────
-async function seedDemoData(frontendUrl: string, company: string): Promise<boolean> {
-    let browser: Browser | null = null;
-    let context: BrowserContext | null = null;
-    let page: Page | null = null;
-
-    try {
-        console.log('[SEED] Starting data seeding process...');
-        browser = await chromium.launch({ headless: true });
-        context = await browser.newContext();
-        page = await context.newPage();
-
-        // Login via API to get token, then inject into localStorage
-        const loginUrl = `${frontendUrl.replace(':4173', ':8001')}/api/users/login?year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
-        const loginRes = await httpPost(loginUrl, {
-            email: process.env.BEFFA_USER,
-            password: process.env.BEFFA_PASS
-        });
-        if (![200, 201].includes(loginRes.status) || !loginRes.body?.auth_token) {
-            console.log('[SEED] ⚠ Login failed during seeding');
-            return false;
-        }
-        const token = loginRes.body.auth_token;
-
-        // Get company ID from API
-        const apiBase = frontendUrl.replace(':4173', ':8001') + '/api';
-        const companyRes = await new Promise<{ status: number; body: any }>((resolve) => {
-            const url = `${apiBase}/companies?page=1&pageSize=10`;
-            const lib = url.startsWith('https') ? https : http;
-            const req = lib.get(url, {
-                headers: { 'Authorization': `Bearer ${token}`, 'x-company': company }
-            }, (r) => {
-                let body = '';
-                r.on('data', (c) => body += c);
-                r.on('end', () => {
-                    try { resolve({ status: r.statusCode || 0, body: JSON.parse(body) }); }
-                    catch { resolve({ status: r.statusCode || 0, body: null }); }
-                });
-            });
-            req.on('error', () => resolve({ status: 0, body: null }));
-        });
-
-        const companies = companyRes.body?.items || companyRes.body?.data || [];
-        const found = companies.find((c: any) =>
-            c.name?.toLowerCase() === company.toLowerCase()
-        ) || companies[0];
-
-        if (!found?.id) {
-            console.log('[SEED] ⚠ Could not resolve company ID');
-            return false;
-        }
-        const companyId = found.id;
-        console.log(`[SEED] Company ID: ${companyId}`);
-
-        // Navigate to data-seeding page with injected session
-        await page.goto(frontendUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
-        await page.evaluate(({ jwt, comp }: { jwt: string; comp: string }) => {
-            localStorage.setItem('auth-token', jwt);
-            localStorage.setItem('token', jwt);
-            localStorage.setItem('selectedYear', process.env.BEFFA_YEAR || '2019');
-            localStorage.setItem('calendar', 'EC');
-            localStorage.setItem('period', 'yearly');
-            localStorage.setItem('selected-role', 'IT Administrator / User Manager');
-            localStorage.setItem('currentCompany', comp);
-        }, { jwt: token, comp: company });
-
-        const seedUrl = `${frontendUrl}/company/${companyId}/data-seeding`;
-        console.log(`[SEED] Navigating to: ${seedUrl}`);
-        await page.goto(seedUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
-        await page.waitForTimeout(2000);
-
-        // Click each button ONLY if it is enabled (not disabled)
-        // Disabled = already seeded; Enabled = needs to be clicked
-        const seedButtons = ['Seed Basic Data', 'Seed Demo Data'];
-        let anySeedDone = false;
-
-        for (const btnText of seedButtons) {
-            const btn = page.getByRole('button', { name: new RegExp(btnText, 'i') }).first();
-            if (!await btn.isVisible({ timeout: 5000 }).catch(() => false)) {
-                console.log(`[SEED] ⚠ Button not found: "${btnText}"`);
-                continue;
-            }
-            const isDisabled = await btn.isDisabled().catch(() => true);
-            if (isDisabled) {
-                console.log(`[SEED] ✓ "${btnText}" is disabled → already seeded, skipping`);
-                continue;
-            }
-            console.log(`[SEED] Clicking: "${btnText}"...`);
-            await btn.click();
-            // Wait for button to become disabled (seeding complete) or timeout after 30s
-            await btn.waitFor({ state: 'attached' });
-            for (let i = 0; i < 15; i++) {
-                const done = await btn.isDisabled().catch(() => false);
-                if (done) break;
-                await page.waitForTimeout(2000);
-            }
-            console.log(`[SEED] ✓ "${btnText}" seeding complete`);
-            anySeedDone = true;
-        }
-
-        if (!anySeedDone) {
-            console.log('[SEED] ✓ All seed buttons were already disabled — data was seeded previously');
-        }
-        return true;
-    } catch (error) {
-        console.log('[SEED] ❌ Error during data seeding:', error);
-        return false;
-    } finally {
-        if (page) await page.close().catch(() => {});
-        if (context) await context.close().catch(() => {});
-        if (browser) await browser.close().catch(() => {});
-    }
 }
 
 async function globalSetup() {
@@ -288,23 +122,6 @@ async function globalSetup() {
     if (fs.existsSync(accumulator)) {
         fs.unlinkSync(accumulator);
         console.log('[SETUP] ✓ Reset dashboard-accumulated.json');
-    }
-
-    // ── 5. Check if environment is clean and seed data if needed ───────────────
-    const company = process.env.BEFFA_COMPANY || 'BM Tech';
-    console.log('[SETUP] ── Data Seeding Check ──────────────────────────────');
-    const isClean = await isEnvironmentClean(rawApi, company);
-    
-    if (isClean) {
-        console.log('[SETUP] ⚠ Environment is clean - seeding demo data...');
-        const seeded = await seedDemoData(rawBase, company);
-        if (seeded) {
-            console.log('[SETUP] ✅ Demo data seeded successfully');
-        } else {
-            console.log('[SETUP] ⚠ Data seeding failed - tests may fail due to missing data');
-        }
-    } else {
-        console.log('[SETUP] ✓ Environment has data - skipping seeding');
     }
 
     console.log('[SETUP] ✅ All pre-flight checks passed. Starting tests...\n');

@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * INVENTORY ITEM MANAGEMENT
  *
@@ -10,9 +25,9 @@ import { AppManager } from '../../pages/AppManager';
 
 test.describe('Inventory Item Management @inventory @logic @regression @full', () => {
 
-    test('Guardrail: System must reject duplicate item_id on creation', async ({ page }) => {
+    test('Guardrail: System must reject duplicate item_id on creation', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const itemCode = `DUP-GUARD-${Date.now()}`;
 
@@ -38,9 +53,9 @@ test.describe('Inventory Item Management @inventory @logic @regression @full', (
         }
     });
 
-    test('Create: New inventory item is created and visible in the system', async ({ page }) => {
+    test('Create: New inventory item is created and visible in the system', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         // Ensure a warehouse+location pair exists, then resolve names via /locations list (fast)
         console.log('[STEP 0] Ensuring warehouse + location exist via API...');
@@ -132,9 +147,9 @@ test.describe('Inventory Item Management @inventory @logic @regression @full', (
         }
     });
 
-    test('View: Existing inventory item details render correctly in the UI', async ({ page }) => {
+    test('View: Existing inventory item details render correctly in the UI', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const itemCode = `VIEW-AUDIT-${Date.now()}`;
         console.log(`[STEP 1] Creating item via API for view verification...`);
@@ -176,9 +191,9 @@ test.describe('Inventory Item Management @inventory @logic @regression @full', (
         console.log(`[PASS] Item "${itemCode}" detail page renders correctly. API confirms: Stock=${details!.currentStock}, Cost=${details!.unitCost}`);
     });
 
-    test('Guardrail: System must reject overselling beyond available stock', async ({ page }) => {
+    test('Guardrail: System must reject overselling beyond available stock', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         console.log(`[STEP 1] Discovering item with known stock...`);
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });

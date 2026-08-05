@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 type JournalRow = { accountName: string; accountType: string; debit: string; credit: string };
 type TxBlock = { docRef: string; docId: string; label: string; entries: JournalRow[]; status?: string };
 
@@ -75,9 +90,9 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
                json.cash_disbursement_journal?.journal_entries || [];
     }
 
-    test('Audit: Full cycle GL — AR debited on invoice, cleared on receipt', async ({ page }) => {
+    test('Audit: Full cycle GL — AR debited on invoice, cleared on receipt', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
@@ -141,9 +156,9 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
         ]);
     });
 
-    test('Audit: Credit note (void) must reverse AR debit from original invoice', async ({ page }) => {
+    test('Audit: Credit note (void) must reverse AR debit from original invoice', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });

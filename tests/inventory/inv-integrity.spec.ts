@@ -1,6 +1,21 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * INVENTORY INTEGRITY & BOUNDARY AUDITS
  * 
@@ -11,12 +26,12 @@ import { AppManager } from'../../pages/AppManager';
 
 test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regression @full', () => {
 
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
     });
 
-    test('Audit: Negative stock adjustment must correctly reduce stock and apply GL impact', async ({ page }) => {
+    test('Audit: Negative stock adjustment must correctly reduce stock and apply GL impact', async ({ page , request }) => {
         const app = new AppManager(page);
         // Pick an item with at least 51 units so -50 reduction is physically possible
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 100, unit_cost: 100 });
@@ -56,7 +71,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
         console.log(`[PASS] Negative adjustment applied correctly — stock reduced from ${stockBefore} to ${finalStock}.`);
     });
 
-    test('Guardrail: System must reject zero-quantity adjustments', async ({ page }) => {
+    test('Guardrail: System must reject zero-quantity adjustments', async ({ page , request }) => {
         const app = new AppManager(page);
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
 

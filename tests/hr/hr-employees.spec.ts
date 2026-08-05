@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
+const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+
+async function apiLogin(request: any): Promise<string> {
+    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
+        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const token = (await r.json()).auth_token;
+    if (!token) throw new Error('apiLogin failed');
+    return token;
+}
+
+
 /**
  * HR: Employee Lifecycle
  * Happy path: full creation with all required fields
@@ -11,9 +26,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
 
     // HAPPY PATH: Full employee creation with all required fields
     // -------------------------------------------------------------------------
-    test('API: Employee must be created with all required fields', async ({ page }) => {
+    test('API: Employee must be created with all required fields', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const ts = Date.now();
         const rand = Math.random().toString(36).slice(2, 7);
@@ -48,9 +63,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
     // -------------------------------------------------------------------------
     // HAPPY PATH: Employee roster is non-empty and has valid structure
     // -------------------------------------------------------------------------
-    test('API: Employee roster must be non-empty with valid structure', async ({ page }) => {
+    test('API: Employee roster must be non-empty with valid structure', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const employees = await app.api.hr.listEmployees(20);
         expect(employees.length).toBeGreaterThan(0);
@@ -65,9 +80,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
     // -------------------------------------------------------------------------
     // EDGE CASE: Missing required fields must return 422
     // -------------------------------------------------------------------------
-    test('Guardrail: Employee creation must reject payload missing required fields', async ({ page }) => {
+    test('Guardrail: Employee creation must reject payload missing required fields', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const token = await app._getAuthToken();
         const headers = {
@@ -92,9 +107,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
     // -------------------------------------------------------------------------
     // EDGE CASE: Duplicate email must be rejected
     // -------------------------------------------------------------------------
-    test('Guardrail: Duplicate employee email must be rejected by the system', async ({ page }) => {
+    test('Guardrail: Duplicate employee email must be rejected by the system', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const ts = Date.now();
         const rand = Math.random().toString(36).slice(2, 7);
@@ -143,9 +158,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
     // -------------------------------------------------------------------------
     // HAPPY PATH: Org chart returns company + segments
     // -------------------------------------------------------------------------
-    test('API: Org chart must return company context and department segments', async ({ page }) => {
+    test('API: Org chart must return company context and department segments', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         const chart = await app.api.hr.getOrgChart();
         expect(chart).toHaveProperty('company');
@@ -161,9 +176,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
     // -------------------------------------------------------------------------
     // UI: Employees page renders rows
     // -------------------------------------------------------------------------
-    test('UI: Employees page must load and display employee records', async ({ page }) => {
+    test('UI: Employees page must load and display employee records', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         await page.goto('/human-resources/employees', { waitUntil: 'domcontentloaded' });
         await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
@@ -181,9 +196,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
     // -------------------------------------------------------------------------
     // UI: Org Chart renders hierarchy
     // -------------------------------------------------------------------------
-    test('UI: Org Chart page must render the department hierarchy', async ({ page }) => {
+    test('UI: Org Chart page must render the department hierarchy', async ({ page , request }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        await apiLogin(request);
 
         await page.goto('/human-resources/org-charts', { waitUntil: 'domcontentloaded' });
         await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});

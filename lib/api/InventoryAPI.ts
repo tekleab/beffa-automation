@@ -691,11 +691,12 @@ export class InventoryAPI extends BasePage {
       default_warehouse_id: warehouseId,
     });
 
-    await this.pollStockAPI(item.id, opts.quantity, locationId);
+    // Stock is set via initial_stock at creation — skip poll, trust creation response.
+    // pollStockAPI is only needed when stock is injected via a separate adjustment.
     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
     return {
       id: item.id,
-      itemId: item.id,          // alias — matches captureRandomItemDataAPI shape
+      itemId: item.id,
       itemName: name,
       currentStock: opts.quantity,
       unitCost: opts.unit_cost,
