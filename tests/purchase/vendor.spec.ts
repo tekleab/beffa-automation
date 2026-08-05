@@ -3,20 +3,6 @@ import { AppManager } from'../../pages/AppManager';
 import * as fs from'fs';
 import * as path from'path';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 const addressData: Array<{ region: string; zones: Array<{ name: string; woredas: string[] }> }> = JSON.parse(
     fs.readFileSync(path.join(__dirname,'../../data/address_locations.json'),'utf8')
@@ -25,9 +11,9 @@ const addressData: Array<{ region: string; zones: Array<{ name: string; woredas:
 test.describe('Vendor Lifecycle — Validation & CRUD @purchase @smoke @full', () => {
     test.setTimeout(120000);
 
-    test('Validate TIN, create vendor, edit, remove', async ({ page , request }) => {
+    test('Validate TIN, create vendor, edit, remove', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const fixedTIN = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const vendorNames = ["TechSource PLC", "Global Imports", "Ethio Supplies", "Pioneer Distributors", "Addis Wholesale Trading"];

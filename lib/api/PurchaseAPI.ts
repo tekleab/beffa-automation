@@ -351,7 +351,7 @@ export class PurchaseAPI extends BasePage {
     const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
 
     // 3. Map strictly into `received_purchase_order_items`
-    const rawItems = poData.po_items || poData.items || poData.purchase_order_items || [];
+    const rawItems = poData.po_items || poData.items || poData.purchase_order_items || poLineItems;
     const receivedItems = rawItems.map((item: any) => ({
       po_item_id: item.id,
       received_quantity: item.quantity,

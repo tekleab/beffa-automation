@@ -2,20 +2,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * Purchase: Procurement Accounting Logic
@@ -25,9 +11,9 @@ async function apiLogin(request: any): Promise<string> {
 test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', () => {
     test.setTimeout(300000);
 
-    test('API: Approved bill must post a debit to Accounts Payable', async ({ page , request }) => {
+    test('API: Approved bill must post a debit to Accounts Payable', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
@@ -81,9 +67,9 @@ test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', (
         console.log(`[PASS] Procurement accounting logic verified for bill ${bill.ref}`);
     });
 
-    test('API: Vendor outstanding balance increases after bill approval', async ({ page , request }) => {
+    test('API: Vendor outstanding balance increases after bill approval', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
         const token = await app._getAuthToken();
