@@ -1,0 +1,40 @@
+[STEP 1] Creating item to deactivate: DEACT-GUARD-1785926629226...
+[OK] Item created: DEACT-GUARD-1785926629226 (ID: 6d796bb5-208c-4465-ae13-ff9e528daf06)
+[STEP 2] Deactivating item via API...
+[OK] Item deactivated.
+[ATTACK] Attempting stock adjustment on deactivated item...
+[ADJ] quantity | qty=10 @ $0 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/05/000083 (ID: a87e4bce-2f2b-4817-a90d-7c5b57760e16)
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║      DEACTIVATED ITEM GUARDRAIL — TEST SUMMARY            ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : DEACT-GUARD-1785926629226              ║
+  ║  Item ID      : 6d796bb5-208c-4465-ae13-ff9e528daf06   ║
+  ║  Status set   : inactive                                   ║
+  ║  Attack       : POST /inventory-adjustments qty=10         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : BLOCKED ✓                             ║
+  ║  Adjustment was correctly rejected by the API.           ║
+  ║  No inventory record was written to the ledger.          ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : None — item lifecycle enforced correctly        ║
+  ║                                                           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Deactivated Item Adjustment Guardrail                                   │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ DEACT-GUARD-1785926629226            │
+  │ Item ID                          │ 6d796bb5-208c-4465-ae13-ff9e528daf0… │
+  │ Item Status                      │ inactive (set in Step 2)             │
+  │ Attack: Adj Qty                  │ 10 units (write-up)                  │
+  │ Adjustment Ref                   │ ADJ/2026/08/05/000083                │
+  │ Adjustment ID                    │ a87e4bce-2f2b-4817-a90d-7c5b57760e1… │
+  │ Block Reason                     │ page.evaluate: SecurityError: Faile… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Inactive item correctly re… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Deactivated item correctly blocked.

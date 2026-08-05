@@ -1,29 +1,37 @@
 {
-  "total": 19,
-  "passed": 16,
-  "failed": 3,
-  "skipped": 0,
-  "passRate": 84.2,
-  "avgDurationMs": 30709,
-  "lastUpdated": "2026-08-05T10:25:08.527Z",
+  "total": 205,
+  "passed": 120,
+  "failed": 81,
+  "skipped": 4,
+  "passRate": 58.5,
+  "avgDurationMs": 7561,
+  "lastUpdated": "2026-08-05T10:51:26.713Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 3,
-      "skipped": 0,
+      "passed": 120,
+      "failed": 81,
+      "skipped": 4,
       "trend": [
-        84,
         86,
         88,
         90,
         92,
         57.9,
-        84.2
+        84.2,
+        59.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "592",
+      "commit": "1fd023d",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "25m 50s",
+      "passRate": 58.5,
+      "status": "failed"
+    },
     {
       "run": "591",
       "commit": "1764016",
@@ -95,38 +103,86 @@
       "duration": "10m 18s",
       "passRate": 84.2,
       "status": "success"
-    },
-    {
-      "run": "581",
-      "commit": "f742b97",
-      "trigger": "push (smoke)",
-      "duration": "11m 1s",
-      "passRate": 73.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO-to-Bill API Failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"po_item_id is required for received purchase order items\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:383\n\n  381 |     });\n  382 |\n> 383 |     ",
-      "firstSeen": "2026-08-05T10:20:26.985Z",
+      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:18.236Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  35 |         console.log(`[S",
-      "firstSeen": "2026-08-05T10:20:28.236Z",
+      "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:21.826Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785925275391\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:107\n\n  105 |       await this.page.waitForTimeout(3000);\n  106 |     }\n",
-      "firstSeen": "2026-08-05T10:21:07.005Z",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:24.588Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:28.364Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
+      "error": "Error: Invoice creation failed: 422 — {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"due_date\": [\n\t\t\t\"Due Date cannot be earlier than the Invoice Date. Please choose a date on or after the Invoice Date.\"\n\t\t]\n\t},\n\t\"",
+      "firstSeen": "2026-08-05T10:41:30.097Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must handle concurrent duplicate receipts atomically",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:33.279Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:36.594Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Forensic Audit: Invoice Void & Stock Restoration",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:38.340Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Invoice must reject second receipt after full payment",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:42.969Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Approved SO must be immutable — quantity change rejected",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
+      "firstSeen": "2026-08-05T10:41:44.715Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
