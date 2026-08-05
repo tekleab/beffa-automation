@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 11,
-  "failed": 8,
+  "passed": 16,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 57.9,
-  "avgDurationMs": 18352,
-  "lastUpdated": "2026-08-05T09:26:06.762Z",
+  "passRate": 84.2,
+  "avgDurationMs": 30709,
+  "lastUpdated": "2026-08-05T10:25:08.527Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 11,
-      "failed": 8,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        82,
         84,
         86,
         88,
         90,
         92,
-        57.9
+        57.9,
+        84.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "591",
+      "commit": "1764016",
+      "trigger": "push (smoke)",
+      "duration": "9m 43s",
+      "passRate": 84.2,
+      "status": "success"
+    },
     {
       "run": "590",
       "commit": "119b124",
@@ -95,78 +103,30 @@
       "duration": "11m 1s",
       "passRate": 73.7,
       "status": "failed"
-    },
-    {
-      "run": "580",
-      "commit": "265e1af",
-      "trigger": "push (smoke)",
-      "duration": "12m 31s",
-      "passRate": 68.4,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\u001b[2m    - waiting for\" http://168.119.175.142:4173/users/lo",
-      "firstSeen": "2026-08-05T09:21:48.759Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:202\n\n  200 |         if (success) break;\n  201 |",
-      "firstSeen": "2026-08-05T09:22:11.066Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO d0a78bbd-6d97-4157-815f-ce3254a4e31b lacks interactable line-items. PO keys: accounts_payable, currency, current_approval_step, dff_values, discount_term, id, po_date, po_number, status, ven",
-      "firstSeen": "2026-08-05T09:22:30.009Z",
+      "error": "Error: PO-to-Bill API Failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"po_item_id is required for received purchase order items\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:383\n\n  381 |     });\n  382 |\n> 383 |     ",
+      "firstSeen": "2026-08-05T10:20:26.985Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
-      "firstSeen": "2026-08-05T09:22:40.308Z",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  35 |         console.log(`[S",
+      "firstSeen": "2026-08-05T10:20:28.236Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScri",
-      "firstSeen": "2026-08-05T09:22:41.785Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "Error: apiLogin failed\n\n  14 |     });\n  15 |     const token = (await r.json()).auth_token;\n> 16 |     if (!token) throw new Error('apiLogin failed');\n     |                       ^\n  17 |     return",
-      "firstSeen": "2026-08-05T09:22:46.525Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI: Employees page must load and display employee records",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/employee/\u001b[39m\nReceived string:  \u001b[31m\"http://168.119.175.142:4173/users/logi",
-      "firstSeen": "2026-08-05T09:22:51.510Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI: Org Chart page must render the department hierarchy",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/org-chart/\u001b[39m\nReceived string:  \u001b[31m\"http://168.119.175.142:4173/users/log",
-      "firstSeen": "2026-08-05T09:22:51.762Z",
+      "title": "Guardrail: Duplicate employee email must be rejected by the system",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785925275391\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:107\n\n  105 |       await this.page.waitForTimeout(3000);\n  106 |     }\n",
+      "firstSeen": "2026-08-05T10:21:07.005Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
