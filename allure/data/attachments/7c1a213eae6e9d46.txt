@@ -1,0 +1,40 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+13:24:29 [PERFORMANCE] API - Auth API Verification: 193.11ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/06/000301 (ID: 0af67c4a-7eb1-499f-b580-c32187a54ced)
+13:24:36 [INFO] Advancing inventory-adjustments "0af67c4a-7eb1-499f-b580-c32187a54ced"...
+[FRESH ITEM] Created: WAC-Item-1786022674854 (40f0781d-2ab0-4266-b41e-91faf3a507a3) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 40f0781d-2ab0-4266-b41e-91faf3a507a3 (WAC-Item-1786022674854)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+13:24:41 [INFO] Advancing sales-orders "4f877700-46bb-4412-aed0-31c779bfd094"...
+[OK] SO SO/2026/08/06/000203 approved (ID: 4f877700-46bb-4412-aed0-31c779bfd094)
+[STEP 2] Releasing Batch 1: 4 units...
+13:24:44 [INFO] Advancing invoices "55780460-2d08-4204-b329-11254659b956"...
+[OK] Batch 1 invoice INV/2026/08/06/000777 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+13:24:47 [INFO] Advancing invoices "02edc0d0-d1d2-456b-ab47-83525d5ced9a"...
+[OK] Batch 2 invoice INV/2026/08/06/000779 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/08/06/000203 (ID: 4f877700-46bb-4412-aed0-31c779bfd094)
+[DOCUMENT] Invoice 1    : INV/2026/08/06/000777 (ID: 55780460-2d08-4204-b329-11254659b956) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/08/06/000779 (ID: 02edc0d0-d1d2-456b-ab47-83525d5ced9a) — 6 units
+[ITEM]     Item         : WAC-Item-1786022674854 (40f0781d-2ab0-4266-b41e-91faf3a507a3)
+[STOCK]    Before       : 20
+[STOCK]    After        : 0
+[STOCK]    Expected     : 10
+================================================
+

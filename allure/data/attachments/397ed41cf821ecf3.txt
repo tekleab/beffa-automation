@@ -1,0 +1,34 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+13:19:35 [PERFORMANCE] API - Auth API Verification: 166.19ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+13:19:46 [PERFORMANCE] API - Auth API Verification: 213.75ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/06/000269 (ID: 86e5eeff-8a64-4a27-9551-5ad764675060)
+13:19:50 [INFO] Advancing inventory-adjustments "86e5eeff-8a64-4a27-9551-5ad764675060"...
+[FRESH ITEM] Created: WAC-Item-1786022389764 (f3278b6f-6097-4bc4-9af9-1591cc3e2aee) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] Created fresh item: "WAC-Item-1786022389764" | Stock: 20
+13:19:55 [INFO] Advancing sales-orders "e35d6528-ff4f-4def-8550-62854bad161d"...
+[OK] Sales Order SO/2026/08/06/000194 approved via API
+13:19:58 [INFO] Advancing invoices "77cc830f-f196-49ae-8b1c-cc6841321c47"...
+[OK] Invoice INV/2026/08/06/000747 approved via API
+[INFO] Document Setup Complete: INV/2026/08/06/000747 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT] amount=102 | invoice=77cc830f...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/06/000216
+[OK] Receipt created via API: RCPT/2026/08/06/000216
+[STEP] Phase 3: Approval flow
+13:20:05 [INFO] Advancing receipts "b7f4dc0e-5053-48c1-9f01-d8b83b3d25b5"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/08/06/000216 in customer profile
+[DEBUG] Rows in Receipts tab: 63
+[KNOWN_BUG] Receipt RCPT/2026/08/06/000216 not visible in customer profile Receipts tab (63 rows). ERP UI indexing lag under parallel load — receipt approved via API.
