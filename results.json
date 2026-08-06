@@ -1,16 +1,16 @@
 {
   "total": 19,
-  "passed": 16,
-  "failed": 3,
+  "passed": 18,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 84.2,
-  "avgDurationMs": 34094,
-  "lastUpdated": "2026-08-06T12:48:48.407Z",
+  "passRate": 94.7,
+  "avgDurationMs": 38259,
+  "lastUpdated": "2026-08-06T13:15:21.059Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 3,
+      "passed": 18,
+      "failed": 1,
       "skipped": 0,
       "trend": [
         84,
@@ -19,17 +19,17 @@
         90,
         92,
         57.9,
-        84.2
+        94.7
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "600",
-      "commit": "36bda44",
+      "run": "601",
+      "commit": "76d5eef",
       "trigger": "push (smoke)",
-      "duration": "10m 47s",
-      "passRate": 84.2,
+      "duration": "12m 6s",
+      "passRate": 94.7,
       "status": "success"
     },
     {
@@ -108,25 +108,9 @@
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:202\n\n  200 |         if (success) break;\n  201 |",
-      "firstSeen": "2026-08-06T12:42:52.296Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO-to-Bill API Failed: 400 - {\"code\":400,\"message\":\"po_item_id is required for received purchase order items\"}\n\n   at ../lib/api/PurchaseAPI.ts:365\n\n  363 |     }));\n  364 |\n> 365 |     if (rec",
-      "firstSeen": "2026-08-06T12:43:02.114Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  35 |         console.log(`[S",
-      "firstSeen": "2026-08-06T12:43:05.208Z",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/pa",
+      "firstSeen": "2026-08-06T13:10:07.682Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
