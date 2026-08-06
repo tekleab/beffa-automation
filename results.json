@@ -1,17 +1,17 @@
 {
   "total": 19,
-  "passed": 16,
-  "failed": 3,
-  "skipped": 0,
-  "passRate": 84.2,
-  "avgDurationMs": 31096,
-  "lastUpdated": "2026-08-06T06:03:26.467Z",
+  "passed": 13,
+  "failed": 5,
+  "skipped": 1,
+  "passRate": 68.4,
+  "avgDurationMs": 39302,
+  "lastUpdated": "2026-08-06T06:43:51.937Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 3,
-      "skipped": 0,
+      "passed": 13,
+      "failed": 5,
+      "skipped": 1,
       "trend": [
         84,
         86,
@@ -19,18 +19,18 @@
         90,
         92,
         57.9,
-        84.2
+        72.2
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "593",
-      "commit": "aeec40f",
+      "run": "595",
+      "commit": "047b1fc",
       "trigger": "push (smoke)",
-      "duration": "9m 50s",
-      "passRate": 84.2,
-      "status": "success"
+      "duration": "12m 26s",
+      "passRate": 68.4,
+      "status": "failed"
     },
     {
       "run": "590",
@@ -107,10 +107,18 @@
   ],
   "criticalBlockers": [
     {
+      "severity": "critical",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:602\n\n  600 |     }\n ",
+      "firstSeen": "2026-08-06T06:37:07.598Z",
+      "occurrences": 2,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "Error: PO-to-Bill API Failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"po_item_id is required for received purchase order items\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:383\n\n  381 |     });\n  382 |\n> 383 |     ",
-      "firstSeen": "2026-08-06T05:58:24.297Z",
+      "firstSeen": "2026-08-06T06:38:24.241Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,15 +126,15 @@
       "severity": "medium",
       "title": "API: Approved bill must post a debit to Accounts Payable",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  35 |         console.log(`[S",
-      "firstSeen": "2026-08-06T05:58:26.166Z",
+      "firstSeen": "2026-08-06T06:38:37.105Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785995949175\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:107\n\n  105 |       await this.page.waitForTimeout(3000);\n  106 |     }\n",
-      "firstSeen": "2026-08-06T05:59:02.721Z",
+      "error": "Error: Create employee: could not retrieve created employee \"Dup-Emp-1785998366868\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:107\n\n  105 |       await this.page.waitForTimeout(3000);\n  106 |     }\n",
+      "firstSeen": "2026-08-06T06:39:17.686Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
