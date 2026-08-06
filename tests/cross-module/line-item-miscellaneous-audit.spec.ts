@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * LINE ITEM & MISCELLANEOUS AUDIT
@@ -41,11 +27,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     let itemB: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
     let periodDateIso: string;
 
-    test.beforeAll(async ({ browser, request }) => {
+    test.beforeAll(async ({ browser }) => {
         test.setTimeout(600000);
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
         salesMeta    = await app.api.sales.discoverMetadataAPI();
         purchaseMeta = await app.api.purchase.discoverMetadataAPI();
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
@@ -55,11 +42,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await page.close();
     });
 
-    test.beforeEach(async ({ page, request }) => {
+    test.beforeEach(async ({ page }) => {
         const { DateHelper } = require('../../lib/utils/DateHelper');
         DateHelper.clearCache();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
     });
 
     // =========================================================================
@@ -104,8 +92,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // SALES ORDER
     // =========================================================================
 
-    test('SO-UI-01: Add inventory Line Item via modal → SO created and approved', async ({ page , request }) => {
+    test('SO-UI-01: Add inventory Line Item via modal → SO created and approved', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Sales Order Date');
@@ -125,8 +114,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] SO with inventory line item created and approved');
     });
 
-    test('SO-UI-02: Add Miscellaneous Line Item via modal → SO created and approved', async ({ page , request }) => {
+    test('SO-UI-02: Add Miscellaneous Line Item via modal → SO created and approved', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Sales Order Date');
@@ -153,8 +143,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] SO with miscellaneous line item created');
     });
 
-    test('SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table', async ({ page , request }) => {
+    test('SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Sales Order Date');
@@ -198,8 +189,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] SO mixed lines — table shows all rows, total accumulated');
     });
 
-    test('SO-API-04: Multi-line SO → grand total = sum of lines', async ({ page , request }) => {
+    test('SO-API-04: Multi-line SO → grand total = sum of lines', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const L1 = 2 * 500, L2 = 3 * 800;
 
@@ -231,8 +223,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] SO multi-line totals correct');
     });
 
-    test('SO-API-05: Zero-qty line → $0 amount or rejected', async ({ page , request }) => {
+    test('SO-API-05: Zero-qty line → $0 amount or rejected', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
         const resp = await page.request.post(`${apiBase}/sales-orders?${qs}`, {
@@ -257,8 +250,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }
     });
 
-    test('SO-API-06: Negative unit price → rejected or flagged as known bug', async ({ page , request }) => {
+    test('SO-API-06: Negative unit price → rejected or flagged as known bug', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
         const resp = await page.request.post(`${apiBase}/sales-orders?${qs}`, {
@@ -282,8 +276,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // INVOICE
     // =========================================================================
 
-    test('INV-UI-01: Add inventory Line Item via modal → Invoice created and approved', async ({ page , request }) => {
+    test('INV-UI-01: Add inventory Line Item via modal → Invoice created and approved', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
@@ -304,8 +299,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Invoice with inventory line created and approved');
     });
 
-    test('INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it', async ({ page , request }) => {
+    test('INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
@@ -331,8 +327,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Invoice with miscellaneous line created');
     });
 
-    test('INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate', async ({ page , request }) => {
+    test('INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
@@ -373,8 +370,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Invoice mixed lines — all rows present, total accumulated');
     });
 
-    test('INV-API-04: Multi-line invoice → grand total = sum of lines', async ({ page , request }) => {
+    test('INV-API-04: Multi-line invoice → grand total = sum of lines', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const L1 = 3 * 400, L2 = 2 * 600;
         const { DateHelper } = require('../../lib/utils/DateHelper');
@@ -407,8 +405,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Multi-line Invoice totals correct');
     });
 
-    test('INV-API-05: Miscellaneous line on invoice (no item_id) → accepted or inventory-only enforced', async ({ page , request }) => {
+    test('INV-API-05: Miscellaneous line on invoice (no item_id) → accepted or inventory-only enforced', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
         const resp = await page.request.post(`${apiBase}/invoices?${qs}`, {
@@ -438,8 +437,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // RECEIPT
     // =========================================================================
 
-    test('RCT-UI-01: Receipt UI — create standalone receipt with line item and verify', async ({ page , request }) => {
+    test('RCT-UI-01: Receipt UI — create standalone receipt with line item and verify', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         // Create and approve invoice first via API
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
@@ -484,8 +484,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }
     });
 
-    test('RCT-API-02: Receipt partial payment → invoice Amount Due reduces by exact amount', async ({ page , request }) => {
+    test('RCT-API-02: Receipt partial payment → invoice Amount Due reduces by exact amount', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: salesMeta.customerId, itemId: itemA.itemId,
@@ -513,8 +514,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Partial receipt reduces invoice Amount Due correctly');
     });
 
-    test('RCT-API-03: Receipt full payment → invoice Amount Due = 0', async ({ page , request }) => {
+    test('RCT-API-03: Receipt full payment → invoice Amount Due = 0', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: salesMeta.customerId, itemId: itemA.itemId,
@@ -545,8 +547,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // PURCHASE ORDER
     // =========================================================================
 
-    test('PO-UI-01: Add inventory Line Item via modal → PO created and approved', async ({ page , request }) => {
+    test('PO-UI-01: Add inventory Line Item via modal → PO created and approved', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Purchase Order Date');
@@ -567,8 +570,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] PO with inventory line item created and approved');
     });
 
-    test('PO-UI-02: Add Miscellaneous Line Item via modal → PO total reflects it', async ({ page , request }) => {
+    test('PO-UI-02: Add Miscellaneous Line Item via modal → PO total reflects it', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Purchase Order Date');
@@ -595,8 +599,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] PO with miscellaneous line created');
     });
 
-    test('PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table', async ({ page , request }) => {
+    test('PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
 
         await app.pickDate('Purchase Order Date');
@@ -639,8 +644,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] PO mixed lines — all rows present in form and API');
     });
 
-    test('PO-API-04: Multi-line PO → grand total = sum of lines', async ({ page , request }) => {
+    test('PO-API-04: Multi-line PO → grand total = sum of lines', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const L1 = 5 * 1000, L2 = 3 * 1500;
         const { DateHelper } = require('../../lib/utils/DateHelper');
@@ -675,8 +681,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Multi-line PO totals correct');
     });
 
-    test('PO-API-05: Miscellaneous line on PO (no item_id) → accepted or inventory-only enforced', async ({ page , request }) => {
+    test('PO-API-05: Miscellaneous line on PO (no item_id) → accepted or inventory-only enforced', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
         const acctData = await (await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers })).json();
@@ -710,8 +717,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // BILL
     // =========================================================================
 
-    test('BILL-UI-01: Add inventory Line Item via modal → Bill created and approved', async ({ page , request }) => {
+    test('BILL-UI-01: Add inventory Line Item via modal → Bill created and approved', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/bills/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
@@ -731,8 +739,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Bill with inventory line created and approved');
     });
 
-    test('BILL-UI-02: Add Miscellaneous line via modal → Bill total reflects it', async ({ page , request }) => {
+    test('BILL-UI-02: Add Miscellaneous line via modal → Bill total reflects it', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/bills/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
@@ -757,8 +766,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Bill with miscellaneous line created');
     });
 
-    test('BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP', async ({ page , request }) => {
+    test('BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/bills/new', { waitUntil: 'commit' });
 
         await app.pickDate('Invoice Date');
@@ -800,8 +810,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Bill mixed lines — approved, AP impact verified');
     });
 
-    test('BILL-API-04: Multi-line Bill → grand total = sum of lines', async ({ page , request }) => {
+    test('BILL-API-04: Multi-line Bill → grand total = sum of lines', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const L1 = 3 * 1000, L2 = 2 * 2000;
 
@@ -837,8 +848,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Multi-line Bill totals correct');
     });
 
-    test('BILL-API-05: Bill discount on line → net = (price − discount) × qty', async ({ page , request }) => {
+    test('BILL-API-05: Bill discount on line → net = (price − discount) × qty', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const QTY = 3, PRICE = 2000, DISC = 200;
 
         const bill = await app.api.purchase.createBillAPI({
@@ -858,8 +870,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // PAYMENT
     // =========================================================================
 
-    test('PAY-API-01: Single bill payment → bill balance settles to zero', async ({ page , request }) => {
+    test('PAY-API-01: Single bill payment → bill balance settles to zero', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const TOTAL = 5000;
 
         const bill = await app.api.purchase.createBillAPI({
@@ -881,8 +894,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Full payment settles bill to zero');
     });
 
-    test('PAY-API-02: Multi-bill payment → all bills settle to zero', async ({ page , request }) => {
+    test('PAY-API-02: Multi-bill payment → all bills settle to zero', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const AMT_A = 3000, AMT_B = 2000;
 
         const [billA, billB] = await Promise.all([
@@ -914,8 +928,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log('[PASS] Multi-bill payment settles all bills to zero');
     });
 
-    test('PAY-API-03: Partial payment → bill balance reduces by exact amount', async ({ page , request }) => {
+    test('PAY-API-03: Partial payment → bill balance reduces by exact amount', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const TOTAL = 6000, PARTIAL = 2000;
 
         const bill = await app.api.purchase.createBillAPI({

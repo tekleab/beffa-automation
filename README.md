@@ -4,11 +4,11 @@
 [![Live Dashboard](https://img.shields.io/badge/dashboard-live-blue)](https://tekleab.github.io/beffa-automation)
 [![Playwright](https://img.shields.io/badge/playwright-1.40.0-2EAD33)](https://playwright.dev)
 
-> **Author**: Tekleab
-> **Version**: 6.0.0
+> **Author**: Tekleab  
+> **Version**: 7.0.0  
 > **Purpose**: Technical Audit Suite for Financial, Inventory, HR & Project Reconciliation
 
-A high-performance Playwright-based testing framework for the BEFFA ERP environment. Uses an **API/UI Hybrid Architecture** that prioritises execution speed and data reconciliation across all integrated workflows. Every test creates its own isolated data — no seeded-data pollution across 6 modules and 50+ spec files.
+A high-performance Playwright-based testing framework for the BEFFA ERP environment. Uses an **API/UI Hybrid Architecture** that prioritises execution speed and data reconciliation across all integrated workflows. Every test creates its own isolated data — no seeded-data pollution across 6 modules and 60+ spec files.
 
 ---
 
@@ -18,47 +18,55 @@ A high-performance Playwright-based testing framework for the BEFFA ERP environm
 - **Self-Healing Fallbacks**: Zero stock → auto-injects new SKU + quantity via `createFreshItemWithStockAPI`. No workspace → auto-creates `Default Workspace`. No location → auto-creates warehouse + location pair.
 - **Location-Synchronized Audits**: Every inventory adjustment and sale is locked to a specific `locationId` resolved at runtime.
 - **Resilient GET Discovery (`safeGet`)**: All metadata discovery calls use retry/backoff — kills 500/socket-hang-up flakiness under parallel load.
-- **Re-Auth on 401**: `createInventoryItemAPI`, `advanceDocumentAPI`, and `HrAPI.headers()` all re-login transparently on token expiry — zero manual token management in tests.
+- **Re-Auth on 401**: `createInventoryItemAPI`, `advanceDocumentAPI`, and `HrAPI.headers()` all re-login transparently on token expiry.
 - **Resilient Search (Omni-Match)**: Ledger verification scans `bill_no`, `ref`, and `invoice_number` for schema-evolution resilience.
 - **Thread-Safe Parallelism**: 4 workers with randomised SKU discovery and isolated location targeting per worker.
 - **Structured Logging**: Custom `Logger` with coloured, timestamped output and `DEBUG=true` gating.
 - **Custom Reporters**: Module-level statistics, dashboard integration, and Allure report with atomic directory swap.
+- **`apiLoginSetup` utility**: Shared login helper used by all load/concurrency specs — single token acquisition per worker, cached for the test run.
 
 ---
 
 ## 🚀 Key Engineering Decisions
 
+### Concurrency Architecture
+All concurrency tests use `Promise.all` / `Promise.allSettled` to fire simultaneous API calls, then verify atomicity via `pollStockAPI` or direct balance checks. Three tiers:
+
+| Tier | Files | Pattern |
+|------|-------|---------|
+| Race-condition guardrails | `so-concurrency`, `po-concurrency`, `inv-concurrency` | 2 concurrent requests → approve both → assert no double-spend |
+| Load / throughput | `so-load`, `po-load`, `inv-load` | 10–20 concurrent creates → SLA assertion + degradation ratio |
+| Stress / financial edge cases | `po-stress` | 6 financial attack scenarios (overpayment, double-bill, ghost payment, reversal, partial drift, orphan bill) |
+
 ### COGS Journal Audit (`so-cogs.spec.ts`)
-Multi-item invoice (3 × WAC items at $50/$80/$120) creates 3 fresh isolated items, approves invoice, then verifies:
+Multi-item invoice (3 × WAC items) creates 3 fresh isolated items, approves invoice, then verifies:
 - Stock deducted per line (3 independent `expect` assertions)
-- Journal is double-entry balanced: `sum(all debits) == sum(all credits)` — schema-agnostic, survives any account name variation
+- Journal is double-entry balanced: `sum(all debits) == sum(all credits)` — schema-agnostic
 
 ### FIFO Layer Integrity (`inv-fifo-layers.spec.ts`)
-End-to-end verification of FIFO costing layer accumulation and drain:
-- **Scenario A**: Approved bill via PO receipt creates exactly 3 FIFO layers — `import(10@$15)`, `bill-direct(2@$40)`, `received-PO(3@$25)`
-- **Scenario B**: Invoice + SO release drains layers in FIFO order; verifies `fifo_consumed_layers` on both invoice items and released SO items
+- **Scenario A**: Approved bill via PO receipt creates exactly 3 FIFO layers
+- **Scenario B**: Invoice + SO release drains layers in FIFO order; verifies `fifo_consumed_layers`
 
 ### PO Split Bill Audit (`po-split-bill.spec.ts`)
-PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items` path:
-- Both approved bills trigger actual goods receipt → stock increases verified via `pollStockAPI`
-- Over-receive attempt (1 unit after PO fully received) is logged as `[KNOWN_BUG]` — ERP does not enforce PO quantity cap at bill creation. CI passes; finding is documented for remediation.
+PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items` path. Over-receive attempt logged as `[KNOWN_BUG]`.
 
 ### PO Document Integrity (`po-doc-integrity.spec.ts`)
-- `getPoReceiveStatusAPI` now has a **dual-source fallback**: reads `unreceived_quantity` from PO items first; if that field is null (async backend update), falls back to summing `received_quantity` from approved bills linked to the PO via `?purchase_order_id=` filter
-- Polling loop (10 × 2s = 20s max) waits for `remainingQty = 0` before the overflow attack
+`getPoReceiveStatusAPI` dual-source fallback: reads `unreceived_quantity` from PO items first; falls back to summing `received_quantity` from approved bills. Polling loop (10 × 2s) before overflow attack.
+
+### Inventory Boundary & Costing Attack (`inv-boundary-attack.spec.ts`)
+5 attack scenarios: zero-qty, float-qty, massive-negative, zero-unit-cost (WAC divide-by-zero guard), concurrent adjustments with retry-on-lock-contention.
+
+### Receipt Overpayment Integrity (`so-receipt-overpayment.spec.ts`)
+3 scenarios: overpayment (stored as amount=0 bug), exact-amount (AR settles to zero), double-receipt on fully-paid invoice.
+
+### RBAC & User Security (`rbac-user-security.spec.ts`)
+6 security checks: duplicate email, missing `x-company` header, invalid company header, tampered JWT, notification isolation, auditor RBAC privilege escalation.
+
+### Line Item & Miscellaneous Audit (`line-item-miscellaneous-audit.spec.ts`)
+Full coverage of the Line Item modal across SO, Invoice, Receipt, PO, Bill, Payment — UI and API paths for inventory items, miscellaneous lines, mixed lines, multi-line totals, zero-qty, negative price, discount, partial/full/multi-bill payment.
 
 ### HR Lifecycle (`hr-lifecycle.spec.ts`)
-- Sequential employee creation (parallel caused backend timeouts)
-- Local `assignedCount` counter — `GET /payroll-runs/{id}/employees` always returns `total=1` (known backend bug)
-- `createEmployee` fallback: 5 retry attempts × 2s wait, `pageSize=100`, match by email first (guaranteed unique), then name — handles `null` response body from backend
-- `HrAPI.headers()` proactively refreshes token if JWT expiry < 60s remaining
-
-### Inventory Concurrency (`inv-concurrency.spec.ts`)
-- `createInventoryItemAPI` re-auths on 401 transparently — fixes token expiry race in parallel workers
-- Both concurrent adjustments are advanced to `approved` then `pollStockAPI` waits for `initialStock + 20`
-
-### ProjectAPI — Workspace Auto-Creation
-`discoverMetadataAPI()` returns `workspaceId` + `workspaceName` and auto-creates a `Default Workspace` via `POST /api/workspaces` if none exist.
+Sequential employee creation → contract → pay structure → payroll run → approve. 5-retry fallback for `null` response body. `HrAPI.headers()` proactively refreshes JWT < 60s before expiry.
 
 ### CI/CD
 - GitHub Actions pipeline on every push
@@ -74,20 +82,24 @@ PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items
 |------|----------|
 | `customer.spec.ts` | Customer CRUD, TIN validation, create/edit/remove lifecycle |
 | `customer-balance-ui.spec.ts` | UI: customer profile shows correct outstanding balance after payment |
+| `sales-customer-balance-ui.spec.ts` | Extended customer balance UI scenarios |
 | `receipt-ui.spec.ts` | UI: receipt creation and approval flow |
 | `so-accounting.spec.ts` | SO accounting journal entries and GL impact |
 | `so-cogs.spec.ts` | Multi-item invoice COGS audit — stock deduction + double-entry journal balance (Dr == Cr) |
-| `so-concurrency.spec.ts` | Concurrent SO submissions — duplicate liability guardrail |
+| `so-concurrency.spec.ts` | **Concurrency**: 2 concurrent duplicate receipts (atomic AR guard) + 2 concurrent invoices for 1 unit (stock double-spend guard) |
 | `so-credit-note.spec.ts` | Credit note creation and reversal flow |
 | `so-doc-integrity.spec.ts` | Future-dated SO rejection, approved SO mutation block |
 | `so-gl-audit.spec.ts` | GL account balance reconciliation after SO lifecycle |
 | `so-guardrails.spec.ts` | Oversell prevention, zero-stock block, negative quantity rejection |
 | `so-integrity.spec.ts` | SO document integrity across approval steps |
+| `so-load.spec.ts` | **Load**: 10 concurrent invoices → distinct IDs; 5 concurrent approvals → AR balance = sum of amounts |
 | `so-partial-release.spec.ts` | Partial SO release tracks remaining unreleased quantity |
 | `so-period-control.spec.ts` | Period control rejects out-of-period dated documents |
+| `so-receipt-overpayment.spec.ts` | **Security**: overpayment ghost receipt, exact-amount AR settlement, double-receipt on paid invoice |
 | `so-security.spec.ts` | SQL injection, auth bypass, permission escalation attempts |
 | `so-split-invoice.spec.ts` | Split invoice across multiple invoices from one SO |
 | `so-tax-audit.spec.ts` | Tax calculation accuracy on invoiced amounts |
+| `test-year-switch.spec.ts` | Fiscal year context switching validation |
 
 ### Purchase (`tests/purchase/`)
 | File | Coverage |
@@ -96,25 +108,28 @@ PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items
 | `bill-ui.spec.ts` | UI: bill creation, PO linkage, approval flow |
 | `bill-to-sale.spec.ts` | Cross-module: PO → bill → payment → SO → invoice reconciliation |
 | `po-accounting.spec.ts` | PO accounting journal entries and AP impact |
-| `po-concurrency.spec.ts` | Concurrent identical PO submissions — duplicate liability guardrail |
+| `po-concurrency.spec.ts` | **Concurrency**: 2 concurrent duplicate bill payments (atomic AP guard) + 2 concurrent bill approvals (stock addition race) |
 | `po-doc-integrity.spec.ts` | Future-dated bill rejection, approved bill mutation block, over-billing guard, PO↔Bill 1:1 reconciliation |
 | `po-integrity.spec.ts` | PO document integrity across approval steps |
+| `po-load.spec.ts` | **Load**: 20 concurrent PO submissions within 60s SLA; response-time degradation ≤ 5× sequential baseline |
 | `po-partial-release.spec.ts` | Partial PO receipt tracks remaining unreceived quantity |
 | `po-payment-attacks.spec.ts` | Double-payment prevention, overpayment rejection |
 | `po-period-control.spec.ts` | Period control rejects out-of-period dated POs and bills |
 | `po-security.spec.ts` | Injection attacks, auth bypass on purchase endpoints |
 | `po-split-bill.spec.ts` | Split bill via `received_purchase_order_items` path (4+6 batches) — stock verified; over-receive logged as `[KNOWN_BUG]` |
-| `po-stress.spec.ts` | High-volume concurrent PO creation stress test |
+| `po-stress.spec.ts` | **Stress**: 6 financial edge cases — overpayment, double-billing, ghost payment, bill reversal + stock rollback, partial payment drift, orphan bill after PO cancel |
 | `procurement-accounting-logic.spec.ts` | Approved bill posts COGS debit + vendor outstanding balance increases |
 
 ### Inventory (`tests/inventory/`)
 | File | Coverage |
 |------|----------|
+| `inv-boundary-attack.spec.ts` | **Security/Boundary**: zero-qty, float-qty, massive-negative, zero-unit-cost WAC guard, concurrent adjustments with lock-contention retry |
 | `inv-costing-audit.spec.ts` | 7-stage WAC and FIFO cost validation across purchases, sales, adjustments |
+| `inv-concurrency.spec.ts` | **Concurrency**: 2 concurrent +10 adjustments → `initialStock + 20` verified via `pollStockAPI`; re-auth on 401 |
 | `inv-fifo-layers.spec.ts` | FIFO layer integrity — PO receipt layer accumulation + SO release layer drain with `fifo_consumed_layers` verification |
-| `inv-concurrency.spec.ts` | Concurrent inventory adjustments — race condition and double-deduction guardrail; re-auth on 401 in parallel workers |
 | `inv-integrity.spec.ts` | Inventory document integrity, negative stock prevention |
 | `inv-lifecycle.spec.ts` | Full item lifecycle: create → adjust → sell → verify |
+| `inv-load.spec.ts` | **Load**: 10 concurrent +5 adjustments → net +50 stock; 10 concurrent -2 adjustments on 20-unit stock → floor ≥ 0 |
 | `inv-logic.spec.ts` | Stock calculation logic, location-based isolation |
 | `inv-management.spec.ts` | Item management CRUD, category and warehouse assignment |
 | `inv-security.spec.ts` | Injection and auth attacks on inventory endpoints |
@@ -122,8 +137,8 @@ PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items
 ### HR (`tests/hr/`)
 | File | Coverage |
 |------|----------|
-| `hr-employees.spec.ts` | Employee CRUD, roster validation, org chart integrity, duplicate email guardrail |
-| `hr-lifecycle.spec.ts` | Full multi-employee lifecycle — create (3 sequential) → contract → pay structure → payroll run → approve; 5-retry fallback for `null` response body |
+| `hr-employees.spec.ts` | Employee CRUD, roster validation, org chart integrity, duplicate email guardrail, UI page load |
+| `hr-lifecycle.spec.ts` | Full multi-employee lifecycle — create (3 sequential) → contract → pay structure → payroll run → approve; 5-retry fallback |
 | `hr-attendance.spec.ts` | Timesheet creation/approval, duplicate date rejection (409), UI page load |
 | `hr-leave.spec.ts` | Leave application creation, approval flow, balance checks |
 | `hr-payroll.spec.ts` | Payroll run creation, employee assignment, approval |
@@ -142,6 +157,51 @@ PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items
 | File | Coverage |
 |------|----------|
 | `cross-module-ui-flows.spec.ts` | Sales UI: partial payment updates invoice Amount Due; Purchase UI: approved bill reflects outstanding balance in vendor profile |
+| `line-item-miscellaneous-audit.spec.ts` | Line Item modal audit across SO/Invoice/Receipt/PO/Bill/Payment — UI + API, inventory + miscellaneous lines, multi-line totals, zero-qty, negative price, discount, partial/full/multi-bill payment (30+ tests) |
+| `rbac-user-security.spec.ts` | **Security**: duplicate email, missing `x-company`, invalid company, tampered JWT, notification isolation, auditor RBAC privilege escalation |
+
+---
+
+## ⚡ Concurrency & Load Coverage Summary
+
+### Concurrency Tests (Race-Condition Guardrails)
+
+| File | Scenario | Concurrency | Assertion |
+|------|----------|-------------|-----------|
+| `so-concurrency.spec.ts` | Duplicate receipt race | 2 concurrent `POST /receipts` | AR not over-credited |
+| `so-concurrency.spec.ts` | Invoice stock double-spend | 2 concurrent `POST /invoices` | Approval layer blocks second |
+| `po-concurrency.spec.ts` | Duplicate bill payment race | 2 concurrent `createBillPaymentAPI` | Only 1 payment approved |
+| `po-concurrency.spec.ts` | Concurrent bill approvals | 2 concurrent `advanceDocumentAPI` | Stock = startStock + 10 |
+| `inv-concurrency.spec.ts` | Concurrent stock adjustments | 2 concurrent `adjustStockAPI` | Stock = initialStock + 20 |
+| `inv-boundary-attack.spec.ts` | Concurrent adjustments (boundary) | 2 concurrent `POST /inventory-adjustments` | Stock = 20, retry on lock contention |
+
+**Implementation pattern**: `Promise.allSettled([...])` fires both requests simultaneously. Results are inspected — if both succeed, both are advanced to `approved` and the final state is polled. Any negative balance, over-credit, or stock desync throws `[CRITICAL_LOGIC_BUG]`.
+
+### Load Tests (Throughput & SLA)
+
+| File | Scenario | Concurrency | SLA / Assertion |
+|------|----------|-------------|-----------------|
+| `so-load.spec.ts` | Concurrent invoice creation | 10 | All distinct IDs, ≤ 1 transient failure |
+| `so-load.spec.ts` | Concurrent invoice approval + AR balance | 5 | AR total = 5 × unitPrice |
+| `po-load.spec.ts` | Concurrent PO creation | 20 | All succeed within 60s |
+| `po-load.spec.ts` | Sequential vs burst degradation | 3 baseline / 10 burst | Degradation ≤ 5× |
+| `inv-load.spec.ts` | Concurrent +5 adjustments | 10 | Net stock = +50 |
+| `inv-load.spec.ts` | Concurrent -2 adjustments | 10 | Stock ≥ 0 (floor enforced) |
+
+**Implementation pattern**: `apiLoginSetup` acquires a single token per worker. `DateHelper.clearCache()` ensures all concurrent calls use the same fiscal date. `Promise.allSettled` collects all results; `passed`/`failed` counts are logged. Known ERP constraints (e.g. `unique_po_company` sequence collision) are documented as `[KNOWN_BUG]` and excluded from hard failure counts.
+
+### Stress Tests (Financial Edge Cases)
+
+`po-stress.spec.ts` — 6 scenarios:
+
+| # | Scenario | Expected | Actual ERP Behaviour |
+|---|----------|----------|----------------------|
+| 1 | Overpayment (2× bill total) | Rejected | **BUG**: accepted, balance goes negative |
+| 2 | Double-billing same PO | Rejected | **BUG**: second bill created and approved |
+| 3 | Ghost payment on fully-paid bill | Rejected | Blocked (E2888) |
+| 4 | Bill reversal after payment | Stock + ledger rollback | Pass after void-then-reverse |
+| 5 | 3 partial payments (3000+3000+3000) | Balance = 0 | Pass (drift ≤ 0.01) |
+| 6 | Cancel PO after linked bill approved | Bill stays `approved` | Pass |
 
 ---
 
@@ -149,20 +209,22 @@ PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items
 
 | Path | Description |
 |------|-------------|
-| `pages/AppManager.ts` | Central facade — wires all API and UI modules, exposes unified interface |
-| `pages/ProjectPage.ts` | Project UI POM — popover field selection, form fill, save, list verify |
-| `pages/SalesPage.ts` | Sales UI POM — SO, invoice, receipt UI helpers |
-| `pages/PurchasePage.ts` | Purchase UI POM — PO, bill, payment UI helpers |
-| `pages/InventoryPage.ts` | Inventory UI POM — adjustment, item management helpers |
+| `pages/AppManager.ts` | Central facade — wires all API and UI modules |
+| `pages/ProjectPage.ts` | Project UI POM |
+| `pages/SalesPage.ts` | Sales UI POM |
+| `pages/PurchasePage.ts` | Purchase UI POM |
+| `pages/InventoryPage.ts` | Inventory UI POM |
 | `pages/components/SharedUI.ts` | Shared UI components — approval flow, journal entry capture, ledger verification |
 | `lib/api/SalesAPI.ts` | Sales REST API — SO/invoice/receipt CRUD, metadata discovery |
-| `lib/api/PurchaseAPI.ts` | Purchase REST API — PO/bill/payment CRUD, vendor discovery, `getPoReceiveStatusAPI` with dual-source fallback |
-| `lib/api/InventoryAPI.ts` | Inventory REST API — item CRUD, adjustment, costing, FIFO layer inspection; re-auth on 401 in `createInventoryItemAPI` |
+| `lib/api/PurchaseAPI.ts` | Purchase REST API — PO/bill/payment CRUD, `getPoReceiveStatusAPI` dual-source fallback |
+| `lib/api/InventoryAPI.ts` | Inventory REST API — item CRUD, adjustment, costing, FIFO layer inspection; re-auth on 401 |
 | `lib/api/HrAPI.ts` | HR REST API — employee, contract, payroll, timesheet, leave CRUD; proactive JWT refresh; 5-retry employee lookup |
 | `lib/api/ProjectAPI.ts` | Project REST API — project CRUD, workspace/metadata discovery, auto-creation |
 | `lib/auth.ts` | Authentication — API login, token injection, company switching |
-| `lib/base-page.ts` | Base utilities — `advanceDocumentAPI` (with re-auth on 401), `safeGet` (with retry/backoff), date helpers, account balance queries |
+| `lib/base-page.ts` | Base utilities — `advanceDocumentAPI` (re-auth on 401), `safeGet` (retry/backoff), date helpers, account balance queries |
+| `lib/utils/apiLoginSetup.ts` | Shared login helper for load/concurrency specs — single token per worker |
 | `lib/utils/Logger.ts` | Structured logger with colour, timestamp, DEBUG gating |
+| `lib/utils/DateHelper.ts` | Fiscal date resolver with cache + `clearCache()` for load test isolation |
 | `lib/utils/perf.ts` | Performance timing utilities |
 
 ---
@@ -175,7 +237,7 @@ PO for 10 units received in 2 batches (4 + 6) via `received_purchase_order_items
 | `reporters/dashboard.ts` | Integrated HTML dashboard generator |
 | `reporters/summary.ts` | CI summary reporter |
 | `scripts/results.js` | Parses `playwright-results.json` → `results.json` with module breakdown, blocker deduplication, Allure URL mapping |
-| `scripts/qa-dashboard.html` | Live SPA dashboard — KPIs, trend charts, FIFO risk rows with hover-reveal Allure links, occurrence deduplication badges, theme switcher |
+| `scripts/qa-dashboard.html` | Live SPA dashboard — KPIs, trend charts, FIFO risk rows, occurrence deduplication badges, theme switcher |
 
 ---
 
@@ -205,31 +267,36 @@ npx playwright test
 | `BEFFA_CALENDAR` | Calendar type (default: `ec`) |
 | `DEBUG` | Set `true` for verbose logs |
 
-**Playwright config**: 4 workers · 600s timeout · 0 retries · JSON + Allure reporters · 6 project groups (Sales, Purchase, Inventory, HR, Project-Management, Cross-Module)
+**Playwright config**: 4 workers · 120s timeout · 0 retries · JSON + Allure reporters · 6 project groups (Sales, Purchase, Inventory, HR, Project-Management, Cross-Module)
 
 ---
 
 ## 🐛 Known ERP Bugs Discovered
 
-These are **confirmed ERP-side defects** detected by the suite. Tests log them as `[KNOWN_BUG]` or `[CRITICAL_LOGIC_BUG]` and pass CI — findings are documented for developer remediation.
-
 | # | Module | Bug | Severity | Status |
 |---|--------|-----|----------|--------|
-| 1 | Purchase | System allows billing beyond 100% of PO quantity — `POST /bills` with `received_purchase_order_items` does not validate against PO exhaustion | High | Open |
-| 2 | Purchase | Future-dated bills (invoice_date > today) are approved by the system — opens balance sheet manipulation vector | High | Open |
-| 3 | Purchase | Same PO can be billed twice — duplicate AP liability created when second `createBillFromPoAPI` call is made on a fully-billed PO | High | Open |
-| 4 | HR | `GET /payroll-runs/{id}/employees` always returns `total=1` regardless of actual assigned count | Medium | Open |
-| 5 | HR | `POST /employees` returns `null` response body — employee is created but ID is not returned directly | Low | Open |
-| 6 | Inventory | Back-dated stock adjustments from closed periods (e.g. 2022) are accepted — period control not enforced on `POST /inventory-adjustments` | High | Open |
+| 1 | Purchase | System allows billing beyond 100% of PO quantity | High | Open |
+| 2 | Purchase | Future-dated bills approved — balance sheet manipulation vector | High | Open |
+| 3 | Purchase | Same PO can be billed twice — duplicate AP liability | High | Open |
+| 4 | Purchase | Overpayment accepted — bill balance goes negative (vendor credit injection) | High | Open |
+| 5 | Sales | Overpayment receipt stored as `amount=0` — silent accounting black hole | High | Open |
+| 6 | Sales | Double-receipt accepted on fully-paid invoice — duplicate AR credit | High | Open |
+| 7 | Sales | `net_due` reflects `unit_cost` not `unit_price` — AR understated | Medium | Open |
+| 8 | Inventory | E1481 deadlock under concurrent `advance` — lost update on stock | High | Open |
+| 9 | Inventory | Back-dated stock adjustments from closed periods accepted | High | Open |
+| 10 | Inventory | Float-quantity adjustment stored as fractional — WAC costing corrupted | Medium | Open |
+| 11 | HR | `GET /payroll-runs/{id}/employees` always returns `total=1` | Medium | Open |
+| 12 | HR | `POST /employees` returns `null` response body | Low | Open |
+| 13 | RBAC | Auditor role can create Sales Orders — privilege escalation | High | Open |
 
 ---
 
 ## 🚧 Known Limitations
 
-- **UI-POM-10 (Project form creation via POM)**: Chakra UI popover fields (customer, workspace) update display text only — React internal state does not reflect selection. `Create project` button stays disabled. Pending network payload intercept to identify React state mutation.
+- **UI-POM-10 (Project form creation via POM)**: Chakra UI popover fields update display text only — React internal state does not reflect selection. Pending network payload intercept.
 - **Database Indexing Lag**: Ledger views exhibit up to 15s latency under parallel load — managed via polling retry (15 retries, 2–5s waits).
-- **Allure `#testresult` URLs**: UIDs are regenerated on every `allure generate` run; dashboard links to `#behaviors` view which is stable across regenerations.
-- **PO Over-Receive**: ERP does not block bill creation beyond PO quantity — logged as `[KNOWN_BUG]`, CI green, awaiting backend fix.
+- **PO Over-Receive**: ERP does not block bill creation beyond PO quantity — logged as `[KNOWN_BUG]`, CI green.
+- **`unique_po_company` constraint**: ERP sequence not atomic under concurrent load — duplicate PO number collisions logged as `[KNOWN_BUG]` in `po-load.spec.ts`.
 
 ---
 
@@ -238,36 +305,48 @@ These are **confirmed ERP-side defects** detected by the suite. Tests log them a
 - [ ] **UI-POM-10**: Intercept `fetch`/XHR on manual submit to capture payload, replicate via `page.evaluate` React state dispatch
 - [ ] **Swagger-Driven API Layer**: Generated API clients for 100% type-accuracy
 - [ ] **Visual Regression**: Screenshot-diffing for the Executive Analytics Dashboard
-- [x] **COGS Journal Fix**: Switched from brittle paired-amount matching to double-entry balance assertion (Dr == Cr) — schema-agnostic
-- [x] **PO Split Bill**: Rewrote to use `received_purchase_order_items` path — triggers actual goods receipt and stock increase
-- [x] **PO Doc Integrity**: `getPoReceiveStatusAPI` dual-source fallback + polling loop — no more `SETUP_FAIL` on async PO status updates
-- [x] **Inv Concurrency**: Re-auth on 401 in `createInventoryItemAPI` — fixes token expiry in parallel workers
-- [x] **HR Lifecycle**: 5-retry employee lookup with `pageSize=100` + proactive JWT refresh in `HrAPI.headers()`
-- [x] **safeGet Resilience**: Retry/backoff on all GET discovery calls — kills 500/socket-hang-up flakiness
-- [x] **FIFO Layer Integrity**: End-to-end `fifo_layers` + `fifo_consumed_layers` verification (Scenario A + B)
-- [x] **HR Lifecycle**: 3-employee payroll run with local counter (fixed broken pagination endpoint)
+- [x] **Load Tests**: `so-load`, `po-load`, `inv-load` — throughput + SLA assertions
+- [x] **Boundary Attack Suite**: `inv-boundary-attack` — zero-qty, float-qty, massive-negative, zero-cost WAC guard
+- [x] **Receipt Overpayment Integrity**: `so-receipt-overpayment` — 3 overpayment/double-receipt scenarios
+- [x] **RBAC Security Audit**: `rbac-user-security` — 6 auth/tenant isolation checks
+- [x] **Line Item & Miscellaneous Audit**: 30+ tests across all 6 document types
+- [x] **COGS Journal Fix**: Double-entry balance assertion (Dr == Cr) — schema-agnostic
+- [x] **PO Split Bill**: `received_purchase_order_items` path — triggers actual goods receipt
+- [x] **PO Doc Integrity**: `getPoReceiveStatusAPI` dual-source fallback + polling loop
+- [x] **Inv Concurrency**: Re-auth on 401 in `createInventoryItemAPI`
+- [x] **HR Lifecycle**: 5-retry employee lookup + proactive JWT refresh
+- [x] **safeGet Resilience**: Retry/backoff on all GET discovery calls
+- [x] **FIFO Layer Integrity**: End-to-end `fifo_layers` + `fifo_consumed_layers` verification
 - [x] **Workspace Auto-Creation**: `discoverMetadataAPI()` self-heals on fresh environments
-- [x] **Project UI Tests**: UI-01→09 (list), UI-10/11/GUARD-01 (form), UI-12→15/GUARD-02/03 (detail)
-- [x] **Dashboard Enhancements**: Hover-reveal Allure links, occurrence deduplication badges, multi-theme switcher, dynamic Chart.js
+- [x] **Project UI Tests**: UI-01→15 (list, form, detail)
+- [x] **Dashboard Enhancements**: Hover-reveal Allure links, occurrence deduplication badges, multi-theme switcher
 
 ---
 
 ## 📋 Changelog
 
-### v6.0.0 — Current
-- **so-cogs**: COGS audit now uses double-entry balance check (total Dr == total Cr) — eliminates false failure from ERP posting individual per-item credits instead of one aggregate credit
-- **po-split-bill**: Rewrote from `createBillAPI` (AP-only) to `createPartialBillFromPoAPI` (`received_purchase_order_items`) — goods receipt path now triggers stock increase; over-receive documented as `[KNOWN_BUG]`
-- **po-doc-integrity**: `getPoReceiveStatusAPI` fallback reads approved bills linked via `?purchase_order_id=` when PO item fields are null; polling loop (10 × 2s) before overflow attack
-- **inv-concurrency**: `createInventoryItemAPI` re-auths on 401, stores new token in localStorage, retries
-- **hr-lifecycle**: `createEmployee` fallback now retries 5× with `pageSize=100`; `HrAPI.headers()` proactively refreshes JWT < 60s before expiry
+### v7.0.0 — Current
+- **New specs**: `so-load`, `po-load`, `inv-load` — load/throughput tests with SLA assertions and degradation ratio checks
+- **New specs**: `inv-boundary-attack` — 5 boundary/costing attack scenarios including concurrent adjustment with lock-contention retry
+- **New specs**: `so-receipt-overpayment` — overpayment ghost receipt, exact-amount AR settlement, double-receipt guard
+- **New specs**: `rbac-user-security` — 6 RBAC/tenant isolation security checks
+- **New specs**: `line-item-miscellaneous-audit` — 30+ line item modal tests across all document types
+- **`apiLoginSetup`**: new shared utility for load specs — single token per worker, `DateHelper.clearCache()` before burst
+- **Known bugs**: expanded from 6 to 13 confirmed ERP defects with severity ratings
+- **README**: full concurrency/load/stress coverage table, implementation patterns documented
+
+### v6.0.0
+- **so-cogs**: double-entry balance check (total Dr == total Cr)
+- **po-split-bill**: rewrote to `received_purchase_order_items` path
+- **po-doc-integrity**: `getPoReceiveStatusAPI` fallback + polling loop
+- **inv-concurrency**: re-auth on 401 in `createInventoryItemAPI`
+- **hr-lifecycle**: 5-retry employee lookup; proactive JWT refresh
 
 ### v5.0.0
-- safeGet retry/backoff for all GET discovery calls
-- re-auth on 401 in `advanceDocumentAPI`
+- safeGet retry/backoff; re-auth on 401 in `advanceDocumentAPI`
 - FIFO layer integrity (Scenario A + B)
 - HR lifecycle 3-employee payroll with local counter
-- Workspace auto-creation
-- Project UI tests (UI-01→15)
+- Workspace auto-creation; Project UI tests (UI-01→15)
 - Dashboard hover-reveal Allure links and theme switcher
 
 ---

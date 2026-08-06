@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * PROJECT API VALIDATION — Input Guardrails & Edge Cases
@@ -26,7 +12,8 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
 
     async function setup(page: any, request: any) {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
         const meta = await app.api.project.discoverMetadataAPI();
         return { app, meta };
     }
@@ -43,7 +30,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
 
     // ── API CREATE GUARDRAILS ──────────────────────────────────────────────────
 
-    test('GUARD-01: Missing customer_id → 422 with "Customer is required"', async ({ page , request }) => {
+    test('GUARD-01: Missing customer_id → 422 with "Customer is required"', async ({ page }) => {
         const { app } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.post(`${apiBase}/projects?${qs}`, {
@@ -61,7 +48,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(JSON.stringify(await resp.json())).toContain('customer');
     });
 
-    test('GUARD-02: Empty project_name → 422 with "Project Name is required"', async ({ page , request }) => {
+    test('GUARD-02: Empty project_name → 422 with "Project Name is required"', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.post(`${apiBase}/projects?${qs}`, {
@@ -80,7 +67,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(JSON.stringify(await resp.json())).toContain('Project Name');
     });
 
-    test('GUARD-03: start_date after end_date → 422 with date validation message', async ({ page , request }) => {
+    test('GUARD-03: start_date after end_date → 422 with date validation message', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.post(`${apiBase}/projects?${qs}`, {
@@ -99,7 +86,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(JSON.stringify(await resp.json())).toContain('Estimated End Date must be after');
     });
 
-    test('GUARD-04: Negative estimated_revenue → 422 "must be positive"', async ({ page , request }) => {
+    test('GUARD-04: Negative estimated_revenue → 422 "must be positive"', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.post(`${apiBase}/projects?${qs}`, {
@@ -118,7 +105,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(JSON.stringify(await resp.json())).toContain('positive');
     });
 
-    test('GUARD-05: Invalid project_status value "approved" → 400', async ({ page , request }) => {
+    test('GUARD-05: Invalid project_status value "approved" → 400', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.post(`${apiBase}/projects?${qs}`, {
@@ -137,7 +124,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         console.log(`[GUARD-05] status='approved' → ${resp.status()}`);
     });
 
-    test('GUARD-06: Non-existent customer_id UUID → 4xx', async ({ page , request }) => {
+    test('GUARD-06: Non-existent customer_id UUID → 4xx', async ({ page }) => {
         const { app } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.post(`${apiBase}/projects?${qs}`, {
@@ -158,7 +145,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
 
     // ── API UPDATE GUARDRAILS ──────────────────────────────────────────────────
 
-    test('GUARD-07: PATCH with invalid status "cancelled" → 400 "Invalid project status"', async ({ page , request }) => {
+    test('GUARD-07: PATCH with invalid status "cancelled" → 400 "Invalid project status"', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const project = await createBaseProject(app, meta);
         const { apiBase, headers, qs } = await app.buildApiContext();
@@ -170,7 +157,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(JSON.stringify(await resp.json())).toContain('Invalid project status');
     });
 
-    test('GUARD-08: PATCH non-existent project_id → 4xx', async ({ page , request }) => {
+    test('GUARD-08: PATCH non-existent project_id → 4xx', async ({ page }) => {
         const { app } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.patch(`${apiBase}/project/00000000-0000-0000-0000-000000000000?${qs}`, {
@@ -180,7 +167,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(resp.status()).toBeGreaterThanOrEqual(400);
     });
 
-    test('GUARD-09: DELETE /projects/:id → 404 (endpoint not implemented)', async ({ page , request }) => {
+    test('GUARD-09: DELETE /projects/:id → 404 (endpoint not implemented)', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const project = await createBaseProject(app, meta);
         const { apiBase, headers, qs } = await app.buildApiContext();
@@ -189,7 +176,7 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         console.log(`[GUARD-09] DELETE not implemented → 404 ✓`);
     });
 
-    test('GUARD-10: Unauthenticated GET /projects → 401', async ({ page , request }) => {
+    test('GUARD-10: Unauthenticated GET /projects → 401', async ({ page }) => {
         const { app } = await setup(page, request);
         const { apiBase, qs } = await app.buildApiContext();
         const resp = await page.request.get(`${apiBase}/projects?${qs}`, {
@@ -198,14 +185,14 @@ test.describe('Project Management: API Validation @project @validation @smoke @r
         expect(resp.status()).toBe(401);
     });
 
-    test('GUARD-11: GET non-existent project_id → 4xx', async ({ page , request }) => {
+    test('GUARD-11: GET non-existent project_id → 4xx', async ({ page }) => {
         const { app } = await setup(page, request);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const resp = await page.request.get(`${apiBase}/project/00000000-0000-0000-0000-000000000000?${qs}`, { headers });
         expect(resp.status()).toBeGreaterThanOrEqual(400);
     });
 
-    test('GUARD-12: remaining_balance is expense-revenue when expense > revenue (no server clamp)', async ({ page , request }) => {
+    test('GUARD-12: remaining_balance is expense-revenue when expense > revenue (no server clamp)', async ({ page }) => {
         const { app, meta } = await setup(page, request);
         const project = await createBaseProject(app, meta);
         await app.api.project.updateProjectAPI(project.id, { estimated_revenue: 1000, estimated_expense: 5000 });

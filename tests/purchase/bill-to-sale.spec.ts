@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * E2E: Purchase to Sale Flow with Inventory Verification
@@ -26,9 +12,10 @@ async function apiLogin(request: any): Promise<string> {
 test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
     test.setTimeout(600000);
 
-    test('Full cycle: PO → Bill → SO → Invoice → stock reconciled', async ({ page , request }) => {
+    test('Full cycle: PO → Bill → SO → Invoice → stock reconciled', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         const PURCHASE_QTY = 5;
         const SELL_QTY = 2;

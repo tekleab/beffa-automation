@@ -6,6 +6,7 @@ test.describe('Purchase to Bill Flow @purchase @smoke @full', () => {
 
     test('Create PO via API, approve, create linked bill, verify in vendor profile', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         // API-only login — no page load needed, just token injection
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);

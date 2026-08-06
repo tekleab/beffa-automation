@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * HR: Leave Applications
@@ -27,9 +13,10 @@ test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
     // -------------------------------------------------------------------------
     // HAPPY PATH: Leave applications endpoint responds with valid structure
     // -------------------------------------------------------------------------
-    test('API: Leave applications endpoint must respond with valid pagination', async ({ page , request }) => {
+    test('API: Leave applications endpoint must respond with valid pagination', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         const leaves = await app.api.hr.listLeaveApplications(10);
         expect(Array.isArray(leaves)).toBe(true);
@@ -39,9 +26,10 @@ test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
     // -------------------------------------------------------------------------
     // EDGE CASE: Leave application creation without required fields must fail
     // -------------------------------------------------------------------------
-    test('Guardrail: Leave application must reject payload missing leave_type_id and reason', async ({ page , request }) => {
+    test('Guardrail: Leave application must reject payload missing leave_type_id and reason', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         const meta = await app.api.hr.discoverMetadataAPI();
         if (!meta) { console.log('[SKIP] HR org structure not configured'); return; }
@@ -77,9 +65,10 @@ test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
     // -------------------------------------------------------------------------
     // UI: Leave Applications page renders without error
     // -------------------------------------------------------------------------
-    test('UI: Leave Applications page must load and render the leave module', async ({ page , request }) => {
+    test('UI: Leave Applications page must load and render the leave module', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         await page.goto('/human-resources/leave/leave-applications', { waitUntil: 'commit' });
 

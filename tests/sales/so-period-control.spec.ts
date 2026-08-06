@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * SALES PERIOD CONTROL EDGE CASES
@@ -37,26 +23,29 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
-    test.beforeAll(async ({ browser, request }) => {
+    test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
         sharedMeta = await app.api.sales.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
-    test.beforeEach(async ({ page, request }) => {
+    test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
     });
 
     // ============================================================================
     // SALES ORDER (SO) - PERIOD CONTROL SCENARIOS
     // ============================================================================
 
-    test('SO: Reject back-dated Sales Order from previous fiscal year (2017)', async ({ page , request }) => {
+    test('SO: Reject back-dated Sales Order from previous fiscal year (2017)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -94,8 +83,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('SO: Reject future-dated Sales Order from next fiscal year (2019)', async ({ page , request }) => {
+    test('SO: Reject future-dated Sales Order from next fiscal year (2019)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -129,8 +119,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
     // INVOICE - PERIOD CONTROL SCENARIOS
     // ============================================================================
 
-    test('Invoice: Reject back-dated Invoice from previous fiscal year (2017)', async ({ page , request }) => {
+    test('Invoice: Reject back-dated Invoice from previous fiscal year (2017)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -160,8 +151,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('Invoice: Reject future-dated Invoice from next fiscal year (2019)', async ({ page , request }) => {
+    test('Invoice: Reject future-dated Invoice from next fiscal year (2019)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -195,8 +187,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
     // RECEIPT - PERIOD CONTROL SCENARIOS
     // ============================================================================
 
-    test('Receipt: Reject back-dated Receipt from previous fiscal year (2017)', async ({ page , request }) => {
+    test('Receipt: Reject back-dated Receipt from previous fiscal year (2017)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -254,8 +247,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('Receipt: Reject future-dated Receipt from next fiscal year (2019)', async ({ page , request }) => {
+    test('Receipt: Reject future-dated Receipt from next fiscal year (2019)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -296,8 +290,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
     // CRITICAL EDGE CASES
     // ============================================================================
 
-    test('Edge Case: Reject invalid date (Feb 30, 2018)', async ({ page , request }) => {
+    test('Edge Case: Reject invalid date (Feb 30, 2018)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -324,8 +319,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('Edge Case: Reject date with negative timestamp (epoch manipulation)', async ({ page , request }) => {
+    test('Edge Case: Reject date with negative timestamp (epoch manipulation)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -349,8 +345,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked', async ({ page , request }) => {
+    test('Edge Case: Verify SO->Invoice->Receipt chain with mixed dates is blocked', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 

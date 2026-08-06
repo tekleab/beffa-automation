@@ -11,6 +11,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
     test('Create fresh invoice via API, then create receipt and link it', async ({ page }) => {
         test.setTimeout(120000);
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { soDate: receiptDate } = app.getTransactionDates();
 
         // Phase 1: API Setup (Guarantees document for linkage)

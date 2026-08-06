@@ -2,20 +2,6 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 import { Logger } from '../../lib/utils/Logger';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * PROCUREMENT STRESS & FINANCIAL EDGE CASES
@@ -34,26 +20,27 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
-    test.beforeAll(async ({ browser, request }) => {
+    test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
-    test.beforeEach(async ({ page, request }) => {
+    test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });
 
     // ── 1. OVERPAYMENT ATTACK ─────────────────────────────────────────────────
-    test('Guardrail: System must reject payment exceeding bill total', async ({ page , request }) => {
+    test('Guardrail: System must reject payment exceeding bill total', async ({ page }) => {
         // CONFIRMED BUG: system accepts overpayment and creates negative balance (vendor credit injection)
         test.fail(true, '[CONFIRMED BUG] Overpayment accepted — balance goes negative. Vendor credit injection possible.');
 
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -79,8 +66,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
     });
 
     // ── 2. DOUBLE-BILLING SAME PO ─────────────────────────────────────────────
-    test('Guardrail: System must prevent double-billing the same PO', async ({ page , request }) => {
+    test('Guardrail: System must prevent double-billing the same PO', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -107,8 +95,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
     });
 
     // ── 3. PAYMENT AGAINST FULLY-PAID BILL ───────────────────────────────────
-    test('Guardrail: System must reject payment against a fully-paid bill', async ({ page , request }) => {
+    test('Guardrail: System must reject payment against a fully-paid bill', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -142,8 +131,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
     });
 
     // ── 4. BILL REVERSAL AFTER PAYMENT — STOCK & LEDGER ROLLBACK ─────────────
-    test('Audit: Bill reversal after payment must roll back stock and restore balance', async ({ page , request }) => {
+    test('Audit: Bill reversal after payment must roll back stock and restore balance', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -192,8 +182,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
     });
 
     // ── 5. PARTIAL PAYMENT SEQUENCE — BALANCE DRIFT ──────────────────────────
-    test('Audit: Three partial payments must exactly zero out bill balance', async ({ page , request }) => {
+    test('Audit: Three partial payments must exactly zero out bill balance', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -232,8 +223,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
     });
 
     // ── 6. ORPHAN BILL — CANCEL PO AFTER BILL APPROVED ───────────────────────
-    test('Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger', async ({ page , request }) => {
+    test('Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
         const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;

@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * PROCUREMENT PERIOD CONTROL EDGE CASES
@@ -37,26 +23,29 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
-    test.beforeAll(async ({ browser, request }) => {
+    test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
-    test.beforeEach(async ({ page, request }) => {
+    test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
     });
 
     // ============================================================================
     // PURCHASE ORDER (PO) - PERIOD CONTROL SCENARIOS
     // ============================================================================
 
-    test('PO: Reject back-dated Purchase Order from previous fiscal year (2017)', async ({ page , request }) => {
+    test('PO: Reject back-dated Purchase Order from previous fiscal year (2017)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -83,8 +72,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         }
     });
 
-    test('PO: Reject future-dated Purchase Order from next fiscal year (2019)', async ({ page , request }) => {
+    test('PO: Reject future-dated Purchase Order from next fiscal year (2019)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -115,8 +105,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
     // BILL - PERIOD CONTROL SCENARIOS
     // ============================================================================
 
-    test('Bill: Reject back-dated Bill from previous fiscal year (2017)', async ({ page , request }) => {
+    test('Bill: Reject back-dated Bill from previous fiscal year (2017)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -144,8 +135,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         }
     });
 
-    test('Bill: Reject future-dated Bill from next fiscal year (2019)', async ({ page , request }) => {
+    test('Bill: Reject future-dated Bill from next fiscal year (2019)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -177,8 +169,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
     // PAYMENT - PERIOD CONTROL SCENARIOS
     // ============================================================================
 
-    test('Payment: Reject back-dated Payment from previous fiscal year (2017)', async ({ page , request }) => {
+    test('Payment: Reject back-dated Payment from previous fiscal year (2017)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -222,8 +215,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         }
     });
 
-    test('Payment: Reject future-dated Payment from next fiscal year (2019)', async ({ page , request }) => {
+    test('Payment: Reject future-dated Payment from next fiscal year (2019)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 

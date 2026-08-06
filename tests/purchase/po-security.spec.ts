@@ -1,20 +1,6 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * CATEGORY 4: Security & Temporal Isolation for Procurement
@@ -26,22 +12,25 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
-    test.beforeAll(async ({ browser, request }) => {
+    test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
-    test.beforeEach(async ({ page, request }) => {
+    test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
     });
 
-    test('Guardrail: System must reject Billing for more units than the approved PO', async ({ page , request }) => {
+    test('Guardrail: System must reject Billing for more units than the approved PO', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
@@ -74,8 +63,9 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         }
     });
 
-    test('Guardrail: System must strictly segregate bills and payments by Vendor', async ({ page , request }) => {
+    test('Guardrail: System must strictly segregate bills and payments by Vendor', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const meta = sharedMeta;
         const item = sharedItem;
@@ -123,8 +113,9 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         }
     });
 
-    test('Guardrail: System must strictly segregate bills by Vendor (IDOR read-access)', async ({ page , request }) => {
+    test('Guardrail: System must strictly segregate bills by Vendor (IDOR read-access)', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
         const vendorA = await app.api.purchase.discoverRandomVendorAPI();
@@ -149,8 +140,9 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
     });
 
     // [KNOWN BUG] API accepts back-dated historical bills allowing temporal manipulation.
-    test('Guardrail: System must explicitly reject historical back-dated bills', async ({ page , request }) => {
+    test('Guardrail: System must explicitly reject historical back-dated bills', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 

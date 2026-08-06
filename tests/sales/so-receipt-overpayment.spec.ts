@@ -40,7 +40,6 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
     test.beforeAll(async ({ request }) => {
         token = await apiLogin(request);
-
         // Discover metadata in parallel
         const [custR, currR, acctR, locR, whR] = await Promise.all([
             request.get(`${API()}/customers?page=1&pageSize=1&${QS()}`, { headers: h(token) }),

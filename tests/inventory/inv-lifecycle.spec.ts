@@ -1,20 +1,6 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * INVENTORY ITEM LIFECYCLE AUDITS
@@ -38,22 +24,25 @@ test.describe('Inventory Item Lifecycle Audits @inventory @logic @regression @fu
         console.log(`  └${line}┘\n`);
     };
 
-    test.beforeAll(async ({ browser, request }) => {
+    test.beforeAll(async ({ browser }) => {
         const page = await browser.newPage();
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
         sharedEnvMeta = await app.api.inventory.discoverMetadataAPI();
         sharedSalesMeta = await app.api.sales.discoverMetadataAPI();
         await page.close();
     });
 
-    test.beforeEach(async ({ page, request }) => {
+    test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
     });
 
-    test('Guardrail: Deactivated item must be rejected for new stock adjustments', async ({ page , request }) => {
+    test('Guardrail: Deactivated item must be rejected for new stock adjustments', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const envMeta = sharedEnvMeta;
 
@@ -140,8 +129,9 @@ test.describe('Inventory Item Lifecycle Audits @inventory @logic @regression @fu
         console.log(`[PASS] Deactivated item correctly blocked.`);
     });
 
-    test('Guardrail: System must block sales when item stock reaches exact zero', async ({ page , request }) => {
+    test('Guardrail: System must block sales when item stock reaches exact zero', async ({ page }) => {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const envMeta = sharedEnvMeta;
         const salesMeta = sharedSalesMeta;
 

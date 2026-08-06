@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 2
     },
     "preserveOutput": "always",
     "projects": [
@@ -20,7 +20,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "Sales",
         "name": "Sales",
@@ -36,7 +36,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "Purchase",
         "name": "Purchase",
@@ -52,7 +52,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "Inventory",
         "name": "Inventory",
@@ -68,7 +68,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "HR",
         "name": "HR",
@@ -84,7 +84,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "Project-Management",
         "name": "Project-Management",
@@ -100,7 +100,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "Cross-Module",
         "name": "Cross-Module",
@@ -185,349 +185,329 @@
   },
   "suites": [
     {
-      "title": "inventory/inv-boundary-attack.spec.ts",
-      "file": "inventory/inv-boundary-attack.spec.ts",
+      "title": "hr/hr-attendance.spec.ts",
+      "file": "hr/hr-attendance.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Inventory Boundary & Costing Attack Audit @inventory @security @logic @regression @full",
-          "file": "inventory/inv-boundary-attack.spec.ts",
-          "line": 31,
+          "title": "HR: Timesheets & Attendances @hr @smoke @regression @full",
+          "file": "hr/hr-attendance.spec.ts",
+          "line": 24,
           "column": 6,
           "specs": [
             {
-              "title": "Guardrail: Zero-quantity adjustment must be rejected",
-              "ok": true,
-              "tags": [
-                "inventory",
-                "security",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 90000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Inventory",
-                  "projectName": "Inventory",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 264,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[SETUP] item_id=bcba912c-6872-4854-92a4-6f55a0d65754 | name=BND-Item-1785917481153 | stock=10 | location=322dd6e4-d744-4197-aa9c-426e34ac192c | adjAccount=bd32401d-9a1c-4637-9dfe-dbf0e79dc766\n"
-                        },
-                        {
-                          "text": "[RESULT] Zero-qty: status=422 | adj_id=N/A\n"
-                        },
-                        {
-                          "text": "[PASS] Zero-quantity correctly rejected: 422\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-05T08:11:19.412Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a0272ba0102dc063051-ad3b021cbd4d9eeb46ed",
-              "file": "inventory/inv-boundary-attack.spec.ts",
-              "line": 98,
-              "column": 9
-            },
-            {
-              "title": "[KNOWN_BUG] Float-quantity adjustment (1.5 units) must be rejected or rounded",
-              "ok": true,
-              "tags": [
-                "inventory",
-                "security",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 90000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Inventory",
-                  "projectName": "Inventory",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 642,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[RESULT] Float-qty 1.5: status=400 | adj_id=N/A | stored_qty=0\n"
-                        },
-                        {
-                          "text": "[PASS] Float-quantity correctly rejected: 400\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-05T08:11:22.036Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a0272ba0102dc063051-e3c9fb9ae642570e4f76",
-              "file": "inventory/inv-boundary-attack.spec.ts",
-              "line": 112,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: Negative adjustment beyond available stock must be rejected",
-              "ok": true,
-              "tags": [
-                "inventory",
-                "security",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 90000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Inventory",
-                  "projectName": "Inventory",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 224,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[ATTACK] qty=-1000009 vs stock=10 | item_id=bcba912c-6872-4854-92a4-6f55a0d65754\n"
-                        },
-                        {
-                          "text": "[RESULT] Massive neg: status=422 | adj_id=N/A\n"
-                        },
-                        {
-                          "text": "[PASS] Massive negative correctly rejected: 422\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-05T08:11:22.772Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a0272ba0102dc063051-72403f4e399f2d512e56",
-              "file": "inventory/inv-boundary-attack.spec.ts",
-              "line": 132,
-              "column": 9
-            },
-            {
-              "title": "Zero unit_cost must not corrupt WAC costing (divide-by-zero guard)",
-              "ok": true,
-              "tags": [
-                "inventory",
-                "security",
-                "logic",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 90000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Inventory",
-                  "projectName": "Inventory",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2648,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[RESULT] Zero unit_cost: status=201 | adj_id=244ae123-f1d1-4a95-b1e7-52256b134603\n"
-                        },
-                        {
-                          "text": "[AUDIT] WAC after zero-cost adj: 100 | item_id=bcba912c-6872-4854-92a4-6f55a0d65754\n"
-                        },
-                        {
-                          "text": "[PASS] WAC integrity maintained: 100\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-05T08:11:23.103Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a0272ba0102dc063051-15d1c0152608ac389395",
-              "file": "inventory/inv-boundary-attack.spec.ts",
-              "line": 160,
-              "column": 9
-            },
-            {
-              "title": "Concurrent adjustments on same item must produce correct final stock",
+              "title": "API: Timesheet must be created and advanced through approval",
               "ok": false,
               "tags": [
-                "inventory",
-                "security",
-                "logic",
+                "hr",
+                "smoke",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 90000,
+                  "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "Inventory",
-                  "projectName": "Inventory",
+                  "projectId": "HR",
+                  "projectName": "HR",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 11857,
+                      "duration": 13130,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m25\u001b[39m\nReceived: \u001b[31m0\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m25\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n    at /home/teklish/beffa-automation/tests/inventory/inv-boundary-attack.spec.ts:252:28",
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at BasePage.advanceDocumentAPI (/home/teklish/beffa-automation/lib/base-page.ts:124:37)\n    at AppManager.advanceDocumentAPI (/home/teklish/beffa-automation/pages/AppManager.ts:177:90)\n    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:48:9",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/inventory/inv-boundary-attack.spec.ts",
-                          "column": 28,
-                          "line": 252
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 250 |\u001b[39m             \u001b[33mBUG\u001b[39m(\u001b[32m'BUG-INV-005'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Concurrent adjustments did not both apply — race condition'\u001b[39m\u001b[33m,\u001b[39m { adj1_doc\u001b[33m:\u001b[39m a1\u001b[33m.\u001b[39mref \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m adj1_id\u001b[33m:\u001b[39m a1\u001b[33m.\u001b[39mid \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m adj2_doc\u001b[33m:\u001b[39m a2\u001b[33m.\u001b[39mref \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m adj2_id\u001b[33m:\u001b[39m a2\u001b[33m.\u001b[39mid \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m item_id\u001b[33m:\u001b[39m ci\u001b[33m.\u001b[39mid\u001b[33m,\u001b[39m stock_before\u001b[33m:\u001b[39m \u001b[35m5\u001b[39m\u001b[33m,\u001b[39m expected_stock\u001b[33m:\u001b[39m \u001b[35m25\u001b[39m\u001b[33m,\u001b[39m actual_stock\u001b[33m:\u001b[39m finalStock\u001b[33m,\u001b[39m impact\u001b[33m:\u001b[39m \u001b[32m'Lost update — one adjustment silently dropped under concurrent load'\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 251 |\u001b[39m         }\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 252 |\u001b[39m         expect(finalStock)\u001b[33m.\u001b[39mtoBe(\u001b[35m25\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 253 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Concurrent adjustments applied correctly: ${finalStock}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 254 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 255 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 304
+                        }
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/inventory/inv-boundary-attack.spec.ts",
-                            "column": 28,
-                            "line": 252
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 304
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m25\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n\u001b[0m \u001b[90m 250 |\u001b[39m             \u001b[33mBUG\u001b[39m(\u001b[32m'BUG-INV-005'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Concurrent adjustments did not both apply — race condition'\u001b[39m\u001b[33m,\u001b[39m { adj1_doc\u001b[33m:\u001b[39m a1\u001b[33m.\u001b[39mref \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m adj1_id\u001b[33m:\u001b[39m a1\u001b[33m.\u001b[39mid \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m adj2_doc\u001b[33m:\u001b[39m a2\u001b[33m.\u001b[39mref \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m adj2_id\u001b[33m:\u001b[39m a2\u001b[33m.\u001b[39mid \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m,\u001b[39m item_id\u001b[33m:\u001b[39m ci\u001b[33m.\u001b[39mid\u001b[33m,\u001b[39m stock_before\u001b[33m:\u001b[39m \u001b[35m5\u001b[39m\u001b[33m,\u001b[39m expected_stock\u001b[33m:\u001b[39m \u001b[35m25\u001b[39m\u001b[33m,\u001b[39m actual_stock\u001b[33m:\u001b[39m finalStock\u001b[33m,\u001b[39m impact\u001b[33m:\u001b[39m \u001b[32m'Lost update — one adjustment silently dropped under concurrent load'\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 251 |\u001b[39m         }\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 252 |\u001b[39m         expect(finalStock)\u001b[33m.\u001b[39mtoBe(\u001b[35m25\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 253 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Concurrent adjustments applied correctly: ${finalStock}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 254 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 255 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/inventory/inv-boundary-attack.spec.ts:252:28\u001b[22m"
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n\u001b[2m    at UtilityScript.evaluate (<anonymous>:304:16)\u001b[22m\n\u001b[2m    at UtilityScript.<anonymous> (<anonymous>:1:44)\u001b[22m\n\u001b[2m    at UtilityScript.evaluate (<anonymous>:304:16)\u001b[22m\n\u001b[2m    at UtilityScript.<anonymous> (<anonymous>:1:44)\u001b[22m\n\u001b[2m    at BasePage.advanceDocumentAPI (/home/teklish/beffa-automation/lib/base-page.ts:124:37)\u001b[22m\n\u001b[2m    at AppManager.advanceDocumentAPI (/home/teklish/beffa-automation/pages/AppManager.ts:177:90)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:48:9\u001b[22m"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[SETUP] Concurrent item_id=85d7c612-7ddc-4222-a574-b7a2b100be85 | stock=5\n"
+                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
                         },
                         {
-                          "text": "[SETUP] adj1: status=201 doc=ADJ/2026/08/05/000069 id=b7f1af2d-90b5-4ffc-8b0c-ae7cfdca1163\n"
+                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
                         },
                         {
-                          "text": "[SETUP] adj2: status=400 doc=N/A id=N/A\n"
+                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
                         },
                         {
-                          "text": "[RETRY] adj2 was rejected (lock contention) — retrying after 500ms\n"
+                          "text": "[STEP 1] Creating timesheet | employee: e0604e0b-4cae-4443-8e9b-f9ed074b43a8 | date: 2026-10-16T00:00:00Z\n"
                         },
                         {
-                          "text": "[RETRY] adj2 retry: status=201 doc=ADJ/2026/08/05/000070 id=2d2d8c8b-cba2-4972-9e5e-7c2dca2e0add\n"
+                          "text": "[SUCCESS] Timesheet created: 8a0e5021-ff7e-4de7-aefe-2fe3232cf345 | status: draft\n"
                         },
                         {
-                          "text": "[AUDIT] item_id=85d7c612-7ddc-4222-a574-b7a2b100be85 | adj1=ADJ/2026/08/05/000069 | adj2=ADJ/2026/08/05/000070 | expected=25 | actual=0\n"
-                        },
-                        {
-                          "text": "\n────────────────────────────────────────────────────────────\n"
-                        },
-                        {
-                          "text": "[BUG REPORT] BUG-INV-005\n"
-                        },
-                        {
-                          "text": "  Title   : Concurrent adjustments did not both apply — race condition\n"
-                        },
-                        {
-                          "text": "  Time    : 2026-08-05T08:11:37.599Z\n"
-                        },
-                        {
-                          "text": "  adj1_doc        : \"ADJ/2026/08/05/000069\"\n"
-                        },
-                        {
-                          "text": "  adj1_id         : \"b7f1af2d-90b5-4ffc-8b0c-ae7cfdca1163\"\n"
-                        },
-                        {
-                          "text": "  adj2_doc        : \"ADJ/2026/08/05/000070\"\n"
-                        },
-                        {
-                          "text": "  adj2_id         : \"2d2d8c8b-cba2-4972-9e5e-7c2dca2e0add\"\n"
-                        },
-                        {
-                          "text": "  item_id         : \"85d7c612-7ddc-4222-a574-b7a2b100be85\"\n"
-                        },
-                        {
-                          "text": "  stock_before    : 5\n"
-                        },
-                        {
-                          "text": "  expected_stock  : 25\n"
-                        },
-                        {
-                          "text": "  actual_stock    : 0\n"
-                        },
-                        {
-                          "text": "  impact          : \"Lost update — one adjustment silently dropped under concurrent load\"\n"
-                        },
-                        {
-                          "text": "────────────────────────────────────────────────────────────\n"
+                          "text": "[STEP 2] Advancing timesheet through approval...\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-05T08:11:25.795Z",
+                      "startTime": "2026-08-05T10:46:08.421Z",
                       "annotations": [],
                       "attachments": [
                         {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/video.webm"
+                        },
+                        {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/inventory-inv-boundary-att-94a2a-produce-correct-final-stock-Inventory/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/inventory-inv-boundary-att-94a2a-produce-correct-final-stock-Inventory/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/inventory/inv-boundary-attack.spec.ts",
-                        "column": 28,
-                        "line": 252
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 304
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "3a0272ba0102dc063051-e5ac0435b28316bb29e0",
-              "file": "inventory/inv-boundary-attack.spec.ts",
-              "line": 182,
+              "id": "15c484018f310a17d40d-d628ca09428ee2be626e",
+              "file": "hr/hr-attendance.spec.ts",
+              "line": 30,
+              "column": 9
+            },
+            {
+              "title": "Guardrail: Duplicate timesheet for same employee+date must be rejected",
+              "ok": true,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 13334,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
+                        },
+                        {
+                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
+                        },
+                        {
+                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
+                        },
+                        {
+                          "text": "[INFO] First timesheet already exists for this date\n"
+                        },
+                        {
+                          "text": "[PASS] Duplicate timesheet correctly rejected: 409\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-05T10:46:07.920Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "15c484018f310a17d40d-3a83c8e296668b389dc9",
+              "file": "hr/hr-attendance.spec.ts",
+              "line": 55,
+              "column": 9
+            },
+            {
+              "title": "UI: Timesheets page must load and not show an error state",
+              "ok": false,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 34090,
+                      "error": {
+                        "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], button, .chakra-text, a').first() to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], button, .chakra-text, a').first() to be visible\u001b[22m\n\n    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:110:23",
+                        "location": {
+                          "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
+                          "column": 23,
+                          "line": 110
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 108 |\u001b[39m         expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoMatch(\u001b[35m/timesheet/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 109 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], button, .chakra-text, a'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Timesheets page loaded without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
+                            "column": 23,
+                            "line": 110
+                          },
+                          "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], button, .chakra-text, a').first() to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 108 |\u001b[39m         expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoMatch(\u001b[35m/timesheet/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 109 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], button, .chakra-text, a'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Timesheets page loaded without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:110:23\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-05T10:46:22.938Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-4e4e5-and-not-show-an-error-state-HR/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-4e4e5-and-not-show-an-error-state-HR/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-4e4e5-and-not-show-an-error-state-HR/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
+                        "column": 23,
+                        "line": 110
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "15c484018f310a17d40d-e61e83fef55a0b0396d4",
+              "file": "hr/hr-attendance.spec.ts",
+              "line": 97,
+              "column": 9
+            },
+            {
+              "title": "UI: Attendances page must load and render the attendance module",
+              "ok": false,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 31619,
+                      "error": {
+                        "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\n    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:128:23",
+                        "location": {
+                          "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
+                          "column": 23,
+                          "line": 128
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 126 |\u001b[39m\n \u001b[90m 127 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 128 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 129 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Attendances page rendered without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 130 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 131 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
+                            "column": 23,
+                            "line": 128
+                          },
+                          "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 126 |\u001b[39m\n \u001b[90m 127 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 128 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 129 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Attendances page rendered without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 130 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 131 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:128:23\u001b[22m"
+                        },
+                        {
+                          "message": "Error: ENOENT: no such file or directory, unlink '/home/teklish/beffa-automation/test-results/.playwright-artifacts-2/8a62d5edd4cf5368b55f52d3f95a8177.zip'"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-05T10:46:34.000Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-a53b9-ender-the-attendance-module-HR/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-a53b9-ender-the-attendance-module-HR/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
+                        "column": 23,
+                        "line": 128
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "15c484018f310a17d40d-366adac3aaec6a2590f9",
+              "file": "hr/hr-attendance.spec.ts",
+              "line": 117,
               "column": 9
             }
           ]
@@ -537,11 +517,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-05T08:11:16.347Z",
-    "duration": 29019.915999999997,
-    "expected": 4,
+    "startTime": "2026-08-05T10:45:57.007Z",
+    "duration": 86487.256,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 3,
     "flaky": 0
   }
 }

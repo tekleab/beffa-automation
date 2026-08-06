@@ -1,20 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-    .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001') + '/api';
-const QS = () => `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-
-async function apiLogin(request: any): Promise<string> {
-    const r = await request.post(`${API()}/users/login?${QS()}&month=6`, {
-        data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const token = (await r.json()).auth_token;
-    if (!token) throw new Error('apiLogin failed');
-    return token;
-}
-
 
 /**
  * HR: Timesheets & Attendances
@@ -27,9 +13,10 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // HAPPY PATH: Timesheet creation and approval flow
     // -------------------------------------------------------------------------
-    test('API: Timesheet must be created and advanced through approval', async ({ page , request }) => {
+    test('API: Timesheet must be created and advanced through approval', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         const meta = await app.api.hr.discoverMetadataAPI();
         if (!meta) { console.log('[SKIP] HR org structure not configured'); return; }
@@ -52,9 +39,10 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // EDGE CASE: Duplicate date must return 409
     // -------------------------------------------------------------------------
-    test('Guardrail: Duplicate timesheet for same employee+date must be rejected', async ({ page , request }) => {
+    test('Guardrail: Duplicate timesheet for same employee+date must be rejected', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         const meta = await app.api.hr.discoverMetadataAPI();
         if (!meta) { console.log("[SKIP] HR org structure not configured"); return; }
@@ -94,9 +82,10 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // UI: Timesheets page loads without error
     // -------------------------------------------------------------------------
-    test('UI: Timesheets page must load and not show an error state', async ({ page , request }) => {
+    test('UI: Timesheets page must load and not show an error state', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         await page.goto('/human-resources/timesheets', { waitUntil: 'commit' });
 
@@ -114,9 +103,10 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
     // -------------------------------------------------------------------------
     // UI: Attendances page loads (no API route — UI-only module)
     // -------------------------------------------------------------------------
-    test('UI: Attendances page must load and render the attendance module', async ({ page , request }) => {
+    test('UI: Attendances page must load and render the attendance module', async ({ page }) => {
         const app = new AppManager(page);
-        await apiLogin(request);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
 
         await page.goto('/human-resources/attendances', { waitUntil: 'commit' });
 
