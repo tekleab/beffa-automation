@@ -1,16 +1,16 @@
 {
   "total": 19,
-  "passed": 11,
-  "failed": 8,
+  "passed": 16,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 57.9,
-  "avgDurationMs": 26165,
-  "lastUpdated": "2026-08-06T11:59:00.598Z",
+  "passRate": 84.2,
+  "avgDurationMs": 34094,
+  "lastUpdated": "2026-08-06T12:48:48.407Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 11,
-      "failed": 8,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
       "trend": [
         84,
@@ -19,18 +19,18 @@
         90,
         92,
         57.9,
-        57.9
+        84.2
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "599",
-      "commit": "901936f",
+      "run": "600",
+      "commit": "36bda44",
       "trigger": "push (smoke)",
-      "duration": "8m 17s",
-      "passRate": 57.9,
-      "status": "failed"
+      "duration": "10m 47s",
+      "passRate": 84.2,
+      "status": "success"
     },
     {
       "run": "590",
@@ -108,33 +108,9 @@
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for d39cfd2b-4135-4ad8-9efd-cc86a6e38f94: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:723\n\n  7",
-      "firstSeen": "2026-08-06T11:53:04.677Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.location_id\": [\n\t\t\t\"Location not found or not linked to this warehouse.\"\n\t\t],\n\t\t\"items.0.quantity\": [\n\t\t\t\"",
-      "firstSeen": "2026-08-06T11:53:04.717Z",
-      "occurrences": 2,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: SO API Failed\n\n  24 |             warehouseId: itemResult.warehouseId\n  25 |         });\n> 26 |         if (!soResult.success) throw new Error(\"SO API Failed\");\n     |                          ",
-      "firstSeen": "2026-08-06T11:53:04.643Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.location_id\": [\n\t\t\t\"Location not found or not linked to this warehouse.\"\n\t\t],\n\t\t\"items.0.quantity\": [\n\t\t\t\"",
-      "firstSeen": "2026-08-06T11:53:35.869Z",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:202\n\n  200 |         if (success) break;\n  201 |",
+      "firstSeen": "2026-08-06T12:42:52.296Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +118,7 @@
       "severity": "medium",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
       "error": "Error: PO-to-Bill API Failed: 400 - {\"code\":400,\"message\":\"po_item_id is required for received purchase order items\"}\n\n   at ../lib/api/PurchaseAPI.ts:365\n\n  363 |     }));\n  364 |\n> 365 |     if (rec",
-      "firstSeen": "2026-08-06T11:53:42.992Z",
+      "firstSeen": "2026-08-06T12:43:02.114Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -150,15 +126,7 @@
       "severity": "medium",
       "title": "API: Approved bill must post a debit to Accounts Payable",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  35 |         console.log(`[S",
-      "firstSeen": "2026-08-06T11:53:54.315Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.location_id\": [\n\t\t\t\"Location not found or not linked to this warehouse.\"\n\t\t],\n\t\t\"items.0.quantity\": [\n\t\t\t\"",
-      "firstSeen": "2026-08-06T11:54:47.605Z",
+      "firstSeen": "2026-08-06T12:43:05.208Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
