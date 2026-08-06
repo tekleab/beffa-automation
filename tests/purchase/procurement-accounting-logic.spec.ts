@@ -34,8 +34,10 @@ test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', (
 
         console.log(`[STEP 3] Fetching bill to verify status and vendor...`);
         const billData = await app.api.purchase.getBillAPI(bill.id);
-        expect(['approved', 'posted', 'paid', 'partial'].some(s => billData.status?.toLowerCase().includes(s))).toBe(true);
-        console.log(`[PASS] Bill ${bill.ref} status: ${billData.status}`);
+        // ERP /bill/{id} has no top-level 'status' field — status is in current_approval_step.status_label
+        const billStatus = (billData.status ?? billData.current_approval_step?.status_label ?? '').toLowerCase();
+        expect(['approved', 'posted', 'paid', 'partial'].some(s => billStatus.includes(s))).toBe(true);
+        console.log(`[PASS] Bill ${bill.ref} status: ${billStatus}`);
 
         console.log(`[STEP 4] Verifying journal entries exist for this bill...`);
         const token = await app._getAuthToken();
