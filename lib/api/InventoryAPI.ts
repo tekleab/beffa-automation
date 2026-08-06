@@ -90,7 +90,7 @@ export class InventoryAPI extends BasePage {
             const locs = ldata.items || ldata.data || [];
             if (locs[0]) {
                 locId = locId || locs[0].id;
-                warehouseId = warehouseId || locs[0].warehouse_id || locs[0].warehouse?.id;
+                warehouseId = warehouseId || await this.resolveWarehouseIdFromLocation(locs[0]);
             }
         }
     }
@@ -176,18 +176,9 @@ export class InventoryAPI extends BasePage {
     if (locResp.ok()) {
       const locJson = await locResp.json();
       const locs = locJson.items || locJson.data || [];
-      // Prefer a location with warehouse_id, but fall back to any location
-      const loc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
+      const loc = locs[0];
       if (loc?.id) {
-        // If warehouse_id is missing on the location object, fetch it from the warehouses list
-        let warehouseId = loc.warehouse_id || loc.warehouse?.id;
-        if (!warehouseId) {
-          const whResp = await this.safeGet(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers });
-          if (whResp.ok()) {
-            const whJson = await whResp.json();
-            warehouseId = (whJson.items || whJson.data || [])[0]?.id;
-          }
-        }
+        const warehouseId = await this.resolveWarehouseIdFromLocation(loc);
         if (warehouseId) return { locationId: loc.id, warehouseId };
       }
     }
@@ -295,7 +286,7 @@ export class InventoryAPI extends BasePage {
         const firstLoc = (locData.items || locData.data || [])[0];
         if (firstLoc) {
           locationId = locationId || firstLoc.id;
-          warehouseId = warehouseId || firstLoc.warehouse_id || firstLoc.warehouse?.id;
+          warehouseId = warehouseId || await this.resolveWarehouseIdFromLocation(firstLoc);
         }
       }
     }
@@ -326,6 +317,12 @@ export class InventoryAPI extends BasePage {
     const absQty = Math.abs(qty);
     const totalCost = absQty * unitCost;
 
+    // Allow callers to override the quantity fields sent to the ERP.
+    // createFreshItemWithStockAPI passes _overrideCurrentQty=0 / _overrideLocationQty=0
+    // so the ERP's consistency check passes on a brand-new zero-stock item.
+    const finalCurrentQty  = data._overrideCurrentQty  !== undefined ? data._overrideCurrentQty  : currentQuantity;
+    const finalLocationQty = data._overrideLocationQty !== undefined ? data._overrideLocationQty : locationQuantity;
+
     const payload = {
       adjusted_by: adjustedBy,
       adjusted_cost: adjustedBy === 'cost' ? unitCost : 0,
@@ -341,8 +338,8 @@ export class InventoryAPI extends BasePage {
       unit_cost: unitCost,
       unit_price: unitCost,
       total_cost: adjustedBy === 'cost' ? 0 : totalCost,
-      current_quantity: currentQuantity,
-      location_quantity: locationQuantity,
+      current_quantity: finalCurrentQty,
+      location_quantity: finalLocationQty,
       skip_draft: false,
       status: 'draft'
     };
@@ -678,52 +675,36 @@ export class InventoryAPI extends BasePage {
     const ts = Date.now();
     const name = opts.name || `${opts.cost_method_code}-Item-${ts}`;
 
-    // Step 1: Create item with initial_stock > 0 so the ERP registers an inventory_item_locations
-    // entry for this locationId. Without this entry the ERP rejects SO/invoice lines with
-    // "Location not found or not linked to this warehouse" even if a later adjustment exists.
+    // Create item with quantity=0 so the ERP has no pre-existing stock to conflict with.
+    // Stock is injected via an approved adjustment with explicit current_quantity=0 and
+    // location_quantity=0 — this is the only path that reliably registers inventory_item_locations
+    // AND passes the ERP's quantity-consistency check.
     const item = await this.createInventoryItemAPI({
       name,
       item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-9)}`,
       part_number: `PN-${ts.toString().slice(-7)}`,
       cost_method_code: opts.cost_method_code,
-      quantity: opts.quantity,
+      quantity: 0,
       unit_cost: opts.unit_cost,
       default_location_id: locationId,
       default_warehouse_id: warehouseId,
     });
 
-    // Step 2: Verify the location was registered. If initial_stock didn't create the
-    // inventory_item_locations entry (some ERP versions skip it), inject via adjustment.
-    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-      .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
-    if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
-    if (!apiBase.endsWith('/api')) apiBase += '/api';
-    const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
-
-    await this.page.waitForTimeout(1500); // allow ERP to index the new item
-    const checkResp = await this.safeGet(`${apiBase}/inventory-item/${item.id}?${params}`, { headers });
-    const checkData = checkResp.ok() ? await checkResp.json() : {};
-    const locEntry = (checkData.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
-    const registeredStock = locEntry?.quantity ?? 0;
-
-    if (registeredStock < opts.quantity) {
-      // Location not registered or stock insufficient — inject via adjustment
-      console.log(`[FRESH ITEM] Location stock=${registeredStock}, expected=${opts.quantity}. Injecting via adjustment...`);
-      const needed = opts.quantity - registeredStock;
-      const adj = await this.createInventoryAdjustmentAPI({
-        itemId: item.id,
-        quantity: needed,
-        cost: opts.unit_cost,
-        locationId,
-        warehouseId,
-        adjusted_by: 'quantity',
-      });
-      if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
-      await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
-      await this.page.waitForTimeout(1000);
-    }
+    // Inject stock via adjustment. Pass current_quantity=0 and location_quantity=0 explicitly
+    // so the ERP's consistency check passes (item was just created with zero stock).
+    const adj = await this.createInventoryAdjustmentAPI({
+      itemId: item.id,
+      quantity: opts.quantity,
+      cost: opts.unit_cost,
+      locationId,
+      warehouseId,
+      adjusted_by: 'quantity',
+      _overrideCurrentQty: 0,
+      _overrideLocationQty: 0,
+    });
+    if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
+    await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+    await this.page.waitForTimeout(2000); // allow ERP to index the approved adjustment
 
     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
     return {

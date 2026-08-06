@@ -102,7 +102,7 @@ export class SalesAPI extends BasePage {
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
         locationId = firstLoc.id;
-        warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id || '';
+        warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
       }
     }
 
@@ -151,10 +151,10 @@ export class SalesAPI extends BasePage {
       if (locResp.ok()) {
         const locData = await locResp.json();
         const locs = locData.items || locData.data || [];
-        const bestLoc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
+        const bestLoc = locs[0];
         if (bestLoc) {
           locationId = locationId || bestLoc.id;
-          warehouseId = warehouseId || bestLoc.warehouse_id || bestLoc.warehouse?.id || '';
+          warehouseId = warehouseId || await this.resolveWarehouseIdFromLocation(bestLoc);
         }
       }
     }

@@ -1123,6 +1123,36 @@ ${curlCmd}
     return data.items || data.data || [];
   }
 
+  /**
+   * Resolves a warehouse UUID from a location object.
+   * The ERP /locations list returns `warehouse` as a name string, not an object with `.id`.
+   * This helper fetches the warehouses list once and matches by name.
+   */
+  async resolveWarehouseIdFromLocation(loc: any): Promise<string> {
+    if (loc.warehouse_id && loc.warehouse_id.length === 36) return loc.warehouse_id;
+    if (loc.warehouse?.id) return loc.warehouse.id;
+    // warehouse is a name string — look it up
+    if (typeof loc.warehouse === 'string' && loc.warehouse) {
+      const token = await this._getAuthToken();
+      const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+      const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+      const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=50&${params}`, { headers });
+      if (whResp.ok()) {
+        const whJson = await whResp.json();
+        const whs: any[] = whJson.items || whJson.data || [];
+        const match = whs.find((w: any) => w.name === loc.warehouse);
+        if (match?.id) return match.id;
+        if (whs[0]?.id) return whs[0].id;
+      }
+    }
+    // Last resort: fetch first warehouse
+    const token = await this._getAuthToken();
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` } });
+    if (whResp.ok()) { const j = await whResp.json(); return (j.items || j.data || [])[0]?.id || ''; }
+    return '';
+  }
+
   /** Parse 422 insufficient-balance payment errors; returns top-up amount needed or null. */
   parseInsufficientCashTopUp(errorText: string): number | null {
     if (!/insufficient balance/i.test(errorText)) return null;
