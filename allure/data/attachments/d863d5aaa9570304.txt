@@ -1,0 +1,70 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:57:32 [PERFORMANCE] API - Auth API Verification: 291.51ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[FRESH ITEM] Created: WAC-Item-1785999462125 (2c868806-363e-4848-b041-38031e37ab0b) | method=WAC | stock=20@$100 | loc=322dd6e4-d744-4197-aa9c-426e34ac192c
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:57:44 [PERFORMANCE] API - Auth API Verification: 236.71ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:57:51 [PERFORMANCE] API - Auth API Verification: 237.14ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 5000...
+06:57:57 [INFO] Advancing bills "e90c950b-e475-4156-8287-3ed031304e9e"...
+[BILL] BILL/2026/08/06/000452 (e90c950b-e475-4156-8287-3ed031304e9e)
+[COA SNAPSHOT] Cash before: 2872737 | AP before: 1842400
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+[INFO] Mismatch payment created: PAY/2026/08/06/000060 (7dd250c3-d79d-4de4-9640-f4c2f9e9003c)
+06:58:00 [INFO] Advancing payments "7dd250c3-d79d-4de4-9640-f4c2f9e9003c"...
+[RESULT] Bill balance after mismatch payment: 2000
+[COA SNAPSHOT] Cash after: 2869737 (moved: 3000) | AP after: 1839400 (moved: 3000)
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║        PAYMENT MISMATCH — FINANCIAL IMPACT SUMMARY       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What we sent:                                           ║
+  ║    • Payment total (header)  : $5000                      ║
+  ║    • Allocated to bill       : $3000                      ║
+  ║    • Gap (unaccounted)        : $2000                      ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What the system posted to the ledger:                   ║
+  ║    Dr  Cash - Main Office    -$3000.00               ║
+  ║    Cr  Accounts Payable      +$3000.00               ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  ✓  Ledger balanced (Dr == Cr)                            ║
+  ║  Bill remaining balance      : $2000.00                   ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Root cause:                                             ║
+  ║  header 'amount' field is not validated by the API       ║
+  ║  Fix: validate amount == sum(bill_payments) on POST       ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Split Array Mismatch Guardrail                                          │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/06/000452               │
+  │ Bill ID                          │ e90c950b-e475-4156-8287-3ed031304e9… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Payment Total (header)           │ $5000.00                             │
+  │ Allocated to Bill                │ $3000.00                             │
+  │ Unaccounted Amount               │ $2000.00                             │
+  │ Payment Ref                      │ PAY/2026/08/06/000060 (7dd250c3-d79… │
+  │ Bill Balance After               │ $2000.00                             │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ COA: Cash - Main Office Before   │ $2872737.00                          │
+  │ COA: Cash - Main Office After    │ $2869737.00                          │
+  │ COA: Cash Movement               │ $3000.00 debited                     │
+  │ COA: Accounts Payable Before     │ $1842400.00                          │
+  │ COA: Accounts Payable After      │ $1839400.00                          │
+  │ COA: AP Movement                 │ $3000.00 credited                    │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ Vulnerability Finding            │ UNVALIDATED FIELD: 'amount' header … │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✗ FAIL — VULNERABILITY — broken dou… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
