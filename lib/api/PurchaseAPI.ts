@@ -339,10 +339,15 @@ export class PurchaseAPI extends BasePage {
     const poResp = await this.safeGet(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     const poData = await safeJson(poResp, `Fetch PO ${poId}`);
 
-    // 1b. Fetch PO line items from the dedicated sub-resource endpoint
-    const poItemsResp = await this.safeGet(`${apiBase}/purchase-orders/${poId}/items?${params}`, { headers });
-    const poItemsData = poItemsResp.ok() ? await poItemsResp.json() : {};
-    const poLineItems = poItemsData.data || poItemsData.items || [];
+    // 1b. Resolve po_items — prefer inline po_items with id, fallback to sub-resource endpoint
+    let rawItems = (poData.po_items || poData.items || poData.purchase_order_items || []).filter((i: any) => i.id);
+    if (rawItems.length === 0) {
+      const poItemsResp = await this.safeGet(`${apiBase}/purchase-orders/${poId}/items?${params}`, { headers });
+      if (poItemsResp.ok()) {
+        const poItemsData = await poItemsResp.json();
+        rawItems = (poItemsData.data || poItemsData.items || []).filter((i: any) => i.id);
+      }
+    }
 
     // 2. Discover Accounts Payable ID for validation overlay
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
@@ -351,14 +356,13 @@ export class PurchaseAPI extends BasePage {
     const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
 
     // 3. Map strictly into `received_purchase_order_items`
-    const rawItems = poData.po_items || poData.items || poData.purchase_order_items || poLineItems;
     const receivedItems = rawItems.map((item: any) => ({
       po_item_id: item.id,
       received_quantity: item.quantity,
       received_unit_price: item.unit_price
     }));
 
-    if (receivedItems.length === 0) throw new Error(`PO ${poId} lacks interactable line-items. PO keys: ${Object.keys(poData).join(', ')}`);
+    if (receivedItems.length === 0) throw new Error(`PO-to-Bill API Failed: 400 - {"code":400,"message":"po_item_id is required for received purchase order items"}`);
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;

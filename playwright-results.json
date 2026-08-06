@@ -185,126 +185,140 @@
   },
   "suites": [
     {
-      "title": "hr/hr-attendance.spec.ts",
-      "file": "hr/hr-attendance.spec.ts",
+      "title": "purchase/po-stress.spec.ts",
+      "file": "purchase/po-stress.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "HR: Timesheets & Attendances @hr @smoke @regression @full",
-          "file": "hr/hr-attendance.spec.ts",
-          "line": 24,
+          "title": "Procurement Stress & Financial Edge Cases @purchase @logic @security @regression @full",
+          "file": "purchase/po-stress.spec.ts",
+          "line": 18,
           "column": 6,
           "specs": [
             {
-              "title": "API: Timesheet must be created and advanced through approval",
+              "title": "Guardrail: System must reject payment exceeding bill total",
               "ok": false,
               "tags": [
-                "hr",
-                "smoke",
+                "purchase",
+                "logic",
+                "security",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
                   "timeout": 120000,
-                  "annotations": [],
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|239.95"
+                    }
+                  ],
                   "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 13130,
+                      "status": "timedOut",
+                      "duration": 3,
                       "error": {
-                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
-                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:304:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at BasePage.advanceDocumentAPI (/home/teklish/beffa-automation/lib/base-page.ts:124:37)\n    at AppManager.advanceDocumentAPI (/home/teklish/beffa-automation/pages/AppManager.ts:177:90)\n    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:48:9",
+                        "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10",
                         "location": {
-                          "file": "<anonymous>",
-                          "column": 16,
-                          "line": 304
-                        }
+                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                          "column": 10,
+                          "line": 23
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "<anonymous>",
-                            "column": 16,
-                            "line": 304
+                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                            "column": 10,
+                            "line": 23
                           },
-                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n\u001b[2m    at UtilityScript.evaluate (<anonymous>:304:16)\u001b[22m\n\u001b[2m    at UtilityScript.<anonymous> (<anonymous>:1:44)\u001b[22m\n\u001b[2m    at UtilityScript.evaluate (<anonymous>:304:16)\u001b[22m\n\u001b[2m    at UtilityScript.<anonymous> (<anonymous>:1:44)\u001b[22m\n\u001b[2m    at BasePage.advanceDocumentAPI (/home/teklish/beffa-automation/lib/base-page.ts:124:37)\u001b[22m\n\u001b[2m    at AppManager.advanceDocumentAPI (/home/teklish/beffa-automation/pages/AppManager.ts:177:90)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:48:9\u001b[22m"
+                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10\u001b[22m"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/lib/base-page.ts",
+                            "column": 27,
+                            "line": 382
+                          },
+                          "message": "Error: page.waitForTimeout: Target page, context or browser has been closed\n\n\u001b[90m   at \u001b[39m../lib/base-page.ts:382\n\n\u001b[0m \u001b[90m 380 |\u001b[39m           \u001b[33mLogger\u001b[39m\u001b[33m.\u001b[39mwarn(\u001b[32m`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.message.split('\\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 381 |\u001b[39m           lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mincludes(\u001b[32m'[TIMEOUT]'\u001b[39m) \u001b[33m?\u001b[39m \u001b[35m408\u001b[39m \u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 382 |\u001b[39m           \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForTimeout(backoff)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 383 |\u001b[39m           \u001b[36mcontinue\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 384 |\u001b[39m         }\n \u001b[90m 385 |\u001b[39m         lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at PurchaseAPI.safeGet (/home/teklish/beffa-automation/lib/base-page.ts:382:27)\u001b[22m\n\u001b[2m    at PurchaseAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/PurchaseAPI.ts:79:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:27:22\u001b[22m"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
+                          "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
                         },
                         {
-                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
+                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15\n"
                         },
                         {
-                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)\n"
                         },
                         {
-                          "text": "[STEP 1] Creating timesheet | employee: e0604e0b-4cae-4443-8e9b-f9ed074b43a8 | date: 2026-10-16T00:00:00Z\n"
+                          "text": "\u001b[33m06:24:14 [PERFORMANCE]\u001b[0m API - Auth API Verification: 239.95ms\n"
                         },
                         {
-                          "text": "[SUCCESS] Timesheet created: 8a0e5021-ff7e-4de7-aefe-2fe3232cf345 | status: draft\n"
+                          "text": "[AUTH] Frontend navigation skipped (unreachable) — API session active.\n"
                         },
                         {
-                          "text": "[STEP 2] Advancing timesheet through approval...\n"
+                          "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
+                        },
+                        {
+                          "text": "\u001b[33m06:26:15 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Target page, context or browser has been closed. Retry 2/4 in 6000ms...\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-05T10:46:08.421Z",
-                      "annotations": [],
+                      "startTime": "2026-08-06T06:24:05.397Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|239.95"
+                        }
+                      ],
                       "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/video.webm"
-                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-27ea1-d-advanced-through-approval-HR/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "<anonymous>",
-                        "column": 16,
-                        "line": 304
+                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                        "column": 10,
+                        "line": 23
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "15c484018f310a17d40d-d628ca09428ee2be626e",
-              "file": "hr/hr-attendance.spec.ts",
-              "line": 30,
+              "id": "433cf0528e1813ec91be-f0575498ce180649fb7b",
+              "file": "purchase/po-stress.spec.ts",
+              "line": 38,
               "column": 9
             },
             {
-              "title": "Guardrail: Duplicate timesheet for same employee+date must be rejected",
+              "title": "Guardrail: System must prevent double-billing the same PO",
               "ok": true,
               "tags": [
-                "hr",
-                "smoke",
+                "purchase",
+                "logic",
+                "security",
                 "regression",
                 "full"
               ],
@@ -313,53 +327,38 @@
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 13334,
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
                       "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
-                        },
-                        {
-                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
-                        },
-                        {
-                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
-                        },
-                        {
-                          "text": "[INFO] First timesheet already exists for this date\n"
-                        },
-                        {
-                          "text": "[PASS] Duplicate timesheet correctly rejected: 409\n"
-                        }
-                      ],
+                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-05T10:46:07.920Z",
+                      "startTime": "2026-08-06T06:26:18.391Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "expected"
+                  "status": "skipped"
                 }
               ],
-              "id": "15c484018f310a17d40d-3a83c8e296668b389dc9",
-              "file": "hr/hr-attendance.spec.ts",
-              "line": 55,
+              "id": "433cf0528e1813ec91be-1b788839c5583ca8f296",
+              "file": "purchase/po-stress.spec.ts",
+              "line": 69,
               "column": 9
             },
             {
-              "title": "UI: Timesheets page must load and not show an error state",
-              "ok": false,
+              "title": "Guardrail: System must reject payment against a fully-paid bill",
+              "ok": true,
               "tags": [
-                "hr",
-                "smoke",
+                "purchase",
+                "logic",
+                "security",
                 "regression",
                 "full"
               ],
@@ -368,77 +367,150 @@
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-06T06:26:18.414Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "433cf0528e1813ec91be-c807ddd6de2d527a71ae",
+              "file": "purchase/po-stress.spec.ts",
+              "line": 98,
+              "column": 9
+            },
+            {
+              "title": "Audit: Bill reversal after payment must roll back stock and restore balance",
+              "ok": false,
+              "tags": [
+                "purchase",
+                "logic",
+                "security",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|245.28"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 34090,
+                      "status": "timedOut",
+                      "duration": 6,
                       "error": {
-                        "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], button, .chakra-text, a').first() to be visible\u001b[22m\n",
-                        "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], button, .chakra-text, a').first() to be visible\u001b[22m\n\n    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:110:23",
+                        "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
-                          "column": 23,
-                          "line": 110
+                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                          "column": 10,
+                          "line": 23
                         },
-                        "snippet": "\u001b[0m \u001b[90m 108 |\u001b[39m         expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoMatch(\u001b[35m/timesheet/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 109 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], button, .chakra-text, a'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Timesheets page loaded without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
-                            "column": 23,
-                            "line": 110
+                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                            "column": 10,
+                            "line": 23
                           },
-                          "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], button, .chakra-text, a').first() to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 108 |\u001b[39m         expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoMatch(\u001b[35m/timesheet/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 109 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], button, .chakra-text, a'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Timesheets page loaded without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:110:23\u001b[22m"
+                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10\u001b[22m"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/teklish/beffa-automation/lib/base-page.ts",
+                            "column": 27,
+                            "line": 382
+                          },
+                          "message": "Error: page.waitForTimeout: Target page, context or browser has been closed\n\n\u001b[90m   at \u001b[39m../lib/base-page.ts:382\n\n\u001b[0m \u001b[90m 380 |\u001b[39m           \u001b[33mLogger\u001b[39m\u001b[33m.\u001b[39mwarn(\u001b[32m`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.message.split('\\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 381 |\u001b[39m           lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mincludes(\u001b[32m'[TIMEOUT]'\u001b[39m) \u001b[33m?\u001b[39m \u001b[35m408\u001b[39m \u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 382 |\u001b[39m           \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForTimeout(backoff)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 383 |\u001b[39m           \u001b[36mcontinue\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 384 |\u001b[39m         }\n \u001b[90m 385 |\u001b[39m         lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at PurchaseAPI.safeGet (/home/teklish/beffa-automation/lib/base-page.ts:382:27)\u001b[22m\n\u001b[2m    at PurchaseAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/PurchaseAPI.ts:79:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:27:22\u001b[22m"
                         }
                       ],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
+                        },
+                        {
+                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15\n"
+                        },
+                        {
+                          "text": "[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)\n"
+                        },
+                        {
+                          "text": "\u001b[33m06:24:14 [PERFORMANCE]\u001b[0m API - Auth API Verification: 245.28ms\n"
+                        },
+                        {
+                          "text": "[AUTH] Year switcher not visible — skipping year switch to 2019.\n"
+                        },
+                        {
+                          "text": "\u001b[33m06:26:18 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Target page, context or browser has been closed. Retry 2/4 in 6000ms...\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-05T10:46:22.938Z",
-                      "annotations": [],
-                      "attachments": [
+                      "startTime": "2026-08-06T06:24:05.318Z",
+                      "annotations": [
                         {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-4e4e5-and-not-show-an-error-state-HR/video.webm"
-                        },
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|245.28"
+                        }
+                      ],
+                      "attachments": [
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-4e4e5-and-not-show-an-error-state-HR/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-4e4e5-and-not-show-an-error-state-HR/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
-                        "column": 23,
-                        "line": 110
+                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                        "column": 10,
+                        "line": 23
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "15c484018f310a17d40d-e61e83fef55a0b0396d4",
-              "file": "hr/hr-attendance.spec.ts",
-              "line": 97,
+              "id": "433cf0528e1813ec91be-a8b4b4e08f71d7402eca",
+              "file": "purchase/po-stress.spec.ts",
+              "line": 134,
               "column": 9
             },
             {
-              "title": "UI: Attendances page must load and render the attendance module",
-              "ok": false,
+              "title": "Audit: Three partial payments must exactly zero out bill balance",
+              "ok": true,
               "tags": [
-                "hr",
-                "smoke",
+                "purchase",
+                "logic",
+                "security",
                 "regression",
                 "full"
               ],
@@ -447,67 +519,69 @@
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 31619,
-                      "error": {
-                        "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n",
-                        "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\n    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:128:23",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
-                          "column": 23,
-                          "line": 128
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 126 |\u001b[39m\n \u001b[90m 127 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 128 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 129 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Attendances page rendered without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 130 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 131 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
-                            "column": 23,
-                            "line": 128
-                          },
-                          "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 126 |\u001b[39m\n \u001b[90m 127 |\u001b[39m         \u001b[36mconst\u001b[39m content \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 128 |\u001b[39m         \u001b[36mawait\u001b[39m content\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 129 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[PASS] Attendances page rendered without errors`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 130 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 131 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts:128:23\u001b[22m"
-                        },
-                        {
-                          "message": "Error: ENOENT: no such file or directory, unlink '/home/teklish/beffa-automation/test-results/.playwright-artifacts-2/8a62d5edd4cf5368b55f52d3f95a8177.zip'"
-                        }
-                      ],
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-05T10:46:34.000Z",
+                      "startTime": "2026-08-06T06:26:19.306Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-a53b9-ender-the-attendance-module-HR/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-attendance-HR-Timesh-a53b9-ender-the-attendance-module-HR/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/hr/hr-attendance.spec.ts",
-                        "column": 23,
-                        "line": 128
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "skipped"
                 }
               ],
-              "id": "15c484018f310a17d40d-366adac3aaec6a2590f9",
-              "file": "hr/hr-attendance.spec.ts",
-              "line": 117,
+              "id": "433cf0528e1813ec91be-38f06d945b956260b7da",
+              "file": "purchase/po-stress.spec.ts",
+              "line": 185,
+              "column": 9
+            },
+            {
+              "title": "Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger",
+              "ok": true,
+              "tags": [
+                "purchase",
+                "logic",
+                "security",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Purchase",
+                  "projectName": "Purchase",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-06T06:26:19.331Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "433cf0528e1813ec91be-1bfc37f61ff329218a35",
+              "file": "purchase/po-stress.spec.ts",
+              "line": 226,
               "column": 9
             }
           ]
@@ -517,11 +591,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-05T10:45:57.007Z",
-    "duration": 86487.256,
-    "expected": 1,
-    "skipped": 0,
-    "unexpected": 3,
+    "startTime": "2026-08-06T06:23:57.136Z",
+    "duration": 154186.93999999997,
+    "expected": 0,
+    "skipped": 4,
+    "unexpected": 2,
     "flaky": 0
   }
 }

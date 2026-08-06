@@ -54,7 +54,14 @@ test.describe('Procurement Partial PO Release Audit @purchase @logic @regression
         console.log(`[STEP 2] Receiving only ${RECEIVE_QTY} / ${PO_QTY} units via partial PO bill...`);
         const poResp = await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers });
         const poData = await poResp.json();
-        const poItemId = poData.po_items?.[0]?.id;
+        let poItemId = (poData.po_items || []).find((i: any) => i.id)?.id;
+        if (!poItemId) {
+            const subResp = await page.request.get(`${apiBase}/purchase-orders/${po.poId}/items?${qs}`, { headers });
+            if (subResp.ok()) {
+                const subData = await subResp.json();
+                poItemId = (subData.data || subData.items || []).find((i: any) => i.id)?.id;
+            }
+        }
         if (!poItemId) throw new Error(`PO ${po.poNumber} has no line items`);
 
         const createBillResp = await page.request.post(`${apiBase}/bills?${qs}`, {

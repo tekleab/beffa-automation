@@ -129,7 +129,14 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         const { apiBase, headers, qs } = await app.buildApiContext();
         const poResp = await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers });
         const poData = await poResp.json();
-        const poItemId = poData.po_items?.[0]?.id;
+        let poItemId = (poData.po_items || []).find((i: any) => i.id)?.id;
+        if (!poItemId) {
+            const subResp = await page.request.get(`${apiBase}/purchase-orders/${po.poId}/items?${qs}`, { headers });
+            if (subResp.ok()) {
+                const subData = await subResp.json();
+                poItemId = (subData.data || subData.items || []).find((i: any) => i.id)?.id;
+            }
+        }
         if (!poItemId) throw new Error(`[SETUP_FAIL] PO ${po.poNumber} has no billable line items.`);
 
         const overflowBill = await app.api.purchase.createPartialBillFromPoAPI(po.poId, [{

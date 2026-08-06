@@ -77,7 +77,14 @@ test.describe('FIFO Write-Down & Sell-Through Audit @inventory @costing @regress
       await app.advanceDocumentAPI(poId, 'purchase-orders');
 
       const poDetail   = await (await page.request.get(`${app.apiBase}/purchase-order/${poId}?${p}`, { headers: h })).json();
-      const poItemId   = (poDetail.po_items || [])[0]?.id;
+      let poItemId = (poDetail.po_items || []).find((i: any) => i.id)?.id;
+      if (!poItemId) {
+        const subResp = await page.request.get(`${app.apiBase}/purchase-orders/${poId}/items?${p}`, { headers: h });
+        if (subResp.ok()) {
+          const subData = await subResp.json();
+          poItemId = (subData.data || subData.items || []).find((i: any) => i.id)?.id;
+        }
+      }
       expect(poItemId, 'PO item id must exist').toBeTruthy();
 
       const billResp = await page.request.post(`${app.apiBase}/bills?${p}`, {

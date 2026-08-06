@@ -242,7 +242,7 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
                 accounts_receivable_id: salesMeta.arAccountId,
                 currency_id: salesMeta.currencyId,
                 invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
-                due_date: new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0] + 'T00:00:00Z',
+                due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 status: 'draft',
                 items: [{
                     item_id: itemId,

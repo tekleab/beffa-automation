@@ -61,7 +61,7 @@ test.describe('Sales COGS Audit: Multi-Item Invoice @sales @inventory @logic @re
             headers,
             data: {                accounts_receivable_id: meta.arAccountId,
                 customer_id: meta.customerId,                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
-                due_date: new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0] + 'T00:00:00Z',
+                due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 currency_id: meta.currencyId,
                 released_sales_order_items: [],
                 items: [

@@ -80,17 +80,26 @@ test.describe('Inventory Item Management @inventory @logic @regression @full', (
         await page.waitForTimeout(800);
 
         console.log('[STEP 4b] Selecting Location...');
-        const locInput = page.locator('input[placeholder*="location" i], input[name*="location" i]').filter({ visible: true }).first();
-        await locInput.click({ timeout: 5000 }).catch(() => {});
-        if (locationName) await locInput.fill(locationName);
-        await page.waitForTimeout(1000);
-        const locOption = page.locator('[role="option"],[role="menuitem"],.chakra-menu__menuitem,li').filter({ visible: true }).first();
-        if (await locOption.isVisible({ timeout: 4000 }).catch(() => false)) {
-            await locOption.click({ force: true });
-            console.log('[INFO] Location selected.');
+        // Try Chakra UI button selector first, fallback to input
+        const locBtn = page.getByRole('button', { name: /location/i }).first();
+        if (await locBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await app.selectRandomOption(locBtn, 'Location');
+            console.log('[INFO] Location selected via button selector.');
         } else {
-            console.log('[WARN] No location options — trying smartSearch fallback...');
-            await app.smartSearch(null, locationName).catch(() => {});
+            const locInput = page.locator('input[placeholder*="location" i], input[name*="location" i]').filter({ visible: true }).first();
+            const locInputVisible = await locInput.isVisible({ timeout: 8000 }).catch(() => false);
+            if (locInputVisible) {
+                await locInput.click({ timeout: 5000 }).catch(() => {});
+                if (locationName) await locInput.fill(locationName);
+                await page.waitForTimeout(1000);
+                const locOption = page.locator('[role="option"],[role="menuitem"],.chakra-menu__menuitem,li').filter({ visible: true }).first();
+                if (await locOption.isVisible({ timeout: 4000 }).catch(() => false)) {
+                    await locOption.click({ force: true });
+                    console.log('[INFO] Location selected via input.');
+                }
+            } else {
+                console.log('[WARN] Location field not found — skipping location selection.');
+            }
         }
 
         await app.selectRandomOption(page.getByRole('button', { name: 'GL Cost Account selector' }), 'GL Cost Account');
