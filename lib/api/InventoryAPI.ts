@@ -678,21 +678,32 @@ export class InventoryAPI extends BasePage {
     const ts = Date.now();
     const name = opts.name || `${opts.cost_method_code}-Item-${ts}`;
 
-    // Use initial_stock + quantity on item creation — creates an import FIFO layer
-    // immediately without a separate adjustment (avoids approval-limit 403 errors)
+    // Create item with initial_stock=0 — ERP does not reliably link initial_stock to location.
+    // Stock is always injected via an approved adjustment to guarantee location linkage.
     const item = await this.createInventoryItemAPI({
       name,
       item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-9)}`,
       part_number: `PN-${ts.toString().slice(-7)}`,
       cost_method_code: opts.cost_method_code,
-      quantity: opts.quantity,
+      quantity: 0,
       unit_cost: opts.unit_cost,
       default_location_id: locationId,
       default_warehouse_id: warehouseId,
     });
 
-    // Stock is set via initial_stock at creation — skip poll, trust creation response.
-    // pollStockAPI is only needed when stock is injected via a separate adjustment.
+    // Inject stock via approved adjustment — this is the only reliable way to link
+    // stock to a specific location_id so invoices/SOs can consume it.
+    const adj = await this.createInventoryAdjustmentAPI({
+      itemId: item.id,
+      quantity: opts.quantity,
+      cost: opts.unit_cost,
+      locationId,
+      warehouseId,
+      adjusted_by: 'quantity',
+    });
+    if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
+    await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+
     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
     return {
       id: item.id,
