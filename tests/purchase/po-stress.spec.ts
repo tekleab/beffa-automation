@@ -19,14 +19,19 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
+    let sharedPage: import('@playwright/test').Page;
 
     test.beforeAll(async ({ browser }) => {
-        const page = await browser.newPage();
-        const app = new AppManager(page);
+        test.setTimeout(300000);
+        sharedPage = await browser.newPage();
+        const app = new AppManager(sharedPage);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
-        await page.close();
+    });
+
+    test.afterAll(async () => {
+        await sharedPage?.close();
     });
 
     test.beforeEach(async ({ page }) => {
