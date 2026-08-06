@@ -214,16 +214,13 @@ export class SalesAPI extends BasePage {
 
     const { DateHelper } = require('../utils/DateHelper');
     const resolvedDate = await DateHelper.resolve(this.page);
-    const dueDate = new Date(resolvedDate.gcDate);
-    dueDate.setUTCDate(resolvedDate.gcDate.getUTCDate() + 30);
-    const dueDateIso = dueDate.toISOString().split('T')[0] + 'T00:00:00Z';
 
     const payload = {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
       currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId, // REQUIRED: must match the SO customer
       invoice_date: data.invoiceDate || resolvedDate.iso,
-      due_date: data.dueDate || dueDateIso,
+      due_date: data.dueDate || resolvedDate.iso,
       released_sales_order_items: [{
         so_item_id: data.soItemId, // REQUIRED: from createSalesOrderAPI response
         released_quantity: data.releasedQuantity || 1,

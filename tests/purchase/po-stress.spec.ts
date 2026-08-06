@@ -83,13 +83,13 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         console.log(`[PO] ${po.poNumber} (${po.poId})`);
 
         console.log(`[STEP 2] Creating first Bill from PO...`);
-        const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
+        const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
         await app.advanceDocumentAPI(bill1.billId, 'bills');
         console.log(`[BILL 1] ${bill1.billNumber} (${bill1.billId}) — approved`);
 
         console.log(`[ATTACK] Attempting second Bill from same PO ${po.poNumber}...`);
         try {
-            const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId);
+            const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
             await app.advanceDocumentAPI(bill2.billId, 'bills');
             expect.soft(false, `[CRITICAL_LOGIC_BUG] Double-billing allowed! PO ${po.poNumber} billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate liability created.`).toBe(true);
             Logger.fail(`Double-billing bug confirmed on PO ${po.poNumber}`);
@@ -241,7 +241,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         console.log(`[PO] ${po.poNumber} (${po.poId})`);
 
         console.log(`[STEP 2] Creating & approving linked Bill...`);
-        const bill = await app.api.purchase.createBillFromPoAPI(po.poId);
+        const bill = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
         await app.advanceDocumentAPI(bill.billId, 'bills');
         console.log(`[BILL] ${bill.billNumber} (${bill.billId}) — approved`);
 
@@ -258,7 +258,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         console.log(`[INFO] PO ${po.poNumber} cancel attempt: HTTP ${cancelResp.status()}`);
 
         const billData = await app.api.purchase.getBillAPI(bill.billId);
-        const billStatus = billData.status?.toLowerCase();
+        const billStatus = (billData.status ?? billData.current_approval_step?.status_label ?? '').toLowerCase();
         console.log(`[AUDIT] Bill ${bill.billNumber} status after PO cancel: ${billStatus}`);
 
         expect.soft(billStatus, `[CRITICAL_LOGIC_BUG] Bill ${bill.billNumber}: Cancelling source PO ${po.poNumber} corrupted bill status to "${billStatus}"`).toBe('approved');

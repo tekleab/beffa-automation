@@ -43,7 +43,7 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         console.log(`[ATTACK] Attempting to Bill 50 units against the 10-unit PO...`);
 
         try {
-            const bill = await app.api.purchase.createBillFromPoAPI(po.poId);
+            const bill = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
             console.log(`[INFO] Bill created for PO. Checking if we can inflate quantity...`);
 
             await app.advanceDocumentAPI(bill.billId, 'bills');

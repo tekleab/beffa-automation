@@ -75,17 +75,18 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
                 { label: 'Bill ID',        value: bill.id },
                 { label: 'Invoice Date',   value: futureDateStr },
                 { label: 'Today',          value: new Date().toISOString().split('T')[0] },
-                { label: 'Status',         value: billData.status },
+                { label: 'Status',         value: billData.status ?? billData.current_approval_step?.status_label },
                 { label: 'Amount',         value: `$${(10000).toFixed(2)}` },
                 { label: 'Vendor',         value: billData.vendor?.name || meta.vendorId },
                 { label: 'Impact',         value: 'Future-period AP liability injected' },
                 { label: 'Fix Required',   value: 'Reject if invoice_date > today' },
             ]);
 
-            if (billData.status === 'approved') {
+            const billStatus = (billData.status ?? billData.current_approval_step?.status_label ?? '').toLowerCase();
+            if (billStatus === 'approved') {
                 throw new Error(`[CRITICAL_LOGIC_BUG] System approved a bill dated ${futureDateStr}. Future-period AP liability injection possible — balance sheet manipulation.`);
             }
-            console.log(`[PASS] Future-dated bill advance ok but status=${billData.status} — not approved.`);
+            console.log(`[PASS] Future-dated bill advance ok but status=${billStatus} — not approved.`);
         } catch (err: any) {
             if (err.message.includes('[CRITICAL_LOGIC_BUG]')) throw err;
             console.log(`[PASS] Future-dated bill correctly blocked: ${err.message.substring(0, 100)}`);
@@ -104,7 +105,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         const po = await app.api.purchase.createPurchaseOrderAPI(item, poQty, unitPrice, meta.vendorId);
         await app.advanceDocumentAPI(po.poId, 'purchase-orders');
 
-        const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
+        const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
         await app.advanceDocumentAPI(bill1.billId, 'bills');
         // Poll until PO shows fully received (unreceived_quantity = 0)
         let poStatus = await app.api.purchase.getPoReceiveStatusAPI(po.poId);
@@ -193,13 +194,13 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         const po = (result1 as PromiseFulfilledResult<any>).value;
         await app.advanceDocumentAPI(po.poId, 'purchase-orders');
 
-        const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId);
+        const bill1 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
         await app.advanceDocumentAPI(bill1.billId, 'bills');
         const bill1Data = await app.api.purchase.getBillAPI(bill1.billId);
         console.log(`[BILL 1] ${bill1.billNumber} — approved`);
 
         try {
-            const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId);
+            const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
             try { await app.advanceDocumentAPI(bill2.billId, 'bills'); } catch { /* block expected */ }
             const bill2Data = await app.api.purchase.getBillAPI(bill2.billId);
 
@@ -308,7 +309,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         const po = await app.api.purchase.createPurchaseOrderAPI(item, poQty, poPrice, meta.vendorId);
         await app.advanceDocumentAPI(po.poId, 'purchase-orders');
 
-        const bill = await app.api.purchase.createBillFromPoAPI(po.poId);
+        const bill = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
         await app.advanceDocumentAPI(bill.billId, 'bills');
 
         const { apiBase, headers, qs } = await app.buildApiContext();

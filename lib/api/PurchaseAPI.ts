@@ -119,7 +119,7 @@ export class PurchaseAPI extends BasePage {
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
         locationId = firstLoc.id;
-        warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id || '';
+        warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
       }
     }
 
@@ -183,7 +183,7 @@ export class PurchaseAPI extends BasePage {
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
         locationId = firstLoc.id;
-        warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id;
+        warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
       }
     }
     // 5. Discover Currency if missing
@@ -220,7 +220,8 @@ export class PurchaseAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`PO API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    return { success: true, poNumber: json.po_number, poId: json.id };
+    // Return po_items from the creation response — GET /purchase-order/{id} strips them out
+    return { success: true, poNumber: json.po_number, poId: json.id, poItems: json.po_items || [] };
   }
 
   async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string; poId?: string } = {}): Promise<{ success: boolean; ref: string; id: string; error?: string }> {
@@ -281,7 +282,7 @@ export class PurchaseAPI extends BasePage {
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
         locationId = firstLoc.id;
-        warehouseId = firstLoc.warehouse_id || firstLoc.warehouse?.id;
+        warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
       }
     }
 
@@ -318,7 +319,7 @@ export class PurchaseAPI extends BasePage {
     const json = await response.json();
     return { success: true, ref: json.invoice_number, id: json.id };
   }
-  async createBillFromPoAPI(poId: string): Promise<{ success: boolean; billNumber: string; billId: string }> {
+  async createBillFromPoAPI(poId: string, poItems?: any[]): Promise<{ success: boolean; billNumber: string; billId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -335,34 +336,28 @@ export class PurchaseAPI extends BasePage {
       try { return JSON.parse(text); } catch (e) { throw new Error(`${label} invalid JSON: ${text.substring(0, 150)}`); }
     };
 
-    // 1. Fetch the Purchase Order to gather its precise mapping metadata
+    // Fetch PO header (vendor, currency) — po_items are NOT returned by GET, use passed poItems
     const poResp = await this.safeGet(`${apiBase}/purchase-order/${poId}?${params}`, { headers });
     const poData = await safeJson(poResp, `Fetch PO ${poId}`);
 
-    // 1b. Resolve po_items — prefer inline po_items with id, fallback to sub-resource endpoint
-    let rawItems = (poData.po_items || poData.items || poData.purchase_order_items || []).filter((i: any) => i.id);
+    // Use po_items passed from createPurchaseOrderAPI (creation response has ids).
+    // If not passed, throw a clear error — GET /purchase-order/{id} never returns po_items.
+    const rawItems: any[] = (poItems || []).filter((i: any) => i.id);
     if (rawItems.length === 0) {
-      const poItemsResp = await this.safeGet(`${apiBase}/purchase-orders/${poId}/items?${params}`, { headers });
-      if (poItemsResp.ok()) {
-        const poItemsData = await poItemsResp.json();
-        rawItems = (poItemsData.data || poItemsData.items || []).filter((i: any) => i.id);
-      }
+      throw new Error(`[createBillFromPoAPI] po_items with ids are required. Pass the po_items array from createPurchaseOrderAPI's response. GET /purchase-order/{id} does not return po_items.`);
     }
 
-    // 2. Discover Accounts Payable ID for validation overlay
+    // Discover AP account
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
     const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
 
-    // 3. Map strictly into `received_purchase_order_items`
     const receivedItems = rawItems.map((item: any) => ({
       po_item_id: item.id,
       received_quantity: item.quantity,
       received_unit_price: item.unit_price
     }));
-
-    if (receivedItems.length === 0) throw new Error(`PO-to-Bill API Failed: 400 - {"code":400,"message":"po_item_id is required for received purchase order items"}`);
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
@@ -371,7 +366,7 @@ export class PurchaseAPI extends BasePage {
       currency_id: poData.currency_id || poData.currency?.id,
       due_date: _dateIso,
       invoice_date: _dateIso,
-      items: [], // MUST be completely empty for a linked PO bill
+      items: [],
       purchase_order_id: poId,
       vendor_id: poData.vendor_id || poData.vendor?.id,
       received_purchase_order_items: receivedItems,
