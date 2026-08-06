@@ -678,31 +678,52 @@ export class InventoryAPI extends BasePage {
     const ts = Date.now();
     const name = opts.name || `${opts.cost_method_code}-Item-${ts}`;
 
-    // Create item with initial_stock=0 — ERP does not reliably link initial_stock to location.
-    // Stock is always injected via an approved adjustment to guarantee location linkage.
+    // Step 1: Create item with initial_stock > 0 so the ERP registers an inventory_item_locations
+    // entry for this locationId. Without this entry the ERP rejects SO/invoice lines with
+    // "Location not found or not linked to this warehouse" even if a later adjustment exists.
     const item = await this.createInventoryItemAPI({
       name,
       item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-9)}`,
       part_number: `PN-${ts.toString().slice(-7)}`,
       cost_method_code: opts.cost_method_code,
-      quantity: 0,
+      quantity: opts.quantity,
       unit_cost: opts.unit_cost,
       default_location_id: locationId,
       default_warehouse_id: warehouseId,
     });
 
-    // Inject stock via approved adjustment — this is the only reliable way to link
-    // stock to a specific location_id so invoices/SOs can consume it.
-    const adj = await this.createInventoryAdjustmentAPI({
-      itemId: item.id,
-      quantity: opts.quantity,
-      cost: opts.unit_cost,
-      locationId,
-      warehouseId,
-      adjusted_by: 'quantity',
-    });
-    if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
-    await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+    // Step 2: Verify the location was registered. If initial_stock didn't create the
+    // inventory_item_locations entry (some ERP versions skip it), inject via adjustment.
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+      .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+    if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
+
+    await this.page.waitForTimeout(1500); // allow ERP to index the new item
+    const checkResp = await this.safeGet(`${apiBase}/inventory-item/${item.id}?${params}`, { headers });
+    const checkData = checkResp.ok() ? await checkResp.json() : {};
+    const locEntry = (checkData.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
+    const registeredStock = locEntry?.quantity ?? 0;
+
+    if (registeredStock < opts.quantity) {
+      // Location not registered or stock insufficient — inject via adjustment
+      console.log(`[FRESH ITEM] Location stock=${registeredStock}, expected=${opts.quantity}. Injecting via adjustment...`);
+      const needed = opts.quantity - registeredStock;
+      const adj = await this.createInventoryAdjustmentAPI({
+        itemId: item.id,
+        quantity: needed,
+        cost: opts.unit_cost,
+        locationId,
+        warehouseId,
+        adjusted_by: 'quantity',
+      });
+      if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
+      await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+      await this.page.waitForTimeout(1000);
+    }
 
     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
     return {
