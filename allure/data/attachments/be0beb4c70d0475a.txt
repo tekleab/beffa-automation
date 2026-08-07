@@ -1,0 +1,74 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:34:26 [PERFORMANCE] API - Auth API Verification: 222.61ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000753 (ID: 1529d177-b6f5-46b1-b942-83211c90d753)
+09:34:35 [INFO] Advancing inventory-adjustments "1529d177-b6f5-46b1-b942-83211c90d753"...
+[FRESH ITEM] Created: WAC-Item-1786095274131 (01550253-4a61-4d24-a849-783bf92ff6d1) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:34:41 [PERFORMANCE] API - Auth API Verification: 191.92ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:34:47 [PERFORMANCE] API - Auth API Verification: 188.34ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 5000...
+09:34:50 [INFO] Advancing bills "30f82cc1-8b67-455c-a803-dae1e29dd2ba"...
+[BILL] BILL/2026/08/07/000623 (30f82cc1-8b67-455c-a803-dae1e29dd2ba)
+[COA SNAPSHOT] Cash before: 1266329 | AP before: 2405100
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+[INFO] Mismatch payment created: PAY/2026/08/07/000120 (2c3937b1-a6cc-4767-8b9c-8b74267860ec)
+09:34:53 [INFO] Advancing payments "2c3937b1-a6cc-4767-8b9c-8b74267860ec"...
+[RESULT] Bill balance after mismatch payment: 2000
+[COA SNAPSHOT] Cash after: 1261329 (moved: 5000) | AP after: 2402100 (moved: 3000)
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║        PAYMENT MISMATCH — FINANCIAL IMPACT SUMMARY       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What we sent:                                           ║
+  ║    • Payment total (header)  : $5000                      ║
+  ║    • Allocated to bill       : $3000                      ║
+  ║    • Gap (unaccounted)        : $2000                      ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What the system posted to the ledger:                   ║
+  ║    Dr  Cash - Main Office    -$5000.00               ║
+  ║    Cr  Accounts Payable      +$3000.00               ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  ⚠  LEDGER IMBALANCE: Dr ≠ Cr by $2000.00               ║
+  ║  Bill remaining balance      : $2000.00                   ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Root cause:                                             ║
+  ║  header 'amount' drained cash but AP not fully relieved  ║
+  ║  Fix: validate amount == sum(bill_payments) on POST       ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Split Array Mismatch Guardrail                                          │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/07/000623               │
+  │ Bill ID                          │ 30f82cc1-8b67-455c-a803-dae1e29dd2b… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Payment Total (header)           │ $5000.00                             │
+  │ Allocated to Bill                │ $3000.00                             │
+  │ Unaccounted Amount               │ $2000.00                             │
+  │ Payment Ref                      │ PAY/2026/08/07/000120 (2c3937b1-a6c… │
+  │ Bill Balance After               │ $2000.00                             │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ COA: Cash - Main Office Before   │ $1266329.00                          │
+  │ COA: Cash - Main Office After    │ $1261329.00                          │
+  │ COA: Cash Movement               │ $5000.00 debited                     │
+  │ COA: Accounts Payable Before     │ $2405100.00                          │
+  │ COA: Accounts Payable After      │ $2402100.00                          │
+  │ COA: AP Movement                 │ $3000.00 credited                    │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ Vulnerability Finding            │ GHOST FUNDS: Cash debited 5000 but … │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✗ FAIL — VULNERABILITY — broken dou… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[KNOWN_BUG] GHOST FUNDS: Cash debited 5000 but AP credited only 3000 — 2000.00 unaccounted. Sent amount=5000, bill_payments sum=3000. COA: Dr Cash=5000, Cr AP=3000, imbalance=2000.00. ERP does not validate that amount == sum(bill_payments). Bug logged for remediation.

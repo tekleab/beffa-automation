@@ -1,0 +1,36 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:36:02 [PERFORMANCE] API - Auth API Verification: 213.09ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000763 (ID: ff03cfd8-9325-40c6-8980-e95a9024408a)
+09:36:13 [INFO] Advancing inventory-adjustments "ff03cfd8-9325-40c6-8980-e95a9024408a"...
+[FRESH ITEM] Created: WAC-Item-1786095372767 (35dafd78-43d6-4ca5-aaaa-880a9b1cb5b8) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:36:19 [PERFORMANCE] API - Auth API Verification: 199.74ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:36:29 [PERFORMANCE] API - Auth API Verification: 216.21ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 2000...
+09:36:33 [INFO] Advancing bills "3f73c65a-e277-410b-8de8-ee8a6257866d"...
+[BILL] BILL/2026/08/07/000632 (3f73c65a-e277-410b-8de8-ee8a6257866d) | Amount: 2000
+[STEP 2] Fully paying bill BILL/2026/08/07/000632...
+[ACTION] Creating Bill Payment for 3f73c65a-e277-410b-8de8-ee8a6257866d via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/07/000124 (ID: dac2fa3b-4378-4893-a0e0-b19b1b375354)
+09:36:36 [INFO] Advancing payments "dac2fa3b-4378-4893-a0e0-b19b1b375354"...
+[PAYMENT] PAY/2026/08/07/000124 (dac2fa3b-4378-4893-a0e0-b19b1b375354) | Amount: 2000
+[AUDIT] Bill BILL/2026/08/07/000632 balance after full payment: 0
+[ATTACK] Attempting ghost payment against fully-paid bill BILL/2026/08/07/000632...
+[ACTION] Creating Bill Payment for 3f73c65a-e277-410b-8de8-ee8a6257866d via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/07/000125 (ID: 17343684-ddc1-4be4-963f-2410cb106a03)
+09:36:38 [INFO] Advancing payments "17343684-ddc1-4be4-963f-2410cb106a03"...
+[GHOST PAYMENT] PAY/2026/08/07/000125 (17343684-ddc1-4be4-963f-2410cb106a03)
+[KNOWN_BUG] Ghost payment PAY/2026/08/07/000125 accepted on fully-paid bill BILL/2026/08/07/000632! ERP does not block payments on fully-paid bills (E2888 only blocks re-approval of same payment ID). Bug logged for remediation.
+09:36:40 [FAIL] Ghost payment bug confirmed on bill BILL/2026/08/07/000632

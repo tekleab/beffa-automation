@@ -1,0 +1,21 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+09:39:25 [PERFORMANCE] API - Auth API Verification: 214.02ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Discovering item with known stock...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000789 (ID: e0846984-4659-49a5-a459-3c33a78aacf5)
+09:39:34 [INFO] Advancing inventory-adjustments "e0846984-4659-49a5-a459-3c33a78aacf5"...
+[FRESH ITEM] Created: WAC-Item-1786095573589 (6f1112b5-bfd0-46e2-b824-0690c7d729a3) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Attempting to invoice 10019 units of "WAC-Item-1786095573589" (available: 20)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 20, required: 10019.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+

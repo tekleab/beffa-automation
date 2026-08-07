@@ -1,0 +1,33 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000783 (ID: cb2c4e62-b606-4573-a2cb-611de1eb687a)
+09:38:37 [INFO] Advancing inventory-adjustments "cb2c4e62-b606-4573-a2cb-611de1eb687a"...
+[FRESH ITEM] Created: WAC-Item-1786095515487 (73200690-91d5-48e0-bcd8-51dd8a89a93f) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] "WAC-Item-1786095515487" | initial=20
+[LOAD] Firing 10 concurrent -2 adjustments (total drain: 20)...
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000784 (ID: 46747b5a-e4ce-40c6-9035-8507c3ee73ce)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000785 (ID: d7394030-9931-4be6-840a-a21d31ce4b04)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000786 (ID: 28451758-a84e-4a1d-b904-5439bad0dc32)
+[LOAD] Created: 10
+09:38:42 [INFO] Advancing inventory-adjustments "46747b5a-e4ce-40c6-9035-8507c3ee73ce"...
+09:38:42 [INFO] Advancing inventory-adjustments "d7394030-9931-4be6-840a-a21d31ce4b04"...
+09:38:42 [INFO] Advancing inventory-adjustments "28451758-a84e-4a1d-b904-5439bad0dc32"...
+09:38:44 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+09:38:44 [WARN] Advance had no successful steps for inventory-adjustments 46747b5a-e4ce-40c6-9035-8507c3ee73ce.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 0...
+[SUCCESS] API Confirmed: Stock correctly reached 0.
+[LOAD] Final stock: 0 (must be >= 0)
+[PASS] Stock floor maintained — final: 0

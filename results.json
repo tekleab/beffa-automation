@@ -1,29 +1,37 @@
 {
-  "total": 19,
-  "passed": 18,
-  "failed": 1,
-  "skipped": 0,
-  "passRate": 94.7,
-  "avgDurationMs": 32796,
-  "lastUpdated": "2026-08-07T09:21:28.981Z",
+  "total": 211,
+  "passed": 158,
+  "failed": 50,
+  "skipped": 3,
+  "passRate": 74.9,
+  "avgDurationMs": 26427,
+  "lastUpdated": "2026-08-07T10:03:26.899Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 1,
-      "skipped": 0,
+      "passed": 158,
+      "failed": 50,
+      "skipped": 3,
       "trend": [
-        82,
         84,
         86,
         88,
         90,
         92,
-        94.7
+        94.7,
+        76
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "609",
+      "commit": "27a59e0",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "92m 56s",
+      "passRate": 74.9,
+      "status": "failed"
+    },
     {
       "run": "608",
       "commit": "3cecedf",
@@ -95,22 +103,86 @@
       "duration": "19m 27s",
       "passRate": 73.7,
       "status": "failed"
-    },
-    {
-      "run": "587",
-      "commit": "1472a1c",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "20m 18s",
-      "passRate": 63.2,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for 2c09febe-db2f-4162-803f-4550b42d2b9a: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:705\n\n  7",
-      "firstSeen": "2026-08-07T09:15:11.616Z",
+      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
+      "error": "Error: WAC-Item-1786094859349 stock not deducted\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m9\u001b[39m\nReceived: \u001b[31m0\u001b",
+      "firstSeen": "2026-08-07T09:27:20.573Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Forensic Audit: Invoice Void & Stock Restoration",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m20\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  56 |\n  57 |         // ASSERTION: ",
+      "firstSeen": "2026-08-07T09:27:52.665Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "error": "Error: AR must be debited on invoice INV/2026/08/07/000920\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  116 |\n  117 |         const arDebitEntr",
+      "firstSeen": "2026-08-07T09:28:31.087Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
+      "error": "Error: AR must be debited on invoice INV/2026/08/07/000921\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  189 |\n  190 |         const arDebitEntr",
+      "firstSeen": "2026-08-07T09:28:37.491Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must prevent receipts against a voided invoice",
+      "error": "Error: Standalone Invoice API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"items.0.quantity\": [\n\t\t\t\"Insufficient stock. Available: 0, required: 1.00\"\n\t\t]\n\t},\n\t\"message\": \"Validation error w",
+      "firstSeen": "2026-08-07T09:29:00.828Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "LOAD: 10 concurrent invoices for same customer must all be created with distinct IDs",
+      "error": "Error: More than 1 invoice failed — possible backend overload\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m1\u001b[39m\nReceived",
+      "firstSeen": "2026-08-07T09:29:10.856Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:599\n\n  597 |     }\n ",
+      "firstSeen": "2026-08-07T09:30:08.498Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:599\n\n  597 |     }\n ",
+      "firstSeen": "2026-08-07T09:31:18.432Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Exact-amount receipt must be accepted and reduce invoice AR balance to zero",
+      "error": "Error: Receipt failed: 500 {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n  147 |             data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method",
+      "firstSeen": "2026-08-07T09:30:06.488Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: SO split into multiple invoices — total must never exceed SO quantity",
+      "error": "Error: [VULNERABILITY] Split Invoice Stock Mismatch\n  SO         : SO/2026/08/07/000240 (ID: ed7b8e4c-ecd9-45b2-8ad2-80951c743738)\n  Invoice 1  : INV/2026/08/07/000946 — 4 units\n  Invoice 2  : INV/202",
+      "firstSeen": "2026-08-07T09:30:49.679Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }

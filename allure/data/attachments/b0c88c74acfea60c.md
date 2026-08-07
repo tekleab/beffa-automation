@@ -1,0 +1,362 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: inventory/inv-fifo-layers.spec.ts >> FIFO Layer Integrity @inventory @fifo @regression @full >> FIFO-B: Approved invoice via SO release drains FIFO layers in order
+- Location: tests/inventory/inv-fifo-layers.spec.ts:205:9
+
+# Error details
+
+```
+Error: PO item id must be resolvable
+
+expect(received).toBeTruthy()
+
+Received: undefined
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - img "BM Tech" [ref=e10]: BT
+        - generic [ref=e11]:
+          - button "BM Tech" [ref=e12] [cursor=pointer]:
+            - generic: BM Tech
+            - img [ref=e14]
+          - generic [ref=e16] [cursor=pointer]:
+            - button "Company Detail" [ref=e17]:
+              - img [ref=e18]
+            - button "Edit Company" [ref=e21]:
+              - img [ref=e22]
+            - button "Company Detail" [ref=e25]:
+              - img [ref=e26]
+      - generic [ref=e29]:
+        - button "New" [ref=e30] [cursor=pointer]:
+          - text: New
+          - img [ref=e32]
+        - generic [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: "5"
+          - img "Notifications" [ref=e38]
+        - button "EC" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+          - paragraph [ref=e44]: EC
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+        - generic [ref=e49] [cursor=pointer]:
+          - img "System" [ref=e51]: S
+          - generic [ref=e52]:
+            - generic [ref=e53]: System
+            - paragraph [ref=e54]: IT Administrator / User Manager
+    - generic [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - img "BM Tech" [ref=e62]: BT
+          - paragraph [ref=e63]: Welcome, System
+        - paragraph [ref=e65]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+        - generic [ref=e66]:
+          - link "Dashboard" [ref=e67] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Settings" [ref=e68] [cursor=pointer]:
+            - /url: /settings/company/details
+        - generic [ref=e69]:
+          - link "Add Customer" [ref=e70] [cursor=pointer]:
+            - /url: /receivables/customers/new
+            - img [ref=e73]
+            - text: Add Customer
+          - link "Add Invoice" [ref=e74] [cursor=pointer]:
+            - /url: /receivables/invoices/new
+            - img [ref=e77]
+            - text: Add Invoice
+          - link "Add Receipt" [ref=e78] [cursor=pointer]:
+            - /url: /receivables/receipts/new
+            - img [ref=e81]
+            - text: Add Receipt
+          - link "Add Sales Order" [ref=e82] [cursor=pointer]:
+            - /url: /receivables/sale-orders/new
+            - img [ref=e85]
+            - text: Add Sales Order
+        - paragraph [ref=e87]: Quick Access
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - link "Sales Sales" [ref=e91] [cursor=pointer]:
+              - /url: /receivables/overview/
+              - button "Sales Sales" [ref=e92]:
+                - generic [ref=e93]:
+                  - img "Sales" [ref=e94]
+                  - paragraph [ref=e95]: Sales
+            - link "Purchase Purchase" [ref=e97] [cursor=pointer]:
+              - /url: /payables/overview/
+              - button "Purchase Purchase" [ref=e98]:
+                - generic [ref=e99]:
+                  - img "Purchase" [ref=e100]
+                  - paragraph [ref=e101]: Purchase
+            - link "Accounting Accounting" [ref=e103] [cursor=pointer]:
+              - /url: /accounting/overview
+              - button "Accounting Accounting" [ref=e104]:
+                - generic [ref=e105]:
+                  - img "Accounting" [ref=e106]
+                  - paragraph [ref=e107]: Accounting
+            - link "Leases Leases" [ref=e109] [cursor=pointer]:
+              - /url: /leases/leases/?page=1&pageSize=15
+              - button "Leases Leases" [ref=e110]:
+                - generic [ref=e111]:
+                  - img "Leases" [ref=e112]
+                  - paragraph [ref=e113]: Leases
+            - link "Assets Assets" [ref=e115] [cursor=pointer]:
+              - /url: /assets/overview
+              - button "Assets Assets" [ref=e116]:
+                - generic [ref=e117]:
+                  - img "Assets" [ref=e118]
+                  - paragraph [ref=e119]: Assets
+            - link "Budgets Budgets" [ref=e121] [cursor=pointer]:
+              - /url: /public-sector-budgets/overview
+              - button "Budgets Budgets" [ref=e122]:
+                - generic [ref=e123]:
+                  - img "Budgets" [ref=e124]
+                  - paragraph [ref=e125]: Budgets
+            - link "Payroll Payroll" [ref=e127] [cursor=pointer]:
+              - /url: /payrolls
+              - button "Payroll Payroll" [ref=e128]:
+                - generic [ref=e129]:
+                  - img "Payroll" [ref=e130]
+                  - paragraph [ref=e131]: Payroll
+            - link "Report Report" [ref=e133] [cursor=pointer]:
+              - /url: /reports
+              - button "Report Report" [ref=e134]:
+                - generic [ref=e135]:
+                  - img "Report" [ref=e136]
+                  - paragraph [ref=e137]: Report
+          - button "View All" [ref=e138] [cursor=pointer]:
+            - text: View All
+            - img [ref=e140]
+      - img "Floating Icon" [ref=e143]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  12  |  *   3. Create Bill from PO:
+  13  |  *      - 2 bill items @ $40  (direct bill line)
+  14  |  *      - 3 received PO items @ $25
+  15  |  *   4. Approve bill → verify 3 FIFO layers, qty=15, cost=$15 (oldest layer)
+  16  |  *      layers: import(10@15) + bill-direct(2@40) + received-PO(3@25)
+  17  |  *
+  18  |  * Scenario B — Released Sales Order:
+  19  |  *   Setup: build same 3-layer item (15 units)
+  20  |  *   1. Create SO: 10 units @ $15
+  21  |  *   2. Create Invoice:
+  22  |  *      - 4 direct invoice items
+  23  |  *      - 9 released SO items
+  24  |  *   3. Approve invoice → 13 units consumed FIFO order → remaining qty=2 @ $25
+  25  |  *      remaining layers: import(0), bill@40(0), received-PO@25(remaining=2)
+  26  |  *      consumed on invoice items:      [{qty:4,  doc_type:'import'}]
+  27  |  *      consumed on released SO items:  [{qty:6,  doc_type:'import'},
+  28  |  *                                       {qty:2,  doc_type:'bill'  },
+  29  |  *                                       {qty:1,  doc_type:'bill'  }]
+  30  |  */
+  31  | test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
+  32  |     test.setTimeout(480000);
+  33  | 
+  34  |     const getHeaders = async (app: AppManager) => ({
+  35  |         'Authorization': `Bearer ${await app._getAuthToken()}`,
+  36  |         'x-company': process.env.BEFFA_COMPANY as string,
+  37  |         'Content-Type': 'application/json',
+  38  |     });
+  39  |     const qp = () =>
+  40  |         `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+  41  | 
+  42  |     // ── shared setup helper: create item + build 3 FIFO layers ───────────────
+  43  |     async function buildThreeLayerItem(page: any, app: AppManager, suffix: string) {
+  44  |         const h = await getHeaders(app);
+  45  |         const p = qp();
+  46  |         const ts = Date.now();
+  47  |         const envMeta  = await app.api.inventory.discoverMetadataAPI();
+  48  |         const salesMeta = await app.api.sales.discoverMetadataAPI();
+  49  |         const currencyId = salesMeta.currencyId;
+  50  | 
+  51  |         // 1. Create FIFO item with initial import batch: 10 @ $15
+  52  |         const freshItem = await app.api.inventory.createFreshItemWithStockAPI({
+  53  |             name: `Pencil-${suffix}-${ts}`,
+  54  |             cost_method_code: 'FIFO',
+  55  |             quantity: 10,
+  56  |             unit_cost: 15,
+  57  |             locationId: envMeta.locationId,
+  58  |             warehouseId: envMeta.warehouseId,
+  59  |         });
+  60  |         const itemId = freshItem.id;
+  61  |         console.log(`[SETUP] Item: ${freshItem.itemName} (${itemId})`);
+  62  | 
+  63  |         // 2. Discover vendor + AP account
+  64  |         const vendorJson = await (await page.request.get(
+  65  |             `${app.apiBase}/vendors?page=1&pageSize=10&${p}`, { headers: h }
+  66  |         )).json();
+  67  |         const vendor = (vendorJson.data || vendorJson.items || [])[0];
+  68  |         expect(vendor, 'A vendor must exist').toBeTruthy();
+  69  | 
+  70  |         const acctJson = await (await page.request.get(
+  71  |             `${app.apiBase}/accounts?page=1&pageSize=50&${p}`, { headers: h }
+  72  |         )).json();
+  73  |         const accounts: any[] = acctJson.items || acctJson.data || [];
+  74  |         const apAccount = accounts.find((a: any) => /payable/i.test(a.account_type || '')) || accounts[0];
+  75  |         const glAccount = accounts.find((a: any) => /expense/i.test(a.account_type || '')) || accounts[1] || accounts[0];
+  76  | 
+  77  |         // 3. Create PO: 5 units @ $25
+  78  |         const poResp = await page.request.post(`${app.apiBase}/purchase-orders?${p}`, {
+  79  |             headers: h,
+  80  |             data: {                vendor_id: vendor.id,
+  81  |                 accounts_payable_id: apAccount?.id,
+  82  |                 currency_id: currencyId,                po_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+  83  |                 delivery_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+  84  |                 status: 'draft',
+  85  |                 purchase_type_id: 4,
+  86  |                 po_items: [{
+  87  |                     item_id: itemId,
+  88  |                     quantity: 5,
+  89  |                     unit_price: 25,
+  90  |                     general_ledger_account_id: glAccount?.id,
+  91  |                     warehouse_id: envMeta.warehouseId,
+  92  |                     location_id: envMeta.locationId,
+  93  |                     description: 'purchase order item for pencil x5 @25',
+  94  |                 }],
+  95  |             },
+  96  |         });
+  97  |         expect(poResp.ok(), `PO creation failed: ${await poResp.text()}`).toBe(true);
+  98  |         const poId = (await poResp.json()).id;
+  99  |         await app.advanceDocumentAPI(poId, 'purchase-orders');
+  100 | 
+  101 |         const poDetailJson = await (await page.request.get(
+  102 |             `${app.apiBase}/purchase-order/${poId}?${p}`, { headers: h }
+  103 |         )).json();
+  104 |         let poItemId = (poDetailJson.po_items || [])[0]?.id;
+  105 |         if (!poItemId) {
+  106 |             const subResp = await page.request.get(`${app.apiBase}/purchase-orders/${poId}/items?${p}`, { headers: h });
+  107 |             if (subResp.ok()) {
+  108 |                 const subData = await subResp.json();
+  109 |                 poItemId = (subData.data || subData.items || [])[0]?.id;
+  110 |             }
+  111 |         }
+> 112 |         expect(poItemId, 'PO item id must be resolvable').toBeTruthy();
+      |                                                           ^ Error: PO item id must be resolvable
+  113 | 
+  114 |         // 4. Create Bill: 2 direct bill items @$40 + 3 received-PO items @$25
+  115 |         const billResp = await page.request.post(`${app.apiBase}/bills?${p}`, {
+  116 |             headers: h,
+  117 |             data: {
+  118 |                 vendor_id: vendor.id,
+  119 |                 accounts_payable_id: apAccount?.id,
+  120 |                 currency_id: currencyId,
+  121 |                 purchase_order_id: poId,
+  122 |                 invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+  123 |                 due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+  124 |                 status: 'draft',
+  125 |                 items: [{
+  126 |                     item_id: itemId,
+  127 |                     quantity: 2,
+  128 |                     unit_price: 40,
+  129 |                     general_ledger_account_id: glAccount?.id,
+  130 |                     warehouse_id: envMeta.warehouseId,
+  131 |                     location_id: envMeta.locationId,
+  132 |                     description: 'pencil bill item x2 @40',
+  133 |                 }],
+  134 |                 received_purchase_order_items: [{
+  135 |                     po_item_id: poItemId,
+  136 |                     received_quantity: 3,
+  137 |                     received_unit_price: 25,
+  138 |                 }],
+  139 |             },
+  140 |         });
+  141 |         expect(billResp.ok(), `Bill creation failed: ${await billResp.text()}`).toBe(true);
+  142 |         const billId = (await billResp.json()).id;
+  143 |         await app.advanceDocumentAPI(billId, 'bills');
+  144 |         await app.api.inventory.pollStockAPI(itemId, 15, envMeta.locationId);
+  145 |         console.log(`[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15`);
+  146 | 
+  147 |         return { itemId, billId, poItemId, envMeta, salesMeta, h, p };
+  148 |     }
+  149 | 
+  150 |     // ─────────────────────────────────────────────────────────────────────────
+  151 |     // SCENARIO A: Received PO → FIFO layer accumulation
+  152 |     // ─────────────────────────────────────────────────────────────────────────
+  153 |     test('FIFO-A: Approved bill via PO receipt creates correct FIFO layers', async ({ page }) => {
+  154 |         const app = new AppManager(page);
+  155 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  156 | 
+  157 | 
+  158 |         const { itemId, envMeta, h, p } = await buildThreeLayerItem(page, app, 'A');
+  159 | 
+  160 |         // ── Verify item state after bill approval ─────────────────────────────
+  161 |         const itemResp = await page.request.get(
+  162 |             `${app.apiBase}/inventory-item/${itemId}?${p}`, { headers: h }
+  163 |         );
+  164 |         expect(itemResp.ok()).toBe(true);
+  165 |         const itemData = await itemResp.json();
+  166 | 
+  167 |         const qty  = itemData.quantity ?? itemData.current_stock ?? itemData.stock;
+  168 |         const cost = Number(itemData.unit_cost ?? itemData.cost ?? 0);
+  169 |         console.log(`[AUDIT-A] qty=${qty} (exp:15) | cost=$${cost} (exp:$15)`);
+  170 |         expect(qty).toBe(15);
+  171 |         expect(cost).toBe(15);
+  172 | 
+  173 |         const layers: any[] = itemData.fifo_layers || itemData.layers || itemData.costing_layers || [];
+  174 |         const fmtLayer = (l: any) => `${l.doc_type}(orig:${l.original_qty} rem:${l.remaining_qty} @$${l.unit_cost} id:${l.doc_id?.slice(0,8)})`;
+  175 |         console.log(`[AUDIT-A] Layers: ${layers.map(fmtLayer).join(' | ')}`);
+  176 | 
+  177 |         // import layer: 10 @ $15, fully intact
+  178 |         const importL = layers.find((l: any) => l.doc_type === 'import');
+  179 |         expect(importL, 'Import layer must exist').toBeTruthy();
+  180 |         expect(Number(importL.unit_cost)).toBe(15);
+  181 |         expect(importL.original_qty).toBe(10);
+  182 |         expect(importL.remaining_qty ?? importL['remaining_q ty']).toBe(10);
+  183 | 
+  184 |         const billLayers = layers.filter((l: any) => l.doc_type === 'bill');
+  185 |         expect(billLayers.length).toBe(2);
+  186 | 
+  187 |         // bill-direct layer: 2 @ $40
+  188 |         const billDirect = billLayers.find((l: any) => Number(l.unit_cost) === 40);
+  189 |         expect(billDirect, 'Bill direct layer @$40 must exist').toBeTruthy();
+  190 |         expect(billDirect.original_qty).toBe(2);
+  191 |         expect(billDirect.remaining_qty).toBe(2);
+  192 | 
+  193 |         // received-PO layer: 3 @ $25
+  194 |         const receivedPo = billLayers.find((l: any) => Number(l.unit_cost) === 25);
+  195 |         expect(receivedPo, 'Received-PO layer @$25 must exist').toBeTruthy();
+  196 |         expect(receivedPo.original_qty).toBe(3);
+  197 |         expect(receivedPo.remaining_qty).toBe(3);
+  198 | 
+  199 |         console.log(`[PASS] FIFO-A ✓ import(10@$15,rem:10) | bill(2@$40,rem:2) | received-PO(3@$25,rem:3)`);
+  200 |     });
+  201 | 
+  202 |     // ─────────────────────────────────────────────────────────────────────────
+  203 |     // SCENARIO B: Released SO → FIFO layer consumption
+  204 |     // ─────────────────────────────────────────────────────────────────────────
+  205 |     test('FIFO-B: Approved invoice via SO release drains FIFO layers in order', async ({ page }) => {
+  206 |         const app = new AppManager(page);
+  207 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  208 | 
+  209 | 
+  210 |         const { itemId, envMeta, salesMeta, h, p } = await buildThreeLayerItem(page, app, 'B');
+  211 | 
+  212 |         // ── STEP 1: Create Sales Order — 10 units @ $15 ───────────────────────
+```
