@@ -89,10 +89,43 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
-        // Read the actual invoice total before paying — backend may override unit_price
-        const invData = await app.api.sales.getInvoiceAPI(inv.id);
-        const ACTUAL_AMOUNT = parseFloat(invData.net_due ?? invData.unreceived_amount ?? '0');
-        if (!ACTUAL_AMOUNT) throw new Error(`[AUDIT] Could not determine invoice net_due for payment. Response: ${JSON.stringify(invData).substring(0, 200)}`);
+        // Poll until net_due is non-zero — accounting engine can lag a few seconds
+        let invData: any;
+        let ACTUAL_AMOUNT = 0;
+        for (let i = 0; i < 10; i++) {
+            await page.waitForTimeout(2000);
+            invData = await app.api.sales.getInvoiceAPI(inv.id);
+            ACTUAL_AMOUNT = parseFloat(invData.net_due ?? invData.unreceived_amount ?? invData.total_amount ?? '0');
+            if (ACTUAL_AMOUNT > 0) break;
+            console.log(`[POLL] Waiting for net_due to populate... attempt ${i + 1}/10`);
+        }
+
+        // Full diagnostic dump so the bug is unambiguous in the report
+        console.log(`[INVOICE SNAPSHOT]`);
+        console.log(`  invoice_id        : ${invData?.id}`);
+        console.log(`  invoice_number    : ${invData?.invoice_number}`);
+        console.log(`  customer_id       : ${invData?.customer_id}`);
+        console.log(`  status            : ${invData?.status}`);
+        console.log(`  total_amount      : ${invData?.total_amount}`);
+        console.log(`  net_due           : ${invData?.net_due}`);
+        console.log(`  unreceived_amount : ${invData?.unreceived_amount}`);
+        console.log(`  balance           : ${invData?.balance}`);
+        console.log(`  unit_price        : ${invData?.items?.[0]?.unit_price ?? invData?.invoice_items?.[0]?.unit_price}`);
+        console.log(`  unit_cost         : ${invData?.items?.[0]?.unit_cost  ?? invData?.invoice_items?.[0]?.unit_cost}`);
+        console.log(`  ACTUAL_AMOUNT used: ${ACTUAL_AMOUNT}`);
+
+        if (!ACTUAL_AMOUNT) {
+            throw new Error(
+                `[BUG] Invoice net_due/unreceived_amount/total_amount all resolved to 0 or null after 10 polls.\n` +
+                `  invoice_id     : ${invData?.id}\n` +
+                `  invoice_number : ${invData?.invoice_number}\n` +
+                `  status         : ${invData?.status}\n` +
+                `  net_due        : ${invData?.net_due}\n` +
+                `  unreceived     : ${invData?.unreceived_amount}\n` +
+                `  total_amount   : ${invData?.total_amount}\n` +
+                `  balance        : ${invData?.balance}`
+            );
+        }
         console.log(`[OK] Invoice ${inv.ref} net_due: ${ACTUAL_AMOUNT}`);
 
         const rct = await app.api.sales.createInvoiceReceiptAPI({
@@ -102,15 +135,38 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         });
         await app.advanceDocumentAPI(rct.id, 'receipts');
         console.log(`[OK] Invoice ${inv.ref} fully paid via receipt ${rct.ref}.`);
+        console.log(`[RECEIPT SNAPSHOT]`);
+        console.log(`  receipt_id     : ${rct.id}`);
+        console.log(`  receipt_ref    : ${rct.ref}`);
+        console.log(`  amount_paid    : ${ACTUAL_AMOUNT}`);
+        console.log(`  invoice_id     : ${inv.id}`);
+        console.log(`  invoice_number : ${inv.ref}`);
 
         await page.waitForTimeout(3000);
 
         console.log(`[STEP 2] Verifying invoice balance is zero via API...`);
         const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
         const remaining = parseFloat(finalInv.unreceived_amount ?? finalInv.balance ?? '-1');
-        if (remaining === -1) throw new Error(`[AUDIT] 'unreceived_amount' field missing from invoice response.`);
+        console.log(`[POST-PAYMENT SNAPSHOT]`);
+        console.log(`  invoice_id        : ${finalInv?.id}`);
+        console.log(`  invoice_number    : ${finalInv?.invoice_number}`);
+        console.log(`  status            : ${finalInv?.status}`);
+        console.log(`  net_due           : ${finalInv?.net_due}`);
+        console.log(`  unreceived_amount : ${finalInv?.unreceived_amount}`);
+        console.log(`  balance           : ${finalInv?.balance}`);
+        console.log(`  remaining (parsed): ${remaining}`);
+        if (remaining === -1) {
+            throw new Error(
+                `[BUG] 'unreceived_amount' and 'balance' both missing from invoice after payment.\n` +
+                `  invoice_id     : ${finalInv?.id}\n` +
+                `  invoice_number : ${finalInv?.invoice_number}\n` +
+                `  receipt_id     : ${rct.id}\n` +
+                `  receipt_ref    : ${rct.ref}\n` +
+                `  amount_paid    : ${ACTUAL_AMOUNT}`
+            );
+        }
         console.log(`[AUDIT] Invoice ${inv.ref} remaining balance: ${remaining} (Expected: 0)`);
-        expect(remaining).toBeCloseTo(0, 2);
+        expect(remaining, `Invoice ${inv.ref} (${inv.id}) should be fully settled after receipt ${rct.ref} (${rct.id}) of ${ACTUAL_AMOUNT}`).toBeCloseTo(0, 2);
 
         console.log(`[STEP 3] Navigating to customer profile...`);
         await page.goto(`/receivables/customers/${meta.customerId}/detail`, { waitUntil: 'domcontentloaded' });
