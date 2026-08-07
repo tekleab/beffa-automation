@@ -162,11 +162,11 @@ export class DateHelper {
         const ecNewYearGC = new Date(`${parseInt(y1)}-09-15T00:00:00Z`); // Sep 15 = Meskerem ~5
         let useDate: Date;
         if (now >= periodStart && now <= periodEnd) {
-          // We are mid-period — use today if it's past the EC new year, else use Sep 15
-          useDate = now >= ecNewYearGC ? now : ecNewYearGC;
+          // We are mid-period — use today (always safe and within bounds)
+          useDate = now;
         } else {
-          // Period hasn't started yet or we're before it — use Sep 15 of start year
-          useDate = ecNewYearGC > periodStart ? ecNewYearGC : periodStart;
+          // Period hasn't started yet — use Sep 15 of start year, clamped to period bounds
+          useDate = ecNewYearGC >= periodStart && ecNewYearGC <= periodEnd ? ecNewYearGC : periodStart;
         }
         console.log(`[DateHelper] Period bounds (year=${year}): ${match[0]} → using ${useDate.toISOString().slice(0, 10)}`);
         return DateHelper._fromDate(useDate, year);
@@ -189,9 +189,14 @@ export class DateHelper {
       const periodStart = new Date(`${gcYear}-09-11T00:00:00Z`);
       const periodEnd   = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
       if (periodEnd < now) continue;
-      // Use Sep 15 of the GC start year as the safe EC-calendar-aligned date
+      // Use today if within period, else Sep 15 of the GC start year clamped to bounds
       const safeDate = new Date(`${gcYear}-09-15T00:00:00Z`);
-      const useDate = safeDate > periodEnd ? periodStart : (safeDate < now ? now : safeDate);
+      let useDate: Date;
+      if (now >= periodStart && now <= periodEnd) {
+        useDate = now;
+      } else {
+        useDate = safeDate >= periodStart && safeDate <= periodEnd ? safeDate : periodStart;
+      }
       console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
       return DateHelper._fromDate(useDate, ecYear);
     }

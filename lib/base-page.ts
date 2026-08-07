@@ -121,10 +121,11 @@ export class BasePage {
     if (!token) throw new Error("[ERROR] No Auth Token found. API Advance cannot proceed.");
 
     // Bulletproof Company Detection: Pull directly from ERP state
+    // .catch(() => null) guards against about:blank / cross-origin SecurityError
     const company = await this.page.evaluate(() => {
       return localStorage.getItem('currentCompany') ||
         localStorage.getItem('company');
-    }) || process.env.BEFFA_COMPANY || 'sample';
+    }).catch(() => null) || process.env.BEFFA_COMPANY || 'sample';
 
     // Always use the DateHelper-resolved fiscal year so the advance URL matches
     // the journal date of the document being advanced (prevents 422 "closed period").

@@ -101,7 +101,14 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
         const poDetailJson = await (await page.request.get(
             `${app.apiBase}/purchase-order/${poId}?${p}`, { headers: h }
         )).json();
-        const poItemId = (poDetailJson.po_items || [])[0]?.id;
+        let poItemId = (poDetailJson.po_items || [])[0]?.id;
+        if (!poItemId) {
+            const subResp = await page.request.get(`${app.apiBase}/purchase-orders/${poId}/items?${p}`, { headers: h });
+            if (subResp.ok()) {
+                const subData = await subResp.json();
+                poItemId = (subData.data || subData.items || [])[0]?.id;
+            }
+        }
         expect(poItemId, 'PO item id must be resolvable').toBeTruthy();
 
         // 4. Create Bill: 2 direct bill items @$40 + 3 received-PO items @$25
