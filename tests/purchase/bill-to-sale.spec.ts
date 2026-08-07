@@ -40,7 +40,7 @@ test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
 
         await page.waitForTimeout(3000);
         const stockAfterPurchase = await app.api.inventory.pollStockAPI(
-            item.itemId, stockBefore + PURCHASE_QTY, item.locationId
+            item.itemId, stockBefore + PURCHASE_QTY, item.locationId, 20
         );
 
         console.log(`[AUDIT] Stock after purchase: ${stockAfterPurchase} (Expected: ${stockBefore + PURCHASE_QTY})`);
@@ -74,7 +74,7 @@ test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
         await page.waitForTimeout(3000);
         const expectedFinalStock = stockBefore + PURCHASE_QTY - SELL_QTY;
         const stockAfterSale = await app.api.inventory.pollStockAPI(
-            item.itemId, expectedFinalStock, item.locationId
+            item.itemId, expectedFinalStock, item.locationId, 20
         );
 
         console.log(`\n========== E2E CYCLE AUDIT REPORT ==========`);

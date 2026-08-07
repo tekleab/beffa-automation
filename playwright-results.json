@@ -185,25 +185,24 @@
   },
   "suites": [
     {
-      "title": "purchase/po-stress.spec.ts",
-      "file": "purchase/po-stress.spec.ts",
+      "title": "sales/so-integrity.spec.ts",
+      "file": "sales/so-integrity.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Procurement Stress & Financial Edge Cases @purchase @logic @security @regression @full",
-          "file": "purchase/po-stress.spec.ts",
-          "line": 18,
+          "title": "Financial Integrity & Boundary Audits @sales @logic @regression @full",
+          "file": "sales/so-integrity.spec.ts",
+          "line": 8,
           "column": 6,
           "specs": [
             {
-              "title": "Guardrail: System must reject payment exceeding bill total",
+              "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
               "ok": false,
               "tags": [
-                "purchase",
+                "sales",
                 "logic",
-                "security",
                 "regression",
                 "full"
               ],
@@ -213,44 +212,44 @@
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|239.95"
+                      "description": "API|Auth API Verification|329.57"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
+                  "projectId": "Sales",
+                  "projectName": "Sales",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "timedOut",
-                      "duration": 3,
+                      "duration": 4,
                       "error": {
                         "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10",
+                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                          "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
                           "column": 10,
-                          "line": 23
+                          "line": 15
                         },
-                        "snippet": "\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                            "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
                             "column": 10,
-                            "line": 23
+                            "line": 15
                           },
-                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10\u001b[22m"
+                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10\u001b[22m"
                         },
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/lib/base-page.ts",
-                            "column": 27,
-                            "line": 382
+                            "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
+                            "column": 29,
+                            "line": 52
                           },
-                          "message": "Error: page.waitForTimeout: Target page, context or browser has been closed\n\n\u001b[90m   at \u001b[39m../lib/base-page.ts:382\n\n\u001b[0m \u001b[90m 380 |\u001b[39m           \u001b[33mLogger\u001b[39m\u001b[33m.\u001b[39mwarn(\u001b[32m`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.message.split('\\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 381 |\u001b[39m           lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mincludes(\u001b[32m'[TIMEOUT]'\u001b[39m) \u001b[33m?\u001b[39m \u001b[35m408\u001b[39m \u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 382 |\u001b[39m           \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForTimeout(backoff)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 383 |\u001b[39m           \u001b[36mcontinue\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 384 |\u001b[39m         }\n \u001b[90m 385 |\u001b[39m         lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at PurchaseAPI.safeGet (/home/teklish/beffa-automation/lib/base-page.ts:382:27)\u001b[22m\n\u001b[2m    at PurchaseAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/PurchaseAPI.ts:79:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:27:22\u001b[22m"
+                          "message": "Error: Accounts Discovery HTTP 0: page-closed\n\n\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m     \u001b[36mconst\u001b[39m safeJson \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m (resp\u001b[33m:\u001b[39m any\u001b[33m,\u001b[39m label\u001b[33m:\u001b[39m string) \u001b[33m=>\u001b[39m {\n \u001b[90m 51 |\u001b[39m       \u001b[36mconst\u001b[39m text \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m resp\u001b[33m.\u001b[39mtext()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m       \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresp\u001b[33m.\u001b[39mok()) \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[36mtry\u001b[39m { \u001b[36mreturn\u001b[39m \u001b[33mJSON\u001b[39m\u001b[33m.\u001b[39mparse(text)\u001b[33m;\u001b[39m } \u001b[36mcatch\u001b[39m (e) {\n \u001b[90m 54 |\u001b[39m         \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} returned invalid JSON: ${text.substring(0, 150)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m       }\u001b[0m\n\u001b[2m    at safeJson (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:52:29)\u001b[22m\n\u001b[2m    at SalesAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:60:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:20:22\u001b[22m"
                         }
                       ],
                       "stdout": [
@@ -258,13 +257,13 @@
                           "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
                         },
                         {
-                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15\n"
+                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07\n"
                         },
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m06:24:14 [PERFORMANCE]\u001b[0m API - Auth API Verification: 239.95ms\n"
+                          "text": "\u001b[33m08:02:18 [PERFORMANCE]\u001b[0m API - Auth API Verification: 329.57ms\n"
                         },
                         {
                           "text": "[AUTH] Frontend navigation skipped (unreachable) — API session active.\n"
@@ -273,52 +272,56 @@
                           "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
                         },
                         {
-                          "text": "\u001b[33m06:26:15 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Target page, context or browser has been closed. Retry 2/4 in 6000ms...\n"
+                          "text": "\u001b[33m08:04:21 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2019&period=yearly&calendar=ec → Page closed mid-request. Aborting retries.\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-06T06:24:05.397Z",
+                      "startTime": "2026-08-07T08:02:12.050Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|239.95"
+                          "description": "API|Auth API Verification|329.57"
                         }
                       ],
                       "attachments": [
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-2bde5--fractional-receipt-amounts-Sales/error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-2bde5--fractional-receipt-amounts-Sales/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-2bde5--fractional-receipt-amounts-Sales/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                        "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
                         "column": 10,
-                        "line": 23
+                        "line": 15
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "433cf0528e1813ec91be-f0575498ce180649fb7b",
-              "file": "purchase/po-stress.spec.ts",
+              "id": "ae19da7ec7e426dd6d63-b903cb76a387c90cadc1",
+              "file": "sales/so-integrity.spec.ts",
               "line": 38,
               "column": 9
             },
             {
-              "title": "Guardrail: System must prevent double-billing the same PO",
+              "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
               "ok": true,
               "tags": [
-                "purchase",
+                "sales",
                 "logic",
-                "security",
                 "regression",
                 "full"
               ],
@@ -327,8 +330,8 @@
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
+                  "projectId": "Sales",
+                  "projectName": "Sales",
                   "results": [
                     {
                       "workerIndex": -1,
@@ -339,7 +342,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-06T06:26:18.391Z",
+                      "startTime": "2026-08-07T08:04:23.863Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -347,58 +350,17 @@
                   "status": "skipped"
                 }
               ],
-              "id": "433cf0528e1813ec91be-1b788839c5583ca8f296",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 69,
+              "id": "ae19da7ec7e426dd6d63-bf3e12fce4dddd690585",
+              "file": "sales/so-integrity.spec.ts",
+              "line": 101,
               "column": 9
             },
             {
-              "title": "Guardrail: System must reject payment against a fully-paid bill",
-              "ok": true,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-06T06:26:18.414Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-c807ddd6de2d527a71ae",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 98,
-              "column": 9
-            },
-            {
-              "title": "Audit: Bill reversal after payment must roll back stock and restore balance",
+              "title": "Guardrail: System must prevent receipts against a voided invoice",
               "ok": false,
               "tags": [
-                "purchase",
+                "sales",
                 "logic",
-                "security",
                 "regression",
                 "full"
               ],
@@ -408,44 +370,44 @@
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|245.28"
+                      "description": "API|Auth API Verification|243.95"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
+                  "projectId": "Sales",
+                  "projectName": "Sales",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "timedOut",
-                      "duration": 6,
+                      "duration": 8,
                       "error": {
                         "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10",
+                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                          "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
                           "column": 10,
-                          "line": 23
+                          "line": 15
                         },
-                        "snippet": "\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                            "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
                             "column": 10,
-                            "line": 23
+                            "line": 15
                           },
-                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \u001b[36mlet\u001b[39m sharedItem\u001b[33m:\u001b[39m \u001b[33mAwaited\u001b[39m\u001b[33m<\u001b[39m\u001b[33mReturnType\u001b[39m\u001b[33m<\u001b[39m\u001b[33mAppManager\u001b[39m[\u001b[32m'api'\u001b[39m][\u001b[32m'inventory'\u001b[39m][\u001b[32m'createFreshItemWithStockAPI'\u001b[39m]\u001b[33m>>\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m         \u001b[36mconst\u001b[39m page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:23:10\u001b[22m"
+                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10\u001b[22m"
                         },
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/lib/base-page.ts",
-                            "column": 27,
-                            "line": 382
+                            "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
+                            "column": 29,
+                            "line": 52
                           },
-                          "message": "Error: page.waitForTimeout: Target page, context or browser has been closed\n\n\u001b[90m   at \u001b[39m../lib/base-page.ts:382\n\n\u001b[0m \u001b[90m 380 |\u001b[39m           \u001b[33mLogger\u001b[39m\u001b[33m.\u001b[39mwarn(\u001b[32m`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.message.split('\\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 381 |\u001b[39m           lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mincludes(\u001b[32m'[TIMEOUT]'\u001b[39m) \u001b[33m?\u001b[39m \u001b[35m408\u001b[39m \u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 382 |\u001b[39m           \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForTimeout(backoff)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 383 |\u001b[39m           \u001b[36mcontinue\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 384 |\u001b[39m         }\n \u001b[90m 385 |\u001b[39m         lastError \u001b[33m=\u001b[39m { status\u001b[33m:\u001b[39m \u001b[35m0\u001b[39m\u001b[33m,\u001b[39m text\u001b[33m:\u001b[39m err\u001b[33m.\u001b[39mmessage }\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at PurchaseAPI.safeGet (/home/teklish/beffa-automation/lib/base-page.ts:382:27)\u001b[22m\n\u001b[2m    at PurchaseAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/PurchaseAPI.ts:79:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:27:22\u001b[22m"
+                          "message": "Error: Accounts Discovery HTTP 0: page-closed\n\n\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m     \u001b[36mconst\u001b[39m safeJson \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m (resp\u001b[33m:\u001b[39m any\u001b[33m,\u001b[39m label\u001b[33m:\u001b[39m string) \u001b[33m=>\u001b[39m {\n \u001b[90m 51 |\u001b[39m       \u001b[36mconst\u001b[39m text \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m resp\u001b[33m.\u001b[39mtext()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m       \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresp\u001b[33m.\u001b[39mok()) \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[36mtry\u001b[39m { \u001b[36mreturn\u001b[39m \u001b[33mJSON\u001b[39m\u001b[33m.\u001b[39mparse(text)\u001b[33m;\u001b[39m } \u001b[36mcatch\u001b[39m (e) {\n \u001b[90m 54 |\u001b[39m         \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} returned invalid JSON: ${text.substring(0, 150)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m       }\u001b[0m\n\u001b[2m    at safeJson (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:52:29)\u001b[22m\n\u001b[2m    at SalesAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:60:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:20:22\u001b[22m"
                         }
                       ],
                       "stdout": [
@@ -453,135 +415,63 @@
                           "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
                         },
                         {
-                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15\n"
+                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07\n"
                         },
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m06:24:14 [PERFORMANCE]\u001b[0m API - Auth API Verification: 245.28ms\n"
+                          "text": "\u001b[33m08:02:20 [PERFORMANCE]\u001b[0m API - Auth API Verification: 243.95ms\n"
                         },
                         {
-                          "text": "[AUTH] Year switcher not visible — skipping year switch to 2019.\n"
+                          "text": "[AUTH] Frontend navigation skipped (unreachable) — API session active.\n"
                         },
                         {
-                          "text": "\u001b[33m06:26:18 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Target page, context or browser has been closed. Retry 2/4 in 6000ms...\n"
+                          "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
+                        },
+                        {
+                          "text": "\u001b[33m08:04:21 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2019&period=yearly&calendar=ec → Page closed mid-request. Aborting retries.\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-06T06:24:05.318Z",
+                      "startTime": "2026-08-07T08:02:11.832Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|245.28"
+                          "description": "API|Auth API Verification|243.95"
                         }
                       ],
                       "attachments": [
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-e1f48-ts-against-a-voided-invoice-Sales/error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-e1f48-ts-against-a-voided-invoice-Sales/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-e1f48-ts-against-a-voided-invoice-Sales/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
+                        "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
                         "column": 10,
-                        "line": 23
+                        "line": 15
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "433cf0528e1813ec91be-a8b4b4e08f71d7402eca",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 134,
-              "column": 9
-            },
-            {
-              "title": "Audit: Three partial payments must exactly zero out bill balance",
-              "ok": true,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-06T06:26:19.306Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-38f06d945b956260b7da",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 185,
-              "column": 9
-            },
-            {
-              "title": "Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger",
-              "ok": true,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-06T06:26:19.331Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-1bfc37f61ff329218a35",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 226,
+              "id": "ae19da7ec7e426dd6d63-c5044bc6fc6735e440ab",
+              "file": "sales/so-integrity.spec.ts",
+              "line": 128,
               "column": 9
             }
           ]
@@ -591,10 +481,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-06T06:23:57.136Z",
-    "duration": 154186.93999999997,
+    "startTime": "2026-08-07T08:02:05.035Z",
+    "duration": 147871.272,
     "expected": 0,
-    "skipped": 4,
+    "skipped": 1,
     "unexpected": 2,
     "flaky": 0
   }

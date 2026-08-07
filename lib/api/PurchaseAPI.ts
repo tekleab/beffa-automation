@@ -502,32 +502,48 @@ export class PurchaseAPI extends BasePage {
     if (!vendor) throw new Error(`API Verification Failed: Could not find Vendor "${vendorName}" in the system.`);
     const vendorId = vendor.id;
 
-    // 2. Poll Vendor Bills Ledger (max 15 tries for indexing = ~30s)
-    const safeJson = async (resp: any, label: string) => {
+    // 2. Poll Vendor Bills Ledger — paginate all pages to find the bill
+    const safeJson = async (resp: any) => {
       const text = await resp.text();
       if (!resp.ok()) return null;
-      try { return JSON.parse(text); } catch (e) { return null; }
+      try { return JSON.parse(text); } catch { return null; }
+    };
+
+    const findInPages = async (): Promise<boolean> => {
+      let page = 1;
+      const pageSize = 50;
+      while (true) {
+        const billResp = await this.safeGet(
+          `${apiBase}/vendor/${vendorId}/bills?page=${page}&pageSize=${pageSize}&${params}`,
+          { headers }
+        );
+        const billData = await safeJson(billResp);
+        if (!billData) return false;
+
+        const bills: any[] = billData.data || billData.items || [];
+        const found = bills.find((b: any) =>
+          b.invoice_number === billNumber ||
+          b.bill_no        === billNumber ||
+          b.ref            === billNumber ||
+          b.bill_number    === billNumber ||
+          b.bill_number    === billNumber.split('/').pop() ||
+          b.id             === billNumber
+        );
+        if (found) return true;
+
+        // Stop if this is the last page
+        const total = billData.total ?? billData.count ?? billData.meta?.total ?? null;
+        if (bills.length < pageSize || (total !== null && page * pageSize >= total)) break;
+        page++;
+      }
+      return false;
     };
 
     for (let i = 0; i < 15; i++) {
-      const billResp = await this.safeGet(`${apiBase}/vendor/${vendorId}/bills?${params}`, { headers });
-      const billData = await safeJson(billResp, 'Vendor Ledger');
-      if (!billData) {
-        console.log(`[WARN] Ledger API busy or returned error. Retrying...`);
-      } else {
-        const bills = billData.data || billData.items || [];
-        const found = bills.find((b: any) =>
-          b.invoice_number === billNumber ||
-          b.bill_no === billNumber ||
-          b.ref === billNumber ||
-          b.bill_number === billNumber ||
-          b.bill_number === billNumber.split('/').pop() ||
-          b.id === billNumber
-        );
-        if (found) {
-          console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
-          return true;
-        }
+      const found = await findInPages();
+      if (found) {
+        console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
+        return true;
       }
       console.log(`[INFO] Bill not found in ledger yet (Index pending). Attempt ${i + 1}/15. Retrying in 2s...`);
       await this.page.waitForTimeout(2000);

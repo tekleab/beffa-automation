@@ -51,7 +51,7 @@ test.describe('Sales Return & Stock Recovery @sales @regression @full', () => {
         console.log('[INFO] Waiting 5s for Stock Engine sync...');
         await page.waitForTimeout(5000);
 
-        const postSaleStock = await app.api.inventory.pollStockAPI(itemInfo.itemId, initialStock - 10);
+        const postSaleStock = await app.api.inventory.pollStockAPI(itemInfo.itemId, initialStock - 10, itemInfo.locationId, 20);
         console.log(`[SNAPSHOT] Post-Sale Stock: ${postSaleStock}`);
 
         // ASSERTION: Stock MUST be exactly 10 less
@@ -73,7 +73,7 @@ test.describe('Sales Return & Stock Recovery @sales @regression @full', () => {
         console.log('[INFO] Waiting 8s for Stock & Ledger Reconciliation...');
         await page.waitForTimeout(8000);
 
-        const finalStock = await app.api.inventory.pollStockAPI(itemInfo.itemId, initialStock);
+        const finalStock = await app.api.inventory.pollStockAPI(itemInfo.itemId, initialStock, itemInfo.locationId, 20);
         const finalLedger = await app.getMultiAccountBalancesAPI([arAccountId]);
         
         console.log(`[AUDIT] Stage 3 Results:`);

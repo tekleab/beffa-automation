@@ -67,13 +67,19 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
     async function fetchReceiptJournal(app: AppManager, receiptId: string) {
         const token = await app._getAuthToken();
         const qs = `year=${process.env.BEFFA_YEAR||'2018'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
-        const apiBase = (app as any).base.apiBase;
+        const apiBase = app.apiBase;
         const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
-        const r = await (app as any).page.request.get(`${apiBase}/receipt/${receiptId}?${qs}`, { headers });
-        if (!r.ok()) { console.log(`[WARN] receipt journal fetch ${r.status()}`); return []; }
-        const json = await r.json();
-        return json.cash_receipt_journal?.journal_entries ||
-               json.cash_disbursement_journal?.journal_entries || [];
+        // Try plural endpoint first (matches ERP list pattern), fall back to singular
+        for (const url of [`${apiBase}/receipts/${receiptId}?${qs}`, `${apiBase}/receipt/${receiptId}?${qs}`]) {
+            const r = await (app as any).page.request.get(url, { headers });
+            if (!r.ok()) continue;
+            const json = await r.json();
+            const entries = json.cash_receipt_journal?.journal_entries ||
+                            json.cash_disbursement_journal?.journal_entries || [];
+            if (entries.length > 0) return entries;
+        }
+        console.log(`[WARN] receipt journal fetch returned no entries for ${receiptId}`);
+        return [];
     }
 
     test('Audit: Full cycle GL — AR debited on invoice, cleared on receipt', async ({ page }) => {
@@ -94,7 +100,15 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
             locationId: item.locationId, warehouseId: item.warehouseId
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
-        await page.waitForTimeout(3000);
+
+        // Poll for journal entries — indexing can lag up to 30s in CI
+        let invEntries: any[] = [];
+        for (let i = 0; i < 10; i++) {
+            await page.waitForTimeout(3000);
+            invEntries = await app.api.inventory.getJournalEntriesAPI(inv.id);
+            if (invEntries.length > 0) break;
+            console.log(`[POLL] Waiting for invoice journal entries... attempt ${i + 1}/10`);
+        }
 
         // Verify AR debit on invoice journal
         const invEntries = await app.api.inventory.getJournalEntriesAPI(inv.id);
@@ -161,9 +175,16 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
             locationId: item.locationId, warehouseId: item.warehouseId
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
-        await page.waitForTimeout(3000);
 
-        const invEntries = await app.api.inventory.getJournalEntriesAPI(inv.id);
+        // Poll for journal entries — indexing can lag up to 30s in CI
+        let invEntries: any[] = [];
+        for (let i = 0; i < 10; i++) {
+            await page.waitForTimeout(3000);
+            invEntries = await app.api.inventory.getJournalEntriesAPI(inv.id);
+            if (invEntries.length > 0) break;
+            console.log(`[POLL] Waiting for invoice journal entries... attempt ${i + 1}/10`);
+        }
+
         console.log(`[INVOICE JOURNAL] ${inv.ref} (${invEntries.length} entries)`);
         invEntries.forEach(e => console.log(`  ${e.accountName} (${e.accountType}) Dr:${e.debit} Cr:${e.credit}`));
 

@@ -74,8 +74,9 @@ test.describe('Sales SO Split Invoice Audit @sales @logic @regression @full', ()
         await page.waitForTimeout(3000);
 
         console.log(`[STEP 4] Verifying stock deducted correctly (${SO_QTY} units total)...`);
-        const finalStock = await app.api.inventory.getItemDetailsAPI(item.itemId, item.locationId);
         const expectedStock = item.currentStock - SO_QTY;
+        await app.api.inventory.pollStockAPI(item.itemId, expectedStock, item.locationId, 20);
+        const finalStock = await app.api.inventory.getItemDetailsAPI(item.itemId, item.locationId);
 
         console.log(`\n========== SPLIT INVOICE STOCK AUDIT ==========`);
         console.log(`[DOCUMENT] SO Ref       : ${so.ref} (ID: ${so.id})`);

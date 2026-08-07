@@ -27,10 +27,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     let itemB: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
     let periodDateIso: string;
 
+    let sharedPage: import('@playwright/test').Page;
+
     test.beforeAll(async ({ browser }) => {
         test.setTimeout(600000);
-        const page = await browser.newPage();
-        const app = new AppManager(page);
+        sharedPage = await browser.newPage();
+        const app = new AppManager(sharedPage);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         salesMeta    = await app.api.sales.discoverMetadataAPI();
@@ -38,8 +40,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 80 });
         const { DateHelper } = require('../../lib/utils/DateHelper');
-        periodDateIso = (await DateHelper.resolve(page)).iso;
-        await page.close();
+        periodDateIso = (await DateHelper.resolve(sharedPage)).iso;
+    });
+
+    test.afterAll(async () => {
+        await sharedPage?.close();
     });
 
     test.beforeEach(async ({ page }) => {

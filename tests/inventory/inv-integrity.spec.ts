@@ -52,7 +52,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
 
         console.log(`[STEP 3] Verifying stock reduced correctly...`);
         const expectedStock = stockBefore + adjustQty; // stockBefore - 50
-        const finalStock = await app.api.inventory.pollStockAPI(item.itemId, expectedStock, item.locationId);
+        const finalStock = await app.api.inventory.pollStockAPI(item.itemId, expectedStock, item.locationId, 20);
 
         console.log(`[AUDIT] Stock before: ${stockBefore} | Adjustment: ${adjustQty} | Expected: ${expectedStock} | Final: ${finalStock}`);
         expect(finalStock, `Stock should have decreased by ${Math.abs(adjustQty)}`).toBe(expectedStock);

@@ -320,7 +320,15 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         if ((poData.vendor_id || poData.vendor?.id) !== (billData.vendor_id || billData.vendor?.id))
             throw new Error(`[CRITICAL_LOGIC_BUG] Vendor mismatch.`);
 
-        const poItems = poData.po_items || [];
+        // GET /purchase-order/{id} does not return po_items — use po.poItems from creation response
+        const poItems = po.poItems?.length ? po.poItems : (poData.po_items || []);
+        if (!poItems.length) {
+            const subResp = await page.request.get(`${apiBase}/purchase-orders/${po.poId}/items?${qs}`, { headers });
+            if (subResp.ok()) {
+                const subData = await subResp.json();
+                poItems.push(...(subData.data || subData.items || []));
+            }
+        }
         const billItems = billData.received_purchase_order_items || [];
         if (!poItems.length) throw new Error(`[CRITICAL_LOGIC_BUG] PO has no items.`);
         if (!billItems.length) throw new Error(`[CRITICAL_LOGIC_BUG] Bill has no received PO items.`);

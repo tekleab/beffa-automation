@@ -187,7 +187,7 @@ export class BasePage {
                 // nosec CWE-79 — test automation framework; token stored in ERP's own localStorage schema
                 localStorage.setItem('token', t);
                 localStorage.setItem('auth-token', t);
-              }, newToken);
+              }, newToken).catch(() => {});
               headers['Authorization'] = `Bearer ${newToken}`;
               Logger.info('Re-authenticated successfully — retrying advance...');
               continue;
@@ -370,6 +370,14 @@ ${curlCmd}
         await this.attachApiFailureToAllure('GET', url, options.headers, null, status, text, duration);
         return response; // 4xx — return as-is
       } catch (err: any) {
+        if (
+          err.message?.includes('Target page, context or browser has been closed') ||
+          err.message?.includes('page has been closed') ||
+          err.message?.includes('context was destroyed')
+        ) {
+          Logger.warn(`GET ${Logger.sanitize(url)} → Page closed mid-request. Aborting retries.`);
+          return { ok: () => false, status: () => 0, text: async () => 'page-closed', json: async () => ({}) };
+        }
         if (
           err.message?.includes('socket hang up') ||
           err.message?.includes('ECONNRESET') ||
