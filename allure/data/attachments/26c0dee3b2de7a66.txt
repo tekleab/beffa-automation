@@ -1,0 +1,89 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+[ADJ] quantity | qty=200 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000890 (ID: e3f93867-e3f3-42fe-a2a0-997fdcc46b62)
+11:53:52 [INFO] Advancing inventory-adjustments "e3f93867-e3f3-42fe-a2a0-997fdcc46b62"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 200...
+[INFO] Attempt 1: Stock is 0. Retrying in 2s...
+[INFO] Attempt 2: Stock is 0. Retrying in 2s...
+[INFO] Attempt 3: Stock is 0. Retrying in 2s...
+[INFO] Attempt 4: Stock is 0. Retrying in 2s...
+[INFO] Attempt 5: Stock is 0. Retrying in 2s...
+[INFO] Attempt 6: Stock is 0. Retrying in 2s...
+[INFO] Attempt 7: Stock is 0. Retrying in 2s...
+[INFO] Attempt 8: Stock is 0. Retrying in 2s...
+[INFO] Attempt 9: Stock is 0. Retrying in 2s...
+[INFO] Attempt 10: Stock is 0. Retrying in 2s...
+[INFO] Attempt 11: Stock is 0. Retrying in 2s...
+[INFO] Attempt 12: Stock is 0. Retrying in 2s...
+[INFO] Attempt 13: Stock is 0. Retrying in 2s...
+[INFO] Attempt 14: Stock is 0. Retrying in 2s...
+[INFO] Attempt 15: Stock is 0. Retrying in 2s...
+[WARN] pollStockAPI timed out. Expected 200, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786103632047 (8af6eee0-046b-447c-b73b-95d71919ec5b) | method=WAC | stock=200@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] Firing 20 concurrent PO creations...
+[LOAD] 8 passed | 12 failed | 8169ms
+[FAIL 1] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 2] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 3] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 4] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 5] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 6] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 7] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 8] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 9] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 10] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 11] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 12] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[KNOWN_BUG] 12 PO(s) hit unique_po_company constraint — ERP sequence not atomic under concurrent load
+[PASS] 20 POs in 8169ms | avg: 408ms/PO
