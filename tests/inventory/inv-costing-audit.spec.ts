@@ -43,8 +43,8 @@ test.describe('FIFO Write-Down & Sell-Through Audit @inventory @costing @regress
 
     const acctJson = await (await page.request.get(`${app.apiBase}/accounts?page=1&pageSize=50&${p}`, { headers: h })).json();
     const accounts: any[] = acctJson.items || acctJson.data || [];
-    const apAccount = accounts.find((a: any) => /payable/i.test(a.account_type || '')) || accounts[0];
-    const glAccount = accounts.find((a: any) => /expense/i.test(a.account_type || '')) || accounts[1] || accounts[0];
+    const apAccount = accounts.find((a: any) => /payable/i.test(a.account_type || a.type || '')) || accounts[0];
+    const glAccount = accounts.find((a: any) => /expense/i.test(a.account_type || a.type || '')) || accounts[1] || accounts[0];
 
     const vendorJson = await (await page.request.get(`${app.apiBase}/vendors?page=1&pageSize=10&${p}`, { headers: h })).json();
     const vendor = (vendorJson.data || vendorJson.items || [])[0];

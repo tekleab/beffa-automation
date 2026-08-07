@@ -71,8 +71,8 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
             `${app.apiBase}/accounts?page=1&pageSize=50&${p}`, { headers: h }
         )).json();
         const accounts: any[] = acctJson.items || acctJson.data || [];
-        const apAccount = accounts.find((a: any) => /payable/i.test(a.account_type || '')) || accounts[0];
-        const glAccount = accounts.find((a: any) => /expense/i.test(a.account_type || '')) || accounts[1] || accounts[0];
+        const apAccount = accounts.find((a: any) => /payable/i.test(a.account_type || a.type || '')) || accounts[0];
+        const glAccount = accounts.find((a: any) => /expense/i.test(a.account_type || a.type || '')) || accounts[1] || accounts[0];
 
         // 3. Create PO: 5 units @ $25
         const poResp = await page.request.post(`${app.apiBase}/purchase-orders?${p}`, {

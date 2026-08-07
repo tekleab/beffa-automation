@@ -177,6 +177,7 @@ export class BasePage {
         try {
           const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
           const loginResp = await this.page.request.post(loginUrl, {
+            data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
             headers: { 'Content-Type': 'application/json' }
           });
           if (loginResp.ok()) {

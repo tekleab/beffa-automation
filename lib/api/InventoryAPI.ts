@@ -575,16 +575,20 @@ export class InventoryAPI extends BasePage {
 
   async pollStockAPI(itemId: string, expectedStock: number, locationId?: string, maxRetries: number = 30): Promise<number> {
     console.log(`[ACTION] API Polling: Waiting for stock at location ${locationId || 'GLOBAL'} to hit ${expectedStock}...`);
+    let lastStock = 0;
     for (let i = 1; i <= maxRetries; i++) {
       const details = await this.getItemDetailsAPI(itemId, locationId);
+      lastStock = details?.currentStock ?? 0;
       if (details && details.currentStock === expectedStock) {
         console.log(`[SUCCESS] API Confirmed: Stock correctly reached ${expectedStock}.`);
         return details.currentStock;
       }
-      console.log(`[INFO] Attempt ${i}: Stock is ${details?.currentStock || 0}. Retrying in 2s...`);
+      console.log(`[INFO] Attempt ${i}: Stock is ${lastStock}. Retrying in 2s...`);
       await this.page.waitForTimeout(2000);
     }
-    return 0;
+    // Return actual stock so assertions show the real value, not a misleading 0
+    console.log(`[WARN] pollStockAPI timed out. Expected ${expectedStock}, actual ${lastStock}.`);
+    return lastStock;
   }
 
   async pollCostAPI(itemId: string, expectedCost: number, locationId?: string, maxRetries: number = 30, precision: number = 1): Promise<number> {
@@ -704,7 +708,8 @@ export class InventoryAPI extends BasePage {
     });
     if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
     await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
-    await this.page.waitForTimeout(2000); // allow ERP to index the approved adjustment
+    // Poll until stock is confirmed — ERP indexing can lag up to 15s
+    await this.pollStockAPI(item.id, opts.quantity, locationId, 15);
 
     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
     return {

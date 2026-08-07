@@ -104,12 +104,13 @@ export class DateHelper {
           page.request.get(`${base}/currency?${qs}`, { headers }).catch(() => null),
         ]);
 
-        const vendorId = ((await vendorResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
-          ?? ((await vendorResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
-        const acctId = ((await acctResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
-          ?? ((await acctResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
-        const currId = ((await currResp?.json().catch(() => ({}))) as any)?.data?.[0]?.id
-          ?? ((await currResp?.json().catch(() => ({}))) as any)?.items?.[0]?.id;
+        const vendorData = await vendorResp?.json().catch(() => ({})) as any;
+        const acctData   = await acctResp?.json().catch(() => ({})) as any;
+        const currData   = await currResp?.json().catch(() => ({})) as any;
+
+        const vendorId = vendorData?.data?.[0]?.id ?? vendorData?.items?.[0]?.id;
+        const acctId   = acctData?.data?.[0]?.id   ?? acctData?.items?.[0]?.id;
+        const currId   = currData?.data?.[0]?.id   ?? currData?.items?.[0]?.id;
 
         if (!vendorId || !acctId || !currId) continue;
 

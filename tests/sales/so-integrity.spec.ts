@@ -131,10 +131,11 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
         const meta = sharedMeta;
-        const item = sharedItem;
+        // Use a fresh isolated item so stock depletion from other tests doesn't cause 422
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 100 });
         await ensureStock(app, item, 5);
 
-        const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, unitPrice: 250, locationId: item.locationId, warehouseId: item.warehouseId });
+        const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, unitPrice: 250, locationId: item.locationId, warehouseId: item.warehouseId, quantity: 1 });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
         console.log(`[ACTION] Voiding Invoice ${inv.ref}...`);

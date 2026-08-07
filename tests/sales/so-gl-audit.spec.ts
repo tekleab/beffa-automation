@@ -66,7 +66,10 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
 
     async function fetchReceiptJournal(app: AppManager, receiptId: string) {
         const token = await app._getAuthToken();
-        const qs = `year=${process.env.BEFFA_YEAR||'2018'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
+        const { DateHelper: _RJH } = require('../../lib/utils/DateHelper');
+        const _rjResolved = await _RJH.resolve((app as any).page).catch(() => null);
+        const year = _rjResolved ? String(_rjResolved.ecYear) : (process.env.BEFFA_YEAR || '2019');
+        const qs = `year=${year}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
         const apiBase = app.apiBase;
         const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
         // Try plural endpoint first (matches ERP list pattern), fall back to singular
