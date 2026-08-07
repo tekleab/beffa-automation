@@ -1,0 +1,27 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] _fromEnv: EC year 2018 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2018)
+[WARN] API Login failed (apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001
+Call log:
+  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000549 (ID: 4598735a-68d5-4a30-bcb8-97c6e6cabcaf)
+07:27:50 [INFO] Advancing inventory-adjustments "4598735a-68d5-4a30-bcb8-97c6e6cabcaf"...
+[FRESH ITEM] Created: WAC-Item-1786087668959 (aef13ebb-f47c-401f-a7da-59e7fd811f2b) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating, approving and paying invoice...
+07:27:55 [INFO] Advancing invoices "fea8dc72-3497-4666-9607-1a7c2d40c53f"...
+[RECEIPT] amount=100 | invoice=fea8dc72...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/07/000222
+07:28:01 [INFO] Advancing receipts "7c6c9f09-494a-4537-85a1-879f57c89547"...
+[OK] Invoice INV/2026/08/07/000849 paid via RCPT/2026/08/07/000222
+[STEP 2] Verifying zero balance via API...
+[AUDIT] INV/2026/08/07/000849 remaining: 0 (expected: 0)
+[STEP 3] Navigating to invoice detail page...
+[PASS] Invoice INV/2026/08/07/000849 fully paid | balance=0 confirmed on detail page

@@ -1,29 +1,37 @@
 {
-  "total": 211,
-  "passed": 142,
-  "failed": 65,
-  "skipped": 4,
-  "passRate": 67.3,
-  "avgDurationMs": 24425,
-  "lastUpdated": "2026-08-07T06:24:15.679Z",
+  "total": 19,
+  "passed": 17,
+  "failed": 2,
+  "skipped": 0,
+  "passRate": 89.5,
+  "avgDurationMs": 43455,
+  "lastUpdated": "2026-08-07T07:34:28.632Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 142,
-      "failed": 65,
-      "skipped": 4,
+      "passed": 17,
+      "failed": 2,
+      "skipped": 0,
       "trend": [
-        90,
         92,
         57.9,
         94.7,
         70.2,
         83.3,
-        68.6
+        68.6,
+        89.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "605",
+      "commit": "8821a88",
+      "trigger": "push (smoke)",
+      "duration": "13m 45s",
+      "passRate": 89.5,
+      "status": "success"
+    },
     {
       "run": "604",
       "commit": "a7913e9",
@@ -95,94 +103,22 @@
       "duration": "19m 20s",
       "passRate": 73.7,
       "status": "failed"
-    },
-    {
-      "run": "584",
-      "commit": "9592bb5",
-      "trigger": "push (smoke)",
-      "duration": "12m 41s",
-      "passRate": 73.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:202\n\n  200 |         if (success) break;\n  201 |",
-      "firstSeen": "2026-08-07T05:49:18.169Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:202\n\n  200 |         if (success) break;\n  201 |",
-      "firstSeen": "2026-08-07T05:49:18.163Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:599\n\n  597 |     }\n ",
-      "firstSeen": "2026-08-07T05:49:50.007Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:599\n\n  597 |     }\n ",
-      "firstSeen": "2026-08-07T05:50:39.805Z",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('section[role=\"dialog\"] button:has-text(\"Yes\"), [role=\"dialog\"] button:has-text(\"Confirm\")').first() to b",
+      "firstSeen": "2026-08-07T07:26:41.859Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
-      "error": "Error: WAC-Item-1786081873194 stock not deducted\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m9\u001b[39m\nReceived: \u001b[31m0\u001b",
-      "firstSeen": "2026-08-07T05:50:51.446Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Forensic Audit: Invoice Void & Stock Restoration",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m20\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  56 |\n  57 |         // ASSERTION: ",
-      "firstSeen": "2026-08-07T05:51:36.385Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Invoice must reject second receipt after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:599\n\n  597 |     }\n ",
-      "firstSeen": "2026-08-07T05:51:37.902Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: AR must be debited on invoice INV/2026/08/07/000807\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  103 |\n  104 |         const arDebitEntr",
-      "firstSeen": "2026-08-07T05:52:21.010Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
-      "error": "Error: AR must be debited on invoice INV/2026/08/07/000808\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  169 |\n  170 |         const arDebitEntr",
-      "firstSeen": "2026-08-07T05:52:32.017Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
-      "error": "Error: [CRITICAL_PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year!\n  SO ID    : bb664501-a7c1-405f-a7bb-023ef767d013\n  SO Ref   : SO/2026/08/07/000213\n  SO Date  : 2017-12-3",
-      "firstSeen": "2026-08-07T05:53:39.816Z",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/07/000566 never appeared in \"Gentium Concrite Industry\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:536\n\n  534 |     }\n  535 |\n> 536 |     throw ",
+      "firstSeen": "2026-08-07T07:28:30.632Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
