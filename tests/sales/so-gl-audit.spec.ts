@@ -111,7 +111,6 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
         }
 
         // Verify AR debit on invoice journal
-        const invEntries = await app.api.inventory.getJournalEntriesAPI(inv.id);
         console.log(`[INVOICE JOURNAL] ${inv.ref} (${invEntries.length} entries)`);
         invEntries.forEach(e => console.log(`  ${e.accountName} (${e.accountType}) Dr:${e.debit} Cr:${e.credit}`));
 
