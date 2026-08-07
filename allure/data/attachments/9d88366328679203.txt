@@ -1,0 +1,55 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:01:58 [PERFORMANCE] API - Auth API Verification: 217.82ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:02:07 [PERFORMANCE] API - Auth API Verification: 207.39ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:02:12 [PERFORMANCE] API - Auth API Verification: 225.35ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating item to deactivate: DEACT-GUARD-1786082534921...
+[OK] Item created: DEACT-GUARD-1786082534921 (ID: 712ff0bd-e1a4-44d2-994d-00ed2fb1dac8)
+[STEP 2] Deactivating item via API...
+[OK] Item deactivated.
+[ATTACK] Attempting stock adjustment on deactivated item...
+[ADJ] quantity | qty=10 @ $0 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000490 (ID: c2a804ec-06a4-4909-bdd7-b7e05723085c)
+06:02:16 [INFO] Advancing inventory-adjustments "c2a804ec-06a4-4909-bdd7-b7e05723085c"...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║      DEACTIVATED ITEM GUARDRAIL — TEST SUMMARY            ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : DEACT-GUARD-1786082534921              ║
+  ║  Item ID      : 712ff0bd-e1a4-44d2-994d-00ed2fb1dac8   ║
+  ║  Status set   : inactive                                   ║
+  ║  Attack       : POST /inventory-adjustments qty=10         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : ACCEPTED ✕ — VULNERABILITY CONFIRMED  ║
+  ║  Adj Ref : ADJ/2026/08/07/000490                        ║
+  ║  Adj ID  : c2a804ec-06a4-4909-bdd7-b7e05723085c         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : Ghost stock written to inactive item           ║
+  ║  Fix     : Reject adjustments if item.status != active    ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Deactivated Item Adjustment Guardrail                                   │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ DEACT-GUARD-1786082534921            │
+  │ Item ID                          │ 712ff0bd-e1a4-44d2-994d-00ed2fb1dac… │
+  │ Item Status                      │ inactive (set in Step 2)             │
+  │ Attack: Adj Qty                  │ 10 units (write-up)                  │
+  │ Adjustment Ref                   │ ADJ/2026/08/07/000490                │
+  │ Adjustment ID                    │ c2a804ec-06a4-4909-bdd7-b7e05723085… │
+  │ Block Reason                     │ Adjustment ADJ/2026/08/07/000490 cr… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✗ FAIL — VULNERABILITY — ghost stoc… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
