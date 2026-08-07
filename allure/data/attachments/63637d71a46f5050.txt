@@ -1,0 +1,17 @@
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000656 (ID: dd1fc2eb-6790-4ea8-a413-e4331830a09a)
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:54:36 [INFO] Advancing inventory-adjustments "dd1fc2eb-6790-4ea8-a413-e4331830a09a"...
+[FRESH ITEM] Created: WAC-Item-1786089272988 (1bb2d857-1450-49a2-85cd-96be472c2d06) | method=WAC | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Destination location unavailable: [SETUP] Could not resolve or create a second location. Ensure the environment has at least 2 locations, or that the API allows location creation.
+[SETUP] Item: "WAC-Item-1786089272988" | Src stock: 0 | Dest stock: 0
+[SETUP] Src loc: 539ab667-5559-4db7-8cd4-24f797d57ebb | Dest loc: N/A (single-location env)
+[TC-05] Excess qty (9999) response: 422 | {
+	"code": 422,
+	"details": {
+		"destination_location_id": [
+			"Source and destination locations cannot be similar"
+		]

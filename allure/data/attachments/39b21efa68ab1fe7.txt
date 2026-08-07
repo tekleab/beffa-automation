@@ -1,0 +1,38 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:47:02 [PERFORMANCE] API - Auth API Verification: 251.39ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000599 (ID: 6bc9c97f-9739-4230-8d17-e2c1162898ea)
+07:47:12 [INFO] Advancing inventory-adjustments "6bc9c97f-9739-4230-8d17-e2c1162898ea"...
+[FRESH ITEM] Created: WAC-Item-1786088831288 (f4798d8f-de34-40ec-b1de-882bf2556e0f) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:47:19 [PERFORMANCE] API - Auth API Verification: 225.06ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:47:26 [PERFORMANCE] API - Auth API Verification: 252.35ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ATTACK] Injecting Bill with future date: 2028-08-07T00:00:00Z...
+07:47:30 [INFO] Advancing bills "444722e7-618d-4ed7-a9b7-1e25be4c6d5e"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/07/000577                   │
+  │ Bill ID                          │ 444722e7-618d-4ed7-a9b7-1e25be4c6d5e     │
+  │ Invoice Date                     │ 2028-08-07T00:00:00Z                     │
+  │ Today                            │ 2026-08-07                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

@@ -1,0 +1,41 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:45:48 [PERFORMANCE] API - Auth API Verification: 238.18ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000592 (ID: 9c354702-59b5-4d32-9cf2-4201e52c4b17)
+07:45:58 [INFO] Advancing inventory-adjustments "9c354702-59b5-4d32-9cf2-4201e52c4b17"...
+[FRESH ITEM] Created: WAC-Item-1786088757327 (2b122c55-5b42-4ca1-a94d-23818c444b7a) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 2b122c55-5b42-4ca1-a94d-23818c444b7a (WAC-Item-1786088757327)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+07:46:04 [INFO] Advancing sales-orders "afea6941-8d32-41f9-958e-650769b3bd29"...
+[OK] SO SO/2026/08/07/000227 approved (ID: afea6941-8d32-41f9-958e-650769b3bd29)
+[STEP 2] Releasing Batch 1: 4 units...
+07:46:08 [INFO] Advancing invoices "864e4ee6-fbef-4229-b143-e713cb0c0856"...
+[OK] Batch 1 invoice INV/2026/08/07/000893 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+07:46:12 [INFO] Advancing invoices "c24a25c9-a7f7-452e-8438-dbe7798cd999"...
+[OK] Batch 2 invoice INV/2026/08/07/000894 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/08/07/000227 (ID: afea6941-8d32-41f9-958e-650769b3bd29)
+[DOCUMENT] Invoice 1    : INV/2026/08/07/000893 (ID: 864e4ee6-fbef-4229-b143-e713cb0c0856) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/08/07/000894 (ID: c24a25c9-a7f7-452e-8438-dbe7798cd999) — 6 units
+[ITEM]     Item         : WAC-Item-1786088757327 (2b122c55-5b42-4ca1-a94d-23818c444b7a)
+[STOCK]    Before       : 20
+[STOCK]    After        : 0
+[STOCK]    Expected     : 10
+================================================
+

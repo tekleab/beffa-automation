@@ -1,0 +1,40 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:48:58 [PERFORMANCE] API - Auth API Verification: 254.97ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/07/000610 (ID: dee3271f-1d7d-4052-8749-ff372c310280)
+07:49:09 [INFO] Advancing inventory-adjustments "dee3271f-1d7d-4052-8749-ff372c310280"...
+[FRESH ITEM] Created: WAC-Item-1786088947793 (10a3d524-a76b-4bac-83f2-54c2b41ccd0e) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:49:15 [PERFORMANCE] API - Auth API Verification: 418.57ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07
+[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)
+07:49:24 [PERFORMANCE] API - Auth API Verification: 299.51ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 5000...
+07:49:27 [INFO] Advancing bills "f557f52d-f1e3-46be-9e93-a9d114564427"...
+[BILL] BILL/2026/08/07/000583 (f557f52d-f1e3-46be-9e93-a9d114564427)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for f557f52d-f1e3-46be-9e93-a9d114564427 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/07/000583               │
+  │ Bill ID                          │ f557f52d-f1e3-46be-9e93-a9d11456442… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.
