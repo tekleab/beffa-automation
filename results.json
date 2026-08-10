@@ -1,35 +1,43 @@
 {
-  "total": 216,
-  "passed": 154,
-  "failed": 33,
-  "skipped": 29,
-  "passRate": 71.3,
-  "avgDurationMs": 21954,
-  "lastUpdated": "2026-08-10T09:58:06.425Z",
+  "total": 19,
+  "passed": 18,
+  "failed": 1,
+  "skipped": 0,
+  "passRate": 94.7,
+  "avgDurationMs": 51371,
+  "lastUpdated": "2026-08-10T10:14:01.785Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 154,
-      "failed": 33,
-      "skipped": 29,
+      "passed": 18,
+      "failed": 1,
+      "skipped": 0,
       "trend": [
-        92,
         94.7,
         76,
         88.9,
         74.8,
         78.8,
-        82.4
+        78.9,
+        94.7
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "616",
+      "run": "617",
+      "commit": "9444005",
+      "trigger": "push (smoke)",
+      "duration": "16m 16s",
+      "passRate": 94.7,
+      "status": "success"
+    },
+    {
+      "run": "615",
       "commit": "78bfa4c",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "79m 2s",
-      "passRate": 71.3,
+      "trigger": "push (smoke)",
+      "duration": "15m 26s",
+      "passRate": 78.9,
       "status": "failed"
     },
     {
@@ -95,94 +103,14 @@
       "duration": "13m 10s",
       "passRate": 78.9,
       "status": "failed"
-    },
-    {
-      "run": "602",
-      "commit": "b3f9798",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "74m 32s",
-      "passRate": 69.2,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
-      "error": "Error: WAC-Item-1786353930980 stock not deducted\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m9\u001b[39m\nReceived: \u001b[31m0\u001b",
-      "firstSeen": "2026-08-10T09:25:12.569Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Forensic Audit: Invoice Void & Stock Restoration",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m20\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  56 |\n  57 |         // ASSERTION: ",
-      "firstSeen": "2026-08-10T09:26:16.182Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
-      "error": "Error: AR must be debited on invoice INV/2026/08/10/001096\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  119 |\n  120 |         const arDebitEntr",
-      "firstSeen": "2026-08-10T09:27:33.262Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
-      "error": "Error: AR must be debited on invoice INV/2026/08/10/001097\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  192 |\n  193 |         const arDebitEntr",
-      "firstSeen": "2026-08-10T09:27:34.916Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for 7b680560-e75d-474e-80b1-3fd8632cedaf: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:728\n\n  7",
-      "firstSeen": "2026-08-10T09:28:27.810Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Partial SO release correctly tracks remaining unreleased quantity",
-      "error": "Error: apiRequestContext.get: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/invoice/d82a5740-a3c6-4ae9-9501-8e2d85b93cb9?year=2019&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - us",
-      "firstSeen": "2026-08-10T09:29:27.860Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: System must strictly segregate invoices and receipts by Customer",
-      "error": "TimeoutError: apiRequestContext.patch: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/inventory-adjustments/25257423-72af-4092-b59c-57ff1f38bd22/advance?year=2019&",
-      "firstSeen": "2026-08-10T09:30:44.601Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: SO split into multiple invoices — total must never exceed SO quantity",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-10T09:31:46.531Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Invoice with tax must credit tax account in journal entries",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-10T09:32:34.849Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Full cycle: PO → Bill → SO → Invoice → stock reconciled",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m25\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  44 |\n  45 |         console.log(`[",
-      "firstSeen": "2026-08-10T09:32:36.585Z",
+      "severity": "high",
+      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test timeout of 120000ms exceeded.\n\n  121 |             if (billVisible) break;\n  122 |             console.log(`[POLL ${attemp",
+      "firstSeen": "2026-08-10T10:08:18.798Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
