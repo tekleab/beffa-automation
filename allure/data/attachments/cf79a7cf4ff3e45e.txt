@@ -1,0 +1,33 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:43:26 [PERFORMANCE] API - Auth API Verification: 230.15ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001283 (ID: e4f757be-d4d1-478a-b16c-fa8640ea8709)
+10:43:34 [INFO] Advancing inventory-adjustments "e4f757be-d4d1-478a-b16c-fa8640ea8709"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786358613782 (15e410f4-6ded-459a-b9f6-aaf6997fddaf) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:44:11 [PERFORMANCE] API - Auth API Verification: 257.90ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:44:18 [PERFORMANCE] API - Auth API Verification: 275.82ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating Bill A (3000) and Bill B (2000)...
+10:44:21 [INFO] Advancing bills "c124aae9-c998-44b9-8b9c-f5d2ee88e8cb"...
+10:44:24 [INFO] Advancing bills "f8277e65-8e97-484a-a4e1-1053b228b819"...
+[SNAPSHOT] Bill A balance: 3000 | Bill B balance: 2000
+[STEP 2] Creating single payment of 5000 covering both bills...
+[ACTION] Creating multi-bill payment of 5000 covering 2 bills...
+[SUCCESS] Multi-bill payment created: PAY/2026/08/10/000172 (ID: 2513e9f7-50be-476a-be73-23191e1a83d7)
+10:44:27 [INFO] Advancing payments "2513e9f7-50be-476a-be73-23191e1a83d7"...
+[AUDIT] Verifying both bills are fully reconciled...
+[SNAPSHOT] Bill A final balance: 0 | Bill B final balance: 0
+[SUCCESS] Multi-Bill Reconciliation confirmed. Both bills fully settled by single payment.

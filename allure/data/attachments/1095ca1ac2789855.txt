@@ -1,0 +1,27 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:42:53 [PERFORMANCE] API - Auth API Verification: 244.29ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:42:59 [PERFORMANCE] API - Auth API Verification: 228.56ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001282 (ID: 2c731013-b7be-4af8-aa93-c9e7e2a4fffe)
+10:43:05 [INFO] Advancing inventory-adjustments "2c731013-b7be-4af8-aa93-c9e7e2a4fffe"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786358584473 (a99aae6a-22e7-441b-925e-33c246df4f53) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/10/000592
+10:43:42 [INFO] Advancing purchase-orders "03ad0960-c4a2-498c-b245-f6f54dc5feca"...
+[OK] PO PO/2026/08/10/000592 approved
+[STEP] Phase 2: Create linked Bill via API
+10:43:44 [INFO] Advancing bills "8f136825-52b0-4c8c-ba3e-a2564be41c6a"...
+[OK] Bill BILL/2026/08/10/000781 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/08/10/000781 is physically present in Gentium Concrite Industry's ledger.
+[RESULT] PASSED — PO PO/2026/08/10/000592 → Bill BILL/2026/08/10/000781 verified in vendor Gentium Concrite Industry

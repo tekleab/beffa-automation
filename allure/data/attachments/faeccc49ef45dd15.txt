@@ -1,0 +1,26 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:53:05 [PERFORMANCE] API - Auth API Verification: 248.37ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:53:11 [PERFORMANCE] API - Auth API Verification: 241.58ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=100 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001318 (ID: 074548c5-513c-4394-bd59-348df80cb4f6)
+10:53:15 [INFO] Advancing inventory-adjustments "074548c5-513c-4394-bd59-348df80cb4f6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 100...
+[WARN] pollStockAPI timed out. Expected 100, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786359194704 (a2669427-70a9-46cf-855d-76a459485358) | method=WAC | stock=100@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating negative adjustment (-50) for: WAC-Item-1786359194704 | Stock before: 100
+[ADJ] quantity | qty=-50 @ $100 | current=100 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001319 (ID: b302af87-64d6-4377-bbf1-5e194c98660c)
+[STEP 2] Adjustment created: ADJ/2026/08/10/001319 | Approving...
+10:53:51 [INFO] Advancing inventory-adjustments "b302af87-64d6-4377-bbf1-5e194c98660c"...
+10:53:53 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[WARN] pollStockAPI timed out. Expected 50, actual 0.
+[AUDIT] Stock before: 100 | Adjustment: -50 | Expected: 50 | Final: 0

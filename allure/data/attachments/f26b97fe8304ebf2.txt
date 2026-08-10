@@ -1,0 +1,21 @@
+[SETUP] Concurrent item_id=56f31934-b2b1-426d-a312-5fc671e194a4 | stock=0
+[SETUP] adj1: status=201 doc=ADJ/2026/08/10/001313 id=f1f1bbd4-c8ca-4394-a551-5462c1672bb4
+[SETUP] adj2: status=400 doc=N/A id=N/A
+[RETRY] adj2 was rejected (lock contention) — retrying after 500ms
+[RETRY] adj2 retry: status=500 doc=N/A id=N/A
+[AUDIT] item_id=56f31934-b2b1-426d-a312-5fc671e194a4 | adj1=ADJ/2026/08/10/001313 | adj2=N/A | expected=20 | actual=10
+
+────────────────────────────────────────────────────────────
+[BUG REPORT] BUG-INV-005
+  Title   : Concurrent adjustments did not both apply — race condition
+  Time    : 2026-08-10T10:52:15.312Z
+  adj1_doc        : "ADJ/2026/08/10/001313"
+  adj1_id         : "f1f1bbd4-c8ca-4394-a551-5462c1672bb4"
+  adj2_doc        : null
+  adj2_id         : null
+  item_id         : "56f31934-b2b1-426d-a312-5fc671e194a4"
+  stock_before    : 0
+  expected_stock  : 20
+  actual_stock    : 10
+  impact          : "Lost update — one adjustment silently dropped under concurrent load"
+────────────────────────────────────────────────────────────

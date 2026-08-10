@@ -1,0 +1,23 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:52:07 [PERFORMANCE] API - Auth API Verification: 244.77ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001314 (ID: bd14d39e-10de-4937-b9bd-88bfec07170e)
+10:52:15 [INFO] Advancing inventory-adjustments "bd14d39e-10de-4937-b9bd-88bfec07170e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786359133959 (89c77456-f7e5-40e9-b3be-cc412262263e) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Triggering 2 CONCURRENT adjustments (+10 each) for WAC-Item-1786359133959...
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001316 (ID: 557c8994-1f35-46f2-acba-b84d24b5e968)
+[INFO] Adjustment 1 ID: FAILED | Adjustment 2 ID: 557c8994-1f35-46f2-acba-b84d24b5e968
+10:52:51 [INFO] Advancing inventory-adjustments "557c8994-1f35-46f2-acba-b84d24b5e968"...
+[SUCCESS] Advanced Adjustment 2 to approved: 557c8994-1f35-46f2-acba-b84d24b5e968
+[ACTION] Verifying Final Stock Integrity...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 40...
+[WARN] pollStockAPI timed out. Expected 40, actual 0.
+[SNAPSHOT] Start: 20 | Final: 0 | Expected: 40
+[KNOWN_BUG] Stock Race Condition: Concurrent adjustments caused lost updates (E1481 deadlock). Expected 40, found 0. ERP does not handle concurrent stock adjustments atomically. Bug logged for remediation.

@@ -1,0 +1,25 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:43:33 [PERFORMANCE] API - Auth API Verification: 227.41ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001284 (ID: 197d28e2-5f6b-4986-a499-4c3cc4f27227)
+10:43:42 [INFO] Advancing inventory-adjustments "197d28e2-5f6b-4986-a499-4c3cc4f27227"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786358621019 (9cf0ddcc-cdc1-4080-8886-8a2e9529dbdd) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:44:19 [PERFORMANCE] API - Auth API Verification: 263.59ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating target Bill for 1000...
+10:44:24 [INFO] Advancing bills "62ebd783-989a-4992-8b75-3ab5bb9a0fb8"...
+[ATTACK] Triggering Concurrent Payment Race...
+[ACTION] Creating Bill Payment for 62ebd783-989a-4992-8b75-3ab5bb9a0fb8 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[ACTION] Creating Bill Payment for 62ebd783-989a-4992-8b75-3ab5bb9a0fb8 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/10/000173 (ID: 6e7fd98c-ff80-4fd4-894e-54cf4790baa7)
+[SNAPSHOT] Concurrent Results: 1 / 2 requests fulfilled.
+[PASS] Integrity Guardrail: System blocked duplicate payment approval.

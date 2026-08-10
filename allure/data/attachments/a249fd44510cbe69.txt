@@ -1,0 +1,28 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:40:23 [PERFORMANCE] API - Auth API Verification: 278.98ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+10:40:33 [WARN] Inventory Adjustment → 500. Retry 1/3 in 1000ms...
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001275 (ID: baf893ad-ccb6-4c2d-8e62-ebdd945ace10)
+10:40:34 [INFO] Advancing inventory-adjustments "baf893ad-ccb6-4c2d-8e62-ebdd945ace10"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786358431778 (a3c22e51-7ee2-4775-919d-6b89a77bfa0f) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:41:11 [PERFORMANCE] API - Auth API Verification: 231.26ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:41:18 [PERFORMANCE] API - Auth API Verification: 247.91ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ATTACK] Submitting Invoice forged for: 2021-04-29T00:00:00Z
+[VULNERABILITY] Backend API accepted back-dated payload! ID: INV/2026/08/10/001182
+10:41:21 [INFO] Advancing invoices "a93e966f-42ea-40ff-b07c-480e275e93ea"...
+[PASS] Backend safely intercepted rogue date during advancement: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2021-04-29 falls in a closed or missin

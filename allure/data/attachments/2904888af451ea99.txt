@@ -1,0 +1,29 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:52:48 [PERFORMANCE] API - Auth API Verification: 225.26ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=10 @ $15 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001317 (ID: 7f68ae1d-f515-4b56-abcd-0ec51964211c)
+10:52:57 [INFO] Advancing inventory-adjustments "7f68ae1d-f515-4b56-abcd-0ec51964211c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[WARN] pollStockAPI timed out. Expected 10, actual 0.
+[FRESH ITEM] Created: Pencil-B-1786359173643 (a3593009-189d-4427-9400-dabc80257728) | method=FIFO | stock=10@$15 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Item: Pencil-B-1786359173643 (a3593009-189d-4427-9400-dabc80257728)
+10:53:33 [INFO] Advancing purchase-orders "ade77e8c-f95d-44f9-a702-f2aa2bac1527"...
+10:53:35 [INFO] Advancing bills "08c7a283-d992-4afd-8f41-9f043199b3ba"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[WARN] pollStockAPI timed out. Expected 15, actual 0.
+[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15
+[STEP 1] SO: 10 units @ $15
+[PASS] SO: SO/2026/08/10/000298 | item:2eef0117
+10:54:11 [INFO] Advancing sales-orders "c6ec0cad-2a3d-4e0f-886f-c1870d2523a7"...
+[STEP 2] Invoice: 4 direct + 9 released SO items
+[PASS] Invoice: INV/2026/08/10/001189 (f3d72065)
+10:54:13 [INFO] Advancing invoices "f3d72065-d42d-45b6-b94a-0e80dcb73ca5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 2...
+[WARN] pollStockAPI timed out. Expected 2, actual 0.
+[AUDIT-B] qty=2 (exp:2)
+[AUDIT-B] Layers: 
+[PASS] FIFO-B ✓ import(10→0) | bill@$40(2→0) | received-PO@$25(3→2) | remaining:2@$25

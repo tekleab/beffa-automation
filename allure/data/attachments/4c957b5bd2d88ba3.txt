@@ -1,0 +1,26 @@
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:50:55 [PERFORMANCE] API - Auth API Verification: 267.45ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:51:03 [PERFORMANCE] API - Auth API Verification: 242.99ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving PO...
+10:51:05 [INFO] Advancing purchase-orders "7e9cb7ba-da68-4eba-b934-10901342d5d2"...
+[PO] PO/2026/08/10/000627 (7e9cb7ba-da68-4eba-b934-10901342d5d2)
+[STEP 2] Creating first Bill from PO...
+10:51:08 [INFO] Advancing bills "8c8d590e-6a6e-4103-b173-4d078ef7879c"...
+[BILL 1] BILL/2026/08/10/000805 (8c8d590e-6a6e-4103-b173-4d078ef7879c) — approved
+[ATTACK] Attempting second Bill from same PO PO/2026/08/10/000627...
+[PASS] Double-billing correctly blocked: PO-to-Bill API Failed: 422 - {
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quantity": [
+			"Unable to consume 5 items from purchase order item, only 0 remaining"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

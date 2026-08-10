@@ -1,0 +1,15 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:56:08 [PERFORMANCE] API - Auth API Verification: 259.98ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001338 (ID: fe2a6c15-d20f-4a94-acaf-89ab166da742)
+10:56:15 [INFO] Advancing inventory-adjustments "fe2a6c15-d20f-4a94-acaf-89ab166da742"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786359373900 (727ba63b-0b60-4085-995d-c4be8cdf667b) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Attempting to inject stock adjustment from 2022-01-01T00:00:00Z (Historical Manipulation)...
+[ADJ] quantity | qty=100 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001340 (ID: 0ddfedd5-46d7-40da-ab7d-516c4ac29a4a)
+[KNOWN_BUG] Historical back-dating accepted by ERP (2022 adjustment approved). Period control not enforced on inventory adjustments.

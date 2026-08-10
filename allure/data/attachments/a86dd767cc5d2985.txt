@@ -1,0 +1,32 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:33:24 [PERFORMANCE] API - Auth API Verification: 235.40ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001250 (ID: 8992d3ec-ff1d-442e-9e32-8a4b58349101)
+10:33:32 [INFO] Advancing inventory-adjustments "8992d3ec-ff1d-442e-9e32-8a4b58349101"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786358011638 (64150075-38c3-46e2-adcd-da14967a12c7) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:34:10 [PERFORMANCE] API - Auth API Verification: 244.59ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+10:34:17 [PERFORMANCE] API - Auth API Verification: 240.33ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+10:34:21 [INFO] Advancing invoices "cfc1849d-29a3-4a9b-be1c-739152f4f1b9"...
+[RECEIPT] amount=40 | invoice=cfc1849d...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/10/000269
+10:34:28 [INFO] Advancing receipts "53038e42-8f19-437f-920b-8c6a68fee5c3"...
+[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...
+[RECEIPT] amount=80 | invoice=cfc1849d...
+[PASS] Overpayment blocked correctly: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/08/10/001147 outstanding balance is 60.00 but 80.00 was applied"
+}
+
