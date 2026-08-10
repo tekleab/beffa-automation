@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 15,
-  "failed": 4,
+  "passed": 18,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 78.9,
-  "avgDurationMs": 48784,
-  "lastUpdated": "2026-08-10T09:16:39.738Z",
+  "passRate": 94.7,
+  "avgDurationMs": 51371,
+  "lastUpdated": "2026-08-10T10:14:01.785Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 15,
-      "failed": 4,
+      "passed": 18,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        92,
         94.7,
         76,
         88.9,
         74.8,
         78.8,
-        78.9
+        78.9,
+        94.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "617",
+      "commit": "9444005",
+      "trigger": "push (smoke)",
+      "duration": "16m 16s",
+      "passRate": 94.7,
+      "status": "success"
+    },
     {
       "run": "615",
       "commit": "78bfa4c",
@@ -95,46 +103,14 @@
       "duration": "13m 10s",
       "passRate": 78.9,
       "status": "failed"
-    },
-    {
-      "run": "602",
-      "commit": "b3f9798",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "74m 32s",
-      "passRate": 69.2,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-10T09:07:23.814Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for 2516230e-b301-4ed7-ac15-cc899316c762: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:728\n\n  7",
-      "firstSeen": "2026-08-10T09:07:23.811Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  62 |         await page.waitForLoadState('",
-      "firstSeen": "2026-08-10T09:09:29.787Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "high",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test timeout of 120000ms exceeded.\n\n  121 |             if (billVisible) break;\n  122 |             console.log(`[POLL ${attemp",
-      "firstSeen": "2026-08-10T09:10:34.988Z",
+      "firstSeen": "2026-08-10T10:08:18.798Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
