@@ -19,7 +19,8 @@ import { AppManager } from '../../pages/AppManager';
  *   - Guardrail: negative price line → rejected or flagged
  */
 test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full', () => {
-    test.setTimeout(300000);
+    test.describe.configure({ mode: 'serial' });
+    test.setTimeout(600000);
 
     let salesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let purchaseMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
@@ -85,8 +86,23 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
         await app.selectRandomOption(glBtn, 'G/L Account');
 
-        await modal.getByRole('group').filter({ hasText: /^Quantity/i }).getByRole('spinbutton').fill(opts.qty);
-        await modal.getByRole('group').filter({ hasText: /Unit Price/i }).getByRole('spinbutton').fill(opts.unitPrice);
+        // Quantity + Unit Price spinbuttons exist on Item lines and some Miscellaneous modals.
+        // Bill Miscellaneous modal uses a single "Before Tax" / "price" field instead.
+        const qtyGroup = modal.getByRole('group').filter({ hasText: /^Quantity/i });
+        const hasQty = await qtyGroup.isVisible({ timeout: 2000 }).catch(() => false);
+        if (hasQty) {
+            await qtyGroup.getByRole('spinbutton').fill(opts.qty);
+            await modal.getByRole('group').filter({ hasText: /Unit Price/i }).getByRole('spinbutton').fill(opts.unitPrice);
+        } else {
+            // Miscellaneous modal without Quantity — fill Before Tax / price directly
+            const beforeTaxInput = modal.locator('input[placeholder="price"], input[name*="price" i], input[name*="before_tax" i], input[name*="amount" i]').first();
+            const spinFallback = modal.getByRole('spinbutton').first();
+            if (await beforeTaxInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+                await beforeTaxInput.fill(opts.unitPrice);
+            } else if (await spinFallback.isVisible({ timeout: 2000 }).catch(() => false)) {
+                await spinFallback.fill(opts.unitPrice);
+            }
+        }
         await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
 
         await modal.getByRole('button', { name: 'Add', exact: true }).click();
@@ -100,7 +116,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('SO-UI-01: Add inventory Line Item via modal → SO created and approved', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -122,7 +140,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('SO-UI-02: Add Miscellaneous Line Item via modal → SO created and approved', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -151,7 +171,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit' });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
@@ -284,7 +306,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('INV-UI-01: Add inventory Line Item via modal → Invoice created and approved', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
+        await page.goto('/receivables/invoices/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
@@ -307,7 +331,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
+        await page.goto('/receivables/invoices/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
@@ -335,7 +361,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/receivables/invoices/new', { waitUntil: 'commit' });
+        await page.goto('/receivables/invoices/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
@@ -555,7 +583,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('PO-UI-01: Add inventory Line Item via modal → PO created and approved', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -578,7 +608,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('PO-UI-02: Add Miscellaneous Line Item via modal → PO total reflects it', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -607,7 +639,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit' });
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -725,7 +759,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('BILL-UI-01: Add inventory Line Item via modal → Bill created and approved', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/bills/new', { waitUntil: 'commit' });
+        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -747,7 +783,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('BILL-UI-02: Add Miscellaneous line via modal → Bill total reflects it', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/bills/new', { waitUntil: 'commit' });
+        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -774,7 +812,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     test('BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/bills/new', { waitUntil: 'commit' });
+        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');

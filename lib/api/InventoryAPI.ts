@@ -66,33 +66,42 @@ export class InventoryAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
-    // Smart Account Discovery
-    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=100&${params}`, { headers });
+    // Account + location discovery — single fast call, no retry (fallback UUIDs used on failure)
     let incAcct = typeof data !== 'string' ? data.gl_sales_account_id : undefined;
     let expAcct = typeof data !== 'string' ? data.gl_cost_account_id : undefined;
     let invAcct = typeof data !== 'string' ? data.gl_inventory_account_id : undefined;
-    
-    if (acctResp.ok() && (!incAcct || !expAcct || !invAcct)) {
-      const adata = await acctResp.json();
-      const accounts = adata.items || adata.data || [];
-      incAcct = incAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('sales'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'income')?.id || accounts[0]?.id || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
-      expAcct = expAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('cogs') || a.name?.toLowerCase().includes('cost of goods'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'expense')?.id || accounts[0]?.id || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
-      invAcct = invAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('inventory'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'asset')?.id || accounts[0]?.id || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
+
+    if (!incAcct || !expAcct || !invAcct) {
+      try {
+        const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=100&${params}`, { headers, timeout: 10000 });
+        if (acctResp.ok()) {
+          const adata = await acctResp.json();
+          const accounts = adata.items || adata.data || [];
+          incAcct = incAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('sales'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'income')?.id || accounts[0]?.id;
+          expAcct = expAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('cogs') || a.name?.toLowerCase().includes('cost of goods'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'expense')?.id || accounts[0]?.id;
+          invAcct = invAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('inventory'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'asset')?.id || accounts[0]?.id;
+        }
+      } catch { /* fall through to hardcoded defaults */ }
     }
+    incAcct = incAcct || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
+    expAcct = expAcct || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
+    invAcct = invAcct || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
 
     let locId = typeof data === 'string' ? undefined : data.default_location_id;
     let warehouseId = typeof data === 'string' ? undefined : data.default_warehouse_id;
 
     if (!locId || !warehouseId) {
-        const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
+      try {
+        const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers, timeout: 10000 });
         if (locResp.ok()) {
-            const ldata = await locResp.json();
-            const locs = ldata.items || ldata.data || [];
-            if (locs[0]) {
-                locId = locId || locs[0].id;
-                warehouseId = warehouseId || await this.resolveWarehouseIdFromLocation(locs[0]);
-            }
+          const ldata = await locResp.json();
+          const locs = ldata.items || ldata.data || [];
+          if (locs[0]) {
+            locId = locId || locs[0].id;
+            warehouseId = warehouseId || await this.resolveWarehouseIdFromLocation(locs[0]);
+          }
         }
+      } catch { /* proceed without location — ERP will use defaults */ }
     }
 
     const payload = {
@@ -126,7 +135,12 @@ export class InventoryAPI extends BasePage {
 
     // Retry up to 3x for 500/503 (transient backend errors) and re-auth on 401
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload });
+      let resp: any;
+      try {
+        resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload, timeout: 30000 });
+      } catch (err: any) {
+        throw new Error(`Item Creation API Failed: ${err.message?.split('\n')[0] || 'network error'}`);
+      }
       if (resp.ok()) {
         const json = await resp.json();
         return { itemName: json.name, id: json.id };
@@ -135,7 +149,8 @@ export class InventoryAPI extends BasePage {
       if (status === 401) {
         const loginResp = await this.page.request.post(`${apiBase}/users/login?${params}&month=6`, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 30000
         });
         if (loginResp.ok()) {
           const newToken = (await loginResp.json()).auth_token;
@@ -148,7 +163,6 @@ export class InventoryAPI extends BasePage {
         throw new Error(`Item Creation API Failed: 401 Unauthorized`);
       }
       if ((status === 500 || status === 503) && attempt < 3) {
-        console.log(`[RETRY] Item creation ${status} on attempt ${attempt} — retrying in ${attempt * 2}s...`);
         await this.page.waitForTimeout(attempt * 2000);
         continue;
       }
@@ -232,7 +246,8 @@ export class InventoryAPI extends BasePage {
             'x-company': process.env.BEFFA_COMPANY as string, 
             'Authorization': `Bearer ${token}`,
             'x-role': 'IT Administrator / User Manager'
-          }
+          },
+          timeout: 30000
       });
       if (!response.ok() && response.status() !== 404) {
           console.warn(`[WARN] Adjustment processing returned ${response.status()}`);
@@ -573,7 +588,7 @@ export class InventoryAPI extends BasePage {
     };
   }
 
-  async pollStockAPI(itemId: string, expectedStock: number, locationId?: string, maxRetries: number = 30): Promise<number> {
+  async pollStockAPI(itemId: string, expectedStock: number, locationId?: string, maxRetries: number = 15): Promise<number> {
     console.log(`[ACTION] API Polling: Waiting for stock at location ${locationId || 'GLOBAL'} to hit ${expectedStock}...`);
     let lastStock = 0;
     for (let i = 1; i <= maxRetries; i++) {
@@ -583,7 +598,7 @@ export class InventoryAPI extends BasePage {
         console.log(`[SUCCESS] API Confirmed: Stock correctly reached ${expectedStock}.`);
         return details.currentStock;
       }
-      console.log(`[INFO] Attempt ${i}: Stock is ${lastStock}. Retrying in 2s...`);
+
       await this.page.waitForTimeout(2000);
     }
     // Return actual stock so assertions show the real value, not a misleading 0
@@ -591,7 +606,7 @@ export class InventoryAPI extends BasePage {
     return lastStock;
   }
 
-  async pollCostAPI(itemId: string, expectedCost: number, locationId?: string, maxRetries: number = 30, precision: number = 1): Promise<number> {
+  async pollCostAPI(itemId: string, expectedCost: number, locationId?: string, maxRetries: number = 15, precision: number = 1): Promise<number> {
     const tolerance = Math.pow(10, -precision) * 5;
     console.log(`[ACTION] API Polling: Waiting for cost to hit ~${expectedCost} (±${tolerance})...`);
     for (let i = 1; i <= maxRetries; i++) {
@@ -600,7 +615,7 @@ export class InventoryAPI extends BasePage {
         console.log(`[SUCCESS] API Confirmed: Cost correctly reached ${details.unitCost}.`);
         return details.unitCost;
       }
-      console.log(`[INFO] Attempt ${i}: Cost is ${details?.unitCost || 0}. Retrying in 2s...`);
+
       await this.page.waitForTimeout(2000);
     }
     const final = await this.getItemDetailsAPI(itemId, locationId);
@@ -611,7 +626,10 @@ export class InventoryAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    // Use DateHelper-resolved year so the journal fetch matches the document's fiscal year
+    const { DateHelper: _JDH } = require('../utils/DateHelper');
+    const _jResolved = await _JDH.resolve(this.page).catch(() => null);
+    const year = _jResolved ? String(_jResolved.ecYear) : (process.env.BEFFA_YEAR || '2019');
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -667,6 +685,7 @@ export class InventoryAPI extends BasePage {
     unit_cost: number;
     locationId?: string;
     warehouseId?: string;
+    skipStockPoll?: boolean;
   }): Promise<{ id: string; itemId: string; itemName: string; currentStock: number; unitCost: number; locationId: string; warehouseId: string }> {
     let locationId = opts.locationId;
     let warehouseId = opts.warehouseId;
@@ -708,8 +727,9 @@ export class InventoryAPI extends BasePage {
     });
     if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
     await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
-    // Poll until stock is confirmed — ERP indexing can lag up to 15s
-    await this.pollStockAPI(item.id, opts.quantity, locationId, 15);
+    if (!opts.skipStockPoll) {
+      await this.pollStockAPI(item.id, opts.quantity, locationId, 15);
+    }
 
     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
     return {

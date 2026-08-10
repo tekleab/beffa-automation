@@ -28,7 +28,7 @@ export class RetryManager {
         if (error.status === 401 || error.status === 403) throw error;
 
         const delay = initialDelay * Math.pow(2, attempt);
-        StructuredLogger.log(LogLevel.WARN, `Attempt ${attempt + 1} failed. Retrying in ${delay}ms...`, { 
+        StructuredLogger.log(LogLevel.DEBUG, `Attempt ${attempt + 1} failed. Retrying in ${delay}ms...`, { 
           error: error.message 
         });
 

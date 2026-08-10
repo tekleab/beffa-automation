@@ -33,7 +33,8 @@ export class HrAPI extends BasePage {
         const loginUrl = `${this.apiBase}/users/login?year=2018&period=yearly&calendar=ec&month=6`;
         const loginResp = await this.page.request.post(loginUrl, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 30000
         });
         if (loginResp.ok()) {
           const d = await loginResp.json();
@@ -61,7 +62,7 @@ export class HrAPI extends BasePage {
   async createEmployee(data: Record<string, any>): Promise<any> {
     const h = await this.headers();
     const resp = await this.page.request.post(
-      `${this.apiBase}/employees?${this.params}`, { headers: h, data }
+      `${this.apiBase}/employees?${this.params}`, { headers: h, data, timeout: 30000 }
     );
     const text = await resp.text();
     if (!resp.ok()) throw new Error(`Create employee failed: ${resp.status()} - ${text}`);
@@ -111,7 +112,7 @@ export class HrAPI extends BasePage {
     const h = await this.headers();
     const resp = await this.page.request.post(
       `${this.apiBase}/pay-structures?${this.params}`,
-      { headers: h, data: { name, description } }
+      { headers: h, data: { name, description }, timeout: 30000 }
     );
     if (!resp.ok()) throw new Error(`Create pay-structure failed: ${resp.status()} - ${await resp.text()}`);
     return resp.json();
@@ -145,7 +146,7 @@ export class HrAPI extends BasePage {
     const h = await this.headers();
     const resp = await this.page.request.post(
       `${this.apiBase}/timesheets?${this.params}`,
-      { headers: h, data: { employee_id: employeeId, date, hours, description } }
+      { headers: h, data: { employee_id: employeeId, date, hours, description }, timeout: 30000 }
     );
     if (!resp.ok()) throw new Error(`Create timesheet failed: ${resp.status()} - ${await resp.text()}`);
     return resp.json();
@@ -171,7 +172,7 @@ export class HrAPI extends BasePage {
     const h = await this.headers();
     const resp = await this.page.request.post(
       `${this.apiBase}/payroll-runs?${this.params}`,
-      { headers: h, data: { event_name: name, start_date: startDate, end_date: endDate, pay_date: payDate } }
+      { headers: h, data: { event_name: name, start_date: startDate, end_date: endDate, pay_date: payDate }, timeout: 30000 }
     );
     if (!resp.ok()) throw new Error(`Create payroll-run failed: ${resp.status()} - ${await resp.text()}`);
     return resp.json();
@@ -197,7 +198,7 @@ export class HrAPI extends BasePage {
     const h = await this.headers();
     const resp = await this.page.request.post(
       `${this.apiBase}/pay-components?${this.params}`,
-      { headers: h, data: { name, type, tax_rule: taxRule, abbreviation, general_ledger_account_id: glAccountId } }
+      { headers: h, data: { name, type, tax_rule: taxRule, abbreviation, general_ledger_account_id: glAccountId }, timeout: 30000 }
     );
     if (!resp.ok()) throw new Error(`Create pay-component failed: ${resp.status()} - ${await resp.text()}`);
     return resp.json();
@@ -246,7 +247,7 @@ export class HrAPI extends BasePage {
           const ts = Date.now().toString().slice(-6);
           const createResp = await this.page.request.post(
             `${this.apiBase}/departments?${this.params}`,
-            { headers: h, data: {
+            { headers: h, timeout: 30000, data: {
               name,
               code: `AUTO-${ts}`,
               config_id: rootDept.config_id,
@@ -307,7 +308,7 @@ export class HrAPI extends BasePage {
     const ts = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const createResp = await this.page.request.post(
       `${this.apiBase}/job-positions?${this.params}`,
-      { headers: h, data: {
+      { headers: h, timeout: 30000, data: {
         title,
         code: `JP-${ts}`,
         department_id: departmentId,

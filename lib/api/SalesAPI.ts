@@ -370,7 +370,7 @@ export class SalesAPI extends BasePage {
       }]
     };
 
-    const response = await this.page.request.post(`${apiBase}/receipts?${params}`, { data: payload, headers });
+    const response = await this.page.request.post(`${apiBase}/receipts?${params}`, { data: payload, headers, timeout: 30000 });
 
     if (!response.ok()) throw new Error(`API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
@@ -389,7 +389,8 @@ export class SalesAPI extends BasePage {
 
     const response = await this.page.request.patch(`${apiBase}/invoices/${invoiceId}/void?${params}`, {
       data: { status: 'reversed' },
-      headers
+      headers,
+      timeout: 30000
     });
 
     if (!response.ok()) {
@@ -442,7 +443,8 @@ export class SalesAPI extends BasePage {
         'x-company': process.env.BEFFA_COMPANY as string,
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
-      }
+      },
+      timeout: 30000
     });
 
     if (!response.ok()) {
@@ -464,7 +466,8 @@ export class SalesAPI extends BasePage {
 
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      timeout: 30000
     });
     return response.ok();
   }
@@ -563,7 +566,8 @@ export class SalesAPI extends BasePage {
       try {
         const response = await this.page.request.post(`${apiBase}/receipts?${params}`, {
           data: payload,
-          headers
+          headers,
+          timeout: 30000
         });
         
         if (response.ok()) {

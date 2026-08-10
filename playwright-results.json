@@ -185,71 +185,308 @@
   },
   "suites": [
     {
-      "title": "sales/so-integrity.spec.ts",
-      "file": "sales/so-integrity.spec.ts",
+      "title": "hr/hr-payroll.spec.ts",
+      "file": "hr/hr-payroll.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Financial Integrity & Boundary Audits @sales @logic @regression @full",
-          "file": "sales/so-integrity.spec.ts",
-          "line": 8,
+          "title": "Payroll: Runs & Pay Components @hr @smoke @regression @full",
+          "file": "hr/hr-payroll.spec.ts",
+          "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
-              "ok": false,
+              "title": "API: Pay structure must be created with valid name",
+              "ok": true,
               "tags": [
-                "sales",
-                "logic",
+                "hr",
+                "smoke",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 180000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|329.57"
+                      "description": "API|Auth API Verification|225.59"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
+                  "projectId": "HR",
+                  "projectName": "HR",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 351,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
+                        },
+                        {
+                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10\n"
+                        },
+                        {
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)\n"
+                        },
+                        {
+                          "text": "\u001b[33m08:01:32 [PERFORMANCE]\u001b[0m API - Auth API Verification: 225.59ms\n"
+                        },
+                        {
+                          "text": "[AUTH] Year switcher not visible — skipping year switch to 2019.\n"
+                        },
+                        {
+                          "text": "[PASS] Pay structure created: b22b6814-e9bf-436d-9796-534e4065ea7e\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-10T08:01:26.080Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|225.59"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4f59d8c6e32615228e92-ea69c34181798c1cf990",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 24,
+              "column": 9
+            },
+            {
+              "title": "API: Pay component must be created with correct GL account linkage",
+              "ok": true,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|225.59"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2759,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
+                        },
+                        {
+                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
+                        },
+                        {
+                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
+                        },
+                        {
+                          "text": "[PASS] Pay component created: e8fa2903-e887-4426-bec6-ec852a85e0c8 | GL: bd32401d-9a1c-4637-9dfe-dbf0e79dc766\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-10T08:03:24.393Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|225.59"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4f59d8c6e32615228e92-87cba11d00aef03a5ebe",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 33,
+              "column": 9
+            },
+            {
+              "title": "API: Pay components must have valid type and tax_rule fields",
+              "ok": true,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|225.59"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1589,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[PASS] All 20 pay components have valid structure\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-10T08:03:27.357Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|225.59"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4f59d8c6e32615228e92-1e5c788c4f45b80cc92a",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 47,
+              "column": 9
+            },
+            {
+              "title": "Guardrail: Pay component must reject invalid type and tax_rule values",
+              "ok": true,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|225.59"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2634,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
+                        },
+                        {
+                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
+                        },
+                        {
+                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
+                        },
+                        {
+                          "text": "[PASS] Invalid pay component type rejected: {\"tax_rule\":[\"Invalid tax rule\"],\"type\":[\"Invalid pay component type\"]}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-10T08:03:29.288Z",
+                      "annotations": [
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|225.59"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4f59d8c6e32615228e92-26e855e61ea2ab9fd3e4",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 59,
+              "column": 9
+            },
+            {
+              "title": "API: Payroll run must be created with correct initial draft status",
+              "ok": false,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|273.86"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
                       "status": "timedOut",
-                      "duration": 4,
+                      "duration": 3,
                       "error": {
                         "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10",
+                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts:13:10",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
+                          "file": "/home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts",
                           "column": 10,
-                          "line": 15
+                          "line": 13
                         },
-                        "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 11 |\u001b[39m     \u001b[36mlet\u001b[39m payRunId\u001b[33m:\u001b[39m string\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 13 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser\u001b[33m:\u001b[39m b }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 14 |\u001b[39m         browser \u001b[33m=\u001b[39m b\u001b[33m;\u001b[39m\n \u001b[90m 15 |\u001b[39m         page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 16 |\u001b[39m         app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
+                            "file": "/home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts",
                             "column": 10,
-                            "line": 15
+                            "line": 13
                           },
-                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10\u001b[22m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
-                            "column": 29,
-                            "line": 52
-                          },
-                          "message": "Error: Accounts Discovery HTTP 0: page-closed\n\n\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m     \u001b[36mconst\u001b[39m safeJson \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m (resp\u001b[33m:\u001b[39m any\u001b[33m,\u001b[39m label\u001b[33m:\u001b[39m string) \u001b[33m=>\u001b[39m {\n \u001b[90m 51 |\u001b[39m       \u001b[36mconst\u001b[39m text \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m resp\u001b[33m.\u001b[39mtext()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m       \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresp\u001b[33m.\u001b[39mok()) \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[36mtry\u001b[39m { \u001b[36mreturn\u001b[39m \u001b[33mJSON\u001b[39m\u001b[33m.\u001b[39mparse(text)\u001b[33m;\u001b[39m } \u001b[36mcatch\u001b[39m (e) {\n \u001b[90m 54 |\u001b[39m         \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} returned invalid JSON: ${text.substring(0, 150)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m       }\u001b[0m\n\u001b[2m    at safeJson (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:52:29)\u001b[22m\n\u001b[2m    at SalesAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:60:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:20:22\u001b[22m"
+                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 11 |\u001b[39m     \u001b[36mlet\u001b[39m payRunId\u001b[33m:\u001b[39m string\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 13 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser\u001b[33m:\u001b[39m b }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 14 |\u001b[39m         browser \u001b[33m=\u001b[39m b\u001b[33m;\u001b[39m\n \u001b[90m 15 |\u001b[39m         page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 16 |\u001b[39m         app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts:13:10\u001b[22m"
                         }
                       ],
                       "stdout": [
@@ -257,81 +494,80 @@
                           "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
                         },
                         {
-                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07\n"
+                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10\n"
                         },
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m08:02:18 [PERFORMANCE]\u001b[0m API - Auth API Verification: 329.57ms\n"
+                          "text": "\u001b[33m08:01:32 [PERFORMANCE]\u001b[0m API - Auth API Verification: 273.86ms\n"
                         },
                         {
-                          "text": "[AUTH] Frontend navigation skipped (unreachable) — API session active.\n"
-                        },
-                        {
-                          "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:04:21 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2019&period=yearly&calendar=ec → Page closed mid-request. Aborting retries.\n"
+                          "text": "[AUTH] Year switcher not visible — skipping year switch to 2019.\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-07T08:02:12.050Z",
+                      "startTime": "2026-08-10T08:01:25.851Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|329.57"
+                          "description": "API|Auth API Verification|273.86"
                         }
                       ],
                       "attachments": [
                         {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-2bde5--fractional-receipt-amounts-Sales/error-context.md"
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/test-failed-1.png"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-2bde5--fractional-receipt-amounts-Sales/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-2bde5--fractional-receipt-amounts-Sales/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
+                        "file": "/home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts",
                         "column": 10,
-                        "line": 15
+                        "line": 13
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "ae19da7ec7e426dd6d63-b903cb76a387c90cadc1",
-              "file": "sales/so-integrity.spec.ts",
-              "line": 38,
+              "id": "4f59d8c6e32615228e92-718dc964a80682617189",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 85,
               "column": 9
             },
             {
-              "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+              "title": "Guardrail: Payroll run advance without active employees must not silently succeed",
               "ok": true,
               "tags": [
-                "sales",
-                "logic",
+                "hr",
+                "smoke",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 180000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
+                  "projectId": "HR",
+                  "projectName": "HR",
                   "results": [
                     {
                       "workerIndex": -1,
@@ -342,7 +578,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-07T08:04:23.863Z",
+                      "startTime": "2026-08-10T08:03:34.733Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -350,128 +586,87 @@
                   "status": "skipped"
                 }
               ],
-              "id": "ae19da7ec7e426dd6d63-bf3e12fce4dddd690585",
-              "file": "sales/so-integrity.spec.ts",
-              "line": 101,
+              "id": "4f59d8c6e32615228e92-c9b21a9ca926d2b20203",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 121,
               "column": 9
             },
             {
-              "title": "Guardrail: System must prevent receipts against a voided invoice",
-              "ok": false,
+              "title": "UI: Payroll Runs page must load and display run records or empty state",
+              "ok": true,
               "tags": [
-                "sales",
-                "logic",
+                "hr",
+                "smoke",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|243.95"
-                    }
-                  ],
+                  "timeout": 180000,
+                  "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "Sales",
-                  "projectName": "Sales",
+                  "projectId": "HR",
+                  "projectName": "HR",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 8,
-                      "error": {
-                        "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
-                          "column": 10,
-                          "line": 15
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
-                            "column": 10,
-                            "line": 15
-                          },
-                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mlet\u001b[39m sharedPage\u001b[33m:\u001b[39m \u001b[36mimport\u001b[39m(\u001b[32m'@playwright/test'\u001b[39m)\u001b[33m.\u001b[39m\u001b[33mPage\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m         sharedPage \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(sharedPage)\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:15:10\u001b[22m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
-                            "column": 29,
-                            "line": 52
-                          },
-                          "message": "Error: Accounts Discovery HTTP 0: page-closed\n\n\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m     \u001b[36mconst\u001b[39m safeJson \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m (resp\u001b[33m:\u001b[39m any\u001b[33m,\u001b[39m label\u001b[33m:\u001b[39m string) \u001b[33m=>\u001b[39m {\n \u001b[90m 51 |\u001b[39m       \u001b[36mconst\u001b[39m text \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m resp\u001b[33m.\u001b[39mtext()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m       \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresp\u001b[33m.\u001b[39mok()) \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[36mtry\u001b[39m { \u001b[36mreturn\u001b[39m \u001b[33mJSON\u001b[39m\u001b[33m.\u001b[39mparse(text)\u001b[33m;\u001b[39m } \u001b[36mcatch\u001b[39m (e) {\n \u001b[90m 54 |\u001b[39m         \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${label} returned invalid JSON: ${text.substring(0, 150)}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m       }\u001b[0m\n\u001b[2m    at safeJson (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:52:29)\u001b[22m\n\u001b[2m    at SalesAPI.discoverMetadataAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:60:21)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts:20:22\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
-                        },
-                        {
-                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-07\n"
-                        },
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-07T00:00:00Z (day=7, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:02:20 [PERFORMANCE]\u001b[0m API - Auth API Verification: 243.95ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Frontend navigation skipped (unreachable) — API session active.\n"
-                        },
-                        {
-                          "text": "[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:04:21 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2019&period=yearly&calendar=ec → Page closed mid-request. Aborting retries.\n"
-                        }
-                      ],
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-07T08:02:11.832Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|243.95"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-e1f48-ts-against-a-voided-invoice-Sales/error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-e1f48-ts-against-a-voided-invoice-Sales/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/sales-so-integrity-Financi-e1f48-ts-against-a-voided-invoice-Sales/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/sales/so-integrity.spec.ts",
-                        "column": 10,
-                        "line": 15
-                      }
+                      "startTime": "2026-08-10T08:03:34.764Z",
+                      "annotations": [],
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "skipped"
                 }
               ],
-              "id": "ae19da7ec7e426dd6d63-c5044bc6fc6735e440ab",
-              "file": "sales/so-integrity.spec.ts",
-              "line": 128,
+              "id": "4f59d8c6e32615228e92-6eeafb663a8a1a397cb8",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 146,
+              "column": 9
+            },
+            {
+              "title": "UI: Pay Components settings page must render the components list",
+              "ok": true,
+              "tags": [
+                "hr",
+                "smoke",
+                "regression",
+                "full"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "HR",
+                  "projectName": "HR",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-10T08:03:34.824Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4f59d8c6e32615228e92-12d5ab2a31fbf2ca0849",
+              "file": "hr/hr-payroll.spec.ts",
+              "line": 159,
               "column": 9
             }
           ]
@@ -481,11 +676,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-07T08:02:05.035Z",
-    "duration": 147871.272,
-    "expected": 0,
-    "skipped": 1,
-    "unexpected": 2,
+    "startTime": "2026-08-10T08:01:20.462Z",
+    "duration": 143837.02000000002,
+    "expected": 4,
+    "skipped": 3,
+    "unexpected": 1,
     "flaky": 0
   }
 }

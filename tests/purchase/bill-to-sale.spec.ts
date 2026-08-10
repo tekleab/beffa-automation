@@ -28,15 +28,14 @@ test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
         const stockBefore = item.currentStock;
         console.log(`[OK] Item: "${item.itemName}" | Stock Before: ${stockBefore}`);
 
-        // ── Phase 2: Purchase — create Bill via API ──────────────────────────
-        console.log('[PHASE 2] Creating & approving Bill via API...');
-        const bill = await app.api.purchase.createBillAPI({
-            itemData: item,
-            quantity: PURCHASE_QTY,
-            unitPrice: 1000
-        });
-        await app.advanceDocumentAPI(bill.id, 'bills');
-        console.log(`[OK] Bill ${bill.ref} approved.`);
+        // ── Phase 2: Purchase — create PO + Bill via API ──────────────────────
+        console.log('[PHASE 2] Creating & approving PO + Bill via API...');
+        const meta = await app.api.sales.discoverMetadataAPI();
+        const po = await app.api.purchase.createPurchaseOrderAPI(item, PURCHASE_QTY, 1000);
+        await app.advanceDocumentAPI(po.poId, 'purchase-orders');
+        const bill = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
+        await app.advanceDocumentAPI(bill.billId, 'bills');
+        console.log(`[OK] Bill ${bill.billNumber} approved.`);
 
         await page.waitForTimeout(3000);
         const stockAfterPurchase = await app.api.inventory.pollStockAPI(
@@ -48,7 +47,6 @@ test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
 
         // ── Phase 3: Sale — create SO + Invoice via API ──────────────────────
         console.log('[PHASE 3] Creating & approving SO via API...');
-        const meta = await app.api.sales.discoverMetadataAPI();
         const so = await app.api.sales.createSalesOrderAPI({
             itemId: item.itemId,
             quantity: SELL_QTY,

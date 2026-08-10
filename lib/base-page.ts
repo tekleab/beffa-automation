@@ -162,7 +162,7 @@ export class BasePage {
 
     let success = false;
     for (let i = 0; i < 4; i++) {
-      const resp = await this.page.request.patch(url, { headers, data: payload });
+      const resp = await this.page.request.patch(url, { headers, data: payload, timeout: 30000 });
       const status = resp.status();
 
       if (status === 200 || status === 204) {
@@ -178,7 +178,8 @@ export class BasePage {
           const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
           const loginResp = await this.page.request.post(loginUrl, {
             data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 30000
           });
           if (loginResp.ok()) {
             const session = await loginResp.json();
@@ -233,7 +234,8 @@ export class BasePage {
       try {
         const r = await this.page.request.post(loginUrl, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 30000
         });
         if (r.ok()) { const d = await r.json(); token = d.auth_token || d.token || null; }
       } catch { /* ignore */ }
@@ -1253,7 +1255,7 @@ ${curlCmd}
     };
 
     Logger.info(`Seeding ${seedAmount} → Dr "${Logger.sanitize(cashAccount.name)}" / Cr "${Logger.sanitize(revenueAccount.name)}"`);
-    const response = await this.page.request.post(`${this.apiBase}/receipts?${params}`, { data: payload, headers });
+    const response = await this.page.request.post(`${this.apiBase}/receipts?${params}`, { data: payload, headers, timeout: 30000 });
     if (!response.ok()) {
       const errText = await response.text();
       throw new Error(`[CASH_TOPUP] Receipt creation failed: ${response.status()} - ${errText}`);

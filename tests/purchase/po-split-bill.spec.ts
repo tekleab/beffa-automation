@@ -43,15 +43,8 @@ test.describe('Procurement PO Split Bill Audit @purchase @logic @regression @ful
 
         // Fetch PO item id for partial billing
         const { apiBase, headers, qs } = await app.buildApiContext();
-        const poDetail = await (await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers })).json();
-        let poItemId = (poDetail.po_items || []).find((i: any) => i.id)?.id;
-        if (!poItemId) {
-            const subResp = await page.request.get(`${apiBase}/purchase-orders/${po.poId}/items?${qs}`, { headers });
-            if (subResp.ok()) {
-                const subData = await subResp.json();
-                poItemId = (subData.data || subData.items || []).find((i: any) => i.id)?.id;
-            }
-        }
+        // po_items are only present on the creation response — GET /purchase-order/{id} strips them
+        const poItemId = (po.poItems || []).find((i: any) => i.id)?.id;
         if (!poItemId) throw new Error(`PO ${po.poNumber} has no line items.`);
 
         // STEP 2: Receive Batch 1 via PO receipt path

@@ -472,7 +472,7 @@ export class PurchaseAPI extends BasePage {
       status: 'draft'
     };
 
-    const response = await this.page.request.post(`${apiBase}/bills?${params}`, { data: payload, headers });
+    const response = await this.page.request.post(`${apiBase}/bills?${params}`, { data: payload, headers, timeout: 30000 });
     if (!response.ok()) {
       return { success: false, billNumber: '', billId: '', status: response.status(), error: await response.text() };
     }
@@ -545,7 +545,7 @@ export class PurchaseAPI extends BasePage {
         console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
         return true;
       }
-      console.log(`[INFO] Bill not found in ledger yet (Index pending). Attempt ${i + 1}/15. Retrying in 2s...`);
+
       await this.page.waitForTimeout(2000);
     }
 
@@ -560,7 +560,7 @@ export class PurchaseAPI extends BasePage {
     label: string
   ): Promise<any> {
     const maxTopUpAttempts = 5;
-    let response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers });
+    let response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers, timeout: 30000 });
 
     for (let attempt = 0; !response.ok() && attempt < maxTopUpAttempts; attempt++) {
       const errText = await response.text();
@@ -577,7 +577,7 @@ export class PurchaseAPI extends BasePage {
       await this.seedCashBalanceAPI(topUp, cashAccountId);
       await this.page.waitForTimeout(6000);
 
-      response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers });
+      response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers, timeout: 30000 });
     }
 
     if (response.ok()) return response.json();
@@ -746,7 +746,8 @@ export class PurchaseAPI extends BasePage {
         'x-company': process.env.BEFFA_COMPANY as string,
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
-      }
+      },
+      timeout: 30000
     });
 
     if (!response.ok()) {
@@ -770,7 +771,8 @@ export class PurchaseAPI extends BasePage {
         'x-company': process.env.BEFFA_COMPANY || 'sample',
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
-      }
+      },
+      timeout: 30000
     });
 
     if (!response.ok()) {
@@ -790,7 +792,8 @@ export class PurchaseAPI extends BasePage {
     console.log(`[ACTION] Approving Payment ${paymentId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/payments/${paymentId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      timeout: 30000
     });
     return response.ok();
   }

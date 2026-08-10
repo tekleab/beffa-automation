@@ -128,16 +128,9 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         }
 
         const { apiBase, headers, qs } = await app.buildApiContext();
-        const poResp = await page.request.get(`${apiBase}/purchase-order/${po.poId}?${qs}`, { headers });
-        const poData = await poResp.json();
-        let poItemId = (poData.po_items || []).find((i: any) => i.id)?.id;
-        if (!poItemId) {
-            const subResp = await page.request.get(`${apiBase}/purchase-orders/${po.poId}/items?${qs}`, { headers });
-            if (subResp.ok()) {
-                const subData = await subResp.json();
-                poItemId = (subData.data || subData.items || []).find((i: any) => i.id)?.id;
-            }
-        }
+        // po.poItems comes from the creation response — the only source that includes item IDs.
+        // GET /purchase-order/{id} and GET /purchase-orders/{id}/items both omit the id field.
+        const poItemId = (po.poItems || []).find((i: any) => i.id)?.id;
         if (!poItemId) throw new Error(`[SETUP_FAIL] PO ${po.poNumber} has no billable line items.`);
 
         const overflowBill = await app.api.purchase.createPartialBillFromPoAPI(po.poId, [{
@@ -320,21 +313,16 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         if ((poData.vendor_id || poData.vendor?.id) !== (billData.vendor_id || billData.vendor?.id))
             throw new Error(`[CRITICAL_LOGIC_BUG] Vendor mismatch.`);
 
-        // GET /purchase-order/{id} does not return po_items — use po.poItems from creation response
-        const poItems = po.poItems?.length ? po.poItems : (poData.po_items || []);
-        if (!poItems.length) {
-            const subResp = await page.request.get(`${apiBase}/purchase-orders/${po.poId}/items?${qs}`, { headers });
-            if (subResp.ok()) {
-                const subData = await subResp.json();
-                poItems.push(...(subData.data || subData.items || []));
-            }
-        }
+        // po.poItems from creation response is the only source with item IDs.
+        // GET /purchase-order/{id} strips po_items; GET /purchase-orders/{id}/items has no id field.
+        const poItems = po.poItems?.length ? po.poItems : [];
         const billItems = billData.received_purchase_order_items || [];
         if (!poItems.length) throw new Error(`[CRITICAL_LOGIC_BUG] PO has no items.`);
         if (!billItems.length) throw new Error(`[CRITICAL_LOGIC_BUG] Bill has no received PO items.`);
 
+        // received_purchase_order_items has no po_item_id — match by item.id (inventory item UUID)
         for (const pi of poItems) {
-            const bi = billItems.find((b: any) => b.po_item_id === pi.id);
+            const bi = billItems.find((b: any) => b.item?.id === pi.item_id || b.item?.id === pi.item?.id);
             if (!bi) throw new Error(`[CRITICAL_LOGIC_BUG] PO item ${pi.id} missing in bill.`);
             if (parseFloat(bi.received_quantity) !== parseFloat(pi.quantity))
                 throw new Error(`[CRITICAL_LOGIC_BUG] Qty mismatch. PO:${pi.quantity} Bill:${bi.received_quantity}`);
