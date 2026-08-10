@@ -358,13 +358,16 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git add scripts/results.json scripts/results-accumulated.json
         git diff --staged --quiet || git commit -m "chore: update results.json from CI run [skip ci]"
+        # Stash any unstaged changes (generated artifacts) so rebase can proceed cleanly
+        git stash --include-untracked || true
         # Rebase on any commits that landed on main while the CI run was in progress
-        # (e.g. developer pushes a fix mid-run). Retry up to 3 times.
         for attempt in 1 2 3; do
           git pull --rebase origin main && break
           echo "[WARN] git pull --rebase failed on attempt $attempt — retrying in 5s..."
           sleep 5
         done
+        # Restore stashed artifacts (ignore errors — stash may be empty)
+        git stash pop || true
         git push origin HEAD:main
 
     - name: Deploy to GitHub Pages
