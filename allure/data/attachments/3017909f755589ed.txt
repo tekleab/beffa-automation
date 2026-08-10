@@ -1,0 +1,25 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:43:10 [PERFORMANCE] API - Auth API Verification: 238.79ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:43:17 [PERFORMANCE] API - Auth API Verification: 236.58ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=100 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001204 (ID: fd078b1e-7b09-430a-b2ac-366021b1a6a5)
+09:43:21 [INFO] Advancing inventory-adjustments "fd078b1e-7b09-430a-b2ac-366021b1a6a5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 100...
+[WARN] pollStockAPI timed out. Expected 100, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786355000336 (526c9fd8-0e3f-44bc-b632-2c9ec4162335) | method=WAC | stock=100@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating negative adjustment (-50) for: WAC-Item-1786355000336 | Stock before: 100
+[ADJ] quantity | qty=-50 @ $100 | current=100 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001205 (ID: 2a964122-907b-4555-92eb-ff315a4bff5a)
+[STEP 2] Adjustment created: ADJ/2026/08/10/001205 | Approving...
+09:43:56 [INFO] Advancing inventory-adjustments "2a964122-907b-4555-92eb-ff315a4bff5a"...
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[WARN] pollStockAPI timed out. Expected 50, actual 0.
+[AUDIT] Stock before: 100 | Adjustment: -50 | Expected: 50 | Final: 0

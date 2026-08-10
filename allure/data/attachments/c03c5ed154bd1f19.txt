@@ -1,0 +1,68 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:37:42 [PERFORMANCE] API - Auth API Verification: 224.48ms
+[WARN] API Login failed (API Login Failed: 500). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001182 (ID: 73f0963e-befe-455e-b5a8-c92cfeba7690)
+09:37:52 [INFO] Advancing inventory-adjustments "73f0963e-befe-455e-b5a8-c92cfeba7690"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786354671258 (ddf17fb7-743c-4b99-9741-350a7262a775) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:38:29 [PERFORMANCE] API - Auth API Verification: 240.88ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:38:35 [PERFORMANCE] API - Auth API Verification: 235.90ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 5000...
+09:38:37 [INFO] Advancing bills "c454fa2a-8b97-49b1-90f4-83b15d3d01c6"...
+[BILL] BILL/2026/08/10/000750 (c454fa2a-8b97-49b1-90f4-83b15d3d01c6)
+[COA SNAPSHOT] Cash before: -60095 | AP before: 2780100
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║         PAYMENT MISMATCH — SYSTEM RESPONSE SUMMARY       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What we sent:                                           ║
+  ║    • Payment total (header)  : $5000                      ║
+  ║    • Allocated to bill       : $3000                      ║
+  ║    • Gap (unaccounted)        : $2000                      ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response: REJECTED ✓                             ║
+  ║  The API enforces amount == sum(bill_payments).           ║
+  ║  No journal entry was created. Ledger is clean.           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Split Array Mismatch Guardrail                                          │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/10/000750               │
+  │ Bill ID                          │ c454fa2a-8b97-49b1-90f4-83b15d3d01c… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Payment Total (header)           │ $5000.00                             │
+  │ Allocated to Bill                │ $3000.00                             │
+  │ Unaccounted Amount               │ $2000.00                             │
+  │ Payment Ref                      │ N/A (blocked)                        │
+  │ Bill Balance After               │ N/A (blocked)                        │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ COA: Cash - Main Office Before   │ $-60095.00                           │
+  │ COA: Cash - Main Office After    │ N/A                                  │
+  │ COA: Cash Movement               │ N/A                                  │
+  │ COA: Accounts Payable Before     │ $2780100.00                          │
+  │ COA: Accounts Payable After      │ N/A                                  │
+  │ COA: AP Movement                 │ N/A                                  │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ Vulnerability Finding            │ HTTP 422 — rejected at creation      │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Mismatch rejected at API l… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Mismatched payment correctly rejected.

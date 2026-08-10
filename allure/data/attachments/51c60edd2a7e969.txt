@@ -1,0 +1,35 @@
+[DateHelper] _fromEnv: EC year 2018 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2018)
+[WARN] API Login failed (apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001
+Call log:
+  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2018.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001160 (ID: 5f558d1d-de09-4d9c-b22c-fdc696b45cc8)
+09:31:42 [INFO] Advancing inventory-adjustments "5f558d1d-de09-4d9c-b22c-fdc696b45cc8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786354301638 (e02df4ab-c8ae-43ee-84a7-aacc652c5fb7) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:32:20 [PERFORMANCE] API - Auth API Verification: 215.04ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:32:27 [PERFORMANCE] API - Auth API Verification: 224.05ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ATTACK] Submitting Invoice forged for: 2021-04-29T00:00:00Z
+[VULNERABILITY] Backend API accepted back-dated payload! ID: INV/2026/08/10/001125
+09:32:30 [INFO] Advancing invoices "7f41d006-2e4c-4ee0-ab56-2894d19e9b90"...
+[PASS] Backend safely intercepted rogue date during advancement: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2021-04-29 falls in a closed or missin

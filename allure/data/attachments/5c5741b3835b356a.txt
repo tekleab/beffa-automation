@@ -1,0 +1,28 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:33:17 [PERFORMANCE] API - Auth API Verification: 248.05ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:33:24 [PERFORMANCE] API - Auth API Verification: 242.71ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP] Phase 1: Create PO via API
+09:33:28 [WARN] GET http://168.119.175.142:8001/api/taxes?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001166 (ID: 78ae660e-862a-4f0e-9452-22d71f6523f4)
+09:33:33 [INFO] Advancing inventory-adjustments "78ae660e-862a-4f0e-9452-22d71f6523f4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786354412045 (5d36d0f3-992c-4488-8a19-6f9cdcd850a8) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/10/000551
+09:34:09 [INFO] Advancing purchase-orders "64de5c59-a480-4e8c-a74d-361f5ac735d1"...
+[OK] PO PO/2026/08/10/000551 approved
+[STEP] Phase 2: Create linked Bill via API
+09:34:11 [INFO] Advancing bills "6d1c64aa-0526-4a85-9112-54a7ff8389bd"...
+[OK] Bill BILL/2026/08/10/000738 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/08/10/000738 is physically present in Gentium Concrite Industry's ledger.
+[RESULT] PASSED — PO PO/2026/08/10/000551 → Bill BILL/2026/08/10/000738 verified in vendor Gentium Concrite Industry

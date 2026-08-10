@@ -1,0 +1,44 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:35:48 [PERFORMANCE] API - Auth API Verification: 228.13ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001174 (ID: 57498ba4-c740-441b-8825-64b2cae34c15)
+09:35:56 [INFO] Advancing inventory-adjustments "57498ba4-c740-441b-8825-64b2cae34c15"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[WARN] pollStockAPI timed out. Expected 50, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786354555845 (be3fe2b6-6d6c-4083-9a03-af8a35b4a832) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:36:33 [PERFORMANCE] API - Auth API Verification: 241.70ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:36:40 [PERFORMANCE] API - Auth API Verification: 221.14ms
+[WARN] API Login failed (API Login Failed: 500). Falling back to UI Login...
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

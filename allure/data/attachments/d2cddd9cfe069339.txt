@@ -1,0 +1,37 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:39:44 [PERFORMANCE] API - Auth API Verification: 236.08ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001190 (ID: 489d92fb-d365-4dc1-a02c-4a40bca2063f)
+09:39:51 [INFO] Advancing inventory-adjustments "489d92fb-d365-4dc1-a02c-4a40bca2063f"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786354790189 (dd44a185-c121-4d82-91d2-4ca0092a8b34) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  WAC-Item-1786354790189 | Stock: 20
+[PLAN]  PO: 10 | Batch1: 4 | Batch2: 6 | Over: 1
+=========================================
+
+[STEP 1] Creating & approving PO for 10 units...
+09:40:28 [INFO] Advancing purchase-orders "43cfc004-6360-4fe7-b157-c90731a56397"...
+[OK] PO PO/2026/08/10/000582 approved (ID: 43cfc004-6360-4fe7-b157-c90731a56397)
+[STEP 2] Receiving Batch 1: 4 units...
+09:40:31 [INFO] Advancing bills "0dfe96a7-c6bd-4813-9c47-83c6c18d0ed9"...
+[OK] Batch 1 bill BILL/2026/08/10/000757 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+09:40:33 [INFO] Advancing bills "5da515d3-e1c5-435e-8d5b-0b87abb9351e"...
+[OK] Batch 2 bill BILL/2026/08/10/000758 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[WARN] pollStockAPI timed out. Expected 30, actual 0.
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO    : PO/2026/08/10/000582 (43cfc004-6360-4fe7-b157-c90731a56397)
+[DOCUMENT] Bill1 : BILL/2026/08/10/000757 (0dfe96a7-c6bd-4813-9c47-83c6c18d0ed9) — 4 units
+[DOCUMENT] Bill2 : BILL/2026/08/10/000758 (5da515d3-e1c5-435e-8d5b-0b87abb9351e) — 6 units
+[STOCK] Before: 20 | After: 0 | Expected: 30
+=============================================
+

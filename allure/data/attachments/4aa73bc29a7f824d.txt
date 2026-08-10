@@ -1,0 +1,35 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:40:02 [PERFORMANCE] API - Auth API Verification: 256.58ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/10/001191 (ID: b2d20c8f-ea8f-44cd-9473-920ca8fac15a)
+09:40:10 [INFO] Advancing inventory-adjustments "b2d20c8f-ea8f-44cd-9473-920ca8fac15a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786354809331 (2f70fdb0-1a97-4416-b382-593b73f93287) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:40:47 [PERFORMANCE] API - Auth API Verification: 245.12ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10
+[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)
+09:40:53 [PERFORMANCE] API - Auth API Verification: 246.34ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 3000...
+09:40:55 [INFO] Advancing bills "b35b9eca-9c18-4315-aefc-8d6818f847f6"...
+[BILL] BILL/2026/08/10/000759 (b35b9eca-9c18-4315-aefc-8d6818f847f6) | Amount: 3000
+[ATTACK] Overpayment of 6000 against bill BILL/2026/08/10/000759 (total: 3000)...
+[ACTION] Creating Bill Payment for b35b9eca-9c18-4315-aefc-8d6818f847f6 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 1/5) — topping up 83095...
+09:40:59 [INFO] Seeding 830950 → Dr "Cash - Main Office" / Cr "Service Income"
+09:41:00 [INFO] Advancing receipts "4d736896-f3d6-4418-9497-4c542cbc2e61"...
+09:41:07 [INFO] Seeded 830950 into "Cash - Main Office" (receipt RCPT/2026/08/10/000262)
+[SUCCESS] Payment created: PAY/2026/08/10/000167 (ID: 9bcdebf1-0046-44a1-9ee4-f0a2f258e5ad)
+09:41:13 [INFO] Advancing payments "9bcdebf1-0046-44a1-9ee4-f0a2f258e5ad"...
+[PAYMENT] PAY/2026/08/10/000167 (9bcdebf1-0046-44a1-9ee4-f0a2f258e5ad) | Amount: 6000
+[RESULT] Bill BILL/2026/08/10/000759 balance after overpayment: -3000 (expected: >= 0)
+09:41:15 [FAIL] Bill BILL/2026/08/10/000759 overpayment bug confirmed: balance=-3000
