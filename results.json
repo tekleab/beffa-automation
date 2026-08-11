@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 15,
-  "failed": 3,
+  "passed": 16,
+  "failed": 2,
   "skipped": 1,
-  "passRate": 78.9,
-  "avgDurationMs": 50189,
-  "lastUpdated": "2026-08-11T05:40:58.232Z",
+  "passRate": 84.2,
+  "avgDurationMs": 39732,
+  "lastUpdated": "2026-08-11T06:13:53.282Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 15,
-      "failed": 3,
+      "passed": 16,
+      "failed": 2,
       "skipped": 1,
       "trend": [
-        88.9,
         74.8,
         78.8,
         78.9,
         94.7,
         84.9,
-        83.3
+        83.3,
+        88.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "620",
+      "commit": "f71c9ea",
+      "trigger": "push (smoke)",
+      "duration": "12m 34s",
+      "passRate": 84.2,
+      "status": "success"
+    },
     {
       "run": "619",
       "commit": "c79de03",
@@ -95,39 +103,15 @@
       "duration": "10m 23s",
       "passRate": 94.7,
       "status": "success"
-    },
-    {
-      "run": "607",
-      "commit": "a1736b2",
-      "trigger": "push (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for 516a1b03-e297-43bd-bf7c-6b79879aa6ca: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:728\n\n  7",
-      "firstSeen": "2026-08-11T05:31:38.505Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:603\n\n  601 |     }\n ",
-      "firstSeen": "2026-08-11T05:32:36.215Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test timeout of 120000ms exceeded.\n\n  121 |             if (billVisible) break;\n  122 |             console.log(`[POLL ${attemp",
-      "firstSeen": "2026-08-11T05:34:49.760Z",
-      "occurrences": 1,
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:607\n\n  605 |     }\n ",
+      "firstSeen": "2026-08-11T06:05:55.668Z",
+      "occurrences": 2,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
   ]
