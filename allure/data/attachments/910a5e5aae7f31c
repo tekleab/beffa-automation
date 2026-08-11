@@ -1,0 +1,99 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/taxes?year=2019&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `400`
+- **Latency**: `208.90ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"data": [
+		{
+			"active": true,
+			"applies_for": "sales",
+			"code": "TOT",
+			"created_at": "2026-07-27T11:53:16.18526Z",
+			"created_by": "00000000-0000-0000-0000-000000000000",
+			"deduction": 0,
+			"deleted_by": "00000000-0000-0000-0000-000000000000",
+			"id": "41bd2d05-67e1-4de4-873e-6608c11d86b8",
+			"max": 0,
+			"min": 0,
+			"name": "Turnover Tax",
+			"rate": 2,
+			"updated_at": "2026-07-27T11:53:16.185292Z",
+			"updated_by": "00000000-0000-0000-0000-000000000000"
+		},
+		{
+			"active": true,
+			"applies_for": "sales",
+			"code": "VAT",
+			"created_at": "2026-07-27T11:53:16.185228Z",
+			"created_by": "00000000-0000-0000-0000-000000000000",
+			"deduction": 0,
+			"deleted_by": "00000000-0000-0000-0000-000000000000",
+			"id": "2109d55a-18ca-4630-9fdd-4f63c10ab900",
+			"max": 0,
+			"min": 0,
+			"name": "Value Added Tax",
+			"rate": 15,
+			"updated_at": "2026-07-27T11:53:16.185292Z",
+			"updated_by": "00000000-0000-0000-0000-000000000000"
+		},
+		{
+			"active": true,
+			"applies_for": "goods",
+			"code": "WHT",
+			"created_at": "2026-07-27T11:53:16.185265Z",
+			"created_by": "00000000-0000-0000-0000-000000000000",
+			"deduction": 0,
+			"deleted_by": "00000000-0000-0000-0000-000000000000",
+			"id": "bd371117-9f3a-49cd-9441-b541ff3bf4ec",
+			"max": 0,
+			"min": 10000,
+			"name": "Withholding Tax",
+			"rate": 2,
+			"updated_at": "2026-07-27T11:53:16.185292Z",
+			"updated_by": "00000000-0000-0000-0000-000000000000"
+		},
+		{
+			"active": true,
+			"applies_for": "service",
+			"code": "WHT",
+			"created_at": "2026-07-27T11:53:16.185269Z",
+			"created_by": "00000000-0000-0000-0000-000000000000",
+			"deduction": 0,
+			"deleted_by": "00000000-0000-0000-0000-000000000000",
+			"id": "3a7d4dd3-e2a5-4a68-b2e7-3a2fe9ddd916",
+			"max": 0,
+			"min": 3000,
+			"name": "Withholding Tax - Service",
+			"rate": 2,
+			"updated_at": "2026-07-27T11:53:16.185292Z",
+			"updated_by": "00000000-0000-0000-0000-000000000000"
+		}
+	],
+	"error": "conn busy"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  "http://168.119.175.142:8001/api/taxes?year=2019&period=yearly&calendar=ec"
+```

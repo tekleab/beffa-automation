@@ -1,0 +1,44 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:31:30 [PERFORMANCE] API - Auth API Verification: 237.16ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001432 (ID: 1c00e722-a5e4-4c83-a327-90369dd3cd7c)
+06:31:40 [INFO] Advancing inventory-adjustments "1c00e722-a5e4-4c83-a327-90369dd3cd7c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786429899197 (dba8f52d-1f84-4503-81c0-263a97823255) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:31:45 [PERFORMANCE] API - Auth API Verification: 252.63ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:31:53 [PERFORMANCE] API - Auth API Verification: 233.98ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 9000...
+06:31:56 [INFO] Advancing bills "82e52db8-385d-4c6f-8c2a-1eb09bf57ea2"...
+[BILL] BILL/2026/08/11/000850 (82e52db8-385d-4c6f-8c2a-1eb09bf57ea2) | Total: 9000
+[STEP 2] Partial payment 1 of 3000 against bill BILL/2026/08/11/000850...
+[ACTION] Creating Bill Payment for 82e52db8-385d-4c6f-8c2a-1eb09bf57ea2 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/11/000190 (ID: 23eb4cdf-5257-4a30-be4c-17385bb0b7b4)
+06:31:59 [INFO] Advancing payments "23eb4cdf-5257-4a30-be4c-17385bb0b7b4"...
+[PAYMENT 1] PAY/2026/08/11/000190 (23eb4cdf-5257-4a30-be4c-17385bb0b7b4) | Amount: 3000
+[AUDIT] Bill BILL/2026/08/11/000850 balance after payment 1: 6000 (expected: 6000)
+[STEP 3] Partial payment 2 of 3000 against bill BILL/2026/08/11/000850...
+[ACTION] Creating Bill Payment for 82e52db8-385d-4c6f-8c2a-1eb09bf57ea2 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/11/000191 (ID: 860f8c27-cc45-4523-946b-6ed81f4c3bc0)
+06:32:04 [INFO] Advancing payments "860f8c27-cc45-4523-946b-6ed81f4c3bc0"...
+[PAYMENT 2] PAY/2026/08/11/000191 (860f8c27-cc45-4523-946b-6ed81f4c3bc0) | Amount: 3000
+[AUDIT] Bill BILL/2026/08/11/000850 balance after payment 2: 3000 (expected: 3000)
+[STEP 4] Partial payment 3 of 3000 against bill BILL/2026/08/11/000850...
+[ACTION] Creating Bill Payment for 82e52db8-385d-4c6f-8c2a-1eb09bf57ea2 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/11/000192 (ID: eead138d-71c3-44d8-bbf9-520e5eff3eda)
+06:32:09 [INFO] Advancing payments "eead138d-71c3-44d8-bbf9-520e5eff3eda"...
+[PAYMENT 3] PAY/2026/08/11/000192 (eead138d-71c3-44d8-bbf9-520e5eff3eda) | Amount: 3000
+[AUDIT] Bill BILL/2026/08/11/000850 balance after payment 3: 0 (expected: 0)
+[AUDIT] Bill BILL/2026/08/11/000850 final balance after 3 partial payments: 0 (expected: 0)
+[PASS] Bill BILL/2026/08/11/000850 partial payment sequence correctly zeroed balance.

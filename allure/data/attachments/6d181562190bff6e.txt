@@ -1,0 +1,30 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2020): between 07/08/2027 and 07/07/2028 → using 2027-09-15
+[DateHelper] Resolved in-period date: 2027-09-15T00:00:00Z (day=15, ecYear=2020)
+06:31:24 [PERFORMANCE] API - Auth API Verification: 233.57ms
+[AUTH] Year switcher not visible — skipping year switch to 2020.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001430 (ID: 6a65dc78-2e30-4ab7-bac7-b50f925a3fb3)
+06:31:33 [INFO] Advancing inventory-adjustments "6a65dc78-2e30-4ab7-bac7-b50f925a3fb3"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786429892655 (6de86bd0-e74e-4bc3-b1b8-da187b0efb7d) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:31:38 [PERFORMANCE] API - Auth API Verification: 239.69ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:31:46 [PERFORMANCE] API - Auth API Verification: 247.69ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating & approving Bill for 3000...
+06:31:49 [INFO] Advancing bills "30dbd73d-3962-45c9-99cf-153b09cc0815"...
+[BILL] BILL/2026/08/11/000848 (30dbd73d-3962-45c9-99cf-153b09cc0815) | Amount: 3000
+[ATTACK] Overpayment of 6000 against bill BILL/2026/08/11/000848 (total: 3000)...
+[ACTION] Creating Bill Payment for 30dbd73d-3962-45c9-99cf-153b09cc0815 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/11/000187 (ID: 34343e10-5dcf-442d-9392-d0fedc5e896c)
+06:31:52 [INFO] Advancing payments "34343e10-5dcf-442d-9392-d0fedc5e896c"...
+[PAYMENT] PAY/2026/08/11/000187 (34343e10-5dcf-442d-9392-d0fedc5e896c) | Amount: 6000
+[RESULT] Bill BILL/2026/08/11/000848 balance after overpayment: -3000 (expected: >= 0)
+06:31:54 [FAIL] Bill BILL/2026/08/11/000848 overpayment bug confirmed: balance=-3000

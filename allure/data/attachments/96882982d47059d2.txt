@@ -1,0 +1,59 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:22:09 [PERFORMANCE] API - Auth API Verification: 252.48ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:22:19 [PERFORMANCE] API - Auth API Verification: 239.24ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:22:25 [PERFORMANCE] API - Auth API Verification: 235.94ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP 1] Creating 3 fresh WAC items...
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001376 (ID: 42d779ee-f9a1-41d7-83cd-61f940a8c2d6)
+06:22:30 [INFO] Advancing inventory-adjustments "42d779ee-f9a1-41d7-83cd-61f940a8c2d6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1786429349123 (ec00d8e6-43c7-4d8b-9cd4-0c831741d449) | method=WAC | stock=10@$50 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001377 (ID: 146aa99f-5664-4953-82db-ff2e7654b2cf)
+06:22:35 [INFO] Advancing inventory-adjustments "146aa99f-5664-4953-82db-ff2e7654b2cf"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1786429353921 (a7c42d0b-a3ee-4959-86e2-ff88a2f458b8) | method=WAC | stock=10@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $120 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001379 (ID: 2743e188-3394-4cf5-81f3-0b99a016c9bb)
+06:22:39 [INFO] Advancing inventory-adjustments "2743e188-3394-4cf5-81f3-0b99a016c9bb"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1786429358635 (0f28c3bc-e72b-4fca-9425-ed7e75299ac4) | method=WAC | stock=10@$120 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM 1] WAC-Item-1786429349123 | stock:10 | cost:$50
+[ITEM 2] WAC-Item-1786429353921 | stock:10 | cost:$80
+[ITEM 3] WAC-Item-1786429358635 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/08/11/001211 (be410933-bc4b-4064-bcea-d41349e3bf39)
+06:22:42 [INFO] Advancing invoices "be410933-bc4b-4064-bcea-d41349e3bf39"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] WAC-Item-1786429349123 | before:10 → after:9 (exp:9)
+[ITEM 2] WAC-Item-1786429353921 | before:10 → after:9 (exp:9)
+[ITEM 3] WAC-Item-1786429358635 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales () | Dr:0 Cr:50
+[JE] Cash - Main Office () | Dr:50 Cr:0
+[JE] Inventory () | Dr:0 Cr:50
+[JE] Sales () | Dr:0 Cr:80
+[JE] Cash - Main Office () | Dr:80 Cr:0
+[JE] Inventory () | Dr:0 Cr:80
+[JE] Sales () | Dr:0 Cr:120
+[JE] Cash - Main Office () | Dr:120 Cr:0
+[JE] Inventory () | Dr:0 Cr:120
+[JE] Accounts Receivable () | Dr:250 Cr:0
+[AUDIT] Total Dr: $500 | Total Cr: $500 | Expected COGS: $250
+[PASS] COGS journal balanced — Dr:$500 = Cr:$500
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced

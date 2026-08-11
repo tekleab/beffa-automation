@@ -1,0 +1,48 @@
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+[ADJ] quantity | qty=200 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001416 (ID: e44edcdc-87e3-4938-bae7-90915c446b61)
+06:28:49 [INFO] Advancing inventory-adjustments "e44edcdc-87e3-4938-bae7-90915c446b61"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 200...
+[SUCCESS] API Confirmed: Stock correctly reached 200.
+[FRESH ITEM] Created: WAC-Item-1786429728143 (b49d1f18-71d0-46aa-b08f-9f18b67f5402) | method=WAC | stock=200@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] Firing 20 concurrent PO creations...
+[LOAD] 13 passed | 7 failed | 15053ms
+[FAIL 1] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 2] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 3] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 4] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 5] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 6] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 7] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[KNOWN_BUG] 7 PO(s) hit unique_po_company constraint — ERP sequence not atomic under concurrent load
+[PASS] 20 POs in 15053ms | avg: 753ms/PO

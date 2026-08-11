@@ -1,0 +1,41 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+06:26:38 [PERFORMANCE] API - Auth API Verification: 242.04ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[PHASE 1] Discovering item for E2E cycle...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001403 (ID: 98cb78e8-ffc7-4daa-930c-9869ec66072f)
+06:26:46 [INFO] Advancing inventory-adjustments "98cb78e8-ffc7-4daa-930c-9869ec66072f"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786429605246 (d7b591e7-bb35-44de-b7a6-4760c349baa0) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] Item: "WAC-Item-1786429605246" | Stock Before: 20
+[PHASE 2] Creating & approving PO + Bill via API...
+06:26:51 [INFO] Advancing purchase-orders "a19db63c-c292-4bed-b291-97496fb902ac"...
+06:26:54 [INFO] Advancing bills "5738f044-ecb8-47a1-a78d-d250bd495bfd"...
+[OK] Bill BILL/2026/08/11/000827 approved.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 25...
+[SUCCESS] API Confirmed: Stock correctly reached 25.
+[AUDIT] Stock after purchase: 25 (Expected: 25)
+[PHASE 3] Creating & approving SO via API...
+06:27:02 [INFO] Advancing sales-orders "8d35c748-7b38-44a0-9778-cf965b7038f6"...
+[OK] SO SO/2026/08/11/000312 approved.
+[PHASE 3] Creating & approving Invoice via API...
+06:27:05 [INFO] Advancing invoices "c1739ea5-5738-41ff-b32f-347d071307e2"...
+[OK] Invoice INV/2026/08/11/001250 approved.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 23...
+[SUCCESS] API Confirmed: Stock correctly reached 23.
+
+========== E2E CYCLE AUDIT REPORT ==========
+[ITEM]    WAC-Item-1786429605246 (d7b591e7-bb35-44de-b7a6-4760c349baa0)
+[BILL]    undefined — purchased 5 units
+[SO]      SO/2026/08/11/000312 — sold 2 units
+[INVOICE] INV/2026/08/11/001250
+[STOCK]   Before Purchase : 20
+[STOCK]   After Purchase  : 25
+[STOCK]   After Sale      : 23 (Expected: 23)
+============================================
+
+[PASS] E2E Purchase to Sale cycle complete. Inventory correctly reconciled.
