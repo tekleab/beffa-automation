@@ -155,30 +155,29 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         const rogueDate = '2021-04-29T00:00:00Z';
         console.log(`[ATTACK] Submitting Bill forged for: ${rogueDate}`);
 
+        let rogueBill: any;
         try {
-            const rogueBill = await app.api.purchase.createBillAPI({
+            rogueBill = await app.api.purchase.createBillAPI({
                 vendorId: meta.vendorId,
                 itemId: item.itemId,
                 quantity: 1,
                 unitPrice: 5000,
                 apAccountId: meta.apAccountId
             });
-            console.log(`[VULNERABILITY] Backend API accepted back-dated payload! ID: ${rogueBill.ref}`);
+        } catch (err: any) {
+            console.log(`[PASS] Backend API rejected back-dated bill creation payload: ${err.message}`);
+            return;
+        }
 
-            try {
-                await app.advanceDocumentAPI(rogueBill.id, 'bills');
-                const finalStatus = await app.api.purchase.getBillAPI(rogueBill.id);
-                if (finalStatus.status?.toLowerCase().includes('approved') || finalStatus.status?.toLowerCase().includes('authorized')) {
-                    throw new Error(`[CRITICAL_LOGIC_BUG] ERP fully approved a bill from the past (${rogueDate})! Immutability is broken.`);
-                }
-                console.log(`[PASS] Bill advanced but stopped short of full approval.`);
-            } catch (authErr: any) {
-                if (authErr.message.includes('CRITICAL_LOGIC_BUG')) throw authErr;
-                console.log(`[PASS] Backend safely intercepted rogue date: ${authErr.message}`);
-            }
-        } catch (error: any) {
-            if (error.message.includes('CRITICAL_LOGIC_BUG')) throw error;
-            console.log(`[PASS] Back-dating blocked: ${error.message}`);
+        console.log(`[VULNERABILITY] Backend API accepted back-dated payload! ID: ${rogueBill.ref}`);
+
+        await app.advanceDocumentAPI(rogueBill.id, 'bills').catch(() => {});
+        const finalStatus = await app.api.purchase.getBillAPI(rogueBill.id);
+
+        if (finalStatus.status?.toLowerCase().includes('approved') || finalStatus.status?.toLowerCase().includes('authorized')) {
+            throw new Error(`[CRITICAL_LOGIC_BUG #TEMP-01] ERP fully approved back-dated bill (${rogueBill.ref}, date: ${rogueDate})! Temporal immutability is violated.`);
+        } else {
+            throw new Error(`[ERP_BUG #TEMP-02] Temporal Immutability Violation: Backend API accepted back-dated bill payload (${rogueBill.ref}).`);
         }
     });
 });

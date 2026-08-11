@@ -50,7 +50,7 @@ jobs:
       API_URL: ${{ secrets.API_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
-      BEFFA_TOKEN: ${{ secrets.BEFFA_TOKEN }}
+      BEFFA_TOKEN: ${{ secrets.BEFFA_TOKEN || '' }}
       BEFFA_COMPANY: ${{ github.event.inputs.company || secrets.BEFFA_COMPANY || 'BM Tech' }}
       # push/PR → smoke (fast gate, ~10 min). Use workflow_dispatch for full/regression.
       TEST_TYPE: ${{ github.event.inputs.test_type || 'smoke' }}

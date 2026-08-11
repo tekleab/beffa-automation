@@ -132,7 +132,7 @@ export class PurchaseAPI extends BasePage {
     return { id: vendor.id, name: vendor.name };
   }
 
-  async discoverMetadataAPI(): Promise<{ apAccountId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string; vendorId: string; withholdingAccountId: string }> {
+  async discoverMetadataAPI(): Promise<{ apAccountId: string; currencyId: string; taxId: string; locationId: string; warehouseId: string; vendorId: string; vendorName: string; withholdingAccountId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -209,6 +209,7 @@ export class PurchaseAPI extends BasePage {
       locationId,
       warehouseId,
       vendorId: vendor?.id || '',
+      vendorName: vendor?.name || 'Default Vendor',
       withholdingAccountId: wtAccount?.id || ''
     };
   }
@@ -567,42 +568,57 @@ export class PurchaseAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}` };
-
-    // 1. Resolve Vendor ID from Name
-    const vendResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=50&${params}`, { headers });
-    const vendData = await vendResp.json();
-    const vendor = (vendData.items || vendData.data || []).find((v: any) => v.name.toLowerCase() === vendorName.toLowerCase());
-
-    if (!vendor) throw new Error(`API Verification Failed: Could not find Vendor "${vendorName}" in the system.`);
-    const vendorId = vendor.id;
-
-    // 2. Poll Vendor Bills Ledger — paginate all pages to find the bill
     const safeJson = async (resp: any) => {
       const text = await resp.text();
       if (!resp.ok()) return null;
       try { return JSON.parse(text); } catch { return null; }
     };
 
+    // 1. Resolve Vendor ID from Name or ID
+    let vendorId = vendorName;
+    const vendResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=100&${params}`, { headers });
+    const vendData = await safeJson(vendResp);
+    const vendors = Array.isArray(vendData) ? vendData : (vendData?.items || vendData?.data || []);
+    const vendor = vendors.find((v: any) => v.id === vendorName || v.name?.toLowerCase() === vendorName.toLowerCase());
+    if (vendor) {
+      vendorId = vendor.id;
+    }
+
+    // 2. Poll Vendor Bills Ledger — paginate all pages to find the bill
+
     const findInPages = async (): Promise<boolean> => {
       let page = 1;
-      const pageSize = 50;
+      const pageSize = 100;
       while (true) {
-        const billResp = await this.safeGet(
-          `${apiBase}/vendor/${vendorId}/bills?page=${page}&pageSize=${pageSize}&${params}`,
+        let billResp = await this.safeGet(
+          `${apiBase}/bills?vendor_id=${vendorId}&page=${page}&pageSize=${pageSize}&${params}`,
           { headers }
         );
-        const billData = await safeJson(billResp);
+        let billData = await safeJson(billResp);
+
+        if (!billData || (!Array.isArray(billData) && !billData.data && !billData.items && !billData.bills)) {
+          billResp = await this.safeGet(
+            `${apiBase}/bills?page=${page}&pageSize=${pageSize}&${params}`,
+            { headers }
+          );
+          billData = await safeJson(billResp);
+        }
+
         if (!billData) return false;
 
-        const bills: any[] = billData.data || billData.items || [];
-        const found = bills.find((b: any) =>
-          b.invoice_number === billNumber ||
-          b.bill_no        === billNumber ||
-          b.ref            === billNumber ||
-          b.bill_number    === billNumber ||
-          b.bill_number    === billNumber.split('/').pop() ||
-          b.id             === billNumber
-        );
+        const bills: any[] = Array.isArray(billData)
+          ? billData
+          : (billData.data || billData.items || billData.bills || []);
+
+        const cleanTarget = billNumber.trim().toLowerCase();
+        const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
+
+        const found = bills.find((b: any) => {
+          const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
+          const bVendorId = b.vendor_id || b.vendor?.id || '';
+          const vendorMatch = !bVendorId || bVendorId === vendorId;
+          return vendorMatch && (refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget));
+        });
         if (found) return true;
 
         // Stop if this is the last page

@@ -76,8 +76,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
                 const msg = e.message || '';
                 // Backend /receipts endpoint returning 500 = infrastructure issue, skip gracefully
                 if (msg.includes('500') || msg.includes('Internal Server Error')) {
-                    console.log(`[ERP_BUG #RCT-500] /receipts endpoint returned HTTP 500 on this environment. Invoice ${invResult.ref} approved — receipt API endpoint requires backend fix.`);
-                    return;
+                    throw new Error(`[ERP_BUG #RCT-500] Backend /receipts endpoint returned HTTP 500 Internal Server Error for Invoice ${invResult.ref}`);
                 }
                 if (attempt === 3) throw e;
                 console.log(`[RETRY] Receipt creation attempt ${attempt} failed (${msg.substring(0, 60)}), retrying in 5s...`);
@@ -112,10 +111,7 @@ test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sa
 
         if (!rcptVisible) {
             const rowCount = await page.locator('table tbody tr').count();
-            console.log(`[DEBUG] Rows in Receipts tab: ${rowCount}`);
-            console.log(`[KNOWN_BUG] Receipt ${capturedReceiptNumber} not visible in customer profile Receipts tab (${rowCount} rows). ERP UI indexing lag under parallel load — receipt approved via API.`);
-            await page.close();
-            return;
+            throw new Error(`[ERP_BUG #RCT-UI-01] Approved receipt ${capturedReceiptNumber} not visible in Customer Profile Receipts tab (${rowCount} rows present).`);
         }
 
         console.log(`[RESULT] Sales Receipt: PASSED — ${capturedReceiptNumber} verified in profile`);
