@@ -1,0 +1,17 @@
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+09:29:25 [PERFORMANCE] API - Auth API Verification: 289.24ms
+09:29:32 [PERFORMANCE] API - Auth API Verification: 260.34ms
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001534 (ID: 1e183ea3-6e8a-4e95-b3cd-764b803d90b7)
+09:29:39 [INFO] Advancing inventory-adjustments "1e183ea3-6e8a-4e95-b3cd-764b803d90b7"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786440577877 (d1a956a4-9505-448f-9579-13f2061f3924) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/11/000684
+09:29:42 [INFO] Advancing purchase-orders "10cd5571-e7f8-4ddc-9698-36fb42ede384"...
+[OK] PO PO/2026/08/11/000684 approved
+[STEP] Phase 2: Create linked Bill via API
+09:29:45 [INFO] Advancing bills "504a10eb-0005-4d1f-8702-07f28401ff95"...
+[OK] Bill BILL/2026/08/11/000887 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
