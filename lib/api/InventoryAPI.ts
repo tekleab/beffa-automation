@@ -577,7 +577,7 @@ export class InventoryAPI extends BasePage {
       if (locationId) {
         // match by location id — the locations sub-endpoint returns {id, name, quantity}
         const match = locs.find((l: any) => l.id === locationId);
-        stock = match ? parseFloat(match.quantity || '0') : locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
+        stock = match ? parseFloat(match.quantity || '0') : 0;
       } else {
         stock = locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
       }
@@ -822,16 +822,17 @@ export class InventoryAPI extends BasePage {
     if (locResp.ok()) {
       const locData = await locResp.json();
       const allLocs = locData.items || locData.data || [];
-      const dest = allLocs.find((l: any) => l.id !== fromLocationId && (l.warehouse_id || l.warehouse?.id));
+      const dest = allLocs.find((l: any) => l.id !== fromLocationId);
       if (dest) {
-        console.log(`[DEST] Using system location: ${dest.id}`);
-        return { locationId: dest.id, warehouseId: dest.warehouse_id || dest.warehouse?.id };
+        const warehouseId = await this.resolveWarehouseIdFromLocation(dest);
+        console.log(`[DEST] Using system location: ${dest.id} | Warehouse: ${warehouseId}`);
+        return { locationId: dest.id, warehouseId };
       }
 
       // Priority 3: only one location exists — create a second one inside the SAME warehouse
       // (locations don't require an address — only warehouses do)
       const srcLoc = allLocs.find((l: any) => l.id === fromLocationId) || allLocs[0];
-      const warehouseId = srcLoc?.warehouse_id || srcLoc?.warehouse?.id;
+      const warehouseId = srcLoc ? await this.resolveWarehouseIdFromLocation(srcLoc) : null;
       if (warehouseId) {
         console.log(`[SELF-HEALING] Only one location found. Creating a second location in warehouse ${warehouseId}...`);
         const createResp = await this.safePost(`${apiBase}/locations?${params}`, {
@@ -879,7 +880,7 @@ export class InventoryAPI extends BasePage {
         const locData = locListResp.ok() ? await locListResp.json() : { items: [] };
         const allLocs = locData.items || locData.data || [];
         const existingLoc = allLocs.find(
-          (l: any) => l.name === TRANSFER_LOC_NAME && (l.warehouse_id === existingWh.id || l.warehouse?.id === existingWh.id)
+          (l: any) => l.name === TRANSFER_LOC_NAME && (l.warehouse_id === existingWh.id || l.warehouse?.id === existingWh.id || l.warehouse === existingWh.name)
         );
         if (existingLoc) {
           console.log(`[SELF-HEALING] Reusing existing warehouse+location: ${existingWh.name} / ${existingLoc.name}`);
@@ -887,7 +888,7 @@ export class InventoryAPI extends BasePage {
         }
         // Warehouse exists but location is missing — search all locations for one in this warehouse
         const anyLoc = allLocs.find(
-          (l: any) => l.warehouse_id === existingWh.id || l.warehouse?.id === existingWh.id
+          (l: any) => l.warehouse_id === existingWh.id || l.warehouse?.id === existingWh.id || l.warehouse === existingWh.name
         );
         if (anyLoc) {
           console.log(`[SELF-HEALING] Reusing existing location in warehouse: ${anyLoc.name} (${anyLoc.id})`);
@@ -998,7 +999,7 @@ export class InventoryAPI extends BasePage {
           dest = await this.ensureTransferLocationAPI(apiBase, params, headers);
         }
         toLocationId  = dest.id;
-        toWarehouseId = dest.warehouse_id || dest.warehouse?.id;
+        toWarehouseId = dest.warehouse_id || dest.warehouse?.id || await this.resolveWarehouseIdFromLocation(dest);
       }
     }
     if (!toLocationId) throw new Error('[TRANSFER] No destination location resolved.');

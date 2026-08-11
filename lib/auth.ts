@@ -38,7 +38,6 @@ export class AuthManager extends BasePage {
     // is accurate for all subsequent query strings in this worker.
     try {
       const { DateHelper } = require('./utils/DateHelper');
-      DateHelper.clearCache(); // force fresh probe on every login so date is always current
       await DateHelper.resolve(this.page);
     } catch { /* ignore — DateHelper will retry on first API call */ }
 
@@ -195,31 +194,37 @@ export class AuthManager extends BasePage {
 
   async switchYear(targetYear: string): Promise<void> {
     if (!targetYear) return;
-    const yearBtn = this.page.locator('button, [role="button"]')
-      .filter({ hasText: new RegExp(`^\\d{4}$`) })
+    // Support Chakra UI popover triggers (id*="popover-trigger") and standard year buttons
+    const yearBtn = this.page.locator('button[id*="popover-trigger"], [id*="popover-trigger"], button, [role="button"]')
+      .filter({ hasText: new RegExp(`\\b${targetYear}\\b|\\b20\\d{2}\\b`) })
       .first();
-    const visible = await yearBtn.isVisible({ timeout: 5000 }).catch(() => false);
+
+    const visible = await yearBtn.isVisible({ timeout: 3000 }).catch(() => false);
     if (!visible) {
       console.log(`[AUTH] Year switcher not visible — skipping year switch to ${targetYear}.`);
       return;
     }
-    const currentYear = (await yearBtn.textContent())?.trim();
-    if (currentYear === targetYear) {
+
+    const currentText = (await yearBtn.textContent())?.trim() || '';
+    if (currentText.includes(targetYear)) {
       console.log(`[AUTH] Year already set to ${targetYear}.`);
       return;
     }
+
     await yearBtn.click();
     await this.page.waitForTimeout(500);
-    const option = this.page.locator('[role="menuitem"], [role="option"], .chakra-menu__menuitem, button')
+
+    const option = this.page.locator('[role="menuitem"], [role="option"], .chakra-menu__menuitem, button, span')
       .filter({ hasText: new RegExp(`^${targetYear}$`) })
       .first();
+
     if (await option.isVisible({ timeout: 3000 }).catch(() => false)) {
       await option.click();
       await this.page.waitForTimeout(1000);
       console.log(`[AUTH] Switched fiscal year to ${targetYear}.`);
     } else {
       await this.page.keyboard.press('Escape');
-      console.log(`[AUTH] Year option ${targetYear} not found in dropdown — staying on ${currentYear}.`);
+      console.log(`[AUTH] Year option ${targetYear} not found in dropdown — staying on ${currentText}.`);
     }
   }
 }

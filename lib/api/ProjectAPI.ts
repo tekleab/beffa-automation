@@ -27,14 +27,29 @@ export class ProjectAPI extends BasePage {
     }
 
     private get qs(): string {
-        const y = process.env.BEFFA_YEAR || '2018';
+        const y = process.env.BEFFA_YEAR || '2019';
         const p = process.env.BEFFA_PERIOD || 'yearly';
         const c = process.env.BEFFA_CALENDAR || 'ec';
         return `year=${y}&period=${p}&calendar=${c}`;
     }
 
     private async h(): Promise<Record<string, string>> {
-        const token = await this._getAuthToken();
+        let token = await this._getAuthToken();
+        // Re-login via API if token is missing — use context-level request which works
+        // even when the page is on about:blank (page.request fails with status 0 in that state)
+        if (!token) {
+            try {
+                const y = process.env.BEFFA_YEAR || '2019';
+                const loginResp = await this.page.context().request.post(
+                    `${this.apiBase}/users/login?year=${y}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`,
+                    { data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS }, headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
+                );
+                if (loginResp.ok()) {
+                    const d = await loginResp.json();
+                    token = d.auth_token || d.token || null;
+                }
+            } catch { /* ignore */ }
+        }
         return {
             'x-company': process.env.BEFFA_COMPANY as string,
             'Authorization': `Bearer ${token}`,
@@ -44,24 +59,26 @@ export class ProjectAPI extends BasePage {
 
     async discoverMetadataAPI(): Promise<ProjectMeta> {
         const headers = await this.h();
+        // Use context-level request — works on about:blank; page.request fails with status 0
+        const req = this.page.context().request;
 
         // Customer
-        const custResp = await this.safeGet(`${this.apiBase}/customers?page=1&pageSize=5&${this.qs}`, { headers });
+        const custResp = await req.get(`${this.apiBase}/customers?page=1&pageSize=5&${this.qs}`, { headers, timeout: 30000 });
         if (!custResp.ok()) throw new Error(`[ProjectAPI] Customer discovery failed: ${custResp.status()}`);
         const custData = await custResp.json();
         const customer = (custData.items || custData.data || [])[0];
         if (!customer) throw new Error('[ProjectAPI] No customers found.');
 
         // Workspace — auto-create if none exist
-        const wsResp = await this.safeGet(`${this.apiBase}/workspaces?page=1&pageSize=5&${this.qs}`, { headers });
+        const wsResp = await req.get(`${this.apiBase}/workspaces?page=1&pageSize=5&${this.qs}`, { headers, timeout: 30000 });
         let workspace: { id: string; name: string } | null = null;
         if (wsResp.ok()) {
             const wsData = await wsResp.json();
             workspace = (wsData.items || wsData.data || [])[0] || null;
         }
         if (!workspace) {
-            const createResp = await this.page.request.post(`${this.apiBase}/workspaces?${this.qs}`, {
-                data: { name: 'Default Workspace' }, headers
+            const createResp = await req.post(`${this.apiBase}/workspaces?${this.qs}`, {
+                data: { name: 'Default Workspace' }, headers, timeout: 30000
             });
             if (!createResp.ok()) throw new Error(`[ProjectAPI] Workspace creation failed: ${createResp.status()} ${await createResp.text()}`);
             workspace = await createResp.json();

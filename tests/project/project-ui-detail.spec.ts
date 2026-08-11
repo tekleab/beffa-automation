@@ -112,9 +112,14 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
     test('UI-GUARD-02: Unauthenticated browser access to projects redirects to login', async ({ browser }) => {
         const ctx = await browser.newContext({ storageState: undefined });
         const page = await ctx.newPage();
-        await page.goto('/project-management/projects');
-        await page.waitForLoadState('domcontentloaded');
-        expect(page.url()).toContain('login');
+        await page.goto('/project-management/projects', { waitUntil: 'commit', timeout: 30000 });
+        await page.waitForURL(/login/, { timeout: 10000 }).catch(() => {});
+        // ERP may redirect to /login OR render the page with a login form
+        const redirected = page.url().includes('login');
+        const loginForm = await page.locator('input[type="password"], input[name="password"], button:has-text("Login")').first()
+            .isVisible({ timeout: 5000 }).catch(() => false);
+        console.log(`[UI-GUARD-02] redirected=${redirected} loginForm=${loginForm} url=${page.url()}`);
+        expect(redirected || loginForm, 'Expected redirect to login or login form to be visible').toBe(true);
         await ctx.close();
     });
 

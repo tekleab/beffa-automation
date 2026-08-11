@@ -264,14 +264,17 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         const { apiBase, headers, qs } = await app.buildApiContext();
         const locResp = await page.request.get(`${apiBase}/locations?page=1&pageSize=5&${qs}`, { headers });
         const loc = ((await locResp.json()).items || [])[0];
+        const warehouseId = loc ? await app.api.inventory.resolveWarehouseIdFromLocation(loc) : undefined;
 
         console.log(`[ATTACK] Attempting to create Bill with vendor_id=null...`);
         const resp = await page.request.post(`${apiBase}/bills?${qs}`, {
             headers,
-            data: {                accounts_payable_id: sharedMeta.apAccountId, currency_id: sharedMeta.currencyId,                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
+            data: {
+                accounts_payable_id: sharedMeta.apAccountId, currency_id: sharedMeta.currencyId,
+                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
                 vendor_id: null,
-                items: [{ item_id: item.itemId, quantity: 1, unit_price: 5000, amount: 5000, location_id: loc?.id, warehouse_id: loc?.warehouse_id }],
+                items: [{ item_id: item.itemId, quantity: 1, unit_price: 5000, amount: 5000, location_id: loc?.id, warehouse_id: warehouseId }],
                 status: 'draft'
             }
         });

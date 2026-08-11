@@ -43,9 +43,10 @@ export class MetadataService {
   async getDefaultLocation() {
     const locs = await this.getLocations();
     const loc = locs.find((l: any) => l.warehouse_id || l.warehouse?.id) || locs[0];
+    const warehouseId = loc ? await this.apiClient.resolveWarehouseIdFromLocation(loc) : undefined;
     return {
       locationId: loc?.id,
-      warehouseId: loc?.warehouse_id || loc?.warehouse?.id
+      warehouseId
     };
   }
 }
