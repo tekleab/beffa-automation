@@ -1,0 +1,28 @@
+11:34:42 [PERFORMANCE] API - Auth API Verification: 244.36ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001596 (ID: a7a80007-6955-44cb-8c17-437fdd697951)
+11:34:51 [INFO] Advancing inventory-adjustments "a7a80007-6955-44cb-8c17-437fdd697951"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786448090327 (70031673-5184-4064-b875-2ed21e424f34) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:34:53 [PERFORMANCE] API - Auth API Verification: 227.27ms
+11:34:58 [PERFORMANCE] API - Auth API Verification: 221.80ms
+[ATTACK] Injecting Bill with future date: 2028-08-11T00:00:00Z...
+11:35:01 [INFO] Advancing bills "7ee2ff86-cc4c-4f94-ada9-29474336dd91"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/11/000907                   │
+  │ Bill ID                          │ 7ee2ff86-cc4c-4f94-ada9-29474336dd91     │
+  │ Invoice Date                     │ 2028-08-11T00:00:00Z                     │
+  │ Today                            │ 2026-08-11                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

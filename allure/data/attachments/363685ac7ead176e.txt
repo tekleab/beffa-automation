@@ -1,0 +1,11 @@
+11:40:33 [PERFORMANCE] API - Auth API Verification: 204.60ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001649 (ID: 11481b85-68ad-46a1-a593-c2168a52c8ee)
+11:40:40 [INFO] Advancing inventory-adjustments "11481b85-68ad-46a1-a593-c2168a52c8ee"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786448439262 (02f45f38-3508-4661-8e58-36bbdb692f69) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Attempting to inject stock adjustment from 2022-01-01T00:00:00Z (Historical Manipulation)...
+[ADJ] quantity | qty=100 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001650 (ID: 6a0858e7-fc1b-4207-8d72-55350593d1c6)
+[KNOWN_BUG] Historical back-dating accepted by ERP (2022 adjustment approved). Period control not enforced on inventory adjustments.

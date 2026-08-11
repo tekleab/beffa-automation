@@ -1,0 +1,16 @@
+11:38:56 [PERFORMANCE] API - Auth API Verification: 224.99ms
+[ADJ] quantity | qty=10 @ $15 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001627 (ID: 1437fd97-0716-41ba-a478-dc9cc50b55b6)
+11:39:04 [INFO] Advancing inventory-adjustments "1437fd97-0716-41ba-a478-dc9cc50b55b6"...
+11:39:05 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E2796)" } 
+11:39:05 [WARN] Advance had no successful steps for inventory-adjustments 1437fd97-0716-41ba-a478-dc9cc50b55b6.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[WARN] pollStockAPI timed out. Expected 10, actual 0.
+[FRESH ITEM] Created: Pencil-A-1786448341382 (0bb97bf1-acf7-4eb7-a932-1e517ba1e671) | method=FIFO | stock=10@$15 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Item: Pencil-A-1786448341382 (0bb97bf1-acf7-4eb7-a932-1e517ba1e671)
+11:39:42 [INFO] Advancing purchase-orders "a01fa98b-de26-4ea9-88a8-e69ffa8107d8"...
+11:39:44 [INFO] Advancing bills "366aa6ba-f1c6-45e7-9f2a-d79afcd9c5b4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[WARN] pollStockAPI timed out. Expected 15, actual 5.
+[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15
+[AUDIT-A] qty=5 (exp:15)
