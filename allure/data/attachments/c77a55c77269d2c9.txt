@@ -1,0 +1,23 @@
+13:30:37 [PERFORMANCE] API - Auth API Verification: 219.54ms
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001804 (ID: 923e32bd-9e6e-44b5-9384-30bddb539f02)
+13:30:46 [INFO] Advancing inventory-adjustments "923e32bd-9e6e-44b5-9384-30bddb539f02"...
+13:30:46 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:30:46 [WARN] Advance had no successful steps for inventory-adjustments 923e32bd-9e6e-44b5-9384-30bddb539f02.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[WARN] pollStockAPI timed out. Expected 50, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786455045038 (a2ca25fc-f30c-4bd5-82cf-4865bfe3c073) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001806 (ID: adfa4cec-e2a8-4681-a7b7-f5db2fdc1fb4)
+13:31:23 [INFO] Advancing inventory-adjustments "adfa4cec-e2a8-4681-a7b7-f5db2fdc1fb4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1786455082886 (02bf52dc-bdf6-4305-a9a5-4e291b948362) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+13:31:27 [PERFORMANCE] API - Auth API Verification: 196.00ms
+13:31:32 [PERFORMANCE] API - Auth API Verification: 186.15ms
+13:32:07 [INFO] Picking date: "Invoice Date" → target 2026-8-11
+13:32:21 [WARN] "Invoice Date" — target day 11 not found, picked early enabled: 1.
+13:32:22 [PERFORMANCE] UI - Pick Date: Invoice Date: 14213.36ms
+13:32:24 [PERFORMANCE] UI - Random Selection: Vendor: 1961.62ms
+13:32:26 [PERFORMANCE] UI - Random Selection: Accounts Payable: 2111.59ms

@@ -1,0 +1,23 @@
+13:24:04 [PERFORMANCE] API - Auth API Verification: 201.05ms
+[ADJ] quantity | qty=10 @ $15 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001772 (ID: 8c409612-2fb8-450f-af1a-2cddc609db73)
+13:24:11 [INFO] Advancing inventory-adjustments "8c409612-2fb8-450f-af1a-2cddc609db73"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: Pencil-B-1786454648283 (8f588562-8da3-426c-8f0f-447a7fdab0d6) | method=FIFO | stock=10@$15 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Item: Pencil-B-1786454648283 (8f588562-8da3-426c-8f0f-447a7fdab0d6)
+13:24:14 [INFO] Advancing purchase-orders "56e9a3dd-8dc2-4554-b9b6-936e90761eb2"...
+13:24:14 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+13:24:14 [WARN] Advance had no successful steps for purchase-orders 56e9a3dd-8dc2-4554-b9b6-936e90761eb2.
+13:24:15 [INFO] Advancing bills "d142cf0f-4a81-44d5-8b0c-4d010e8f131f"...
+13:24:15 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:24:15 [WARN] Advance had no successful steps for bills d142cf0f-4a81-44d5-8b0c-4d010e8f131f.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[WARN] pollStockAPI timed out. Expected 15, actual 10.
+[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15
+[STEP 1] SO: 10 units @ $15
+[PASS] SO: SO/2026/08/11/000346 | item:0fd86882
+13:24:51 [INFO] Advancing sales-orders "67f46564-ac39-4192-ab08-ce6734915786"...
+[STEP 2] Invoice: 4 direct + 9 released SO items
+[PASS] Invoice: INV/2026/08/11/001391 (b1bc4dd6)
+13:24:53 [INFO] Advancing invoices "b1bc4dd6-477a-4ef8-8572-c295652bb564"...

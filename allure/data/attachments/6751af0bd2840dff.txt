@@ -1,0 +1,28 @@
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001784 (ID: 808edef0-b22d-4f6b-a0c6-bb20fd2505bf)
+13:24:55 [INFO] Advancing inventory-adjustments "808edef0-b22d-4f6b-a0c6-bb20fd2505bf"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786454694366 (6270b04b-9013-4feb-a1d8-022466f0e1da) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] "WAC-Item-1786454694366" | initial=20
+[LOAD] Firing 10 concurrent -2 adjustments (total drain: 20)...
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001786 (ID: 4699ba81-42ec-4d54-a86a-cdc420a41680)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001787 (ID: 2d3f6f4f-308e-4bf0-9ea4-5c99d91ecdbe)
+[LOAD] Created: 10
+13:24:58 [INFO] Advancing inventory-adjustments "4699ba81-42ec-4d54-a86a-cdc420a41680"...
+13:24:58 [INFO] Advancing inventory-adjustments "2d3f6f4f-308e-4bf0-9ea4-5c99d91ecdbe"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 0...
+[WARN] pollStockAPI timed out. Expected 0, actual 24.
+[LOAD] Final stock: 24 (must be >= 0)
+[PASS] Stock floor maintained — final: 24

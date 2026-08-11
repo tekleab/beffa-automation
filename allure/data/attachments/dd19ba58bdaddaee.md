@@ -1,0 +1,555 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/line-item-miscellaneous-audit.spec.ts >> Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full >> BILL-UI-01: Add inventory Line Item via modal → Bill created and approved
+- Location: tests/cross-module/line-item-miscellaneous-audit.spec.ts:793:9
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('.chakra-modal__content').first() to be visible
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e11]: Enterprise
+      - generic [ref=e13]:
+        - generic:
+          - img
+        - textbox "Search tasks" [ref=e14]
+      - generic [ref=e15]:
+        - navigation [ref=e17]:
+          - link "Dashboard" [ref=e18] [cursor=pointer]:
+            - /url: /dashboard
+            - paragraph [ref=e21]: Dashboard
+        - generic [ref=e23] [cursor=pointer]:
+          - paragraph [ref=e26]: Accounting
+          - paragraph [ref=e27]:
+            - button "Toggle section" [ref=e28]:
+              - img [ref=e29]
+        - generic [ref=e32] [cursor=pointer]:
+          - paragraph [ref=e35]: Account Reconciliation
+          - paragraph [ref=e36]:
+            - button "Toggle section" [ref=e37]:
+              - img [ref=e38]
+        - generic [ref=e41] [cursor=pointer]:
+          - paragraph [ref=e44]: CRM
+          - paragraph [ref=e45]:
+            - button "Toggle section" [ref=e46]:
+              - img [ref=e47]
+        - generic [ref=e50] [cursor=pointer]:
+          - paragraph [ref=e53]: HRM
+          - paragraph [ref=e54]:
+            - button "Toggle section" [ref=e55]:
+              - img [ref=e56]
+        - generic [ref=e59] [cursor=pointer]:
+          - paragraph [ref=e62]: Project Management
+          - paragraph [ref=e63]:
+            - button "Toggle section" [ref=e64]:
+              - img [ref=e65]
+        - generic [ref=e68] [cursor=pointer]:
+          - paragraph [ref=e71]: SCM
+          - paragraph [ref=e72]:
+            - button "Toggle section" [ref=e73]:
+              - img [ref=e74]
+        - generic [ref=e77] [cursor=pointer]:
+          - paragraph [ref=e80]: Lease Management
+          - paragraph [ref=e81]:
+            - button "Toggle section" [ref=e82]:
+              - img [ref=e83]
+        - generic [ref=e86] [cursor=pointer]:
+          - paragraph [ref=e89]: Service Management
+          - paragraph [ref=e90]:
+            - button "Toggle section" [ref=e91]:
+              - img [ref=e92]
+        - generic [ref=e95] [cursor=pointer]:
+          - paragraph [ref=e98]: Report
+          - paragraph [ref=e99]:
+            - button "Toggle section" [ref=e100]:
+              - img [ref=e101]
+      - generic [ref=e103]:
+        - button "Settings" [ref=e105] [cursor=pointer]:
+          - generic:
+            - generic:
+              - img
+              - paragraph: Settings
+        - navigation [ref=e107]:
+          - link "User Management" [ref=e109] [cursor=pointer]:
+            - /url: /settings/general/users
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - paragraph [ref=e114]: User Management
+              - button [ref=e115]:
+                - img [ref=e116]
+        - button "Logout" [ref=e118] [cursor=pointer]:
+          - img [ref=e120]
+          - text: Logout
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img "BM Tech" [ref=e126]: BT
+          - generic [ref=e127]:
+            - button "BM Tech" [ref=e128] [cursor=pointer]:
+              - generic: BM Tech
+              - img [ref=e130]
+            - generic [ref=e132] [cursor=pointer]:
+              - button "Company Detail" [ref=e133]:
+                - img [ref=e134]
+              - button "Edit Company" [ref=e137]:
+                - img [ref=e138]
+              - button "Company Detail" [ref=e141]:
+                - img [ref=e142]
+        - generic [ref=e145]:
+          - button "New" [ref=e146] [cursor=pointer]:
+            - text: New
+            - img [ref=e148]
+          - generic [ref=e152] [cursor=pointer]:
+            - generic [ref=e153]: "5"
+            - img "Notifications" [ref=e154]
+          - button "EC" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: EC
+          - button [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+          - generic [ref=e165] [cursor=pointer]:
+            - img "System" [ref=e167]: S
+            - generic [ref=e168]:
+              - generic [ref=e169]: System
+              - paragraph [ref=e170]: IT Administrator / User Manager
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - navigation "breadcrumb" [ref=e176]:
+                  - list [ref=e177]:
+                    - listitem [ref=e178]:
+                      - link "Home" [ref=e179] [cursor=pointer]:
+                        - /url: /
+                      - text: /
+                    - listitem [ref=e180]:
+                      - link "Payables" [ref=e181] [cursor=pointer]:
+                        - /url: /payables/overview/
+                      - text: /
+                    - listitem [ref=e182]:
+                      - link "Bills" [ref=e183] [cursor=pointer]:
+                        - /url: /payables/bills/?page=1&pageSize=15
+                      - text: /
+                    - listitem [ref=e184]:
+                      - link "New" [ref=e185] [cursor=pointer]:
+                        - /url: /payables/new
+            - button "2019" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: "2019"
+              - img [ref=e189]
+          - generic [ref=e192]:
+            - button "Toggle Visibility" [ref=e195] [cursor=pointer]:
+              - img [ref=e196]
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - button "Close" [ref=e201] [cursor=pointer]:
+                  - img [ref=e202]
+                - heading "New Bills" [level=5] [ref=e204]
+              - generic [ref=e205]:
+                - generic [ref=e207]:
+                  - generic [ref=e208]:
+                    - group [ref=e209]:
+                      - generic [ref=e210]: Vendor *
+                      - button "Vendor selector" [ref=e211]: KAMARIYA PLC
+                    - group [ref=e212]:
+                      - generic [ref=e213]: Purchase Order
+                      - button "Purchase Order selector" [ref=e214]
+                    - generic [ref=e215]:
+                      - group [ref=e216]:
+                        - generic [ref=e217]: Invoice number
+                        - textbox "Invoice number" [disabled] [ref=e219]: BILL/2026/08/11/000988
+                      - paragraph [ref=e220]: Invoice number is auto-generated
+                    - generic [ref=e221]:
+                      - generic [ref=e222]: Due Date
+                      - button "ነሀሴ 05, 2018" [ref=e224] [cursor=pointer]:
+                        - img [ref=e225]
+                        - generic [ref=e227]: ነሀሴ 05, 2018
+                    - group [ref=e228]:
+                      - generic [ref=e229]: Budget
+                      - button "Budget selector" [ref=e230]: Select a budget
+                  - generic [ref=e231]:
+                    - generic [ref=e232]:
+                      - generic [ref=e233]: Invoice Date
+                      - button "ጳጉሜ 01, 2019" [ref=e235] [cursor=pointer]:
+                        - img [ref=e236]
+                        - generic [ref=e238]: ጳጉሜ 01, 2019
+                      - paragraph [ref=e239]: Selected date is after the period end date (ሰኔ 30, 2019).
+                    - group [ref=e240]:
+                      - generic [ref=e241]: Accounts Payable *
+                      - button "Accounts Payable selector" [ref=e242]: Withholding Tax Receivable
+                    - group [ref=e243]:
+                      - generic [ref=e244]: Currency *
+                      - button "Currency selector" [ref=e245]
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - tablist [ref=e248]:
+                      - tab "Purchases" [selected] [ref=e249] [cursor=pointer]
+                      - tab "Received Purchase Order" [ref=e250] [cursor=pointer]
+                      - tab "Journal" [ref=e251] [cursor=pointer]
+                      - tab "Miscelaneuos" [ref=e252] [cursor=pointer]
+                      - tab "Upload Related Documents" [ref=e253] [cursor=pointer]
+                    - button "Line Item" [expanded] [ref=e255] [cursor=pointer]:
+                      - img [ref=e257]
+                      - text: Line Item
+                  - tabpanel "Purchases" [ref=e260]:
+                    - table [ref=e264]:
+                      - rowgroup [ref=e265]:
+                        - row "Item Quantity Unit Price Purchase Type Description G/L Account * Project Before Tax * Tax Total" [ref=e266]:
+                          - columnheader [ref=e267]
+                          - columnheader "Item" [ref=e269]: Item
+                          - columnheader "Quantity" [ref=e271]: Quantity
+                          - columnheader "Unit Price" [ref=e273]: Unit Price
+                          - columnheader "Purchase Type" [ref=e275]: Purchase Type
+                          - columnheader "Description" [ref=e277]: Description
+                          - columnheader "G/L Account *" [ref=e279]: G/L Account *
+                          - columnheader "Project" [ref=e281]: Project
+                          - columnheader "Before Tax *" [ref=e283]: Before Tax *
+                          - columnheader "Tax" [ref=e285]: Tax
+                          - columnheader "Total" [ref=e287]: Total
+                          - columnheader [ref=e289]
+                      - rowgroup [ref=e291]:
+                        - row "No record found" [ref=e292]:
+                          - cell "No record found" [ref=e293]:
+                            - paragraph [ref=e295]: No record found
+                      - rowgroup [ref=e296]:
+                        - row "0.00 0.00 0.00" [ref=e297]:
+                          - columnheader [ref=e298]
+                          - columnheader [ref=e299]
+                          - columnheader [ref=e300]
+                          - columnheader [ref=e301]
+                          - columnheader [ref=e302]
+                          - columnheader [ref=e303]
+                          - columnheader [ref=e304]
+                          - columnheader [ref=e305]
+                          - columnheader "0.00" [ref=e306]
+                          - columnheader "0.00" [ref=e307]
+                          - columnheader "0.00" [ref=e308]
+                          - columnheader [ref=e309]
+              - group [ref=e311]:
+                - button "Add Now" [ref=e312] [cursor=pointer]
+                - button [ref=e313] [cursor=pointer]:
+                  - generic:
+                    - img
+        - generic [ref=e314]: BM Technology © 2026
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - option "1950"
+    - option "1951"
+    - option "1952"
+    - option "1953"
+    - option "1954"
+    - option "1955"
+    - option "1956"
+    - option "1957"
+    - option "1958"
+    - option "1959"
+    - option "1960"
+    - option "1961"
+    - option "1962"
+    - option "1963"
+    - option "1964"
+    - option "1965"
+    - option "1966"
+    - option "1967"
+    - option "1968"
+    - option "1969"
+    - option "1970"
+    - option "1971"
+    - option "1972"
+    - option "1973"
+    - option "1974"
+    - option "1975"
+    - option "1976"
+    - option "1977"
+    - option "1978"
+    - option "1979"
+    - option "1980"
+    - option "1981"
+    - option "1982"
+    - option "1983"
+    - option "1984"
+    - option "1985"
+    - option "1986"
+    - option "1987"
+    - option "1988"
+    - option "1989"
+    - option "1990"
+    - option "1991"
+    - option "1992"
+    - option "1993"
+    - option "1994"
+    - option "1995"
+    - option "1996"
+    - option "1997"
+    - option "1998"
+    - option "1999"
+    - option "2000"
+    - option "2001"
+    - option "2002"
+    - option "2003"
+    - option "2004"
+    - option "2005"
+    - option "2006"
+    - option "2007"
+    - option "2008"
+    - option "2009"
+    - option "2010"
+    - option "2011"
+    - option "2012"
+    - option "2013"
+    - option "2014"
+    - option "2015"
+    - option "2016"
+    - option "2017"
+    - option "2018"
+    - option "2019 (open)" [selected]
+    - option "2020"
+    - option "2021"
+    - option "2022"
+    - option "2023"
+    - option "2024"
+    - option "2025"
+    - option "2026"
+    - option "2027"
+    - option "2028"
+    - option "2029"
+    - option "2030"
+    - option "2031"
+    - option "2032"
+    - option "2033"
+    - option "2034"
+    - option "2035"
+    - option "2036"
+    - option "2037"
+    - option "2038"
+    - option "2039"
+    - option "2040"
+    - option "2041"
+    - option "2042"
+    - option "2043"
+    - option "2044"
+    - option "2045"
+    - option "2046"
+    - option "2047"
+    - option "2048"
+    - option "2049"
+  - dialog [active] [ref=e316]:
+    - generic [ref=e320]:
+      - generic [ref=e321]:
+        - generic [ref=e322]:
+          - button "Item" [ref=e323] [cursor=pointer]:
+            - img [ref=e325]
+            - text: Item
+          - button "Asset" [ref=e329] [cursor=pointer]:
+            - img [ref=e331]
+            - text: Asset
+          - button "Service Event" [ref=e334] [cursor=pointer]:
+            - img [ref=e336]
+            - text: Service Event
+          - button "Miscellaneous" [ref=e338] [cursor=pointer]:
+            - img [ref=e340]
+            - text: Miscellaneous
+        - generic [ref=e342]:
+          - paragraph [ref=e343]: Please select an item type to continue
+          - paragraph [ref=e344]: Choose between Item, Asset, or Service to start adding items to your list
+      - button "Cancel" [ref=e345] [cursor=pointer]
+```
+
+# Test source
+
+```ts
+  1   | import { test, expect } from '@playwright/test';
+  2   | import { AppManager } from '../../pages/AppManager';
+  3   | 
+  4   | 
+  5   | /**
+  6   |  * LINE ITEM & MISCELLANEOUS AUDIT
+  7   |  *
+  8   |  * Covers the "Line Item" button → modal → [Item | Miscellaneous] table
+  9   |  * that appears on SO, Invoice, Receipt, PO, Bill, Payment.
+  10  |  *
+  11  |  * Each document gets:
+  12  |  *   - UI: inventory line item added via modal "Item" tab
+  13  |  *   - UI: miscellaneous line added via modal "Miscellaneous" tab
+  14  |  *   - API: standalone with inventory line → total correct
+  15  |  *   - API: standalone with miscellaneous line (no item_id) → accepted or documented
+  16  |  *   - API: mixed inventory + miscellaneous → combined total
+  17  |  *   - API: multi-line → grand total = sum of lines
+  18  |  *   - Guardrail: zero-qty line → $0 or rejected
+  19  |  *   - Guardrail: negative price line → rejected or flagged
+  20  |  */
+  21  | test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full', () => {
+  22  |     test.setTimeout(600000);
+  23  | 
+  24  |     let salesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
+  25  |     let purchaseMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
+  26  |     let itemA: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
+  27  |     let itemB: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
+  28  |     let periodDateIso: string;
+  29  | 
+  30  |     test.beforeAll(async ({ browser }) => {
+  31  |         test.setTimeout(600000);
+  32  |         const setupPage = await browser.newPage();
+  33  |         const app = new AppManager(setupPage);
+  34  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  35  | 
+  36  |         salesMeta    = await app.api.sales.discoverMetadataAPI();
+  37  |         purchaseMeta = await app.api.purchase.discoverMetadataAPI();
+  38  |         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
+  39  |         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 80 });
+  40  |         const { DateHelper } = require('../../lib/utils/DateHelper');
+  41  |         periodDateIso = (await DateHelper.resolve(setupPage)).iso;
+  42  |         await setupPage.close().catch(() => {});
+  43  |     });
+  44  | 
+  45  |     test.beforeEach(async ({ page }) => {
+  46  |         const { DateHelper } = require('../../lib/utils/DateHelper');
+  47  |         DateHelper.clearCache();
+  48  |         const app = new AppManager(page);
+  49  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  50  | 
+  51  |     });
+  52  | 
+  53  |     // =========================================================================
+  54  |     // HELPERS
+  55  |     // =========================================================================
+  56  | 
+  57  |     async function addLineItemViaModal(page: any, app: AppManager, type: 'Item' | 'Miscellaneous', opts: {
+  58  |         unitPrice: string; qty: string; description?: string;
+  59  |     }) {
+  60  |         const modal = page.locator('.chakra-modal__content').first();
+> 61  |         await modal.waitFor({ state: 'visible', timeout: 15000 });
+      |                     ^ TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+  62  | 
+  63  |         // Choose Item vs Miscellaneous tab inside the modal
+  64  |         await modal.getByRole('button', { name: type, exact: true }).click();
+  65  |         await page.waitForTimeout(500);
+  66  | 
+  67  |         if (type === 'Item') {
+  68  |             await app.selectRandomOption(modal.getByRole('button', { name: 'Item selector' }), 'Item');
+  69  |             await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
+  70  |             await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
+  71  |         } else {
+  72  |             // Miscellaneous: description field instead of item picker
+  73  |             const descField = modal.getByRole('textbox').first();
+  74  |             if (await descField.isVisible({ timeout: 3000 }).catch(() => false)) {
+  75  |                 await descField.fill(opts.description || 'Miscellaneous charge');
+  76  |             }
+  77  |         }
+  78  | 
+  79  |         const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
+  80  |         await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
+  81  |         await app.selectRandomOption(glBtn, 'G/L Account');
+  82  | 
+  83  |         // Quantity + Price inputs exist on Item lines and some Miscellaneous modals.
+  84  |         const qtyGroup = modal.getByRole('group').filter({ hasText: /^Quantity/i });
+  85  |         const hasQty = await qtyGroup.isVisible({ timeout: 2000 }).catch(() => false);
+  86  |         if (hasQty) {
+  87  |             await qtyGroup.getByRole('spinbutton').fill(opts.qty);
+  88  |             
+  89  |             // Multi-strategy price field locator for Chakra UI forms (Selling Price, Unit Price, Before Tax)
+  90  |             let priceFilled = false;
+  91  | 
+  92  |             // Strategy 1: Find form control container matching text label
+  93  |             const labelContainers = modal.locator('.chakra-form-control, [role="group"], div').filter({
+  94  |                 has: page.getByText(/Selling Price|Unit Price|Before Tax/i)
+  95  |             });
+  96  |             const containerCount = await labelContainers.count();
+  97  |             for (let i = 0; i < containerCount; i++) {
+  98  |                 const inp = labelContainers.nth(i).locator('input').first();
+  99  |                 if (await inp.isVisible({ timeout: 500 }).catch(() => false)) {
+  100 |                     await inp.fill(opts.unitPrice);
+  101 |                     priceFilled = true;
+  102 |                     console.log(`[MODAL] Filled price field via label container: ${opts.unitPrice}`);
+  103 |                     break;
+  104 |                 }
+  105 |             }
+  106 | 
+  107 |             // Strategy 2: Fallback to inputs initialized with value="0" or price-related names
+  108 |             if (!priceFilled) {
+  109 |                 const zeroInput = modal.locator('input[value="0"]').first();
+  110 |                 if (await zeroInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+  111 |                     await zeroInput.fill(opts.unitPrice);
+  112 |                     priceFilled = true;
+  113 |                     console.log(`[MODAL] Filled price field via value=0 fallback: ${opts.unitPrice}`);
+  114 |                 }
+  115 |             }
+  116 | 
+  117 |             // Strategy 3: Fallback to last input in the modal
+  118 |             if (!priceFilled) {
+  119 |                 const inputs = modal.locator('input').filter({ visible: true });
+  120 |                 const count = await inputs.count();
+  121 |                 if (count > 0) {
+  122 |                     await inputs.nth(count - 1).fill(opts.unitPrice);
+  123 |                     console.log(`[MODAL] Filled price field via last input fallback: ${opts.unitPrice}`);
+  124 |                 }
+  125 |             }
+  126 |         } else {
+  127 |             // Miscellaneous modal without Quantity — fill Before Tax / price directly
+  128 |             const beforeTaxInput = modal.locator('input[placeholder="price"], input[name*="price" i], input[name*="before_tax" i], input[name*="amount" i], input[value="0"]').first();
+  129 |             const spinFallback = modal.getByRole('spinbutton').first();
+  130 |             if (await beforeTaxInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+  131 |                 await beforeTaxInput.fill(opts.unitPrice);
+  132 |             } else if (await spinFallback.isVisible({ timeout: 2000 }).catch(() => false)) {
+  133 |                 await spinFallback.fill(opts.unitPrice);
+  134 |             }
+  135 |         }
+  136 |         await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
+  137 | 
+  138 |         const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
+  139 |         await addBtn.click();
+  140 |         await expect(modal).not.toBeVisible({ timeout: 15000 });
+  141 |     }
+  142 | 
+  143 |     // =========================================================================
+  144 |     // SALES ORDER
+  145 |     // =========================================================================
+  146 | 
+  147 |     test('SO-UI-01: Add inventory Line Item via modal → SO created and approved', async ({ page }) => {
+  148 |         const app = new AppManager(page);
+  149 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  150 |         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+  151 |         await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+  152 | 
+  153 |         const lineItemBtn = page.locator('button:has-text("Line Item"), button:has-text("Add Line Item")').first();
+  154 |         await lineItemBtn.waitFor({ state: 'visible', timeout: 60000 });
+  155 | 
+  156 |         await app.pickDate('Sales Order Date');
+  157 |         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
+  158 |         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+  159 |         await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
+  160 | 
+  161 |         await lineItemBtn.click();
+```

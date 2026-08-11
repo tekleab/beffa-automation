@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+13:24:20 [PERFORMANCE] API - Auth API Verification: 206.00ms
+13:24:25 [PERFORMANCE] API - Auth API Verification: 206.82ms
+[ADJ] quantity | qty=100 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001775 (ID: 98752de7-6b39-40c5-9272-24e3d8c2a39a)
+13:24:29 [INFO] Advancing inventory-adjustments "98752de7-6b39-40c5-9272-24e3d8c2a39a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 100...
+[SUCCESS] API Confirmed: Stock correctly reached 100.
+[FRESH ITEM] Created: WAC-Item-1786454668953 (77178b99-984a-4b17-982d-b32bd5619ee4) | method=WAC | stock=100@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating negative adjustment (-50) for: WAC-Item-1786454668953 | Stock before: 100
+[ADJ] quantity | qty=-50 @ $100 | current=100 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001776 (ID: 7a6b5b60-3d16-4a98-905f-2cb366aa0b70)
+[STEP 2] Adjustment created: ADJ/2026/08/11/001776 | Approving...
+13:24:32 [INFO] Advancing inventory-adjustments "7a6b5b60-3d16-4a98-905f-2cb366aa0b70"...
+13:24:34 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[AUDIT] Stock before: 100 | Adjustment: -50 | Expected: 50 | Final: 50
+[PASS] Negative adjustment applied correctly — stock reduced from 100 to 50.
