@@ -1,0 +1,27 @@
+[DateHelper] Year 2017 period ended 2025-07-07 — trying year 2018
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+05:31:54 [PERFORMANCE] API - Auth API Verification: 201.59ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019
+[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-11
+[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)
+05:32:04 [PERFORMANCE] API - Auth API Verification: 240.65ms
+[AUTH] Year switcher not visible — skipping year switch to 2019.
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001348 (ID: 306b0db8-a8fd-41f8-bb92-22f454fa9782)
+05:32:09 [INFO] Advancing inventory-adjustments "306b0db8-a8fd-41f8-bb92-22f454fa9782"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[WARN] pollStockAPI timed out. Expected 20, actual 0.
+[FRESH ITEM] Created: WAC-Item-1786426328692 (d649fa73-c8ca-4284-9af3-f397dcd5a581) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] Created fresh item: "WAC-Item-1786426328692" | Stock: 20
+05:32:45 [INFO] Advancing sales-orders "c68cb0ed-99f7-480c-8c53-9c7447f87353"...
+[OK] Sales Order SO/2026/08/11/000299 approved via API
+05:32:47 [INFO] Advancing invoices "df1419f7-df17-4690-801f-2a2cf2de37bb"...
+[OK] Invoice INV/2026/08/11/001193 approved via API
+[INFO] Document Setup Complete: INV/2026/08/11/001193 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT] amount=102 | invoice=df1419f7...
