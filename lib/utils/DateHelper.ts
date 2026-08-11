@@ -149,7 +149,9 @@ export class DateHelper {
         if (now >= periodStart && now <= periodEnd) {
           useDate = now;
         } else {
-          useDate = ecNewYearGC >= periodStart && ecNewYearGC <= periodEnd ? ecNewYearGC : periodStart;
+          // Select an early day in the valid open period to guarantee date is within bounds
+          const safeInPeriod = new Date(periodStart.getTime() + 5 * 86400000);
+          useDate = (safeInPeriod >= periodStart && safeInPeriod <= periodEnd) ? safeInPeriod : periodStart;
         }
         return DateHelper._fromDate(useDate, year);
       }

@@ -940,14 +940,14 @@ ${curlCmd}
       await enabledDays.first().click({ force: true });
       Logger.pass(`"${Logger.sanitize(label)}" set to day ${targetDay}.`);
     } else {
-      // Fallback: pick last enabled day in whatever month is showing
+      // Fallback: pick first/early enabled day in whatever month is showing to stay safely within period bounds
       const anyEnabled = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
       const count = await anyEnabled.count();
       if (count > 0) {
-        const last = anyEnabled.nth(count - 1);
-        const dayText = await last.textContent();
-        await last.click({ force: true });
-        Logger.warn(`"${Logger.sanitize(label)}" — target day ${targetDay} not found, picked last enabled: ${Logger.sanitize(dayText?.trim())}.`);
+        const earlyDay = anyEnabled.first();
+        const dayText = await earlyDay.textContent();
+        await earlyDay.click({ force: true });
+        Logger.warn(`"${Logger.sanitize(label)}" — target day ${targetDay} not found, picked early enabled: ${Logger.sanitize(dayText?.trim())}.`);
       } else {
         await this.page.keyboard.press('Enter');
         Logger.warn(`"${Logger.sanitize(label)}" — no enabled days found, pressed Enter.`);

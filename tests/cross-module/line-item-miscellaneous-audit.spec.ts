@@ -19,7 +19,6 @@ import { AppManager } from '../../pages/AppManager';
  *   - Guardrail: negative price line → rejected or flagged
  */
 test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full', () => {
-    test.describe.configure({ mode: 'serial' });
     test.setTimeout(600000);
 
     let salesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
@@ -28,12 +27,10 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     let itemB: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
     let periodDateIso: string;
 
-    let sharedPage: import('@playwright/test').Page;
-
     test.beforeAll(async ({ browser }) => {
         test.setTimeout(600000);
-        sharedPage = await browser.newPage();
-        const app = new AppManager(sharedPage);
+        const setupPage = await browser.newPage();
+        const app = new AppManager(setupPage);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         salesMeta    = await app.api.sales.discoverMetadataAPI();
@@ -41,11 +38,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 80 });
         const { DateHelper } = require('../../lib/utils/DateHelper');
-        periodDateIso = (await DateHelper.resolve(sharedPage)).iso;
-    });
-
-    test.afterAll(async () => {
-        await sharedPage?.close();
+        periodDateIso = (await DateHelper.resolve(setupPage)).iso;
+        await setupPage.close().catch(() => {});
     });
 
     test.beforeEach(async ({ page }) => {
@@ -63,7 +57,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     async function addLineItemViaModal(page: any, app: AppManager, type: 'Item' | 'Miscellaneous', opts: {
         unitPrice: string; qty: string; description?: string;
     }) {
-        const modal = page.getByRole('dialog').last();
+        const modal = page.locator('.chakra-modal__content').first();
         await modal.waitFor({ state: 'visible', timeout: 15000 });
 
         // Choose Item vs Miscellaneous tab inside the modal
@@ -86,16 +80,52 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
         await app.selectRandomOption(glBtn, 'G/L Account');
 
-        // Quantity + Unit Price spinbuttons exist on Item lines and some Miscellaneous modals.
-        // Bill Miscellaneous modal uses a single "Before Tax" / "price" field instead.
+        // Quantity + Price inputs exist on Item lines and some Miscellaneous modals.
         const qtyGroup = modal.getByRole('group').filter({ hasText: /^Quantity/i });
         const hasQty = await qtyGroup.isVisible({ timeout: 2000 }).catch(() => false);
         if (hasQty) {
             await qtyGroup.getByRole('spinbutton').fill(opts.qty);
-            await modal.getByRole('group').filter({ hasText: /Unit Price/i }).getByRole('spinbutton').fill(opts.unitPrice);
+            
+            // Multi-strategy price field locator for Chakra UI forms (Selling Price, Unit Price, Before Tax)
+            let priceFilled = false;
+
+            // Strategy 1: Find form control container matching text label
+            const labelContainers = modal.locator('.chakra-form-control, [role="group"], div').filter({
+                has: page.getByText(/Selling Price|Unit Price|Before Tax/i)
+            });
+            const containerCount = await labelContainers.count();
+            for (let i = 0; i < containerCount; i++) {
+                const inp = labelContainers.nth(i).locator('input').first();
+                if (await inp.isVisible({ timeout: 500 }).catch(() => false)) {
+                    await inp.fill(opts.unitPrice);
+                    priceFilled = true;
+                    console.log(`[MODAL] Filled price field via label container: ${opts.unitPrice}`);
+                    break;
+                }
+            }
+
+            // Strategy 2: Fallback to inputs initialized with value="0" or price-related names
+            if (!priceFilled) {
+                const zeroInput = modal.locator('input[value="0"]').first();
+                if (await zeroInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+                    await zeroInput.fill(opts.unitPrice);
+                    priceFilled = true;
+                    console.log(`[MODAL] Filled price field via value=0 fallback: ${opts.unitPrice}`);
+                }
+            }
+
+            // Strategy 3: Fallback to last input in the modal
+            if (!priceFilled) {
+                const inputs = modal.locator('input').filter({ visible: true });
+                const count = await inputs.count();
+                if (count > 0) {
+                    await inputs.nth(count - 1).fill(opts.unitPrice);
+                    console.log(`[MODAL] Filled price field via last input fallback: ${opts.unitPrice}`);
+                }
+            }
         } else {
             // Miscellaneous modal without Quantity — fill Before Tax / price directly
-            const beforeTaxInput = modal.locator('input[placeholder="price"], input[name*="price" i], input[name*="before_tax" i], input[name*="amount" i]').first();
+            const beforeTaxInput = modal.locator('input[placeholder="price"], input[name*="price" i], input[name*="before_tax" i], input[name*="amount" i], input[value="0"]').first();
             const spinFallback = modal.getByRole('spinbutton').first();
             if (await beforeTaxInput.isVisible({ timeout: 2000 }).catch(() => false)) {
                 await beforeTaxInput.fill(opts.unitPrice);
@@ -105,7 +135,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }
         await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
 
-        await modal.getByRole('button', { name: 'Add', exact: true }).click();
+        const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
+        await addBtn.click();
         await expect(modal).not.toBeVisible({ timeout: 15000 });
     }
 
@@ -118,18 +149,21 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
         await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
-        await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
+
+        const lineItemBtn = page.locator('button:has-text("Line Item"), button:has-text("Add Line Item")').first();
+        await lineItemBtn.waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
         await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
 
-        await page.getByRole('button', { name: 'Line Item' }).click();
+        await lineItemBtn.click();
         await addLineItemViaModal(page, app, 'Item', { qty: '3', unitPrice: '500' });
         console.log('[OK] Inventory line item added to SO');
 
-        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        const addNowBtn = page.locator('button:has-text("Add Now"), button:has-text("Save"), button:has-text("Create")').first();
+        await addNowBtn.click();
         await page.waitForURL(/sale-orders\/.*\/detail/, { timeout: 60000 });
 
         const soId = await app.extractIdFromUrl();

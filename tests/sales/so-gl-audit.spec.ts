@@ -59,10 +59,11 @@ function printGLReport(blocks: TxBlock[]) {
 test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => {
     test.setTimeout(180000);
 
-    const isAR = (e: any) =>
-        e.accountType?.toLowerCase().includes('receivable') ||
-        e.account?.type?.name?.toLowerCase().includes('receivable') ||
-        e.account?.name?.toLowerCase().includes('receivable');
+    const isAR = (e: any) => {
+        const typeStr = String(e.accountType || e.account_type || e.account?.type?.name || e.account?.type || '').toLowerCase();
+        const nameStr = String(e.accountName || e.account_name || e.account?.name || '').toLowerCase();
+        return typeStr.includes('receivable') || nameStr.includes('receivable');
+    };
 
     async function fetchReceiptJournal(app: AppManager, receiptId: string) {
         const token = await app._getAuthToken();

@@ -73,17 +73,18 @@ export class PurchaseAPI extends BasePage {
     }
 
     const typesToTry = existingType
-      ? [existingType, 'business', 'organization', 'person', 'local', 'trade', 'Business', 'Person', 'Organization', 'Local']
-      : ['business', 'organization', 'person', 'local', 'trade', 'Business', 'Person', 'Organization', 'Local'];
+      ? [existingType, 'Business', 'Organization', 'Person', 'business', 'organization', 'person', 'local', 'trade']
+      : ['Business', 'Organization', 'Person', 'business', 'organization', 'person', 'local', 'trade'];
 
     let lastErr = '';
     for (const typeVal of typesToTry) {
+      const dynamicPhone = `09${Math.floor(10000000 + Math.random() * 90000000)}`;
       const payload = {
         name,
         tin: randomTin,
         type: typeVal,
-        phone: '0911000000',
-        email: `vendor_${Date.now()}@audit.com`,
+        phone: dynamicPhone,
+        email: `vendor_${Date.now()}_${Math.floor(Math.random() * 1000)}@audit.com`,
         accounts_payable_id: apAccount?.id,
         currency_id: currency?.id,
         address: {

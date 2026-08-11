@@ -20,9 +20,9 @@ test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () =>
 
         const meta = await app.api.hr.discoverMetadataAPI();
         if (!meta) { console.log('[SKIP] HR org structure not configured'); return; }
-        // Unique future date per run — avoids 409 duplicate conflict
-        const offset = (Date.now() % 180) + 1;
-        const date = new Date(Date.now() + offset * 86400000).toISOString().split('T')[0] + 'T00:00:00Z';
+        // Unique date per run — avoids 409 duplicate conflict
+        const randomDays = Math.floor(Math.random() * 3000) + 100;
+        const date = new Date(Date.now() + randomDays * 86400000).toISOString().split('T')[0] + 'T00:00:00Z';
 
         console.log(`[STEP 1] Creating timesheet | employee: ${meta.employeeId} | date: ${date}`);
         const ts = await app.api.hr.createTimesheet(meta.employeeId, date, 8, 'Audit Timesheet Entry');

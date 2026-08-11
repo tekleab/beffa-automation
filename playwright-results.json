@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "projects": [
@@ -20,7 +20,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Sales",
         "name": "Sales",
@@ -36,7 +36,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Purchase",
         "name": "Purchase",
@@ -52,7 +52,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Inventory",
         "name": "Inventory",
@@ -68,7 +68,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "HR",
         "name": "HR",
@@ -84,7 +84,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Project-Management",
         "name": "Project-Management",
@@ -100,7 +100,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Cross-Module",
         "name": "Cross-Module",
@@ -185,488 +185,290 @@
   },
   "suites": [
     {
-      "title": "hr/hr-payroll.spec.ts",
-      "file": "hr/hr-payroll.spec.ts",
+      "title": "cross-module/line-item-miscellaneous-audit.spec.ts",
+      "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Payroll: Runs & Pay Components @hr @smoke @regression @full",
-          "file": "hr/hr-payroll.spec.ts",
-          "line": 4,
+          "title": "Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full",
+          "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+          "line": 21,
           "column": 6,
           "specs": [
             {
-              "title": "API: Pay structure must be created with valid name",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|225.59"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 351,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
-                        },
-                        {
-                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10\n"
-                        },
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:01:32 [PERFORMANCE]\u001b[0m API - Auth API Verification: 225.59ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Year switcher not visible — skipping year switch to 2019.\n"
-                        },
-                        {
-                          "text": "[PASS] Pay structure created: b22b6814-e9bf-436d-9796-534e4065ea7e\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:01:26.080Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|225.59"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-ea69c34181798c1cf990",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 24,
-              "column": 9
-            },
-            {
-              "title": "API: Pay component must be created with correct GL account linkage",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|225.59"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2759,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
-                        },
-                        {
-                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
-                        },
-                        {
-                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
-                        },
-                        {
-                          "text": "[PASS] Pay component created: e8fa2903-e887-4426-bec6-ec852a85e0c8 | GL: bd32401d-9a1c-4637-9dfe-dbf0e79dc766\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:03:24.393Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|225.59"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-87cba11d00aef03a5ebe",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 33,
-              "column": 9
-            },
-            {
-              "title": "API: Pay components must have valid type and tax_rule fields",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|225.59"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1589,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[PASS] All 20 pay components have valid structure\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:03:27.357Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|225.59"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-1e5c788c4f45b80cc92a",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 47,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: Pay component must reject invalid type and tax_rule values",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|225.59"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2634,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[HR] All job positions for dept 13d20b07-8042-435a-a405-a9108d45b6af are full. Creating new one...\n"
-                        },
-                        {
-                          "text": "[HR] Job position 409 conflict — re-fetching existing positions for dept 13d20b07-8042-435a-a405-a9108d45b6af\n"
-                        },
-                        {
-                          "text": "[HR] Fallback: using any job position \"QA Specialist\" (08f85fe1-fd6c-4fc9-a466-5f62ae7f0675)\n"
-                        },
-                        {
-                          "text": "[PASS] Invalid pay component type rejected: {\"tax_rule\":[\"Invalid tax rule\"],\"type\":[\"Invalid pay component type\"]}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:03:29.288Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|225.59"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-26e855e61ea2ab9fd3e4",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 59,
-              "column": 9
-            },
-            {
-              "title": "API: Payroll run must be created with correct initial draft status",
+              "title": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
               "ok": false,
               "tags": [
-                "hr",
-                "smoke",
+                "sales",
+                "purchase",
+                "logic",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 180000,
+                  "timeout": 600000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|273.86"
+                      "description": "API|Auth API Verification|372.23"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|554.29"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|310.95"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Pick Date: Sales Order Date|18147.98"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Customer|2769.73"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Accounts Receivable|3021.23"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Currency|3318.58"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Item|2391.78"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Warehouse|2887.75"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Location|2673.80"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: G/L Account|2506.78"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Tax|3013.22"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
+                  "projectId": "Cross-Module",
+                  "projectName": "Cross-Module",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 3,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 253986,
                       "error": {
-                        "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n    at /home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts:13:10",
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('dialog').last()\nExpected: not visible\nReceived: visible\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').last()\u001b[22m\n\u001b[2m    18 × locator resolved to <section tabindex=\"-1\" role=\"dialog\" id=\"popover-content-:rev:\" aria-describedby=\"popover-body-:rev:\" class=\"chakra-popover__content css-unt9s1\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('dialog').last()\nExpected: not visible\nReceived: visible\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').last()\u001b[22m\n\u001b[2m    18 × locator resolved to <section tabindex=\"-1\" role=\"dialog\" id=\"popover-content-:rev:\" aria-describedby=\"popover-body-:rev:\" class=\"chakra-popover__content css-unt9s1\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at addLineItemViaModal (/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:140:33)\n    at /home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:162:9",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts",
-                          "column": 10,
-                          "line": 13
+                          "file": "/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+                          "column": 33,
+                          "line": 140
                         },
-                        "snippet": "\u001b[0m \u001b[90m 11 |\u001b[39m     \u001b[36mlet\u001b[39m payRunId\u001b[33m:\u001b[39m string\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 13 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser\u001b[33m:\u001b[39m b }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 14 |\u001b[39m         browser \u001b[33m=\u001b[39m b\u001b[33m;\u001b[39m\n \u001b[90m 15 |\u001b[39m         page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 16 |\u001b[39m         app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\u001b[0m"
+                        "snippet": "  138 |         const addBtn = modal.locator('button:has-text(\"Add\"), button:has-text(\"Save\")').first();\n  139 |         await addBtn.click();\n> 140 |         await expect(modal).not.toBeVisible({ timeout: 15000 });\n      |                                 ^\n  141 |     }\n  142 |\n  143 |     // ========================================================================="
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts",
-                            "column": 10,
-                            "line": 13
+                            "file": "/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+                            "column": 33,
+                            "line": 140
                           },
-                          "message": "\u001b[31m\"beforeAll\" hook timeout of 120000ms exceeded.\u001b[39m\n\n\u001b[0m \u001b[90m 11 |\u001b[39m     \u001b[36mlet\u001b[39m payRunId\u001b[33m:\u001b[39m string\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 13 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeAll(\u001b[36masync\u001b[39m ({ browser\u001b[33m:\u001b[39m b }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 14 |\u001b[39m         browser \u001b[33m=\u001b[39m b\u001b[33m;\u001b[39m\n \u001b[90m 15 |\u001b[39m         page \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m browser\u001b[33m.\u001b[39mnewPage()\u001b[33m;\u001b[39m\n \u001b[90m 16 |\u001b[39m         app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts:13:10\u001b[22m"
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('dialog').last()\nExpected: not visible\nReceived: visible\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').last()\u001b[22m\n\u001b[2m    18 × locator resolved to <section tabindex=\"-1\" role=\"dialog\" id=\"popover-content-:rev:\" aria-describedby=\"popover-body-:rev:\" class=\"chakra-popover__content css-unt9s1\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n  138 |         const addBtn = modal.locator('button:has-text(\"Add\"), button:has-text(\"Save\")').first();\n  139 |         await addBtn.click();\n> 140 |         await expect(modal).not.toBeVisible({ timeout: 15000 });\n      |                                 ^\n  141 |     }\n  142 |\n  143 |     // =========================================================================\n    at addLineItemViaModal (/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:140:33)\n    at /home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:162:9"
+                        },
+                        {
+                          "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-0/traces/5dc60173c5454776a922-fbccbd4d7894309cf5dc.trace'"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[DateHelper] Year 2018 period ended 2026-07-07 — trying year 2019\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)\n"
                         },
                         {
-                          "text": "[DateHelper] Period bounds (year=2019): between 07/08/2026 and 07/07/2027 → using 2026-08-10\n"
+                          "text": "\u001b[33m12:20:56 [PERFORMANCE]\u001b[0m API - Auth API Verification: 372.23ms\n"
                         },
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-10T00:00:00Z (day=10, ecYear=2019)\n"
+                          "text": "[ADJ] quantity | qty=50 @ $100 | current=0 loc=0\n"
                         },
                         {
-                          "text": "\u001b[33m08:01:32 [PERFORMANCE]\u001b[0m API - Auth API Verification: 273.86ms\n"
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001667 (ID: 26110884-34e3-4246-b2c8-a8ea1ab3d275)\n"
                         },
                         {
-                          "text": "[AUTH] Year switcher not visible — skipping year switch to 2019.\n"
+                          "text": "\u001b[36m12:23:26 [INFO]\u001b[0m Advancing inventory-adjustments \"26110884-34e3-4246-b2c8-a8ea1ab3d275\"...\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1786451003505 (632b9f47-0d8b-4f26-bdfe-98735aff0aa1) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                        },
+                        {
+                          "text": "[ADJ] quantity | qty=50 @ $80 | current=0 loc=0\n"
+                        },
+                        {
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001668 (ID: cd68c54c-a8ae-42f1-9219-c935e8123668)\n"
+                        },
+                        {
+                          "text": "\u001b[36m12:23:34 [INFO]\u001b[0m Advancing inventory-adjustments \"cd68c54c-a8ae-42f1-9219-c935e8123668\"...\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1786451012017 (f606e9ac-1a0b-45a1-8ffe-b5418cffa796) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                        },
+                        {
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:23:40 [PERFORMANCE]\u001b[0m API - Auth API Verification: 554.29ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:26:04 [PERFORMANCE]\u001b[0m API - Auth API Verification: 310.95ms\n"
+                        },
+                        {
+                          "text": "\u001b[36m12:26:44 [INFO]\u001b[0m Picking date: \"Sales Order Date\" → target 2026-8-11\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:01 [WARN]\u001b[0m \"Sales Order Date\" — target day 11 not found, picked early enabled: 1.\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:02 [PERFORMANCE]\u001b[0m UI - Pick Date: Sales Order Date: 18147.98ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:05 [PERFORMANCE]\u001b[0m UI - Random Selection: Customer: 2769.73ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:08 [PERFORMANCE]\u001b[0m UI - Random Selection: Accounts Receivable: 3021.23ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:11 [PERFORMANCE]\u001b[0m UI - Random Selection: Currency: 3318.58ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:16 [PERFORMANCE]\u001b[0m UI - Random Selection: Item: 2391.78ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:18 [PERFORMANCE]\u001b[0m UI - Random Selection: Warehouse: 2887.75ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:21 [PERFORMANCE]\u001b[0m UI - Random Selection: Location: 2673.80ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:24 [PERFORMANCE]\u001b[0m UI - Random Selection: G/L Account: 2506.78ms\n"
+                        },
+                        {
+                          "text": "[MODAL] Filled price field via label container: 500\n"
+                        },
+                        {
+                          "text": "\u001b[33m12:27:28 [PERFORMANCE]\u001b[0m UI - Random Selection: Tax: 3013.22ms\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-10T08:01:25.851Z",
+                      "startTime": "2026-08-11T12:20:48.018Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|273.86"
+                          "description": "API|Auth API Verification|372.23"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|554.29"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "API|Auth API Verification|310.95"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Pick Date: Sales Order Date|18147.98"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Customer|2769.73"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Accounts Receivable|3021.23"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Currency|3318.58"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Item|2391.78"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Warehouse|2887.75"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Location|2673.80"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: G/L Account|2506.78"
+                        },
+                        {
+                          "type": "tactical-perf",
+                          "description": "UI|Random Selection: Tax|3013.22"
                         }
                       ],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/test-failed-1.png"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/test-failed-1.png"
                         },
                         {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/error-context.md"
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/test-failed-2.png"
                         },
                         {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/error-context.md"
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/video.webm"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/hr-hr-payroll-Payroll-Runs-699af-orrect-initial-draft-status-HR/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/hr/hr-payroll.spec.ts",
-                        "column": 10,
-                        "line": 13
+                        "file": "/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+                        "column": 33,
+                        "line": 140
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "4f59d8c6e32615228e92-718dc964a80682617189",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 85,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: Payroll run advance without active employees must not silently succeed",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:03:34.733Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-c9b21a9ca926d2b20203",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 121,
-              "column": 9
-            },
-            {
-              "title": "UI: Payroll Runs page must load and display run records or empty state",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:03:34.764Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-6eeafb663a8a1a397cb8",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 146,
-              "column": 9
-            },
-            {
-              "title": "UI: Pay Components settings page must render the components list",
-              "ok": true,
-              "tags": [
-                "hr",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 180000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "HR",
-                  "projectName": "HR",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-10T08:03:34.824Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4f59d8c6e32615228e92-12d5ab2a31fbf2ca0849",
-              "file": "hr/hr-payroll.spec.ts",
-              "line": 159,
+              "id": "5dc60173c5454776a922-fbccbd4d7894309cf5dc",
+              "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+              "line": 147,
               "column": 9
             }
           ]
@@ -676,10 +478,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-10T08:01:20.462Z",
-    "duration": 143837.02000000002,
-    "expected": 4,
-    "skipped": 3,
+    "startTime": "2026-08-11T12:20:39.019Z",
+    "duration": 444252.067,
+    "expected": 0,
+    "skipped": 0,
     "unexpected": 1,
     "flaky": 0
   }

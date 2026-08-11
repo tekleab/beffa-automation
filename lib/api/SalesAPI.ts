@@ -182,7 +182,7 @@ export class SalesAPI extends BasePage {
         general_ledger_account_id: data.glAccountId || meta.arAccountId,
         warehouse_id: warehouseId,
         location_id: locationId,
-        ...(( data.taxId || meta.taxId) && { tax_id: data.taxId || meta.taxId }),
+        ...((data.taxId || meta.taxId) && { tax_id: data.taxId || meta.taxId }),
         description: data.description || 'E2E Speed Track'
       }],
       status: 'draft'
@@ -256,14 +256,28 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    
+
     // Discover live company environment
     const meta = await this.discoverMetadataAPI();
-    
-    const custId = data.customerId || meta.customerId;
-    const unitPrice = data.unitPrice || 10993.05;
+
+    let itemId = data.itemId;
+    let locationId = data.locationId || meta.locationId;
+    let warehouseId = data.warehouseId || meta.warehouseId;
+
     const q = data.quantity || 1;
+    const unitPrice = data.unitPrice || 10993.05;
     const amount = q * unitPrice;
+
+    if (!itemId) {
+      const { InventoryAPI } = require('./InventoryAPI');
+      const invApi = new InventoryAPI(this.page);
+      const fresh = await invApi.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: q + 20, unit_cost: 100 });
+      itemId = fresh.itemId;
+      locationId = fresh.locationId;
+      warehouseId = fresh.warehouseId;
+    }
+
+    const custId = data.customerId || meta.customerId;
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
@@ -276,11 +290,11 @@ export class SalesAPI extends BasePage {
       items: [{
         amount: amount,
         general_ledger_account_id: meta.salesAccountId,
-        item_id: data.itemId,
-        location_id: data.locationId || meta.locationId,
+        item_id: itemId,
+        location_id: locationId,
         quantity: q,
         unit_price: unitPrice,
-        warehouse_id: data.warehouseId || meta.warehouseId,
+        warehouse_id: warehouseId,
         ...(data.discount_amount && { discount_amount: data.discount_amount }),
         ...(data.discount_type && { discount_type: data.discount_type })
       }],
@@ -573,37 +587,37 @@ export class SalesAPI extends BasePage {
           headers,
           timeout: 30000
         });
-        
+
         if (response.ok()) {
           const json = await response.json();
           console.log(`[SUCCESS] Receipt created on attempt ${attempt}:`, json.ref || json.id);
           return { success: true, ref: json.ref || json.receipt_number || `RCT-${json.id}`, id: json.id };
         }
-        
+
         const errorText = await response.text();
         lastError = `Attempt ${attempt}: HTTP ${response.status()} - ${errorText}`;
         console.warn(`[WARN] Receipt creation failed on attempt ${attempt}: ${lastError}`);
-        
+
         // If it's a 422 validation error, don't retry
         if (response.status() === 422) {
           throw new Error(`Validation Error (422): ${errorText}`);
         }
-        
+
         // Wait before retry
         if (attempt < 3) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
         }
-        
+
       } catch (error) {
         lastError = `Attempt ${attempt}: ${error}`;
         console.warn(`[WARN] Receipt creation error on attempt ${attempt}:`, error);
-        
+
         if (attempt < 3) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
         }
       }
     }
-    
+
     throw new Error(`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`);
   }
 

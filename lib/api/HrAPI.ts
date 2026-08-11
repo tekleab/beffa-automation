@@ -72,6 +72,9 @@ export class HrAPI extends BasePage {
       try {
         const parsed = JSON.parse(text);
         if (parsed?.id) return parsed;
+        if (parsed?.data?.id) return parsed.data;
+        if (parsed?.employee?.id) return parsed.employee;
+        if (Array.isArray(parsed?.data) && parsed.data[0]?.id) return parsed.data[0];
       } catch {}
     }
 
