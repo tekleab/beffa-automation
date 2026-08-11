@@ -979,7 +979,9 @@ export class InventoryAPI extends BasePage {
     if (acctResp.ok()) {
       const acctData = await acctResp.json();
       const accounts = acctData.items || acctData.data || [];
-      adjAccountId = accounts.find((a: any) => a.account_type?.toLowerCase().includes('expense'))?.id || accounts[0]?.id;
+      // type is a plain string on this ERP (e.g. "Operating Expenses", "Cost of Sales")
+      const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+      adjAccountId = accounts.find((a: any) => typeOf(a).includes('expense') || typeOf(a).includes('cost'))?.id || accounts[0]?.id;
     }
 
     // 2. Discover destination location (different from source), self-healing if only one exists
@@ -1020,8 +1022,12 @@ export class InventoryAPI extends BasePage {
 
       // srcItemData already fetched above for the location check
       const srcItem = srcItemData;
+      // GL accounts are nested objects on this ERP: gl_cost_account.id (not gl_cost_account_id)
+      const glCostId      = srcItem.gl_cost_account_id      || srcItem.gl_cost_account?.id;
+      const glSalesId     = srcItem.gl_sales_account_id     || srcItem.gl_sales_account?.id;
+      const glInventoryId = srcItem.gl_inventory_account_id || srcItem.gl_inventory_account?.id;
 
-      // Create item with destination as default → registers it at destination
+      // Create item with source location as default
       const transferItemResp = await this.safePost(`${apiBase}/inventory-items?${params}`, {
         data: {
           name: `Transfer Test Item ${Date.now().toString().slice(-6)}`,
@@ -1040,9 +1046,9 @@ export class InventoryAPI extends BasePage {
           purchase_price: 0,
           selling_price: 0,
           unit_cost: srcItem.unit_cost || 100,
-          gl_sales_account_id: srcItem.gl_sales_account_id,
-          gl_cost_account_id: srcItem.gl_cost_account_id,
-          gl_inventory_account_id: srcItem.gl_inventory_account_id,
+          gl_sales_account_id: glSalesId,
+          gl_cost_account_id: glCostId,
+          gl_inventory_account_id: glInventoryId,
           default_location_id: data.fromLocationId,
           default_warehouse_id: data.fromWarehouseId,
           quantity: data.quantity + 10
@@ -1074,9 +1080,9 @@ export class InventoryAPI extends BasePage {
           purchase_price: 0,
           selling_price: 0,
           unit_cost: srcItem.unit_cost || 100,
-          gl_sales_account_id: srcItem.gl_sales_account_id,
-          gl_cost_account_id: srcItem.gl_cost_account_id,
-          gl_inventory_account_id: srcItem.gl_inventory_account_id,
+          gl_sales_account_id: glSalesId,
+          gl_cost_account_id: glCostId,
+          gl_inventory_account_id: glInventoryId,
           default_location_id: toLocationId,
           default_warehouse_id: toWarehouseId,
           quantity: 0
