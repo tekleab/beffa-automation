@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 18,
-  "failed": 1,
+  "passed": 16,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 94.7,
-  "avgDurationMs": 39941,
-  "lastUpdated": "2026-08-11T09:36:08.396Z",
+  "passRate": 84.2,
+  "avgDurationMs": 35942,
+  "lastUpdated": "2026-08-11T11:22:42.374Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 1,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        78.9,
         94.7,
         84.9,
         83.3,
         88.9,
         85.9,
-        94.7
+        94.7,
+        84.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "623",
+      "commit": "531e0db",
+      "trigger": "push (smoke)",
+      "duration": "11m 22s",
+      "passRate": 84.2,
+      "status": "success"
+    },
     {
       "run": "622",
       "commit": "a0def37",
@@ -95,22 +103,30 @@
       "duration": "99m 17s",
       "passRate": 73,
       "status": "failed"
-    },
-    {
-      "run": "612",
-      "commit": "8eb47af",
-      "trigger": "push (smoke)",
-      "duration": "16m 53s",
-      "passRate": 84.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/11/000887 never appeared in \"Gentium Concrite Industry\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:626\n\n  624 |     }\n  625 |\n> 626 |     throw ",
-      "firstSeen": "2026-08-11T09:29:22.104Z",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: [ERP_BUG #RCT-UI-01] Approved receipt RCPT/2026/08/11/000279 not visible in Customer Profile Receipts tab (63 rows present).\n\n  112 |         if (!rcptVisible) {\n  113 |             const rowCo",
+      "firstSeen": "2026-08-11T11:14:34.719Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [FRESH ITEM] Stock adjustment failed for bb4d2ddc-5569-4f67-a7f9-c90ab8d96c84: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:731\n\n  7",
+      "firstSeen": "2026-08-11T11:15:34.121Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/10 digit|must be 10|invalid/i)\nExpected: visible\nTimeout: 30000ms\nError: element(s) not f",
+      "firstSeen": "2026-08-11T11:15:59.476Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
