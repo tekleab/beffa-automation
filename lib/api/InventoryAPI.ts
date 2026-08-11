@@ -286,7 +286,12 @@ export class InventoryAPI extends BasePage {
       const acctData = await safeJson(acctResp);
       if (acctData) {
         const allAccounts = acctData.items || acctData.data || [];
-        const expAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense') || a.account_type?.toLowerCase().includes('cost')) || allAccounts[0];
+        // type is a plain string on this ERP (e.g. "Expense", "Cost of Goods Sold")
+        const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+        const expAcct = allAccounts.find((a: any) =>
+          typeOf(a).includes('expense') || typeOf(a).includes('cost') ||
+          a.name?.toLowerCase().includes('expense')
+        ) || allAccounts[0];
         if (expAcct) adjustmentAccountId = expAcct.id;
       }
     }
@@ -433,18 +438,15 @@ export class InventoryAPI extends BasePage {
     const json = await safeJson(response, 'Item Discovery');
     const list = json.data || json.items || [];
 
-    const items = list.filter((i: any) => {
-      const locations = i.inventory_item_locations || [];
-      const locationStock = locations.reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
-      // STRICT REQUIREMENT: Item must be active, have location data, and satisfy minStock
-      return i.status === 'active' && locations.length > 0 && (locationStock >= minStock);
-    });
+    // After DTO refactor, inventory_item_locations is stripped from list responses too.
+    // Filter only on status — stock is verified via /locations sub-endpoint in getItemDetailsAPI.
+    const items = list.filter((i: any) => i.status === 'active');
 
     if (items.length === 0) {
       console.log(`[SELF-HEALING] No active items with stock >= ${minStock} found. Attempting stock adjustment on existing item...`);
 
       // Pick any active item regardless of stock
-      const anyActive = list.filter((i: any) => i.status === 'active' && (i.inventory_item_locations || []).length > 0);
+      const anyActive = list.filter((i: any) => i.status === 'active');
       const candidate = anyActive[0];
 
       if (!candidate) {
@@ -452,9 +454,26 @@ export class InventoryAPI extends BasePage {
         return null as any;
       }
 
-      const loc = candidate.inventory_item_locations[0];
-      const locationId = loc.location_id || loc.id;
-      const warehouseId = loc.warehouse_id || loc.warehouse?.id || '';
+      // default_location_id is absent from list responses — discover from /locations endpoint
+      let locationId = '';
+      let warehouseId = '';
+      try {
+        const token = await this._getAuthToken();
+        const year = process.env.BEFFA_YEAR || '2018';
+        const period = process.env.BEFFA_PERIOD || 'yearly';
+        const calendar = process.env.BEFFA_CALENDAR || 'ec';
+        const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
+          headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        });
+        if (locResp.ok()) {
+          const locData = await locResp.json();
+          const firstLoc = (locData.items || locData.data || [])[0];
+          if (firstLoc) {
+            locationId = firstLoc.id;
+            warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
+          }
+        }
+      } catch { /* proceed without location */ }
 
       try {
         const adjResult = await this.createInventoryAdjustmentAPI({
@@ -487,47 +506,39 @@ export class InventoryAPI extends BasePage {
     const target = items[Math.floor(Math.random() * items.length)];
 
     // Find the specific location that satisfied the minStock requirement
-    const stockLocs = (target.inventory_item_locations || []).filter((loc: any) => (loc.quantity || 0) >= minStock);
-    const bestLoc = stockLocs.sort((a: any, b: any) => (b.quantity || 0) - (a.quantity || 0))[0] || target.inventory_item_locations?.[0];
-
-    const stock = bestLoc?.quantity || 0;
-
-    // Resolve warehouseId from multiple possible fields on the location object
-    const resolvedWarehouseId =
-      bestLoc?.warehouse_id ||
-      bestLoc?.location?.warehouse_id ||
-      bestLoc?.location?.warehouse?.id ||
-      bestLoc?.warehouse?.id ||
-      target.default_warehouse_id ||
-      '';
-
-    if (!resolvedWarehouseId) {
-      // Last resort: fetch from /locations API
-      const locId = bestLoc?.location_id;
-      if (locId) {
-        let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
-        if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
-        if (!apiBase.endsWith('/api')) apiBase += '/api';
-        const token = await this._getAuthToken();
-        const y = process.env.BEFFA_YEAR || '2018', p = process.env.BEFFA_PERIOD || 'yearly', c = process.env.BEFFA_CALENDAR || 'ec';
-        const locResp = await this.safeGet(`${apiBase}/location/${locId}?year=${y}&period=${p}&calendar=${c}`, {
-          headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-        });
-        if (locResp.ok()) {
-          const locJson = await locResp.json();
-          const wid = locJson.warehouse_id || locJson.warehouse?.id || '';
-          return { itemName: target.name, itemId: target.id, currentStock: stock, unitCost: target.unit_cost || 0, locationId: locId, warehouseId: wid };
+    // default_location_id is absent from list responses after DTO refactor.
+    // Discover location from /locations endpoint; live stock fetched via getItemDetailsAPI.
+    let locationId = '';
+    let warehouseId = '';
+    try {
+      const token = await this._getAuthToken();
+      const year = process.env.BEFFA_YEAR || '2018';
+      const period = process.env.BEFFA_PERIOD || 'yearly';
+      const calendar = process.env.BEFFA_CALENDAR || 'ec';
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
+        headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+      });
+      if (locResp.ok()) {
+        const locData = await locResp.json();
+        const firstLoc = (locData.items || locData.data || [])[0];
+        if (firstLoc) {
+          locationId = firstLoc.id;
+          warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
         }
       }
-    }
+    } catch { /* proceed without location */ }
+
+    // Fetch live stock via the /locations sub-endpoint
+    const liveDetails = await this.getItemDetailsAPI(target.id, locationId);
+    const stock = liveDetails?.currentStock ?? 0;
 
     return {
       itemName: target.name,
       itemId: target.id,
       currentStock: stock,
       unitCost: target.unit_cost || 0,
-      locationId: bestLoc?.location_id,
-      warehouseId: resolvedWarehouseId
+      locationId,
+      warehouseId
     };
   }
 
@@ -539,6 +550,11 @@ export class InventoryAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 
+      'x-company': process.env.BEFFA_COMPANY as string, 
+      'Authorization': `Bearer ${token}`,
+      'x-role': 'IT Administrator / User Manager'
+    };
 
     const safeJson = async (resp: any): Promise<any | null> => {
       const text = await resp.text();
@@ -546,38 +562,25 @@ export class InventoryAPI extends BasePage {
       try { return JSON.parse(text); } catch { return null; }
     };
 
-    let response = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, {
-      headers: { 
-        'x-company': process.env.BEFFA_COMPANY as string, 
-        'Authorization': `Bearer ${token}`,
-        'x-role': 'IT Administrator / User Manager'
-      }
-    });
+    const detailResp = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
+    const json = await safeJson(detailResp);
+    if (!json) return null;
 
-    const json = await safeJson(response);
-
-    if (!json) {
-      console.log(`[INFO] Direct Item API for ${itemId} failed. Trying search...`);
-      const searchResp = await this.safeGet(`${apiBase}/inventory-item?search=${itemId}&${params}`, {
-        headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
-      });
-      const searchJson = await safeJson(searchResp);
-      if (!searchJson) return null;
-      const item = searchJson.items?.[0] || searchJson.data?.[0];
-      if (!item) return null;
-      
-      let stock = (item.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
+    // GET /inventory-item/{id}/locations is the only endpoint that returns live stock.
+    // The detail endpoint's quantity field is creation-time initial stock, not live stock.
+    // inventory_item_locations on the detail response is always empty on this ERP.
+    const locsResp = await this.safeGet(`${apiBase}/inventory-item/${itemId}/locations?${params}`, { headers });
+    let stock = 0;
+    if (locsResp.ok()) {
+      const locsJson = await safeJson(locsResp);
+      const locs: any[] = locsJson?.data || locsJson?.items || [];
       if (locationId) {
-          const loc = (item.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
-          stock = loc?.quantity || 0;
+        // match by location id — the locations sub-endpoint returns {id, name, quantity}
+        const match = locs.find((l: any) => l.id === locationId);
+        stock = match ? parseFloat(match.quantity || '0') : locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
+      } else {
+        stock = locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
       }
-      return { itemName: item.name, itemId: item.id, currentStock: stock, unitCost: item.unit_cost || 0 };
-    }
-
-    let stock = (json.inventory_item_locations || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
-    if (locationId) {
-        const loc = (json.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
-        stock = loc?.quantity || 0;
     }
 
     return {
@@ -810,12 +813,7 @@ export class InventoryAPI extends BasePage {
       const itemResp = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
       if (itemResp.ok()) {
         const itemData = await itemResp.json();
-        const otherLoc = (itemData.inventory_item_locations || [])
-          .find((l: any) => l.location_id !== fromLocationId && (l.warehouse_id || l.warehouse?.id));
-        if (otherLoc) {
-          console.log(`[DEST] Using existing item location: ${otherLoc.location_id}`);
-          return { locationId: otherLoc.location_id, warehouseId: otherLoc.warehouse_id || otherLoc.warehouse?.id };
-        }
+        // inventory_item_locations stripped from detail response — skip this path
       }
     }
 
@@ -1014,7 +1012,8 @@ export class InventoryAPI extends BasePage {
     // Check if item is actually registered at destination by inspecting its location list directly
     const srcItemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
     const srcItemData = srcItemResp.ok() ? await srcItemResp.json() : {};
-    const registeredAtDest = (srcItemData.inventory_item_locations || []).some((l: any) => l.location_id === toLocationId);
+    // inventory_item_locations stripped from detail response — always create dedicated transfer items
+    const registeredAtDest = false;
 
     if (!registeredAtDest) {
       console.log(`[TRANSFER] Item not registered at destination. Creating a dedicated transfer item pre-stocked at both locations...`);

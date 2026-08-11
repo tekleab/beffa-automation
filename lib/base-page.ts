@@ -347,17 +347,17 @@ ${curlCmd}
   /**
    * Resilient GET with exponential backoff for 500/503/socket-hang-up.
    */
-  async safeGet(url: string, options: { headers: any }, timeoutMs = 30000): Promise<any> {
+  async safeGet(url: string, options: { headers: any }, timeoutMs = 15000): Promise<any> {
     let lastError: any = null;
     const startTime = performance.now();
+    // Use context-level request when page is on about:blank — page.request fails with status 0
+    const requester = (this.page.url() === 'about:blank' || this.page.url() === '')
+      ? this.page.context().request
+      : this.page.request;
 
     for (let attempt = 1; attempt <= 4; attempt++) {
       try {
-        const response = await this.withTimeout(
-          this.page.request.get(url, { headers: options.headers }),
-          timeoutMs,
-          `GET ${url}`
-        );
+        const response = await requester.get(url, { headers: options.headers, timeout: timeoutMs });
         if (response.ok()) return response;
         const status = response.status();
         const text = await response.text();
@@ -380,6 +380,10 @@ ${curlCmd}
         ) {
           Logger.warn(`GET ${Logger.sanitize(url)} → Page closed mid-request. Aborting retries.`);
           return { ok: () => false, status: () => 0, text: async () => 'page-closed', json: async () => ({}) };
+        }
+        // Playwright test timeout killed the request — abort immediately, no retry
+        if (err.message?.includes('Test timeout of') && err.message?.includes('exceeded')) {
+          throw err;
         }
         if (
           err.message?.includes('socket hang up') ||

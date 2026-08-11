@@ -60,16 +60,19 @@ export class SalesAPI extends BasePage {
     const accData = await safeJson(accResp, 'Accounts Discovery');
     const allAccounts = accData.items || accData.data || [];
 
+    // type is a plain string e.g. "Cash & Cash Equivalents" — not a nested object
+    const typeStr = (a: any) => (a.type || a.account_type || '').toLowerCase();
+
     // Precise AR account
     const arAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase() === 'accounts receivable') ||
-      allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('trade') && a.name?.toLowerCase().includes('receivable')) ||
-      allAccounts.find((a: any) => a.type?.type?.toLowerCase() === 'accounts receivable') ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('receivable')) ||
+      allAccounts.find((a: any) => typeStr(a).includes('receivable')) ||
       allAccounts[0];
 
     const salesAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase() === 'sales') ||
-      allAccounts.find((a: any) => a.type?.type?.toLowerCase().includes('revenue')) ||
+      allAccounts.find((a: any) => typeStr(a).includes('revenue') || typeStr(a).includes('income')) ||
       arAccount;
 
     // 2. Fetch Customer
@@ -108,7 +111,7 @@ export class SalesAPI extends BasePage {
 
     const cashAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')) ||
-      allAccounts.find((a: any) => a.type?.name?.toLowerCase().includes('cash')) ||
+      allAccounts.find((a: any) => typeStr(a).includes('cash') || typeStr(a).includes('bank')) ||
       allAccounts[0];
 
     if (!arAccount || !customer) throw new Error('Metadata Discovery Failed: Missing Account or Customer records.');
@@ -330,11 +333,13 @@ export class SalesAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Business Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
+    const _typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
     const cashAccount = allAccounts.find((a: any) =>
-      a.account_type?.toLowerCase().includes('cash') || a.account_type?.toLowerCase().includes('bank')
+      _typeOf(a).includes('cash') || _typeOf(a).includes('bank') ||
+      a.name?.toLowerCase().includes('cash')
     ) || allAccounts[0];
     const glAccount = allAccounts.find((a: any) =>
-      a.account_type?.toLowerCase().includes('receivable')
+      _typeOf(a).includes('receivable') || a.name?.toLowerCase().includes('receivable')
     ) || allAccounts[1] || allAccounts[0];
     if (!cashAccount) throw new Error('Receipt Discovery Failed: No cash/bank accounts found.');
 
@@ -505,11 +510,10 @@ export class SalesAPI extends BasePage {
       if (acctResp.ok()) {
         const acctData = await acctResp.json();
         const allAccounts = acctData.items || acctData.data || [];
-        const cashAcct = allAccounts.find((a: any) => 
-          a.account_type?.toLowerCase().includes('cash') || 
-          a.account_type?.toLowerCase().includes('bank') ||
-          a.name?.toLowerCase().includes('cash') ||
-          a.name?.toLowerCase().includes('petty')
+        const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+        const cashAcct = allAccounts.find((a: any) =>
+          typeOf(a).includes('cash') || typeOf(a).includes('bank') ||
+          a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')
         ) || allAccounts[0];
         if (cashAcct) cashAccountId = cashAcct.id;
       }

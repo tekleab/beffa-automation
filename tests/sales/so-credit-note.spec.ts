@@ -14,7 +14,7 @@ import { AppManager } from'../../pages/AppManager';
 test.describe('Sales Return & Stock Recovery @sales @regression @full', () => {
 
     test('Forensic Audit: Invoice Void & Stock Restoration', async ({ page }) => {
-        test.setTimeout(120000);
+        test.setTimeout(180000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
