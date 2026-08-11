@@ -194,22 +194,15 @@ export class AuthManager extends BasePage {
 
   async switchYear(targetYear: string): Promise<void> {
     if (!targetYear) return;
-    // Support Chakra UI popover triggers (id*="popover-trigger") and standard year buttons
     const yearBtn = this.page.locator('button[id*="popover-trigger"], [id*="popover-trigger"], button, [role="button"]')
       .filter({ hasText: new RegExp(`\\b${targetYear}\\b|\\b20\\d{2}\\b`) })
       .first();
 
-    const visible = await yearBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    if (!visible) {
-      console.log(`[AUTH] Year switcher not visible — skipping year switch to ${targetYear}.`);
-      return;
-    }
+    const visible = await yearBtn.isVisible({ timeout: 500 }).catch(() => false);
+    if (!visible) return;
 
     const currentText = (await yearBtn.textContent())?.trim() || '';
-    if (currentText.includes(targetYear)) {
-      console.log(`[AUTH] Year already set to ${targetYear}.`);
-      return;
-    }
+    if (currentText.includes(targetYear)) return;
 
     await yearBtn.click();
     await this.page.waitForTimeout(500);
@@ -218,13 +211,12 @@ export class AuthManager extends BasePage {
       .filter({ hasText: new RegExp(`^${targetYear}$`) })
       .first();
 
-    if (await option.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await option.isVisible({ timeout: 1500 }).catch(() => false)) {
       await option.click();
-      await this.page.waitForTimeout(1000);
+      await this.page.waitForTimeout(500);
       console.log(`[AUTH] Switched fiscal year to ${targetYear}.`);
     } else {
       await this.page.keyboard.press('Escape');
-      console.log(`[AUTH] Year option ${targetYear} not found in dropdown — staying on ${currentText}.`);
     }
   }
 }

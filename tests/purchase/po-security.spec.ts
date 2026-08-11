@@ -71,8 +71,11 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         const item = sharedItem;
 
         const vendorResp = await page.request.get(`${apiBase}/vendors?page=1&pageSize=10&${qs}`, { headers });
-        const vendors = (await vendorResp.json()).items || [];
-        if (vendors.length < 2) { console.log('[SKIP] Need at least 2 vendors.'); return; }
+        let vendors = (await vendorResp.json()).items || (await vendorResp.json()).data || [];
+        if (vendors.length < 2) {
+            const newVendor = await app.api.purchase.createVendorAPI(`Sec-Vendor-${Date.now()}`);
+            vendors.push(newVendor);
+        }
 
         const vendorA = vendors[0];
         const vendorB = vendors[1];
@@ -88,7 +91,11 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         await app.advanceDocumentAPI(billA.id, 'bills');
 
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-        const cashAcct = (await acctResp.json()).items?.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || (await acctResp.json()).items?.[0];
+        const acctJson = await acctResp.json().catch(() => ({}));
+        const allAccounts = acctJson.items || acctJson.data || [];
+        const cashAcct = allAccounts.find((a: any) => (a.account_type || a.type || a.name || '').toLowerCase().includes('cash') || (a.account_type || a.type || a.name || '').toLowerCase().includes('bank')) || allAccounts[0];
+
+        if (!cashAcct) throw new Error('[SETUP] No cash account found.');
 
         console.log(`[ATTACK] Submitting Payment under Vendor B, linking to Vendor A's Bill!`);
         const attackResp = await page.request.post(`${apiBase}/payments?${qs}`, {
@@ -119,11 +126,10 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         const { apiBase, headers, qs } = await app.buildApiContext();
 
         const vendorA = await app.api.purchase.discoverRandomVendorAPI();
-        const vendorB = await app.api.purchase.discoverRandomVendorAPI();
+        let vendorB = await app.api.purchase.discoverRandomVendorAPI();
 
         if (vendorB.id === vendorA.id) {
-            console.log(`[SKIP] Only one vendor exists — cannot test cross-vendor isolation.`);
-            return;
+            vendorB = await app.api.purchase.createVendorAPI(`IDOR-Vendor-${Date.now()}`);
         }
 
         const billA = await app.api.purchase.createBillAPI({ itemData: sharedItem, vendorId: vendorA.id });

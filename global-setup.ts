@@ -75,9 +75,16 @@ async function globalSetup() {
         .replace(/['"]+/g, '').replace(/\/$/, '');
 
     console.log(`[SETUP] Pinging frontend : ${rawBase}`);
-    const frontendStatus = await httpPing(rawBase);
+    let frontendStatus = await httpPing(rawBase);
     console.log(`[SETUP] Pinging API      : ${rawApi}`);
-    const apiStatus = await httpPing(rawApi);
+    let apiStatus = await httpPing(rawApi);
+
+    if (frontendStatus === 0 && apiStatus === 0) {
+        // Retry once after 2s to absorb transient network glitches
+        await new Promise((r) => setTimeout(r, 2000));
+        frontendStatus = await httpPing(rawBase);
+        apiStatus = await httpPing(rawApi);
+    }
 
     if (frontendStatus === 0 && apiStatus === 0) {
         throw new Error(

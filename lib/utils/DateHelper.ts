@@ -91,9 +91,8 @@ export class DateHelper {
 
       const now = new Date();
 
-      // Try env year ± offsets — stops as soon as period end is in the future.
-      // Include -1 to handle cases where the open period is one EC year below BEFFA_YEAR.
-      for (let yearOffset = -1; yearOffset <= 3; yearOffset++) {
+      // Try env year first (yearOffset = 0), then future years
+      for (let yearOffset = 0; yearOffset <= 3; yearOffset++) {
         const year = baseYear + yearOffset;
         const qs = `year=${year}&period=${period}&calendar=${calendar}`;
 
@@ -115,7 +114,6 @@ export class DateHelper {
         if (!vendorId || !acctId || !currId) continue;
 
         // POST with sentinel date far in the past — guaranteed out of period → 422 with bounds
-        // Using past date (not future) because empty po_items with future date may return 200
         const probeResp = await page.request.post(`${base}/purchase-orders?${qs}`, {
           headers,
           data: {
@@ -134,11 +132,8 @@ export class DateHelper {
         // Parse "between DD/MM/YYYY and DD/MM/YYYY"
         const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
         if (!match) {
-          // If no date error, this year's period is open and accepts any date — use today
           if (probeResp.status() === 200 || probeResp.status() === 201) {
-            const useDate = now;
-            console.log(`[DateHelper] Year ${year}: probe returned ${probeResp.status()} (open period) → using today ${useDate.toISOString().slice(0, 10)}`);
-            return DateHelper._fromDate(useDate, year);
+            return DateHelper._fromDate(now, year);
           }
           continue;
         }
@@ -147,29 +142,15 @@ export class DateHelper {
         const periodStart = new Date(`${y1}-${m1}-${d1}T00:00:00Z`);
         const periodEnd   = new Date(`${y2}-${m2}-${d2}T00:00:00Z`);
 
-        // Skip if this period has already ended — try next year
-        if (periodEnd < now) {
-          console.log(`[DateHelper] Year ${year} period ended ${y2}-${m2}-${d2} — trying year ${year + 1}`);
-          continue;
-        }
+        if (periodEnd < now) continue;
 
-        // Pick a date that is:
-        //   (a) within the API period (>= periodStart)
-        //   (b) unambiguously within the EC calendar year shown in the UI
-        // The EC new year starts ~Sep 11 GC. Dates before Sep 11 in the first GC year
-        // of the period still belong to the previous EC year in the UI calendar.
-        // To avoid UI date-picker rejection, advance to Sep 15 of the period's GC start year
-        // (= safely inside EC year N Meskerem) when today is before that date.
-        const ecNewYearGC = new Date(`${parseInt(y1)}-09-15T00:00:00Z`); // Sep 15 = Meskerem ~5
+        const ecNewYearGC = new Date(`${parseInt(y1)}-09-15T00:00:00Z`);
         let useDate: Date;
         if (now >= periodStart && now <= periodEnd) {
-          // We are mid-period — use today (always safe and within bounds)
           useDate = now;
         } else {
-          // Period hasn't started yet — use Sep 15 of start year, clamped to period bounds
           useDate = ecNewYearGC >= periodStart && ecNewYearGC <= periodEnd ? ecNewYearGC : periodStart;
         }
-        console.log(`[DateHelper] Period bounds (year=${year}): ${match[0]} → using ${useDate.toISOString().slice(0, 10)}`);
         return DateHelper._fromDate(useDate, year);
       }
 

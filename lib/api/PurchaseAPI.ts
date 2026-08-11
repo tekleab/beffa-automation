@@ -36,6 +36,80 @@ export class PurchaseAPI extends BasePage {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
+  async createVendorAPI(vendorName?: string): Promise<{ id: string; name: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const company = process.env.BEFFA_COMPANY as string;
+    const year = process.env.BEFFA_YEAR || '2018';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const qs = `year=${year}&period=${period}&calendar=${calendar}`;
+    const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
+    const acctData = await acctResp.json().catch(() => ({}));
+    const allAccounts = acctData.items || acctData.data || [];
+    const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || a.name || '').toLowerCase().includes('payable')) || allAccounts[0];
+
+    const currResp = await this.safeGet(`${apiBase}/currency?${qs}`, { headers });
+    const currData = await currResp.json().catch(() => ({}));
+    const currency = currData.items?.[0] || currData.data?.[0];
+
+    const name = vendorName || `Audit-Vendor-${Date.now()}`;
+    const randomTin = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+
+    // Query existing system vendor to extract valid 'type' property
+    const sampleResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=5&${qs}`, { headers });
+    let existingType: string | null = null;
+    if (sampleResp.ok()) {
+      const sampleData = await sampleResp.json().catch(() => ({}));
+      const items = sampleData.items || sampleData.data || [];
+      const found = items.find((v: any) => v.type || v.vendor_type);
+      if (found) {
+        existingType = found.type || found.vendor_type;
+        console.log(`[VENDOR_TYPE] Discovered system vendor type: "${existingType}"`);
+      }
+    }
+
+    const typesToTry = existingType
+      ? [existingType, 'business', 'organization', 'person', 'local', 'trade', 'Business', 'Person', 'Organization', 'Local']
+      : ['business', 'organization', 'person', 'local', 'trade', 'Business', 'Person', 'Organization', 'Local'];
+
+    let lastErr = '';
+    for (const typeVal of typesToTry) {
+      const payload = {
+        name,
+        tin: randomTin,
+        type: typeVal,
+        phone: '0911000000',
+        email: `vendor_${Date.now()}@audit.com`,
+        accounts_payable_id: apAccount?.id,
+        currency_id: currency?.id,
+        address: {
+          region: 'Addis Ababa City Administration',
+          zone: 'Bole Subcity',
+          woreda: 'Woreda 2',
+          kebele: '1'
+        }
+      };
+
+      const response = await this.safePost(`${apiBase}/vendors?${qs}`, {
+        data: payload,
+        headers,
+        label: `Create Vendor (${typeVal})`
+      });
+
+      if (response.ok()) {
+        const json = await response.json();
+        return { id: json.id, name: json.name || name };
+      }
+      lastErr = await response.text();
+    }
+
+    throw new Error(`Vendor API Creation Failed: ${lastErr}`);
+  }
+
   async discoverRandomVendorAPI(): Promise<{ id: string; name: string }> {
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY || 'sample';
@@ -53,7 +127,7 @@ export class PurchaseAPI extends BasePage {
 
     const data = await response.json();
     const vendor = (data.items || data.data || [])[0];
-    if (!vendor) throw new Error('Forensic Audit Blocked: No Vendors available in the system.');
+    if (!vendor) return this.createVendorAPI();
 
     return { id: vendor.id, name: vendor.name };
   }
