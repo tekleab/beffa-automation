@@ -1,29 +1,37 @@
 {
-  "total": 19,
-  "passed": 16,
-  "failed": 2,
-  "skipped": 1,
-  "passRate": 84.2,
-  "avgDurationMs": 39732,
-  "lastUpdated": "2026-08-11T06:13:53.282Z",
+  "total": 216,
+  "passed": 159,
+  "failed": 26,
+  "skipped": 31,
+  "passRate": 73.6,
+  "avgDurationMs": 17861,
+  "lastUpdated": "2026-08-11T06:45:31.086Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 2,
-      "skipped": 1,
+      "passed": 159,
+      "failed": 26,
+      "skipped": 31,
       "trend": [
-        74.8,
         78.8,
         78.9,
         94.7,
         84.9,
         83.3,
-        88.9
+        88.9,
+        85.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "621",
+      "commit": "6aca339",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "64m 17s",
+      "passRate": 73.6,
+      "status": "failed"
+    },
     {
       "run": "620",
       "commit": "f71c9ea",
@@ -95,14 +103,6 @@
       "duration": "92m 56s",
       "passRate": 74.9,
       "status": "failed"
-    },
-    {
-      "run": "608",
-      "commit": "3cecedf",
-      "trigger": "push (smoke)",
-      "duration": "10m 23s",
-      "passRate": 94.7,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
@@ -110,8 +110,80 @@
       "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:607\n\n  605 |     }\n ",
-      "firstSeen": "2026-08-11T06:05:55.668Z",
+      "firstSeen": "2026-08-11T06:19:59.120Z",
       "occurrences": 2,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2027-09-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
+      "firstSeen": "2026-08-11T06:20:57.253Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:607\n\n  605 |     }\n ",
+      "firstSeen": "2026-08-11T06:21:35.724Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice must reject second receipt after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:607\n\n  605 |     }\n ",
+      "firstSeen": "2026-08-11T06:22:50.248Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "error": "Error: AR must be debited on invoice INV/2026/08/11/001216\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  119 |\n  120 |         const arDebitEntr",
+      "firstSeen": "2026-08-11T06:23:23.365Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
+      "error": "Error: AR must be debited on invoice INV/2026/08/11/001217\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n  192 |\n  193 |         const arDebitEntr",
+      "firstSeen": "2026-08-11T06:23:28.992Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:607\n\n  605 |     }\n ",
+      "firstSeen": "2026-08-11T06:25:20.152Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:607\n\n  605 |     }\n ",
+      "firstSeen": "2026-08-11T06:26:35.691Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Exact-amount receipt must be accepted and reduce invoice AR balance to zero",
+      "error": "Error: Receipt failed: 500 {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n  147 |             data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method",
+      "firstSeen": "2026-08-11T06:25:16.824Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject approval of a future-dated Bill",
+      "error": "Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-08-11T00:00:00Z. Future-period AP liability injection possible — balance sheet manipulation.\n\n  85 |             const billStatus = (billD",
+      "firstSeen": "2026-08-11T06:27:37.315Z",
+      "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
   ]
