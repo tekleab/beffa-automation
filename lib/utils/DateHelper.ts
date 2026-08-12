@@ -198,7 +198,7 @@ export class DateHelper {
 
   // ── Strategy 3: today ────────────────────────────────────────────────────────
   private static _today(): ResolvedDate {
-    const baseYear = parseInt(process.env.BEFFA_YEAR || '2018', 10);
+    const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
     return DateHelper._fromDate(new Date(), baseYear);
   }
 
