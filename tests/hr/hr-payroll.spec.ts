@@ -66,7 +66,7 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
             'x-company': process.env.BEFFA_COMPANY as string,
             'Content-Type': 'application/json',
         };
-        const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
         const resp = await page.request.post(`${app.apiBase}/pay-components?${params}`, {
             headers,
             data: {
@@ -132,7 +132,7 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
         if (!payRunId) { console.log('[SKIP] No payroll run ID from previous test'); return; }
         const token = await app._getAuthToken();
         const headers = { 'Authorization': `Bearer ${token}`, 'x-company': process.env.BEFFA_COMPANY as string };
-        const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
         const empResp = await page.request.get(`${app.apiBase}/payroll-runs/${payRunId}/employees?${params}`, { headers });
         const empBody = await empResp.json();
         console.log(`[INFO] Employees in payroll run: ${empBody.data?.length ?? 0}`);

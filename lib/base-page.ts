@@ -131,7 +131,7 @@ export class BasePage {
     // the journal date of the document being advanced (prevents 422 "closed period").
     const { DateHelper: _AdvDH } = require('./utils/DateHelper');
     const _advResolved = await _AdvDH.resolve(this.page).catch(() => null);
-    const year = _advResolved ? String(_advResolved.ecYear) : (process.env.BEFFA_YEAR || '2018');
+    const year = _advResolved ? String(_advResolved.ecYear) : (process.env.BEFFA_YEAR || '2019');
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 
@@ -240,7 +240,7 @@ export class BasePage {
     // Fall back to env-based re-login if no token is available from the page context.
     let token = await this._getAuthToken().catch(() => null);
     if (!token) {
-      const loginUrl = `${this.apiBase}/users/login?year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
+      const loginUrl = `${this.apiBase}/users/login?year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
       try {
         const r = await this.page.request.post(loginUrl, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
@@ -251,7 +251,7 @@ export class BasePage {
       } catch { /* ignore */ }
     }
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     return {
@@ -509,7 +509,7 @@ ${curlCmd}
     const token = await this._getAuthToken();
     if (!token) throw new Error('[COMPANY] No auth token — login first.');
 
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const candidates = new Set<string>();
     const addCandidate = (value?: string | null) => { if (value?.trim()) candidates.add(value.trim()); };
 
@@ -801,7 +801,7 @@ ${curlCmd}
    */
   async getOpenPeriodEndDateAPI(): Promise<string | null> {
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const company = process.env.BEFFA_COMPANY as string;
@@ -1074,7 +1074,7 @@ ${curlCmd}
   async getAccountBalanceAPI(accountId: string, companyOverride?: string): Promise<number> {
     const token = await this._getAuthToken();
     const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 
@@ -1111,7 +1111,7 @@ ${curlCmd}
   async getMultiAccountBalancesAPI(accountIds: string[], companyOverride?: string): Promise<Record<string, number>> {
     const token = await this._getAuthToken();
     const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 
@@ -1144,7 +1144,7 @@ ${curlCmd}
   async getAllAccountsAPI(companyOverride?: string): Promise<any[]> {
     const token = await this._getAuthToken();
     const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
 
     const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=yearly&calendar=ec`;
     const response = await this.page.request.get(url, {
@@ -1171,7 +1171,7 @@ ${curlCmd}
     // warehouse is a name string — look it up
     if (typeof loc.warehouse === 'string' && loc.warehouse) {
       const token = await this._getAuthToken();
-      const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+      const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
       const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
       const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=50&${params}`, { headers });
       if (whResp.ok()) {
@@ -1184,7 +1184,7 @@ ${curlCmd}
     }
     // Last resort: fetch first warehouse
     const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` } });
     if (whResp.ok()) { const j = await whResp.json(); return (j.items || j.data || [])[0]?.id || ''; }
     return '';
@@ -1213,7 +1213,7 @@ ${curlCmd}
   async seedCashBalanceAPI(amount: number, cashAccountId?: string): Promise<void> {
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;

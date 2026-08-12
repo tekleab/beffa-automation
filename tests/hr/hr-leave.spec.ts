@@ -39,7 +39,7 @@ test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
             'x-company': process.env.BEFFA_COMPANY as string,
             'Content-Type': 'application/json',
         };
-        const params = `year=${process.env.BEFFA_YEAR||'2018'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR||'2019'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
 
         // Missing leave_type_id and reason — known required fields from API probe
         const resp = await page.request.post(

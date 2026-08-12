@@ -51,7 +51,7 @@ export default defineConfig({
           OS: process.platform,
           Node: process.version,
           Company: process.env.BEFFA_COMPANY || 'sample',
-          FiscalYear: process.env.BEFFA_YEAR || '2018',
+          FiscalYear: process.env.BEFFA_YEAR || '2019',
           Project: 'BEFFA ERP High-Integrity Suite',
           Engine: 'Integrated-Allure-Reporter'
         }

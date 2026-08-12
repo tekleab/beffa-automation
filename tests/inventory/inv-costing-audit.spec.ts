@@ -35,7 +35,7 @@ test.describe('FIFO Write-Down & Sell-Through Audit @inventory @costing @regress
       'x-company': process.env.BEFFA_COMPANY as string,
       'Content-Type': 'application/json',
     };
-    const p = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const p = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
     const envMeta   = await app.api.inventory.discoverMetadataAPI();
     const salesMeta = await app.api.sales.discoverMetadataAPI();

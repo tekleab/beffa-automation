@@ -51,7 +51,7 @@ export class DateHelper {
       const period   = process.env.BEFFA_PERIOD   || 'yearly';
       const calendar = process.env.BEFFA_CALENDAR || 'ec';
       const company  = process.env.BEFFA_COMPANY  || '';
-      const baseYear = parseInt(process.env.BEFFA_YEAR || '2018', 10);
+      const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
 
       const token = await page.evaluate(() => {
         for (const k of ['token', 'auth-token', 'jwt', 'access_token']) {

@@ -6,7 +6,7 @@ export class MetadataService {
   constructor(private apiClient: BasePage) {}
 
   private get params() {
-    return `year=${process.env.BEFFA_YEAR || '2018'}&period=yearly&calendar=ec`;
+    return `year=${process.env.BEFFA_YEAR || '2019'}&period=yearly&calendar=ec`;
   }
 
   async getAccounts(): Promise<any[]> {

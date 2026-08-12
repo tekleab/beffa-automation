@@ -37,7 +37,7 @@ test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
         'Content-Type': 'application/json',
     });
     const qp = () =>
-        `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+        `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
     // ── shared setup helper: create item + build 3 FIFO layers ───────────────
     async function buildThreeLayerItem(page: any, app: AppManager, suffix: string) {

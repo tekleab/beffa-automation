@@ -76,7 +76,7 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
             'x-company': process.env.BEFFA_COMPANY as string,
             'Content-Type': 'application/json',
         };
-        const params = `year=${process.env.BEFFA_YEAR||'2018'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR||'2019'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
 
         // Intentionally incomplete payload — missing address, bank, emergency_contacts
         const resp = await page.request.post(
@@ -134,7 +134,7 @@ test.describe('HR: Employee Lifecycle @hr @smoke @full', () => {
             'x-company': process.env.BEFFA_COMPANY as string,
             'Content-Type': 'application/json',
         };
-        const params = `year=${process.env.BEFFA_YEAR||'2018'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR||'2019'}&period=${process.env.BEFFA_PERIOD||'yearly'}&calendar=${process.env.BEFFA_CALENDAR||'ec'}`;
         const dupResp = await page.request.post(
             `${app.apiBase}/employees?${params}`,
             { headers, data: { ...basePayload, name: `Dup-Emp-${ts}-2` } }

@@ -9,7 +9,7 @@ export class HrAPI extends BasePage {
   }
 
   private get params() {
-    const y = process.env.BEFFA_YEAR || '2018';
+    const y = process.env.BEFFA_YEAR || '2019';
     const p = process.env.BEFFA_PERIOD || 'yearly';
     const c = process.env.BEFFA_CALENDAR || 'ec';
     return `year=${y}&period=${p}&calendar=${c}`;

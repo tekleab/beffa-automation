@@ -192,7 +192,7 @@ export class AppManager {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this.auth._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     // Fetch SO to get invoice details

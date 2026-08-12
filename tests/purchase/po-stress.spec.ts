@@ -232,7 +232,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
-        const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
         console.log(`[STEP 1] Creating & approving PO...`);
         const po = await app.api.purchase.createPurchaseOrderAPI(item, 2, 1500, meta.vendorId);

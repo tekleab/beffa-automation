@@ -77,7 +77,7 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
             // Check final statuses AFTER all advances complete
             const token = await app._getAuthToken();
             const apiBase: string = (app as any).base.apiBase;
-            const qs = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+            const qs = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
             const headers = {
                 'x-company': process.env.BEFFA_COMPANY as string,
                 'Authorization': `Bearer ${token}`,

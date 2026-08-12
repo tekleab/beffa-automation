@@ -116,7 +116,7 @@ export class AuthManager extends BasePage {
     const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 }).then(() => true).catch(() => false);
     if (uiReady && companyName) {
       await this.switchCompany(companyName);
-      await this.switchYear(process.env.BEFFA_YEAR || '2018');
+      await this.switchYear(process.env.BEFFA_YEAR || '2019');
     } else {
       console.log('[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.');
     }
@@ -142,7 +142,7 @@ export class AuthManager extends BasePage {
     } catch { /* page on about:blank or cross-origin — fall through to API login */ }
     // Re-login via API to get a fresh token (handles about:blank and cross-origin pages)
     try {
-      const year = process.env.BEFFA_YEAR || '2018';
+      const year = process.env.BEFFA_YEAR || '2019';
       const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
       const r = await this.page.request.post(loginUrl, {
         data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },

@@ -61,7 +61,7 @@ export class InventoryAPI extends BasePage {
       'x-role': 'IT Administrator / User Manager'
     };
 
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -184,7 +184,7 @@ export class InventoryAPI extends BasePage {
       'Content-Type': 'application/json',
       'x-role': 'IT Administrator / User Manager'
     };
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
     const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
     if (locResp.ok()) {
@@ -214,7 +214,7 @@ export class InventoryAPI extends BasePage {
         'Authorization': `Bearer ${token}`,
         'x-role': 'IT Administrator / User Manager'
       };
-      const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+      const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
       const { locationId, warehouseId } = await this.ensureDefaultLocationAPI();
 
@@ -400,7 +400,7 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `page=1&pageSize=100&year=${year}&period=${period}&calendar=${calendar}`;
@@ -462,7 +462,7 @@ export class InventoryAPI extends BasePage {
       let warehouseId = '';
       try {
         const token = await this._getAuthToken();
-        const year = process.env.BEFFA_YEAR || '2018';
+        const year = process.env.BEFFA_YEAR || '2019';
         const period = process.env.BEFFA_PERIOD || 'yearly';
         const calendar = process.env.BEFFA_CALENDAR || 'ec';
         const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
@@ -515,7 +515,7 @@ export class InventoryAPI extends BasePage {
     let warehouseId = '';
     try {
       const token = await this._getAuthToken();
-      const year = process.env.BEFFA_YEAR || '2018';
+      const year = process.env.BEFFA_YEAR || '2019';
       const period = process.env.BEFFA_PERIOD || 'yearly';
       const calendar = process.env.BEFFA_CALENDAR || 'ec';
       const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
@@ -549,7 +549,7 @@ export class InventoryAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -770,7 +770,7 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const headers = {
       'x-company': process.env.BEFFA_COMPANY as string,
       'Authorization': `Bearer ${token}`,
@@ -803,7 +803,7 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const headers = {
       'x-company': process.env.BEFFA_COMPANY as string,
       'Authorization': `Bearer ${token}`,
@@ -966,7 +966,7 @@ export class InventoryAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year     = process.env.BEFFA_YEAR     || '2018';
+    const year     = process.env.BEFFA_YEAR     || '2019';
     const period   = process.env.BEFFA_PERIOD   || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params   = `year=${year}&period=${period}&calendar=${calendar}`;

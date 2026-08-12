@@ -41,7 +41,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const qs = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -114,7 +114,7 @@ export class PurchaseAPI extends BasePage {
   async discoverRandomVendorAPI(): Promise<{ id: string; name: string }> {
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY || 'sample';
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -138,7 +138,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -220,7 +220,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -307,7 +307,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const qs = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -419,7 +419,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -500,7 +500,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -554,7 +554,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -599,7 +599,7 @@ export class PurchaseAPI extends BasePage {
     // Use DateHelper-resolved year so the ledger query matches the bill's fiscal year
     const { DateHelper: _VDH } = require('../utils/DateHelper');
     const _vResolved = await _VDH.resolve(this.page).catch(() => null);
-    const year = _vResolved ? String(_vResolved.ecYear) : (process.env.BEFFA_YEAR || '2018');
+    const year = _vResolved ? String(_vResolved.ecYear) : (process.env.BEFFA_YEAR || '2019');
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -735,7 +735,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -796,7 +796,7 @@ export class PurchaseAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -835,7 +835,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -849,7 +849,7 @@ export class PurchaseAPI extends BasePage {
 
   async getPaymentAPI(paymentId: string): Promise<any> {
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const params = `year=${year}&period=yearly&calendar=ec`;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -862,7 +862,7 @@ export class PurchaseAPI extends BasePage {
 
   async reverseBillAPI(billId: string): Promise<boolean> {
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const params = `year=${year}&period=yearly&calendar=ec`;
 
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
@@ -887,7 +887,7 @@ export class PurchaseAPI extends BasePage {
 
   async reversePaymentAPI(paymentId: string): Promise<boolean> {
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const params = `year=${year}&period=yearly&calendar=ec`;
 
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
@@ -912,7 +912,7 @@ export class PurchaseAPI extends BasePage {
 
   async approvePaymentAPI(paymentId: string): Promise<boolean> {
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const params = `year=${year}&period=yearly&calendar=ec`;
 
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
@@ -929,7 +929,7 @@ export class PurchaseAPI extends BasePage {
   async findUnpaidBillAPI(): Promise<{ billId: string; billNumber: string; amount: number; vendorId: string; vendorName: string } | null> {
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY || 'sample';
-    const year = process.env.BEFFA_YEAR || '2018';
+    const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `status=approved&year=${year}&period=${period}&calendar=${calendar}`;

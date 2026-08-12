@@ -19,7 +19,7 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', 
 
 
         const ts = Date.now();
-        const params = `year=${process.env.BEFFA_YEAR || '2018'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+        const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
         const getHeaders = async () => ({
             'Authorization': `Bearer ${await app._getAuthToken()}`,
             'x-company': process.env.BEFFA_COMPANY as string,
