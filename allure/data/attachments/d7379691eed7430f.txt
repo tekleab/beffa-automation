@@ -1,0 +1,26 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+09:27:22 [PERFORMANCE] API - Auth API Verification: 304.05ms
+09:27:30 [PERFORMANCE] API - Auth API Verification: 333.87ms
+09:27:38 [PERFORMANCE] API - Auth API Verification: 318.31ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002191 (ID: 42b10c7d-2295-4bda-96b6-dba59f77dba0)
+09:27:48 [INFO] Advancing inventory-adjustments "42b10c7d-2295-4bda-96b6-dba59f77dba0"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786526867164 (58315332-a334-4941-94ee-02c65a4238db) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:27:52 [INFO] Advancing bills "e99e2afe-af3f-4879-bfab-af2d8f510622"...
+[AP] Bill BILL/2026/08/12/001180 approved | amount=2000
+09:27:56 [INFO] Advancing invoices "1203d109-cd77-4d76-b184-c234fb94995d"...
+
+══════════════════════════════════════════════════════════════════════
+[ERP_BUG #INV-BAL-01] STALE/INCORRECT INVOICE BALANCE FIELD
+  Invoice    : INV/2026/08/12/001546 (ID: 1203d109-cd77-4d76-b184-c234fb94995d)
+  Created for: $3000
+  API reports: unreceived_amount=100 | total_amount=undefined | amount=undefined | net_due=100
+  Resolved to: $100  ← does NOT match created unit price $3000
+══════════════════════════════════════════════════════════════════════
+
+[AP] Bill BILL/2026/08/12/001180 | actual_outstanding=2000
+[ACTION] Creating Bill Payment for e99e2afe-af3f-4879-bfab-af2d8f510622 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[SUCCESS] Payment created: PAY/2026/08/12/000311 (ID: 7541777e-922d-4884-9d10-588bb7312ac7)
+[RECEIPT] amount=100 | invoice=1203d109...

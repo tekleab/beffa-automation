@@ -1,0 +1,581 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/line-item-miscellaneous-audit.spec.ts >> Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full >> RCT-UI-01: Receipt UI — create standalone receipt with line item and verify
+- Location: tests/cross-module/line-item-miscellaneous-audit.spec.ts:584:9
+
+# Error details
+
+```
+Error: [pickDate] Could not find date trigger button for label "Receipt Date"
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e11]: Enterprise
+      - generic [ref=e13]:
+        - generic:
+          - img
+        - textbox "Search tasks" [ref=e14]
+      - generic [ref=e15]:
+        - navigation [ref=e17]:
+          - link "Dashboard" [ref=e18] [cursor=pointer]:
+            - /url: /dashboard
+            - paragraph [ref=e21]: Dashboard
+        - generic [ref=e23] [cursor=pointer]:
+          - paragraph [ref=e26]: Accounting
+          - paragraph [ref=e27]:
+            - button "Toggle section" [ref=e28]:
+              - img [ref=e29]
+        - generic [ref=e32] [cursor=pointer]:
+          - paragraph [ref=e35]: Account Reconciliation
+          - paragraph [ref=e36]:
+            - button "Toggle section" [ref=e37]:
+              - img [ref=e38]
+        - generic [ref=e41] [cursor=pointer]:
+          - paragraph [ref=e44]: CRM
+          - paragraph [ref=e45]:
+            - button "Toggle section" [ref=e46]:
+              - img [ref=e47]
+        - generic [ref=e50] [cursor=pointer]:
+          - paragraph [ref=e53]: HRM
+          - paragraph [ref=e54]:
+            - button "Toggle section" [ref=e55]:
+              - img [ref=e56]
+        - generic [ref=e59] [cursor=pointer]:
+          - paragraph [ref=e62]: Project Management
+          - paragraph [ref=e63]:
+            - button "Toggle section" [ref=e64]:
+              - img [ref=e65]
+        - generic [ref=e68] [cursor=pointer]:
+          - paragraph [ref=e71]: SCM
+          - paragraph [ref=e72]:
+            - button "Toggle section" [ref=e73]:
+              - img [ref=e74]
+        - generic [ref=e77] [cursor=pointer]:
+          - paragraph [ref=e80]: Lease Management
+          - paragraph [ref=e81]:
+            - button "Toggle section" [ref=e82]:
+              - img [ref=e83]
+        - generic [ref=e86] [cursor=pointer]:
+          - paragraph [ref=e89]: Service Management
+          - paragraph [ref=e90]:
+            - button "Toggle section" [ref=e91]:
+              - img [ref=e92]
+        - generic [ref=e95] [cursor=pointer]:
+          - paragraph [ref=e98]: Report
+          - paragraph [ref=e99]:
+            - button "Toggle section" [ref=e100]:
+              - img [ref=e101]
+      - generic [ref=e103]:
+        - button "Settings" [ref=e105] [cursor=pointer]:
+          - generic:
+            - generic:
+              - img
+              - paragraph: Settings
+        - navigation [ref=e107]:
+          - link "User Management" [ref=e109] [cursor=pointer]:
+            - /url: /settings/general/users
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - paragraph [ref=e114]: User Management
+              - button [ref=e115]:
+                - img [ref=e116]
+        - button "Logout" [ref=e118] [cursor=pointer]:
+          - img [ref=e120]
+          - text: Logout
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img "BM Tech" [ref=e126]: BT
+          - generic [ref=e127]:
+            - button "BM Tech" [ref=e128] [cursor=pointer]:
+              - generic: BM Tech
+              - img [ref=e130]
+            - generic [ref=e132] [cursor=pointer]:
+              - button "Company Detail" [ref=e133]:
+                - img [ref=e134]
+              - button "Edit Company" [ref=e137]:
+                - img [ref=e138]
+              - button "Company Detail" [ref=e141]:
+                - img [ref=e142]
+        - generic [ref=e145]:
+          - button "New" [ref=e146] [cursor=pointer]:
+            - text: New
+            - img [ref=e148]
+          - generic [ref=e152] [cursor=pointer]:
+            - generic [ref=e153]: "5"
+            - img "Notifications" [ref=e154]
+          - button "EC" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: EC
+          - button [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+          - generic [ref=e165] [cursor=pointer]:
+            - img "System" [ref=e167]: S
+            - generic [ref=e168]:
+              - generic [ref=e169]: System
+              - paragraph [ref=e170]: IT Administrator / User Manager
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - navigation "breadcrumb" [ref=e176]:
+                  - list [ref=e177]:
+                    - listitem [ref=e178]:
+                      - link "Home" [ref=e179] [cursor=pointer]:
+                        - /url: /
+                      - text: /
+                    - listitem [ref=e180]:
+                      - link "Receivables" [ref=e181] [cursor=pointer]:
+                        - /url: /receivables/overview/
+                      - text: /
+                    - listitem [ref=e182]:
+                      - link "Receipt" [ref=e183] [cursor=pointer]:
+                        - /url: /receivables/receipts/?page=1&pageSize=15
+                      - text: /
+                    - listitem [ref=e184]:
+                      - link "New" [ref=e185] [cursor=pointer]:
+                        - /url: /receivables/receipts/new
+            - button "2019" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: "2019"
+              - img [ref=e189]
+          - generic [ref=e192]:
+            - button "Toggle Visibility" [ref=e195] [cursor=pointer]:
+              - img [ref=e196]
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - heading "New Receipt" [level=5] [ref=e201]
+                - generic [ref=e202]:
+                  - generic [ref=e203]: "Total Amount :"
+                  - generic [ref=e204]: 0.00 ETB
+              - generic [ref=e205]:
+                - generic [ref=e208]:
+                  - generic [ref=e209]:
+                    - group [ref=e210]:
+                      - generic [ref=e211]: Customer *
+                      - button "Customer selector" [ref=e212]
+                    - generic [ref=e213]:
+                      - group [ref=e214]:
+                        - generic [ref=e215]: Ref
+                        - textbox "Ref" [disabled] [ref=e217]: RCPT/2026/08/12/000308
+                      - paragraph [ref=e218]: Ref is auto-generated
+                    - group [ref=e219]:
+                      - generic [ref=e220]: Check No
+                      - textbox "Check No" [ref=e222]
+                    - group [ref=e223]:
+                      - generic [ref=e224]: Cash Account *
+                      - button "Cash Account selector" [ref=e225]
+                  - generic [ref=e226]:
+                    - group [ref=e227]:
+                      - generic [ref=e228]: Budget
+                      - button "Budget selector" [ref=e229]: Select a budget
+                    - generic [ref=e230]:
+                      - generic [ref=e231]: Date
+                      - button "ነሀሴ 06, 2018" [ref=e233] [cursor=pointer]:
+                        - img [ref=e234]
+                        - generic [ref=e236]: ነሀሴ 06, 2018
+                    - group [ref=e237]:
+                      - generic [ref=e238]: Currency *
+                      - button "Currency selector" [ref=e239]: Birr
+                    - group [ref=e240]:
+                      - generic [ref=e241]: Payment Method *
+                      - generic [ref=e242]:
+                        - combobox "Payment Method *" [ref=e243]:
+                          - option "Cash" [selected]
+                          - option "Check"
+                          - option "Credit Card"
+                          - option "Debit Card"
+                          - option "Bank Transfer"
+                          - option "Other"
+                        - generic:
+                          - img
+                - generic [ref=e245]:
+                  - generic [ref=e246]:
+                    - tablist [ref=e247]:
+                      - tab "Sales * ETB" [selected] [ref=e248] [cursor=pointer]:
+                        - text: Sales *
+                        - generic [ref=e249]: ETB
+                      - tab "Sales Invoices 0.00 ETB" [ref=e250] [cursor=pointer]:
+                        - text: Sales Invoices
+                        - generic [ref=e251]: 0.00 ETB
+                      - tab "CRJ" [ref=e252] [cursor=pointer]
+                      - tab "Miscellenous" [ref=e253] [cursor=pointer]
+                      - tab "Upload Related Documents" [ref=e254] [cursor=pointer]
+                    - button "Line Item" [ref=e256] [cursor=pointer]:
+                      - img [ref=e258]
+                      - text: Line Item
+                  - tabpanel "Sales * ETB" [ref=e261]:
+                    - table [ref=e265]:
+                      - rowgroup [ref=e266]:
+                        - row "Item Quantity Unit Price Description G/L Account * Project Before Tax * Tax Total" [ref=e267]:
+                          - columnheader [ref=e268]
+                          - columnheader "Item" [ref=e270]: Item
+                          - columnheader "Quantity" [ref=e272]: Quantity
+                          - columnheader "Unit Price" [ref=e274]: Unit Price
+                          - columnheader "Description" [ref=e276]: Description
+                          - columnheader "G/L Account *" [ref=e278]: G/L Account *
+                          - columnheader "Project" [ref=e280]: Project
+                          - columnheader "Before Tax *" [ref=e282]: Before Tax *
+                          - columnheader "Tax" [ref=e284]: Tax
+                          - columnheader "Total" [ref=e286]: Total
+                          - columnheader [ref=e288]
+                      - rowgroup [ref=e290]:
+                        - row "No record found" [ref=e291]:
+                          - cell "No record found" [ref=e292]:
+                            - paragraph [ref=e294]: No record found
+                      - rowgroup [ref=e295]:
+                        - row "0.00 0.00 0.00" [ref=e296]:
+                          - columnheader [ref=e297]
+                          - columnheader [ref=e298]
+                          - columnheader [ref=e299]
+                          - columnheader [ref=e300]
+                          - columnheader [ref=e301]
+                          - columnheader [ref=e302]
+                          - columnheader [ref=e303]
+                          - columnheader "0.00" [ref=e304]
+                          - columnheader "0.00" [ref=e305]
+                          - columnheader "0.00" [ref=e306]
+                          - columnheader [ref=e307]
+              - group [ref=e309]:
+                - button "Add Now" [ref=e310] [cursor=pointer]
+                - button [ref=e311] [cursor=pointer]:
+                  - generic:
+                    - img
+        - generic [ref=e312]: BM Technology © 2026
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - option "1950"
+    - option "1951"
+    - option "1952"
+    - option "1953"
+    - option "1954"
+    - option "1955"
+    - option "1956"
+    - option "1957"
+    - option "1958"
+    - option "1959"
+    - option "1960"
+    - option "1961"
+    - option "1962"
+    - option "1963"
+    - option "1964"
+    - option "1965"
+    - option "1966"
+    - option "1967"
+    - option "1968"
+    - option "1969"
+    - option "1970"
+    - option "1971"
+    - option "1972"
+    - option "1973"
+    - option "1974"
+    - option "1975"
+    - option "1976"
+    - option "1977"
+    - option "1978"
+    - option "1979"
+    - option "1980"
+    - option "1981"
+    - option "1982"
+    - option "1983"
+    - option "1984"
+    - option "1985"
+    - option "1986"
+    - option "1987"
+    - option "1988"
+    - option "1989"
+    - option "1990"
+    - option "1991"
+    - option "1992"
+    - option "1993"
+    - option "1994"
+    - option "1995"
+    - option "1996"
+    - option "1997"
+    - option "1998"
+    - option "1999"
+    - option "2000"
+    - option "2001"
+    - option "2002"
+    - option "2003"
+    - option "2004"
+    - option "2005"
+    - option "2006"
+    - option "2007"
+    - option "2008"
+    - option "2009"
+    - option "2010"
+    - option "2011"
+    - option "2012"
+    - option "2013"
+    - option "2014"
+    - option "2015"
+    - option "2016"
+    - option "2017"
+    - option "2018"
+    - option "2019 (open)" [selected]
+    - option "2020"
+    - option "2021"
+    - option "2022"
+    - option "2023"
+    - option "2024"
+    - option "2025"
+    - option "2026"
+    - option "2027"
+    - option "2028"
+    - option "2029"
+    - option "2030"
+    - option "2031"
+    - option "2032"
+    - option "2033"
+    - option "2034"
+    - option "2035"
+    - option "2036"
+    - option "2037"
+    - option "2038"
+    - option "2039"
+    - option "2040"
+    - option "2041"
+    - option "2042"
+    - option "2043"
+    - option "2044"
+    - option "2045"
+    - option "2046"
+    - option "2047"
+    - option "2048"
+    - option "2049"
+```
+
+# Test source
+
+```ts
+  794 |     await this.page.waitForTimeout(1000);
+  795 |     await this.stopTacticalTimer(`Fill Date: ${labelOrIndex}`, 'UI');
+  796 |   }
+  797 | 
+  798 |   /**
+  799 |    * Queries the API for the open fiscal period's end date (ISO string).
+  800 |    * Used by pickDate to guarantee the selected date is within the legal period.
+  801 |    */
+  802 |   async getOpenPeriodEndDateAPI(): Promise<string | null> {
+  803 |     const token = await this._getAuthToken();
+  804 |     const year = process.env.BEFFA_YEAR || '2018';
+  805 |     const period = process.env.BEFFA_PERIOD || 'yearly';
+  806 |     const calendar = process.env.BEFFA_CALENDAR || 'ec';
+  807 |     const company = process.env.BEFFA_COMPANY as string;
+  808 |     const params = `year=${year}&period=${period}&calendar=${calendar}`;
+  809 |     const headers = {
+  810 |       'Authorization': `Bearer ${token}`,
+  811 |       'x-company': company,
+  812 |       'x-role': 'IT Administrator / User Manager'
+  813 |     };
+  814 |     // Try /periods endpoint first, then /fiscal-periods
+  815 |     for (const endpoint of ['periods', 'fiscal-periods', 'accounting-periods']) {
+  816 |       const resp = await this.safeGet(`${this.apiBase}/${endpoint}?${params}`, { headers });
+  817 |       if (!resp.ok()) continue;
+  818 |       const data = await resp.json();
+  819 |       const list: any[] = data.items || data.data || (Array.isArray(data) ? data : []);
+  820 |       // Find the open/active period
+  821 |       const open = list.find((p: any) =>
+  822 |         (p.status?.toLowerCase() === 'open' || p.is_open === true || p.is_active === true) &&
+  823 |         (p.end_date || p.period_end || p.to_date)
+  824 |       );
+  825 |       if (open) {
+  826 |         const endDate = open.end_date || open.period_end || open.to_date;
+  827 |         Logger.info(`Open period end date: ${Logger.sanitize(endDate)}`);
+  828 |         return endDate;
+  829 |       }
+  830 |     }
+  831 |     return null;
+  832 |   }
+  833 | 
+  834 |   async pickDate(label: string, dayNum?: number): Promise<void> {
+  835 |     const { DateHelper } = require('./utils/DateHelper');
+  836 |     const resolved = await DateHelper.resolve(this.page);
+  837 |     const targetDay = dayNum ?? resolved.dayNumber;
+  838 |     const targetMonth = resolved.gcDate.getUTCMonth();
+  839 |     const targetYear = resolved.gcDate.getUTCFullYear();
+  840 | 
+  841 |     Logger.info(`Picking date: "${Logger.sanitize(label)}" → target ${targetYear}-${targetMonth + 1}-${targetDay}`);
+  842 |     await this.startTacticalTimer();
+  843 | 
+  844 |     // Strategy: find the label text, then locate the nearest date-trigger button.
+  845 |     // The ERP renders date fields as: <label>Sale Order Date</label> + <button> (calendar icon)
+  846 |     // We use a broad regex so "Sale Order Date" and "Sales Order Date" both match.
+  847 |     const labelRegex = new RegExp(label.replace(/s?\s+/gi, '.?\\s*'), 'i');
+  848 | 
+  849 |     // Wait for the page to render the form (any input or button visible)
+  850 |     const formReady = await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 90000 }).then(() => true).catch(() => false);
+  851 |     if (!formReady) {
+  852 |       // SPA bundle still loading — wait for network idle then retry
+  853 |       await this.page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
+  854 |       await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 30000 });
+  855 |     }
+  856 | 
+  857 |     // Try multiple selector strategies to find the date button
+  858 |     let btn: Locator | null = null;
+  859 | 
+  860 |     // Strategy 1: container has label text + has button
+  861 |     for (const containerSel of [
+  862 |       '.chakra-form-control',
+  863 |       '[role="group"]',
+  864 |       '.flex-col',
+  865 |       'div'
+  866 |     ]) {
+  867 |       const container = this.page.locator(containerSel)
+  868 |         .filter({ has: this.page.getByText(labelRegex) })
+  869 |         .filter({ has: this.page.locator('button') })
+  870 |         .last();
+  871 |       if (await container.isVisible({ timeout: 2000 }).catch(() => false)) {
+  872 |         btn = container.locator('button').first();
+  873 |         break;
+  874 |       }
+  875 |     }
+  876 | 
+  877 |     // Strategy 2: find label element, then look for adjacent button in parent
+  878 |     if (!btn) {
+  879 |       const labelEl = this.page.getByText(labelRegex).first();
+  880 |       if (await labelEl.isVisible({ timeout: 3000 }).catch(() => false)) {
+  881 |         // Walk up to find a parent that contains a button
+  882 |         for (const ancestor of ['xpath=..', 'xpath=../..', 'xpath=../../..']) {
+  883 |           const parent = labelEl.locator(ancestor);
+  884 |           const parentBtn = parent.locator('button').first();
+  885 |           if (await parentBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+  886 |             btn = parentBtn;
+  887 |             break;
+  888 |           }
+  889 |         }
+  890 |       }
+  891 |     }
+  892 | 
+  893 |     if (!btn) {
+> 894 |       throw new Error(`[pickDate] Could not find date trigger button for label "${label}"`);
+      |             ^ Error: [pickDate] Could not find date trigger button for label "Receipt Date"
+  895 |     }
+  896 | 
+  897 |     await btn.waitFor({ state: 'visible', timeout: 15000 });
+  898 |     await btn.click({ force: true });
+  899 |     await this.page.waitForTimeout(800);
+  900 | 
+  901 |     const popover = this.page.locator('[role="dialog"], [data-slot="popover-content"], [id^="radix-"], .chakra-popover__content').filter({ visible: true }).last();
+  902 | 
+  903 |     // Navigate the calendar to the correct month/year
+  904 |     const headerBtns = popover.locator('button').filter({ hasNotText: /^\d{1,2}$/ });
+  905 |     const prevBtn = headerBtns.first();
+  906 |     const nextBtn = headerBtns.last();
+  907 | 
+  908 |     // Determine if the calendar is showing EC years (EC year = GC year - 7 or - 8)
+  909 |     // Convert targetYear/targetMonth to the calendar's own coordinate system before navigating.
+  910 |     const isEcCalendar = (process.env.BEFFA_CALENDAR || 'ec').toLowerCase() === 'ec';
+  911 |     let navTargetYear = targetYear;
+  912 |     let navTargetMonth = targetMonth;
+  913 |     if (isEcCalendar) {
+  914 |       // EC year N starts on Meskerem 1 (~Sep 11 GC of year N+7).
+  915 |       // So GC dates from Jan 1 to Sep 10 map to EC year GC_year - 8.
+  916 |       // GC dates from Sep 11 to Dec 31 map to EC year GC_year - 7.
+  917 |       const isEarlyGC = (targetMonth < 8) || (targetMonth === 8 && targetDay < 11);
+  918 |       navTargetYear = isEarlyGC ? targetYear - 8 : targetYear - 7;
+  919 |       if (targetMonth === 8) {
+  920 |         navTargetMonth = targetDay < 11 ? 12 : 0; // Pagume (12) or Meskerem (0)
+  921 |       } else {
+  922 |         navTargetMonth = (targetMonth + 4) % 13;
+  923 |       }
+  924 |     }
+  925 | 
+  926 |     const getDisplayedYearMonth = async (): Promise<{ year: number; month: number } | null> => {
+  927 |       try {
+  928 |         const headerText = await popover.evaluate((el: HTMLElement) => el.textContent || '').catch(() => '');
+  929 |         const yearMatch = headerText.match(/(\d{4})/);
+  930 |         if (!yearMatch) return null;
+  931 |         const year = parseInt(yearMatch[1]);
+  932 |         const monthNames = [
+  933 |           'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','pag',
+  934 |           'መስ','ጥቅ','ህዳ','ታህ','ጥር','የካ','መጋ','ሚያ','ግን','ሰኔ','ሐም','ነሐ','ጳጉ'
+  935 |         ];
+  936 |         const lower = headerText.toLowerCase();
+  937 |         const monthIdx = monthNames.findIndex(m => lower.includes(m));
+  938 |         if (monthIdx === -1) return null;
+  939 |         const month = monthIdx >= 13 ? monthIdx - 13 : monthIdx;
+  940 |         return { year, month };
+  941 |       } catch { return null; }
+  942 |     };
+  943 | 
+  944 |     for (let step = 0; step < 24; step++) {
+  945 |       const current = await getDisplayedYearMonth();
+  946 |       if (current) {
+  947 |         const monthDiff = (navTargetYear - current.year) * 12 + (navTargetMonth - current.month);
+  948 |         if (monthDiff === 0) break;
+  949 |         const navBtn = monthDiff > 0 ? nextBtn : prevBtn;
+  950 |         if (!await navBtn.isVisible({ timeout: 500 }).catch(() => false)) break;
+  951 |         await navBtn.click({ force: true });
+  952 |         await this.page.waitForTimeout(300);
+  953 |       } else {
+  954 |         break;
+  955 |       }
+  956 |     }
+  957 | 
+  958 |     // Click the target day
+  959 |     const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: new RegExp(`^${targetDay}$`) });
+  960 |     if (await enabledDays.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+  961 |       await enabledDays.first().click({ force: true });
+  962 |       Logger.pass(`"${Logger.sanitize(label)}" set to day ${targetDay}.`);
+  963 |     } else {
+  964 |       // Fallback: pick first/early enabled day in whatever month is showing to stay safely within period bounds
+  965 |       const anyEnabled = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
+  966 |       const count = await anyEnabled.count();
+  967 |       if (count > 0) {
+  968 |         const earlyDay = anyEnabled.first();
+  969 |         const dayText = await earlyDay.textContent();
+  970 |         await earlyDay.click({ force: true });
+  971 |         Logger.warn(`"${Logger.sanitize(label)}" — target day ${targetDay} not found, picked early enabled: ${Logger.sanitize(dayText?.trim())}.`);
+  972 |       } else {
+  973 |         await this.page.keyboard.press('Enter');
+  974 |         Logger.warn(`"${Logger.sanitize(label)}" — no enabled days found, pressed Enter.`);
+  975 |       }
+  976 |     }
+  977 | 
+  978 |     await this.page.waitForTimeout(800);
+  979 |     await this.stopTacticalTimer(`Pick Date: ${label}`, 'UI');
+  980 |   }
+  981 | 
+  982 |   async selectRandomOption(selector: Locator, labelName: string, isOptional: boolean = false): Promise<number> {
+  983 |     const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
+  984 | 
+  985 |     await this.startTacticalTimer(); // Start Tactical UI Timer
+  986 | 
+  987 |     for (let i = 0; i < 3; i++) {
+  988 |       try {
+  989 |         await selector.scrollIntoViewIfNeeded();
+  990 |         await selector.click({ timeout: 5000 });
+  991 |         await this.page.waitForTimeout(1500);
+  992 |         const options = this.page.locator(optionSelector).filter({ visible: true });
+  993 |         // Wait for at least one option to appear before counting
+  994 |         await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+```
