@@ -1,29 +1,45 @@
 {
   "total": 19,
-  "passed": 18,
-  "failed": 1,
+  "passed": 16,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 94.7,
-  "avgDurationMs": 39941,
-  "lastUpdated": "2026-08-11T09:36:08.396Z",
+  "passRate": 84.2,
+  "avgDurationMs": 38734,
+  "lastUpdated": "2026-08-12T05:33:27.297Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 1,
+      "passed": 16,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        78.9,
-        94.7,
         84.9,
         83.3,
         88.9,
         85.9,
-        94.7
+        94.7,
+        81.4,
+        84.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "627",
+      "commit": "638418c",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "12m 15s",
+      "passRate": 84.2,
+      "status": "success"
+    },
+    {
+      "run": "626",
+      "commit": "f79c21c",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "89m 5s",
+      "passRate": 81,
+      "status": "success"
+    },
     {
       "run": "622",
       "commit": "a0def37",
@@ -87,30 +103,30 @@
       "duration": "103m 34s",
       "passRate": 77.7,
       "status": "failed"
-    },
-    {
-      "run": "613",
-      "commit": "cc8574d",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "99m 17s",
-      "passRate": 73,
-      "status": "failed"
-    },
-    {
-      "run": "612",
-      "commit": "8eb47af",
-      "trigger": "push (smoke)",
-      "duration": "16m 53s",
-      "passRate": 84.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
+      "severity": "critical",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:621\n\n  619 |     }\n ",
+      "firstSeen": "2026-08-12T05:24:54.304Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: [ERP_BUG #RCT-500] Backend /receipts endpoint returned HTTP 500 Internal Server Error for Invoice INV/2026/08/12/001402\n\n  77 |                 // Backend /receipts endpoint returning 500 = inf",
+      "firstSeen": "2026-08-12T05:24:54.381Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
       "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/11/000887 never appeared in \"Gentium Concrite Industry\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:626\n\n  624 |     }\n  625 |\n> 626 |     throw ",
-      "firstSeen": "2026-08-11T09:29:22.104Z",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [FRESH ITEM] Stock adjustment failed for b2ef24bd-8f82-4cb5-aea7-b48c6701cd62: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:731\n\n  7",
+      "firstSeen": "2026-08-12T05:25:55.358Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
