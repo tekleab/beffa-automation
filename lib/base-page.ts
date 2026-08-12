@@ -898,12 +898,20 @@ ${curlCmd}
     // Determine if the calendar is showing EC years (EC year = GC year - 7 or - 8)
     // Convert targetYear/targetMonth to the calendar's own coordinate system before navigating.
     const isEcCalendar = (process.env.BEFFA_CALENDAR || 'ec').toLowerCase() === 'ec';
-    // EC year N starts ~Sep 11 of GC year N+7. A GC date in Jan–Sep of GC year Y maps to EC year Y-8;
-    // Oct–Dec maps to EC year Y-7. Use the simpler constant offset of 7 for navigation purposes.
-    const navTargetYear  = isEcCalendar ? targetYear - 7 : targetYear;
-    // EC months are offset: EC month 1 (Meskerem) starts ~Sep 11 GC.
-    // GC month index 0-11 → EC month index: (gcMonth + 4) % 13 (approx, good enough for nav).
-    const navTargetMonth = isEcCalendar ? (targetMonth + 4) % 13 : targetMonth;
+    let navTargetYear = targetYear;
+    let navTargetMonth = targetMonth;
+    if (isEcCalendar) {
+      // EC year N starts on Meskerem 1 (~Sep 11 GC of year N+7).
+      // So GC dates from Jan 1 to Sep 10 map to EC year GC_year - 8.
+      // GC dates from Sep 11 to Dec 31 map to EC year GC_year - 7.
+      const isEarlyGC = (targetMonth < 8) || (targetMonth === 8 && targetDay < 11);
+      navTargetYear = isEarlyGC ? targetYear - 8 : targetYear - 7;
+      if (targetMonth === 8) {
+        navTargetMonth = targetDay < 11 ? 12 : 0; // Pagume (12) or Meskerem (0)
+      } else {
+        navTargetMonth = (targetMonth + 4) % 13;
+      }
+    }
 
     const getDisplayedYearMonth = async (): Promise<{ year: number; month: number } | null> => {
       try {
@@ -911,11 +919,14 @@ ${curlCmd}
         const yearMatch = headerText.match(/(\d{4})/);
         if (!yearMatch) return null;
         const year = parseInt(yearMatch[1]);
-        const monthNames = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec',
-                            'መስ','ጥቅ','ህዳ','ታህ','ጥር','የካ','መጋ','ሚያ','ግን','ሰኔ','ሐም','ነሐ'];
+        const monthNames = [
+          'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','pag',
+          'መስ','ጥቅ','ህዳ','ታህ','ጥር','የካ','መጋ','ሚያ','ግን','ሰኔ','ሐም','ነሐ','ጳጉ'
+        ];
         const lower = headerText.toLowerCase();
         const monthIdx = monthNames.findIndex(m => lower.includes(m));
-        const month = monthIdx >= 12 ? monthIdx - 12 : monthIdx;
+        if (monthIdx === -1) return null;
+        const month = monthIdx >= 13 ? monthIdx - 13 : monthIdx;
         return { year, month };
       } catch { return null; }
     };

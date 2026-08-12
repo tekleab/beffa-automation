@@ -129,7 +129,7 @@ export class DateHelper {
         if (!probeResp) continue;
 
         const errText = await probeResp.text().catch(() => '');
-        // Parse "between DD/MM/YYYY and DD/MM/YYYY"
+        // Parse date bounds from error response: supports both MM/DD/YYYY and DD/MM/YYYY formats.
         const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
         if (!match) {
           if (probeResp.status() === 200 || probeResp.status() === 201) {
@@ -138,9 +138,22 @@ export class DateHelper {
           continue;
         }
 
-        const [, d1, m1, y1, d2, m2, y2] = match;
-        const periodStart = new Date(`${y1}-${m1}-${d1}T00:00:00Z`);
-        const periodEnd   = new Date(`${y2}-${m2}-${d2}T00:00:00Z`);
+        const [, val1_1, val1_2, y1, val2_1, val2_2, y2] = match;
+        let m1 = parseInt(val1_1, 10);
+        let d1 = parseInt(val1_2, 10);
+        let m2 = parseInt(val2_1, 10);
+        let d2 = parseInt(val2_2, 10);
+
+        // If the parsed month is > 12, it must be DD/MM/YYYY format
+        if (m1 > 12 || m2 > 12) {
+          m1 = parseInt(val1_2, 10);
+          d1 = parseInt(val1_1, 10);
+          m2 = parseInt(val2_2, 10);
+          d2 = parseInt(val2_1, 10);
+        }
+
+        const periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
+        const periodEnd   = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
 
         if (periodEnd < now) continue;
 

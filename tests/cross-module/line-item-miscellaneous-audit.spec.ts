@@ -54,15 +54,92 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     // HELPERS
     // =========================================================================
 
+    /**
+     * Fills the Currency field, which can render as either:
+     *   (a) a Chakra selector button (opens a dropdown), or
+     *   (b) a plain text input (type + pick from autocomplete list)
+     */
+    async function fillCurrencyField(page: any, app: AppManager) {
+        const currBtn = page.getByRole('button', { name: 'Currency selector' });
+        const currInput = page.locator('input[placeholder*="urrency"], input[name*="urrency"]').first();
+
+        // Strategy A: button-style selector
+        if (await currBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+            const selected = await currBtn.textContent().catch(() => '');
+            if (!selected?.trim() || selected.trim().toLowerCase().includes('select')) {
+                await app.selectRandomOption(currBtn, 'Currency', false);
+            }
+            const afterText = await currBtn.textContent().catch(() => '');
+            if (afterText?.trim() && !afterText.trim().toLowerCase().includes('select')) {
+                console.log(`[CURRENCY] Selected via button: ${afterText.trim()}`);
+                return;
+            }
+        }
+
+        // Strategy B: text input with autocomplete
+        // Find the Currency group by label text and get its input
+        const currGroup = page.locator('div, [role="group"]').filter({ has: page.getByText(/^Currency\s*\*?$/i) }).last();
+        const groupInput = currGroup.locator('input').first();
+        const visibleInput = (await groupInput.isVisible({ timeout: 2000 }).catch(() => false))
+            ? groupInput
+            : (await currInput.isVisible({ timeout: 2000 }).catch(() => false) ? currInput : null);
+
+        if (visibleInput) {
+            await visibleInput.click();
+            await visibleInput.fill('');
+            await page.waitForTimeout(300);
+            // Type first letter to trigger autocomplete
+            await visibleInput.type('B', { delay: 100 });
+            await page.waitForTimeout(800);
+            const option = page.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem').filter({ visible: true }).first();
+            if (await option.isVisible({ timeout: 3000 }).catch(() => false)) {
+                const optText = await option.textContent();
+                await option.click();
+                console.log(`[CURRENCY] Selected via input autocomplete: ${optText?.trim()}`);
+                await page.waitForTimeout(300);
+                return;
+            }
+            // Fallback: just pick whatever is in the input after typing
+            const val = await visibleInput.inputValue().catch(() => '');
+            console.log(`[CURRENCY] Input value after typing: "${val}" — pressing Enter`);
+            await page.keyboard.press('Enter');
+            await page.waitForTimeout(300);
+            return;
+        }
+
+        throw new Error('[CURRENCY] Could not locate Currency field as button or text input');
+    }
+
     async function addLineItemViaModal(page: any, app: AppManager, type: 'Item' | 'Miscellaneous', opts: {
         unitPrice: string; qty: string; description?: string;
     }) {
-        const modal = page.locator('.chakra-modal__content').first();
+        const popover = page.locator('[role="dialog"], .chakra-popover__content')
+            .filter({ hasText: /Please select an item type/i });
+        const modal = page.locator('.chakra-modal__content, .chakra-popover__content, [role="dialog"]')
+            .filter({ hasText: /Warehouse \*|G\/L Account \*|Description/i })
+            .first();
+
+        // Wait up to 5s for either the popover or the modal to appear
+        await Promise.race([
+            popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+            modal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
+        ]);
+
+        // If type selection popover is visible, click the button matching type first to open the modal
+        if (await popover.isVisible().catch(() => false)) {
+            const typeBtn = popover.getByRole('button', { name: type, exact: true });
+            await typeBtn.click();
+            await page.waitForTimeout(500);
+        }
+
         await modal.waitFor({ state: 'visible', timeout: 15000 });
 
-        // Choose Item vs Miscellaneous tab inside the modal
-        await modal.getByRole('button', { name: type, exact: true }).click();
-        await page.waitForTimeout(500);
+        // Choose Item vs Miscellaneous tab inside the modal if the inner button/tab is visible
+        const innerTabBtn = modal.getByRole('button', { name: type, exact: true });
+        if (await innerTabBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+            await innerTabBtn.click();
+            await page.waitForTimeout(500);
+        }
 
         if (type === 'Item') {
             await app.selectRandomOption(modal.getByRole('button', { name: 'Item selector' }), 'Item');
@@ -80,57 +157,54 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
         await app.selectRandomOption(glBtn, 'G/L Account');
 
-        // Quantity + Price inputs exist on Item lines and some Miscellaneous modals.
+        // Quantity input exists on Item lines and some Miscellaneous modals.
         const qtyGroup = modal.getByRole('group').filter({ hasText: /^Quantity/i });
         const hasQty = await qtyGroup.isVisible({ timeout: 2000 }).catch(() => false);
         if (hasQty) {
             await qtyGroup.getByRole('spinbutton').fill(opts.qty);
+        }
+
+        // Fill price field (Selling Price, Unit Price, Before Tax, price)
+        let priceFilled = false;
+        for (const labelName of [/Selling Price/i, /Unit Price/i, /Before Tax/i, /price/i, /amount/i]) {
+            const container = modal.locator('.chakra-form-control, [role="group"], div').filter({
+                has: page.getByText(labelName)
+            }).filter({ has: page.locator('input:not([disabled])') }).first();
             
-            // Multi-strategy price field locator for Chakra UI forms (Selling Price, Unit Price, Before Tax)
-            let priceFilled = false;
-
-            // Strategy 1: Find form control container matching text label
-            const labelContainers = modal.locator('.chakra-form-control, [role="group"], div').filter({
-                has: page.getByText(/Selling Price|Unit Price|Before Tax/i)
-            });
-            const containerCount = await labelContainers.count();
-            for (let i = 0; i < containerCount; i++) {
-                const inp = labelContainers.nth(i).locator('input').first();
-                if (await inp.isVisible({ timeout: 500 }).catch(() => false)) {
-                    await inp.fill(opts.unitPrice);
-                    priceFilled = true;
-                    console.log(`[MODAL] Filled price field via label container: ${opts.unitPrice}`);
-                    break;
-                }
+            if (await container.isVisible({ timeout: 1000 }).catch(() => false)) {
+                const inp = container.locator('input:not([disabled])').first();
+                await inp.fill(opts.unitPrice);
+                priceFilled = true;
+                console.log(`[MODAL] Filled price field via label container "${labelName.source}": ${opts.unitPrice}`);
+                break;
             }
+        }
 
-            // Strategy 2: Fallback to inputs initialized with value="0" or price-related names
-            if (!priceFilled) {
-                const zeroInput = modal.locator('input[value="0"]').first();
-                if (await zeroInput.isVisible({ timeout: 1000 }).catch(() => false)) {
-                    await zeroInput.fill(opts.unitPrice);
-                    priceFilled = true;
-                    console.log(`[MODAL] Filled price field via value=0 fallback: ${opts.unitPrice}`);
-                }
+        if (!priceFilled) {
+            // Strategy 2: Fallback to inputs initialized with value="0" or price-related placeholders/names that are enabled
+            const fallbackInput = modal.locator('input:not([disabled])').filter({
+                hasText: /price|amount|before_tax/i
+            }).first();
+            if (await fallbackInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+                await fallbackInput.fill(opts.unitPrice);
+                priceFilled = true;
+                console.log(`[MODAL] Filled price field via fallback input: ${opts.unitPrice}`);
             }
+        }
 
-            // Strategy 3: Fallback to last input in the modal
-            if (!priceFilled) {
-                const inputs = modal.locator('input').filter({ visible: true });
-                const count = await inputs.count();
-                if (count > 0) {
-                    await inputs.nth(count - 1).fill(opts.unitPrice);
-                    console.log(`[MODAL] Filled price field via last input fallback: ${opts.unitPrice}`);
-                }
-            }
-        } else {
-            // Miscellaneous modal without Quantity — fill Before Tax / price directly
-            const beforeTaxInput = modal.locator('input[placeholder="price"], input[name*="price" i], input[name*="before_tax" i], input[name*="amount" i], input[value="0"]').first();
-            const spinFallback = modal.getByRole('spinbutton').first();
-            if (await beforeTaxInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-                await beforeTaxInput.fill(opts.unitPrice);
-            } else if (await spinFallback.isVisible({ timeout: 2000 }).catch(() => false)) {
-                await spinFallback.fill(opts.unitPrice);
+        if (!priceFilled) {
+            // Strategy 3: Fallback to first visible enabled spinbutton or input that is not description/textbox
+            const inputs = modal.locator('input:not([disabled])').filter({ visible: true });
+            const count = await inputs.count();
+            for (let i = 0; i < count; i++) {
+                const inp = inputs.nth(i);
+                const role = await inp.getAttribute('role');
+                const type = await inp.getAttribute('type');
+                if (role === 'textbox' || type === 'text') continue;
+                await inp.fill(opts.unitPrice);
+                priceFilled = true;
+                console.log(`[MODAL] Filled price field via fallback enabled input index ${i}: ${opts.unitPrice}`);
+                break;
             }
         }
         await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
@@ -156,7 +230,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
+        await fillCurrencyField(page, app);
 
         await lineItemBtn.click();
         await addLineItemViaModal(page, app, 'Item', { qty: '3', unitPrice: '500' });
@@ -181,7 +255,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
+        await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         const modal = page.getByRole('dialog').last();
@@ -212,6 +286,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await fillCurrencyField(page, app);
 
         // Line 1: inventory item
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -348,7 +423,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Due Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
+        await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         await addLineItemViaModal(page, app, 'Item', { qty: '2', unitPrice: '800' });
@@ -373,6 +448,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Due Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         const modal = page.getByRole('dialog').last();
@@ -403,6 +479,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Due Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await fillCurrencyField(page, app);
 
         // Item line
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -521,7 +598,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Receipt Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Cash Account selector' }), 'Cash Account');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
+        await fillCurrencyField(page, app);
 
         // Add line item via modal
         const lineItemBtn = page.getByRole('button', { name: 'Line Item' });
@@ -800,7 +877,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Currency selector' }), 'Currency', true);
+        await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         await addLineItemViaModal(page, app, 'Item', { qty: '4', unitPrice: '2500' });
@@ -824,6 +901,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
+        await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
         const modal = page.getByRole('dialog').last();
@@ -854,6 +932,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
         const selectedVendor = (await page.getByRole('button', { name: 'Vendor selector' }).textContent())?.trim() || '';
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
+        await fillCurrencyField(page, app);
 
         // Item line
         await page.getByRole('button', { name: 'Line Item' }).click();
