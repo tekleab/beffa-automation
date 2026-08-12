@@ -1,29 +1,37 @@
 {
   "total": 19,
-  "passed": 16,
-  "failed": 3,
+  "passed": 18,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 84.2,
-  "avgDurationMs": 38734,
-  "lastUpdated": "2026-08-12T05:33:27.297Z",
+  "passRate": 94.7,
+  "avgDurationMs": 38866,
+  "lastUpdated": "2026-08-12T08:59:02.274Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 16,
-      "failed": 3,
+      "passed": 18,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        84.9,
         83.3,
         88.9,
         85.9,
         94.7,
         81.4,
-        84.2
+        84.2,
+        94.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "630",
+      "commit": "85dc452",
+      "trigger": "push (smoke)",
+      "duration": "12m 18s",
+      "passRate": 94.7,
+      "status": "success"
+    },
     {
       "run": "627",
       "commit": "638418c",
@@ -95,38 +103,14 @@
       "duration": "15m 26s",
       "passRate": 78.9,
       "status": "failed"
-    },
-    {
-      "run": "614",
-      "commit": "193c4c6",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "103m 34s",
-      "passRate": 77.7,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:621\n\n  619 |     }\n ",
-      "firstSeen": "2026-08-12T05:24:54.304Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: [ERP_BUG #RCT-500] Backend /receipts endpoint returned HTTP 500 Internal Server Error for Invoice INV/2026/08/12/001402\n\n  77 |                 // Backend /receipts endpoint returning 500 = inf",
-      "firstSeen": "2026-08-12T05:24:54.381Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for b2ef24bd-8f82-4cb5-aea7-b48c6701cd62: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:731\n\n  7",
-      "firstSeen": "2026-08-12T05:25:55.358Z",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: [ERP_BUG #RCT-UI-01] Approved receipt RCPT/2026/08/12/000299 not visible in Customer Profile Receipts tab (63 rows present).\n\n  112 |         if (!rcptVisible) {\n  113 |             const rowCo",
+      "firstSeen": "2026-08-12T08:50:14.528Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
