@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+13:16:53 [PERFORMANCE] API - Auth API Verification: 203.22ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002391 (ID: 849c5117-d8ec-43c6-9e1a-21f79170fc77)
+13:17:00 [INFO] Advancing inventory-adjustments "849c5117-d8ec-43c6-9e1a-21f79170fc77"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786540619227 (03714e6e-3653-4b86-a242-06a7def6a98b) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Triggering 2 CONCURRENT adjustments (+10 each) for WAC-Item-1786540619227...
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002392 (ID: 1f7daba4-1a40-41d4-89c6-ef8d2ab493b5)
+[INFO] Adjustment 1 ID: 1f7daba4-1a40-41d4-89c6-ef8d2ab493b5 | Adjustment 2 ID: FAILED
+13:17:02 [INFO] Advancing inventory-adjustments "1f7daba4-1a40-41d4-89c6-ef8d2ab493b5"...
+[SUCCESS] Advanced Adjustment 1 to approved: 1f7daba4-1a40-41d4-89c6-ef8d2ab493b5
+[ACTION] Verifying Final Stock Integrity...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 40...
+[WARN] pollStockAPI timed out. Expected 40, actual 30.
+[SNAPSHOT] Start: 20 | Final: 30 | Expected: 40
+[KNOWN_BUG] Stock Race Condition: Concurrent adjustments caused lost updates (E1481 deadlock). Expected 40, found 30. ERP does not handle concurrent stock adjustments atomically. Bug logged for remediation.

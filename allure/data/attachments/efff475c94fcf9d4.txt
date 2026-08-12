@@ -1,0 +1,29 @@
+13:11:06 [PERFORMANCE] API - Auth API Verification: 218.45ms
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002359 (ID: eba1da3c-d993-4872-92b4-027e149f113e)
+13:11:17 [INFO] Advancing inventory-adjustments "eba1da3c-d993-4872-92b4-027e149f113e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786540276184 (5fc169f7-78e2-4385-b0be-49660b4f734c) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:11:19 [PERFORMANCE] API - Auth API Verification: 208.75ms
+13:11:24 [PERFORMANCE] API - Auth API Verification: 250.56ms
+[ATTACK] Injecting Bill with future date: 2028-08-12T00:00:00Z...
+13:11:26 [INFO] Advancing bills "38457d97-6588-46ef-8e73-d88ea30178ac"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/12/001224                   │
+  │ Bill ID                          │ 38457d97-6588-46ef-8e73-d88ea30178ac     │
+  │ Invoice Date                     │ 2028-08-12T00:00:00Z                     │
+  │ Today                            │ 2026-08-12                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
