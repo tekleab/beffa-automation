@@ -1,0 +1,30 @@
+06:50:16 [PERFORMANCE] API - Auth API Verification: 1891.46ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001928 (ID: 89fa9f2d-eb6a-4e3c-aa3a-9d59bfba059a)
+06:51:10 [INFO] Advancing inventory-adjustments "89fa9f2d-eb6a-4e3c-aa3a-9d59bfba059a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786517467170 (bc130fea-ed75-49cf-8ef6-11f480c1f43f) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:51:14 [PERFORMANCE] API - Auth API Verification: 212.37ms
+06:51:20 [PERFORMANCE] API - Auth API Verification: 297.80ms
+[STEP 1] Creating & approving Bill for 5000...
+06:51:22 [INFO] Advancing bills "53d7d20e-654b-41b9-8c5b-80c0af855129"...
+[BILL] BILL/2026/08/12/001012 (53d7d20e-654b-41b9-8c5b-80c0af855129)
+[ATTACK] Attempting to create and approve a 0.00 payment against live bill...
+[ACTION] Creating Bill Payment for 53d7d20e-654b-41b9-8c5b-80c0af855129 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Zero-Amount Payment Guardrail                                           │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/12/001012               │
+  │ Bill ID                          │ 53d7d20e-654b-41b9-8c5b-80c0af85512… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $0.00                                │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Zero-amount payment blocke… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Zero-amount payment correctly blocked.

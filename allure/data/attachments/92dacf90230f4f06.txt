@@ -1,0 +1,56 @@
+06:45:30 [PERFORMANCE] API - Auth API Verification: 206.25ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001891 (ID: 4e74bed9-cbd8-486d-8a76-a81e09896aeb)
+06:45:37 [INFO] Advancing inventory-adjustments "4e74bed9-cbd8-486d-8a76-a81e09896aeb"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786517136784 (afac8ab1-bd48-48f0-8a8b-008b090a2bae) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1786517136784 | stock:20
+06:45:41 [INFO] Advancing invoices "4be8097c-2492-4874-9a35-691472c5717e"...
+[INVOICE JOURNAL] INV/2026/08/12/001425 (4 entries)
+  Sales () Dr:0 Cr:100
+  Cash - Main Office () Dr:100 Cr:0
+  Inventory () Dr:0 Cr:100
+  Accounts Receivable () Dr:100 Cr:0
+[PASS] AR debited $100 on INV/2026/08/12/001425
+[RECEIPT] amount=100 | invoice=4be8097c...
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/12/000291
+06:45:50 [INFO] Advancing receipts "4f54d297-51cd-4327-9ac7-e69b53bc6fa2"...
+[RECEIPT JOURNAL] RCPT/2026/08/12/000291 (2 entries)
+  Accounts Receivable Dr:0 Cr:100
+  Cash - Main Office Dr:100 Cr:0
+[AUDIT] AR Dr:$100 (inv) Cr:$100 (rct) drift:$0.00
+[PASS] Full cycle GL: AR Dr=$100 = Cr=$100
+
+===============================================================================================
+  GL AUDIT REPORT — BEFFA ERP  |  Company: BM Tech  |  2026-08-12T06:45:55.143Z
+===============================================================================================
+
+  ▶ 1. Invoice (AR Debit)
+    Ref: INV/2026/08/12/001425
+    ID : 4be8097c-2492-4874-9a35-691472c5717e
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Sales                                |                              |            — |       100.00 |
+  | Cash - Main Office                   |                              |       100.00 |            — |
+  | Inventory                            |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 2. Receipt (AR Credit)
+    Ref: RCPT/2026/08/12/000291
+    ID : 4f54d297-51cd-4327-9ac7-e69b53bc6fa2
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Accounts Receivable                  |                              |            — |       100.00 |
+  | Cash - Main Office                   |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       100.00 |       100.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+

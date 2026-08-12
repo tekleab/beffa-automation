@@ -1,0 +1,17 @@
+06:54:58 [PERFORMANCE] API - Auth API Verification: 193.18ms
+[STEP 1] Creating item with stock via API...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001973 (ID: a61d5d9b-3e0b-4595-835a-432a3b203182)
+06:55:05 [INFO] Advancing inventory-adjustments "a61d5d9b-3e0b-4595-835a-432a3b203182"...
+[FRESH ITEM] Created: WAC-Item-1786517704326 (3a2c8527-b4ef-444e-838b-4a1ddec08bfa) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Attempting to invoice 10019 units of "WAC-Item-1786517704326" (available: 20)...
+[PASS] Oversell correctly rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"Insufficient stock. Available: 20, required: 10019.00"
+		]
+	},
+	"message": "Validation error when creating invoice"
+}
+

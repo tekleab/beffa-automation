@@ -1,0 +1,40 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001957 (ID: cde316e1-f8ea-4ecf-907e-cce962a5d007)
+06:54:24 [INFO] Advancing inventory-adjustments "cde316e1-f8ea-4ecf-907e-cce962a5d007"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1786517662557 (fb1775d5-d921-419c-b949-c3e6cabc0fa3) | method=WAC | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] "WAC-Item-1786517662557" | initial=10 | expected=60
+[LOAD] Firing 10 concurrent +5 adjustments...
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001958 (ID: 25b6ce9d-8b65-42de-8e56-3e11525e5b76)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001959 (ID: ae25c661-5aa3-4146-b256-89b4be462100)
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001960 (ID: 5c6139f9-ed17-4d8d-91c5-0a343230164c)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001961 (ID: e881aa3d-0677-497e-94ff-f8e52ae1e9c4)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/12/001962 (ID: 33202bcf-0d78-406c-a142-53a770e14dcc)
+[LOAD] Created: 10 | Failed: 0
+06:54:28 [INFO] Advancing inventory-adjustments "5c6139f9-ed17-4d8d-91c5-0a343230164c"...
+06:54:28 [INFO] Advancing inventory-adjustments "25b6ce9d-8b65-42de-8e56-3e11525e5b76"...
+06:54:28 [INFO] Advancing inventory-adjustments "ae25c661-5aa3-4146-b256-89b4be462100"...
+06:54:28 [INFO] Advancing inventory-adjustments "33202bcf-0d78-406c-a142-53a770e14dcc"...
+06:54:28 [INFO] Advancing inventory-adjustments "e881aa3d-0677-497e-94ff-f8e52ae1e9c4"...
+06:54:29 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+06:54:29 [WARN] Advance had no successful steps for inventory-adjustments ae25c661-5aa3-4146-b256-89b4be462100.
+06:54:30 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+06:54:30 [WARN] Advance had no successful steps for inventory-adjustments 5c6139f9-ed17-4d8d-91c5-0a343230164c.
+06:54:31 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+06:54:31 [WARN] Advance had no successful steps for inventory-adjustments 25b6ce9d-8b65-42de-8e56-3e11525e5b76.
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 60...
+[WARN] pollStockAPI timed out. Expected 60, actual 20.
+[LOAD] final=20 | expected=60 | net=+10
+[KNOWN_BUG] Lost update under concurrent advance: expected 60, got 20. E1481 deadlock on concurrent inventory-adjustment advance. Bug #8.
