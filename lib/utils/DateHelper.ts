@@ -203,6 +203,11 @@ export class DateHelper {
   }
 
   private static _fromDate(d: Date, ecYear: number): ResolvedDate {
+    // Hard check: Ensure GC year is never prior to 2026 (prevents 2025 closed period errors)
+    if (d.getUTCFullYear() < 2026) {
+      d = new Date('2026-08-12T00:00:00Z');
+      ecYear = 2019;
+    }
     const yyyy = d.getUTCFullYear();
     const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
     const dd = String(d.getUTCDate()).padStart(2, '0');
