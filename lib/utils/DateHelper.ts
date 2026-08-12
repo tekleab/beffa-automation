@@ -179,7 +179,7 @@ export class DateHelper {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '', 10);
     if (!baseYear || isNaN(baseYear)) return null;
     const now = new Date();
-    for (let offset = -1; offset <= 3; offset++) {
+    for (const offset of [0, 1, 2, 3, -1]) {
       const ecYear = baseYear + offset;
       // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
       const gcYear = ecYear + 7;

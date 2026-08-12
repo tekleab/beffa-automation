@@ -185,79 +185,35 @@
   },
   "suites": [
     {
-      "title": "cross-module/line-item-miscellaneous-audit.spec.ts",
-      "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+      "title": "cross-module/order-to-cash-e2e.spec.ts",
+      "file": "cross-module/order-to-cash-e2e.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full",
-          "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
-          "line": 21,
+          "title": "Order-to-Cash (O2C) Full Integration @cross-module @sales @logic @regression @full",
+          "file": "cross-module/order-to-cash-e2e.spec.ts",
+          "line": 31,
           "column": 6,
           "specs": [
             {
-              "title": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+              "title": "Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification",
               "ok": false,
               "tags": [
+                "cross-module",
                 "sales",
-                "purchase",
                 "logic",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 600000,
+                  "timeout": 360000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|372.23"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|554.29"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|310.95"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Pick Date: Sales Order Date|18147.98"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Customer|2769.73"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Accounts Receivable|3021.23"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Currency|3318.58"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Item|2391.78"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Warehouse|2887.75"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Location|2673.80"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: G/L Account|2506.78"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "UI|Random Selection: Tax|3013.22"
+                      "description": "API|Auth API Verification|251.22"
                     }
                   ],
                   "expectedStatus": "passed",
@@ -268,63 +224,45 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 253986,
+                      "duration": 175268,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('dialog').last()\nExpected: not visible\nReceived: visible\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').last()\u001b[22m\n\u001b[2m    18 × locator resolved to <section tabindex=\"-1\" role=\"dialog\" id=\"popover-content-:rev:\" aria-describedby=\"popover-body-:rev:\" class=\"chakra-popover__content css-unt9s1\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('dialog').last()\nExpected: not visible\nReceived: visible\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').last()\u001b[22m\n\u001b[2m    18 × locator resolved to <section tabindex=\"-1\" role=\"dialog\" id=\"popover-content-:rev:\" aria-describedby=\"popover-body-:rev:\" class=\"chakra-popover__content css-unt9s1\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at addLineItemViaModal (/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:140:33)\n    at /home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:162:9",
+                        "message": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n",
+                        "stack": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n    at SalesAPI.createInvoiceReceiptAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:621:11)\n    at /home/teklish/beffa-automation/tests/cross-module/order-to-cash-e2e.spec.ts:125:25",
                         "location": {
-                          "file": "/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-                          "column": 33,
-                          "line": 140
+                          "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
+                          "column": 11,
+                          "line": 621
                         },
-                        "snippet": "  138 |         const addBtn = modal.locator('button:has-text(\"Add\"), button:has-text(\"Save\")').first();\n  139 |         await addBtn.click();\n> 140 |         await expect(modal).not.toBeVisible({ timeout: 15000 });\n      |                                 ^\n  141 |     }\n  142 |\n  143 |     // ========================================================================="
+                        "snippet": "\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:621\n\n\u001b[0m \u001b[90m 619 |\u001b[39m     }\n \u001b[90m 620 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 621 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 622 |\u001b[39m   }\n \u001b[90m 623 |\u001b[39m\n \u001b[90m 624 |\u001b[39m   \u001b[36masync\u001b[39m getInvoiceAPI(invoiceId\u001b[33m:\u001b[39m string)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33many\u001b[39m\u001b[33m>\u001b[39m {\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-                            "column": 33,
-                            "line": 140
+                            "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
+                            "column": 11,
+                            "line": 621
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('dialog').last()\nExpected: not visible\nReceived: visible\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').last()\u001b[22m\n\u001b[2m    18 × locator resolved to <section tabindex=\"-1\" role=\"dialog\" id=\"popover-content-:rev:\" aria-describedby=\"popover-body-:rev:\" class=\"chakra-popover__content css-unt9s1\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n  138 |         const addBtn = modal.locator('button:has-text(\"Add\"), button:has-text(\"Save\")').first();\n  139 |         await addBtn.click();\n> 140 |         await expect(modal).not.toBeVisible({ timeout: 15000 });\n      |                                 ^\n  141 |     }\n  142 |\n  143 |     // =========================================================================\n    at addLineItemViaModal (/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:140:33)\n    at /home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts:162:9"
-                        },
-                        {
-                          "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-0/traces/5dc60173c5454776a922-fbccbd4d7894309cf5dc.trace'"
+                          "message": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n\n\u001b[90m   at \u001b[39m../lib/api/SalesAPI.ts:621\n\n\u001b[0m \u001b[90m 619 |\u001b[39m     }\n \u001b[90m 620 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 621 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 622 |\u001b[39m   }\n \u001b[90m 623 |\u001b[39m\n \u001b[90m 624 |\u001b[39m   \u001b[36masync\u001b[39m getInvoiceAPI(invoiceId\u001b[33m:\u001b[39m string)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33many\u001b[39m\u001b[33m>\u001b[39m {\u001b[0m\n\u001b[2m    at SalesAPI.createInvoiceReceiptAPI (/home/teklish/beffa-automation/lib/api/SalesAPI.ts:621:11)\u001b[22m\n\u001b[2m    at /home/teklish/beffa-automation/tests/cross-module/order-to-cash-e2e.spec.ts:125:25\u001b[22m"
                         }
                       ],
                       "stdout": [
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m12:20:56 [PERFORMANCE]\u001b[0m API - Auth API Verification: 372.23ms\n"
+                          "text": "\u001b[33m08:35:22 [PERFORMANCE]\u001b[0m API - Auth API Verification: 251.22ms\n"
+                        },
+                        {
+                          "text": "[STEP 1] Metadata & Inventory Setup...\n"
                         },
                         {
                           "text": "[ADJ] quantity | qty=50 @ $100 | current=0 loc=0\n"
                         },
                         {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001667 (ID: 26110884-34e3-4246-b2c8-a8ea1ab3d275)\n"
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002064 (ID: d0ad5c35-9b8e-4750-b250-c7a0e0e6acca)\n"
                         },
                         {
-                          "text": "\u001b[36m12:23:26 [INFO]\u001b[0m Advancing inventory-adjustments \"26110884-34e3-4246-b2c8-a8ea1ab3d275\"...\n"
-                        },
-                        {
-                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...\n"
-                        },
-                        {
-                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
-                        },
-                        {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786451003505 (632b9f47-0d8b-4f26-bdfe-98735aff0aa1) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
-                        },
-                        {
-                          "text": "[ADJ] quantity | qty=50 @ $80 | current=0 loc=0\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/11/001668 (ID: cd68c54c-a8ae-42f1-9219-c935e8123668)\n"
-                        },
-                        {
-                          "text": "\u001b[36m12:23:34 [INFO]\u001b[0m Advancing inventory-adjustments \"cd68c54c-a8ae-42f1-9219-c935e8123668\"...\n"
+                          "text": "\u001b[36m08:37:29 [INFO]\u001b[0m Advancing inventory-adjustments \"d0ad5c35-9b8e-4750-b250-c7a0e0e6acca\"...\n"
                         },
                         {
                           "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...\n"
@@ -333,142 +271,123 @@
                           "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
                         },
                         {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786451012017 (f606e9ac-1a0b-45a1-8ffe-b5418cffa796) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                          "text": "[FRESH ITEM] Created: WAC-Item-1786523845846 (ce939f5c-c8ae-442b-ade4-ad39edacefc3) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
                         },
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-11T00:00:00Z (day=11, ecYear=2019)\n"
+                          "text": "[ITEM] WAC-Item-1786523845846 (ce939f5c-c8ae-442b-ade4-ad39edacefc3) | Stock before: 50\n"
                         },
                         {
-                          "text": "\u001b[33m12:23:40 [PERFORMANCE]\u001b[0m API - Auth API Verification: 554.29ms\n"
+                          "text": "[STEP 2] Creating Sales Order...\n"
                         },
                         {
-                          "text": "\u001b[33m12:26:04 [PERFORMANCE]\u001b[0m API - Auth API Verification: 310.95ms\n"
+                          "text": "[SO] Created SO/2026/08/12/000373 (f4fd9300-400e-4d07-800b-5e2b7309fca6) | Item id: 0b5130ad-dcd2-4986-90e1-6bc9b1f26440\n"
                         },
                         {
-                          "text": "\u001b[36m12:26:44 [INFO]\u001b[0m Picking date: \"Sales Order Date\" → target 2026-8-11\n"
+                          "text": "\u001b[36m08:37:36 [INFO]\u001b[0m Advancing sales-orders \"f4fd9300-400e-4d07-800b-5e2b7309fca6\"...\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:01 [WARN]\u001b[0m \"Sales Order Date\" — target day 11 not found, picked early enabled: 1.\n"
+                          "text": "[SO] Approved SO/2026/08/12/000373\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:02 [PERFORMANCE]\u001b[0m UI - Pick Date: Sales Order Date: 18147.98ms\n"
+                          "text": "[STEP 3] Invoicing and releasing SO items...\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:05 [PERFORMANCE]\u001b[0m UI - Random Selection: Customer: 2769.73ms\n"
+                          "text": "[INVOICE] Created from SO: INV/2026/08/12/001478 (bfa86168-a8ce-47b6-8060-640a82b00581)\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:08 [PERFORMANCE]\u001b[0m UI - Random Selection: Accounts Receivable: 3021.23ms\n"
+                          "text": "\u001b[36m08:37:43 [INFO]\u001b[0m Advancing invoices \"bfa86168-a8ce-47b6-8060-640a82b00581\"...\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:11 [PERFORMANCE]\u001b[0m UI - Random Selection: Currency: 3318.58ms\n"
+                          "text": "[INVOICE] Approved INV/2026/08/12/001478\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:16 [PERFORMANCE]\u001b[0m UI - Random Selection: Item: 2391.78ms\n"
+                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 45...\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:18 [PERFORMANCE]\u001b[0m UI - Random Selection: Warehouse: 2887.75ms\n"
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 45.\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:21 [PERFORMANCE]\u001b[0m UI - Random Selection: Location: 2673.80ms\n"
+                          "text": "[STOCK] Expected: 45, Got: 45\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:24 [PERFORMANCE]\u001b[0m UI - Random Selection: G/L Account: 2506.78ms\n"
+                          "text": "[INVOICE] Outstanding balance after Approval: 510 (expected ~3000 — [KNOWN_BUG] ERP uses unit_cost not unit_price for net_due)\n"
                         },
                         {
-                          "text": "[MODAL] Filled price field via label container: 500\n"
+                          "text": "[INVOICE GL] Entries found: 5\n"
                         },
                         {
-                          "text": "\u001b[33m12:27:28 [PERFORMANCE]\u001b[0m UI - Random Selection: Tax: 3013.22ms\n"
+                          "text": "[INVOICE GL] AR debit=510 | Sales credit=10 (expected 3000 — [KNOWN_BUG #7])\n"
+                        },
+                        {
+                          "text": "[STEP 4] Creating Receipt for Invoice...\n"
+                        },
+                        {
+                          "text": "[RECEIPT] amount=3000 | invoice=bfa86168...\n"
                         }
                       ],
-                      "stderr": [],
+                      "stderr": [
+                        {
+                          "text": "[WARN] Receipt creation failed on attempt 1: Attempt 1: HTTP 422 - {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n"
+                        },
+                        {
+                          "text": "[WARN] Receipt creation error on attempt 1: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n    at SalesAPI.createInvoiceReceiptAPI \u001b[90m(/home/teklish/beffa-automation/\u001b[39mlib/api/SalesAPI.ts:603:17\u001b[90m)\u001b[39m\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mtests/cross-module/order-to-cash-e2e.spec.ts:125:25\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:326:9\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/testInfo.js:320:11\n    at TimeoutManager.withRunnable \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/timeoutManager.js:75:14\u001b[90m)\u001b[39m\n    at TestInfoImpl._runWithTimeout \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/testInfo.js:318:7\u001b[90m)\u001b[39m\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:324:7\n    at WorkerMain._runTest \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:297:5\u001b[90m)\u001b[39m\n    at WorkerMain.runTestGroup \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:203:9\u001b[90m)\u001b[39m\n    at process.<anonymous> \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/common/process.js:73:22\u001b[90m)\u001b[39m\n"
+                        },
+                        {
+                          "text": "[WARN] Receipt creation failed on attempt 2: Attempt 2: HTTP 422 - {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n"
+                        },
+                        {
+                          "text": "[WARN] Receipt creation error on attempt 2: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n    at SalesAPI.createInvoiceReceiptAPI \u001b[90m(/home/teklish/beffa-automation/\u001b[39mlib/api/SalesAPI.ts:603:17\u001b[90m)\u001b[39m\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mtests/cross-module/order-to-cash-e2e.spec.ts:125:25\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:326:9\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/testInfo.js:320:11\n    at TimeoutManager.withRunnable \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/timeoutManager.js:75:14\u001b[90m)\u001b[39m\n    at TestInfoImpl._runWithTimeout \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/testInfo.js:318:7\u001b[90m)\u001b[39m\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:324:7\n    at WorkerMain._runTest \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:297:5\u001b[90m)\u001b[39m\n    at WorkerMain.runTestGroup \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:203:9\u001b[90m)\u001b[39m\n    at process.<anonymous> \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/common/process.js:73:22\u001b[90m)\u001b[39m\n"
+                        },
+                        {
+                          "text": "[WARN] Receipt creation failed on attempt 3: Attempt 3: HTTP 422 - {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n"
+                        },
+                        {
+                          "text": "[WARN] Receipt creation error on attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/12/001478 outstanding balance is 510.00 but 3000.00 was applied\"\n}\n\n    at SalesAPI.createInvoiceReceiptAPI \u001b[90m(/home/teklish/beffa-automation/\u001b[39mlib/api/SalesAPI.ts:603:17\u001b[90m)\u001b[39m\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mtests/cross-module/order-to-cash-e2e.spec.ts:125:25\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:326:9\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/testInfo.js:320:11\n    at TimeoutManager.withRunnable \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/timeoutManager.js:75:14\u001b[90m)\u001b[39m\n    at TestInfoImpl._runWithTimeout \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/testInfo.js:318:7\u001b[90m)\u001b[39m\n    at \u001b[90m/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:324:7\n    at WorkerMain._runTest \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:297:5\u001b[90m)\u001b[39m\n    at WorkerMain.runTestGroup \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/worker/workerMain.js:203:9\u001b[90m)\u001b[39m\n    at process.<anonymous> \u001b[90m(/home/teklish/beffa-automation/\u001b[39mnode_modules/\u001b[4mplaywright\u001b[24m/lib/common/process.js:73:22\u001b[90m)\u001b[39m\n"
+                        }
+                      ],
                       "retry": 0,
-                      "startTime": "2026-08-11T12:20:48.018Z",
+                      "startTime": "2026-08-12T08:35:14.627Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|372.23"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|554.29"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|310.95"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Pick Date: Sales Order Date|18147.98"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Customer|2769.73"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Accounts Receivable|3021.23"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Currency|3318.58"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Item|2391.78"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Warehouse|2887.75"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Location|2673.80"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: G/L Account|2506.78"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "UI|Random Selection: Tax|3013.22"
+                          "description": "API|Auth API Verification|251.22"
                         }
                       ],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/test-failed-2.png"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-order-to-cash-c2b16-pt---Ledger-GL-Verification-Cross-Module/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/video.webm"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-order-to-cash-c2b16-pt---Ledger-GL-Verification-Cross-Module/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-order-to-cash-c2b16-pt---Ledger-GL-Verification-Cross-Module/error-context.md"
                         },
                         {
                           "name": "trace",
                           "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/cross-module-line-item-mis-c50eb-l-→-SO-created-and-approved-Cross-Module/trace.zip"
+                          "path": "/home/teklish/beffa-automation/test-results/cross-module-order-to-cash-c2b16-pt---Ledger-GL-Verification-Cross-Module/trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-                        "column": 33,
-                        "line": 140
+                        "file": "/home/teklish/beffa-automation/lib/api/SalesAPI.ts",
+                        "column": 11,
+                        "line": 621
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "5dc60173c5454776a922-fbccbd4d7894309cf5dc",
-              "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
-              "line": 147,
+              "id": "cf16196db086ebed57c4-e46e56649b6519944b5a",
+              "file": "cross-module/order-to-cash-e2e.spec.ts",
+              "line": 34,
               "column": 9
             }
           ]
@@ -478,8 +397,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-11T12:20:39.019Z",
-    "duration": 444252.067,
+    "startTime": "2026-08-12T08:35:08.816Z",
+    "duration": 191722.73500000002,
     "expected": 0,
     "skipped": 0,
     "unexpected": 1,

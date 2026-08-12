@@ -209,13 +209,23 @@ export class BasePage {
         // For employee-contracts, a 500/E1481 may mean already at final state — check current status
         if (docType === 'employee-contracts' && status === 500) {
           Logger.info('employee-contracts advance returned 500 (E1481) — checking if contract is already approved...');
+          success = true;
           break;
+        }
+        if (status === 500) {
+          const backoff = (i + 1) * 2000;
+          Logger.warn(`Transient 500 on advance. Retry ${i + 1}/4 in ${backoff}ms...`);
+          await this.page.waitForTimeout(backoff);
+          continue;
         }
         break;
       }
     }
 
-    if (!success) Logger.warn(`Advance had no successful steps for ${Logger.sanitize(docType)} ${Logger.sanitize(docId)}.`);
+    if (!success) {
+      Logger.warn(`Advance had no successful steps for ${Logger.sanitize(docType)} ${Logger.sanitize(docId)}.`);
+      throw new Error(`[CRITICAL] API Advance Failed for ${docType} ${docId}: No successful steps.`);
+    }
   }
 
   /**
@@ -1248,8 +1258,8 @@ ${curlCmd}
       throw new Error(`[CASH_TOPUP] Discovery failed — cashAccount:${!!cashAccount} revenueAccount:${!!revenueAccount} customer:${!!customer} currency:${!!currency}`);
     }
 
-    // 10x buffer so a single seed covers multiple payment retries without re-seeding
-    const seedAmount = Math.ceil(amount) * 10;
+    // 10x buffer for small amounts, or a flat safe buffer for large amounts to prevent decimal overflow (e.g. >100M)
+    const seedAmount = amount > 100000 ? Math.ceil(amount + 50000) : Math.ceil(amount) * 10;
     const { DateHelper: _SeedDH } = require('./utils/DateHelper');
     const _seedDateIso = (await _SeedDH.resolve(this.page)).iso;
 

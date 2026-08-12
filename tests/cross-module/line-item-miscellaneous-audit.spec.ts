@@ -167,16 +167,16 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         // Fill price field (Selling Price, Unit Price, Before Tax, price)
         let priceFilled = false;
         for (const labelName of [/Selling Price/i, /Unit Price/i, /Before Tax/i, /price/i, /amount/i]) {
-            const container = modal.locator('.chakra-form-control, [role="group"], div').filter({
-                has: page.getByText(labelName)
-            }).filter({ has: page.locator('input:not([disabled])') }).first();
-            
-            if (await container.isVisible({ timeout: 1000 }).catch(() => false)) {
+            const lbl = modal.locator('label').filter({ hasText: labelName }).first();
+            if (await lbl.isVisible({ timeout: 1000 }).catch(() => false)) {
+                const container = lbl.locator('..').first(); // Parent element
                 const inp = container.locator('input:not([disabled])').first();
-                await inp.fill(opts.unitPrice);
-                priceFilled = true;
-                console.log(`[MODAL] Filled price field via label container "${labelName.source}": ${opts.unitPrice}`);
-                break;
+                if (await inp.isVisible({ timeout: 1000 }).catch(() => false)) {
+                    await inp.fill(opts.unitPrice);
+                    priceFilled = true;
+                    console.log(`[MODAL] Filled price field via label "${labelName.source}": ${opts.unitPrice}`);
+                    break;
+                }
             }
         }
 
@@ -229,7 +229,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
         await lineItemBtn.click();
@@ -254,7 +254,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -285,7 +285,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await app.pickDate('Sales Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
         // Line 1: inventory item
@@ -422,7 +422,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -447,7 +447,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -478,7 +478,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.pickDate('Invoice Date');
         await app.pickDate('Due Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Receivable selector' }), 'Accounts Receivable');
+        await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
         // Item line

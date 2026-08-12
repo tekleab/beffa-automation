@@ -336,10 +336,18 @@ export class PurchaseAPI extends BasePage {
     const allAccounts = acctData.items || acctData.data || [];
 
     // Improved strict AP discovery
-    const _typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+    const _typeOf = (a: any) => {
+      if (typeof a.type === 'string') return a.type.toLowerCase();
+      if (a.type?.name && typeof a.type.name === 'string') return a.type.name.toLowerCase();
+      if (typeof a.account_type === 'string') return a.account_type.toLowerCase();
+      if (a.account_type?.name && typeof a.account_type.name === 'string') return a.account_type.name.toLowerCase();
+      return '';
+    };
     const discoveredAp =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
       allAccounts.find((a: any) => _typeOf(a).includes('payable')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => _typeOf(a).includes('liability')) ||
       allAccounts[0];
 
     const resolvedGlAccount = glAccountId !== undefined ? { id: glAccountId } : (allAccounts.find((a: any) => _typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0]);
@@ -395,7 +403,7 @@ export class PurchaseAPI extends BasePage {
     const json = await response.json();
     return { success: true, ref: json.invoice_number, id: json.id };
   }
-  async createBillFromPoAPI(poId: string, poItems?: any[]): Promise<{ success: boolean; billNumber: string; billId: string }> {
+  async createBillFromPoAPI(poId: string, poItems?: any[], apAccountId?: string | null): Promise<{ success: boolean; billNumber: string; billId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -427,7 +435,23 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    const apAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) || allAccounts[0];
+    
+    const _typeOf = (a: any) => {
+      if (typeof a.type === 'string') return a.type.toLowerCase();
+      if (a.type?.name && typeof a.type.name === 'string') return a.type.name.toLowerCase();
+      if (typeof a.account_type === 'string') return a.account_type.toLowerCase();
+      if (a.account_type?.name && typeof a.account_type.name === 'string') return a.account_type.name.toLowerCase();
+      return '';
+    };
+    
+    const discoveredAp =
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
+      allAccounts.find((a: any) => _typeOf(a).includes('payable')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
+      allAccounts.find((a: any) => _typeOf(a).includes('liability')) ||
+      allAccounts[0];
+
+    const apAccount = apAccountId ? { id: apAccountId } : discoveredAp;
 
     const receivedItems = rawItems.map((item: any) => ({
       po_item_id: item.id,
@@ -688,9 +712,10 @@ export class PurchaseAPI extends BasePage {
     }
     if (preferredId && accounts.some((a: any) => a.id === preferredId)) return preferredId;
     const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
-    const cashAccount = accounts.find((a: any) =>
-      typeOf(a).includes('cash') || typeOf(a).includes('bank')
-    ) || accounts[0];
+    const cashAccount =
+      accounts.find((a: any) => (typeOf(a).includes('cash') || typeOf(a).includes('bank')) && parseFloat(a.balance || '0') >= 0) ||
+      accounts.find((a: any) => typeOf(a).includes('cash') || typeOf(a).includes('bank')) ||
+      accounts[0];
     return cashAccount?.id;
   }
 
@@ -817,9 +842,10 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=yearly&calendar=ec`;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
-    const response = await this.safeGet(`${apiBase}/payments/${paymentId}?${params}`, {
+    const response = await this.safeGet(`${apiBase}/payment/${paymentId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY || 'sample', 'Authorization': `Bearer ${token}` }
     });
+    if (!response.ok()) throw new Error(`Failed to fetch Payment ${paymentId}: ${response.status()}`);
     return await response.json();
   }
 
