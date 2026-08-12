@@ -91,8 +91,8 @@ export class DateHelper {
 
       const now = new Date();
 
-      // Try env year first (yearOffset = 0), then future years
-      for (let yearOffset = 0; yearOffset <= 3; yearOffset++) {
+      // Try env year first (yearOffset = 0), then past and future years
+      for (const yearOffset of [0, 1, 2, 3, -1, -2]) {
         const year = baseYear + yearOffset;
         const qs = `year=${year}&period=${period}&calendar=${calendar}`;
 
@@ -155,9 +155,6 @@ export class DateHelper {
         const periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
         const periodEnd   = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
 
-        if (periodEnd < now) continue;
-
-        const ecNewYearGC = new Date(`${parseInt(y1)}-09-15T00:00:00Z`);
         let useDate: Date;
         if (now >= periodStart && now <= periodEnd) {
           useDate = now;
@@ -179,14 +176,13 @@ export class DateHelper {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '', 10);
     if (!baseYear || isNaN(baseYear)) return null;
     const now = new Date();
-    for (const offset of [0, 1, 2, 3, -1]) {
+    for (const offset of [0, 1, 2, 3, -1, -2]) {
       const ecYear = baseYear + offset;
       // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
       const gcYear = ecYear + 7;
       const periodStart = new Date(`${gcYear}-09-11T00:00:00Z`);
       const periodEnd   = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
-      if (periodEnd < now) continue;
-      // Use today if within period, else Sep 15 of the GC start year clamped to bounds
+
       const safeDate = new Date(`${gcYear}-09-15T00:00:00Z`);
       let useDate: Date;
       if (now >= periodStart && now <= periodEnd) {

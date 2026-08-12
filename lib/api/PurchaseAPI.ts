@@ -393,11 +393,22 @@ export class PurchaseAPI extends BasePage {
       status: 'draft'
     };
 
-    const response = await this.safePost(`${apiBase}/bills?${qs}`, {
+    let response = await this.safePost(`${apiBase}/bills?${qs}`, {
       data: payload,
       headers,
       label: 'Create Bill'
     });
+
+    if (response.status() === 401) {
+      console.warn(`[WARN] Create Bill received 401 (likely invalid vendor ID ${resolvedVendorId}). Discovering fresh vendor...`);
+      const freshVendor = await this.discoverRandomVendorAPI();
+      payload.vendor_id = freshVendor.id;
+      response = await this.safePost(`${apiBase}/bills?${qs}`, {
+        data: payload,
+        headers,
+        label: 'Create Bill (fresh vendor retry)'
+      });
+    }
 
     if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();

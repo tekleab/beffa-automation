@@ -252,7 +252,10 @@ export class SalesAPI extends BasePage {
   async createStandaloneInvoiceAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string; amountDue: number; customerId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
-    const year = process.env.BEFFA_YEAR || '2018';
+
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const resolvedDate = await _DH.resolve(this.page);
+    const year = String(resolvedDate.ecYear);
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -279,8 +282,7 @@ export class SalesAPI extends BasePage {
 
     const custId = data.customerId || meta.customerId;
 
-    const { DateHelper: _DH } = require('../utils/DateHelper');
-    const _dateIso = (await _DH.resolve(this.page)).iso;
+    const _dateIso = resolvedDate.iso;
     const payload: Record<string, any> = {
       accounts_receivable_id: meta.arAccountId,
       customer_id: custId,
@@ -495,14 +497,17 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const resolvedDate = await _DH.resolve(this.page);
+    const year = String(resolvedDate.ecYear);
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     // Wait a moment before attempting receipt creation to ensure invoice is fully processed
-    await new Promise(resolve => setTimeout(resolve, 3000)); // Increased from 2000 to 3000
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     // Verify invoice exists and is in approved state before creating receipt
     try {
@@ -544,13 +549,11 @@ export class SalesAPI extends BasePage {
       }
     }
 
-    const { DateHelper: _DH } = require('../utils/DateHelper');
-    const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       amount: Math.round(data.amount * 100) / 100, // Round to 2 decimal places
       cash_account_id: cashAccountId,
       customer_id: data.customerId, // MUST match the invoice customer
-      date: data.receiptDate || _dateIso,
+      date: data.receiptDate || resolvedDate.iso,
       payment_method: data.payment_method || 'cash',
       currency_id: currencyId,
       invoice_receipts: [{
@@ -559,7 +562,7 @@ export class SalesAPI extends BasePage {
       }]
     };
 
-    console.log(`[RECEIPT] amount=${payload.amount} | invoice=${data.invoiceId?.substring(0, 8)}...`);
+    console.log(`[RECEIPT] amount=${payload.amount} | invoice=${data.invoiceId?.substring(0, 8)}... | year=${year}`);
 
     // Validate required fields before making the API call
     if (!cashAccountId) {
@@ -582,11 +585,11 @@ export class SalesAPI extends BasePage {
     let lastError = '';
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        const response = await this.page.request.post(`${apiBase}/receipts?${params}`, {
+        const response = await this.safePost(`${apiBase}/receipts?${params}`, {
           data: payload,
           headers,
-          timeout: 30000
-        });
+          label: `Create Invoice Receipt (Attempt ${attempt})`
+        }, 30000);
 
         if (response.ok()) {
           const json = await response.json();

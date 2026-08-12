@@ -259,7 +259,10 @@ export class InventoryAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2018';
+
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const resolvedDate = await _DH.resolve(this.page);
+    const year = String(resolvedDate.ecYear);
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
@@ -352,7 +355,7 @@ export class InventoryAPI extends BasePage {
       is_write_down: isWriteDown ? 'true' : 'false',
       location_id: locationId,
       warehouse_id: warehouseId,
-      date: (() => { try { const { DateHelper: _DH } = require('../utils/DateHelper'); return _DH._cached?.iso || new Date().toISOString().split('T')[0] + 'T00:00:00.000Z'; } catch { return new Date().toISOString().split('T')[0] + 'T00:00:00.000Z'; } })(),
+      date: data.date || resolvedDate.iso,
       reason: data.reason || 'Automated E2E Adjustment',
       note: '',
       unit_cost: unitCost,
