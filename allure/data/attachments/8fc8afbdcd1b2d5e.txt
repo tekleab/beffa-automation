@@ -1,0 +1,46 @@
+10:58:51 [PERFORMANCE] API - Auth API Verification: 232.03ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002488 (ID: 995819ee-604c-42ad-8fbd-b7b71dbf3d2d)
+10:59:00 [INFO] Advancing inventory-adjustments "995819ee-604c-42ad-8fbd-b7b71dbf3d2d"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786618738949 (444c569e-f376-474a-80b6-8d80f006c7bd) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating invoice, approving, and paying in full via API...
+10:59:03 [INFO] Advancing invoices "8da243cb-8e7d-49f3-9ee7-8aaa5a61d30d"...
+[INVOICE SNAPSHOT]
+  invoice_id        : 8da243cb-8e7d-49f3-9ee7-8aaa5a61d30d
+  invoice_number    : INV/2026/08/13/001664
+  customer_id       : undefined
+  status            : approved
+  total_amount      : undefined
+  net_due           : 100
+  unreceived_amount : 100
+  balance           : undefined
+  unit_price        : undefined
+  unit_cost         : undefined
+  ACTUAL_AMOUNT used: 100
+[OK] Invoice INV/2026/08/13/001664 net_due: 100
+[RECEIPT] amount=100 | invoice=8da243cb... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/13/000333
+10:59:12 [INFO] Advancing receipts "09d0060f-07e4-48a4-acf2-4627e4083e47"...
+[OK] Invoice INV/2026/08/13/001664 fully paid via receipt RCPT/2026/08/13/000333.
+[RECEIPT SNAPSHOT]
+  receipt_id     : 09d0060f-07e4-48a4-acf2-4627e4083e47
+  receipt_ref    : RCPT/2026/08/13/000333
+  amount_paid    : 100
+  invoice_id     : 8da243cb-8e7d-49f3-9ee7-8aaa5a61d30d
+  invoice_number : INV/2026/08/13/001664
+[STEP 2] Verifying invoice balance is zero via API...
+[POST-PAYMENT SNAPSHOT]
+  invoice_id        : 8da243cb-8e7d-49f3-9ee7-8aaa5a61d30d
+  invoice_number    : INV/2026/08/13/001664
+  status            : approved
+  net_due           : 100
+  unreceived_amount : 0
+  balance           : undefined
+  remaining (parsed): 0
+[AUDIT] Invoice INV/2026/08/13/001664 remaining balance: 0 (Expected: 0)
+[STEP 3] Navigating to customer profile...
+[STEP 4] Asserting receipt RCPT/2026/08/13/000333 is visible in customer profile Receipts tab...
+[DEBUG] Rows in table: 63
+[KNOWN_BUG] Receipt RCPT/2026/08/13/000333 not visible in customer profile Receipts tab (63 rows). ERP UI indexing lag under parallel load — receipt approved and zero balance confirmed via API.
