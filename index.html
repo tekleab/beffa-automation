@@ -242,9 +242,85 @@
 
     .badge-healthy { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
     .badge-failed { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    /* ── LOGIN MODAL ── */
+    #login-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(3, 7, 18, 0.92);
+      backdrop-filter: blur(20px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 50px rgba(6, 182, 212, 0.25);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px 16px;
+      margin-top: 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      color: white;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .login-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: white;
+      border: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
+    }
   </style>
 </head>
 <body>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-overlay">
+    <div class="login-card">
+      <div class="brand-icon" style="margin: 0 auto 16px auto; width: 48px; height: 48px; font-size: 1.5rem;">⚡</div>
+      <h2 style="font-weight: 800; margin-bottom: 4px;">BEFFA <span style="color: var(--cyan);">QA Center</span></h2>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 24px;">Enter Authorized Executive Credentials</p>
+      
+      <form onsubmit="handleLogin(event)">
+        <input type="text" id="login-user" class="login-input" placeholder="Username (beffa)" required>
+        <input type="password" id="login-pass" class="login-input" placeholder="Password (beffa@2026)" required>
+        <div id="login-error" style="color: var(--danger); font-size: 0.78rem; font-weight: 600; margin-top: 10px; display: none;">Invalid credentials. Please try again.</div>
+        <button type="submit" class="login-btn">Unlock Command Center 🔓</button>
+      </form>
+    </div>
+  </div>
 
   <canvas id="bg-canvas"></canvas>
 
@@ -282,9 +358,12 @@
       <button onclick="copySummary()" style="width: 100%; padding: 10px; border-radius: 10px; background: linear-gradient(135deg, var(--cyan), var(--purple)); color: white; border: none; font-weight: 700; font-size: 0.8rem; cursor: pointer; margin-bottom: 10px;">
         📋 Copy Summary
       </button>
-      <a href="allure/" target="_blank" style="display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-weight: 700; font-size: 0.8rem;">
+      <a href="allure/" target="_blank" style="display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-weight: 700; font-size: 0.8rem; margin-bottom: 10px;">
         📊 Allure Deep Report ↗
       </a>
+      <button onclick="handleLogout()" style="width: 100%; padding: 10px; border-radius: 10px; background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+        🔒 Lock / Logout
+      </button>
     </div>
   </aside>
 
@@ -294,9 +373,9 @@
     <!-- TOP ALERT BANNER -->
     <div class="top-alert-strip">
       <div>
-        ⚠️ <strong>CRITICAL AUDIT NOTICE:</strong> 3 Business Flows At Risk — Immediate Attention Required
+        ⚠️ <strong>CRITICAL AUDIT NOTICE:</strong> 2 Business Flows At Risk — Immediate Attention Required
       </div>
-      <div style="font-family: var(--font-mono); font-size: 0.75rem;">Aug 13, 2026, 10:25:59 UTC</div>
+      <div style="font-family: var(--font-mono); font-size: 0.75rem;">Aug 13, 2026, 10:41:34 UTC</div>
     </div>
 
     <!-- TAB 1: EXECUTIVE OVERVIEW -->
@@ -310,20 +389,20 @@
 
         <div class="metric-box" style="border-top: 3px solid var(--success);">
           <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-dim);">HEALTHY ASSERTIONS</div>
-          <div class="metric-val" style="color: var(--success);">16</div>
+          <div class="metric-val" style="color: var(--success);">17</div>
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">100% GL & Financial Balance</div>
         </div>
 
         <div class="metric-box" style="border-top: 3px solid var(--danger);">
           <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-dim);">FLOWS AT RISK</div>
-          <div class="metric-val" style="color: var(--danger);">3</div>
+          <div class="metric-val" style="color: var(--danger);">2</div>
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Requires Review</div>
         </div>
 
         <div class="metric-box" style="border-top: 3px solid var(--cyan);">
           <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-dim);">AVERAGE HEALTH SCORE</div>
-          <div class="metric-val" style="color: var(--warning);">84%</div>
-          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Runtime: 13m 57s</div>
+          <div class="metric-val" style="color: var(--warning);">89%</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Runtime: 13m 44s</div>
         </div>
       </div>
 
@@ -362,15 +441,15 @@
           <div class="mod-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
               <div style="font-size: 1rem; font-weight: 700;">🛍️ Purchase & AP (P2P)</div>
-              <div style="font-size: 1.4rem; font-weight: 800; font-family: var(--font-mono); color: var(--danger);">50%</div>
+              <div style="font-size: 1.4rem; font-weight: 800; font-family: var(--font-mono); color: var(--danger);">75%</div>
             </div>
             <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-bottom: 12px;">
-              <div style="width: 50%; height: 100%; background: var(--danger);"></div>
+              <div style="width: 75%; height: 100%; background: var(--danger);"></div>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
               <span>Total: <strong>4</strong></span>
-              <span style="color: var(--success);">Passed: <strong>2</strong></span>
-              <span style="color: var(--danger);">Failed: <strong>2</strong></span>
+              <span style="color: var(--success);">Passed: <strong>3</strong></span>
+              <span style="color: var(--danger);">Failed: <strong>1</strong></span>
             </div>
           </div>
           
@@ -449,27 +528,17 @@
             <tbody>
               
                 <tr>
-                  <td><span class="badge badge-failed">Purchase</span></td>
-                  <td style="font-weight: 600;">Validate TIN, create vendor, edit, remove</td>
-                  <td>UI_FLAKINESS</td>
-                  <td><button onclick="alert('Trace: TimeoutError: locator.waitFor: Timeout 30000ms exceeded.
-Call log:
-  - waiting for getByRole(\'textbox\', { name: \'Vendor Name *\' }) to be visible
-')" style="padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 0.75rem; cursor: pointer;">View Stack Trace</button></td>
-                </tr>
-              
-                <tr>
                   <td><span class="badge badge-failed">Sales</span></td>
                   <td style="font-weight: 600;">Create fresh invoice via API, then create receipt and link it</td>
                   <td>UI_FLAKINESS</td>
-                  <td><button onclick="alert('Trace: Error: [ERP_BUG #RCT-UI-01] Approved receipt RCPT/2026/08/13/000324 not visible in Customer Profile Receipts tab (63 rows present).')" style="padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 0.75rem; cursor: pointer;">View Stack Trace</button></td>
+                  <td><button onclick="alert('Trace: Error: [ERP_BUG #RCT-UI-01] Approved receipt RCPT/2026/08/13/000327 not visible in Customer Profile Receipts tab (63 rows present).')" style="padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 0.75rem; cursor: pointer;">View Stack Trace</button></td>
                 </tr>
               
                 <tr>
                   <td><span class="badge badge-failed">Purchase</span></td>
                   <td style="font-weight: 600;">Create PO via API, approve, create linked bill, verify in vendor profile</td>
                   <td>LOGIC_VULN</td>
-                  <td><button onclick="alert('Trace: Error: [ERROR] API Verification Failed: Bill BILL/2026/08/13/001272 never appeared in "Gentium Concrite Industry" ledger.')" style="padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 0.75rem; cursor: pointer;">View Stack Trace</button></td>
+                  <td><button onclick="alert('Trace: Error: [ERROR] API Verification Failed: Bill BILL/2026/08/13/001276 never appeared in "Gentium Concrite Industry" ledger.')" style="padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 0.75rem; cursor: pointer;">View Stack Trace</button></td>
                 </tr>
               
             </tbody>
@@ -605,63 +674,7 @@ Call log:
                   <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
                   <td style="font-weight: 600;">UI Audit: Customer profile shows zero balance after full payment</td>
                   <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/customer-balance-ui.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">63.59s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="validate tin, create vendor, edit, remove purchase/vendor.spec.ts purchase smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
-                  <td style="font-weight: 600;">Validate TIN, create vendor, edit, remove</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/vendor.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">75.83s</td>
-                  <td><span class="badge badge-failed">failed</span></td>
-                </tr>
-              
-                <tr data-text="ui audit: approved invoice reflects outstanding balance in customer profile sales/customer-balance-ui.spec.ts sales smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
-                  <td style="font-weight: 600;">UI Audit: Approved invoice reflects outstanding balance in customer profile</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/customer-balance-ui.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">52.64s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="api: vendor outstanding balance increases after bill approval purchase/procurement-accounting-logic.spec.ts purchase smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
-                  <td style="font-weight: 600;">API: Vendor outstanding balance increases after bill approval</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/procurement-accounting-logic.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">18.82s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="ui audit: customer profile shows zero balance after full payment sales/sales-customer-balance-ui.spec.ts sales smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
-                  <td style="font-weight: 600;">UI Audit: Customer profile shows zero balance after full payment</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/sales-customer-balance-ui.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">49.45s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="purchase ui: approved bill reflects outstanding balance in vendor profile cross-module/cross-module-ui-flows.spec.ts sales purchase smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Cross-Module</span></td>
-                  <td style="font-weight: 600;">Purchase UI: Approved bill reflects outstanding balance in vendor profile</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">cross-module/cross-module-ui-flows.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">92.30s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="sales ui: partial payment updates invoice amount due correctly cross-module/cross-module-ui-flows.spec.ts sales purchase smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Cross-Module</span></td>
-                  <td style="font-weight: 600;">Sales UI: Partial payment updates invoice Amount Due correctly</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">cross-module/cross-module-ui-flows.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">35.85s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="ui: org chart page must render the department hierarchy hr/hr-employees.spec.ts hr smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
-                  <td style="font-weight: 600;">UI: Org Chart page must render the department hierarchy</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">14.69s</td>
+                  <td style="font-family: var(--font-mono);">63.46s</td>
                   <td><span class="badge badge-healthy">passed</span></td>
                 </tr>
               
@@ -669,63 +682,23 @@ Call log:
                   <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
                   <td style="font-weight: 600;">Create fresh invoice via API, then create receipt and link it</td>
                   <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/receipt-ui.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">64.19s</td>
+                  <td style="font-family: var(--font-mono);">60.96s</td>
                   <td><span class="badge badge-failed">failed</span></td>
                 </tr>
               
-                <tr data-text="api: approved bill must post a debit to accounts payable purchase/procurement-accounting-logic.spec.ts purchase smoke full">
+                <tr data-text="api: employee roster must be non-empty with valid structure hr/hr-employees.spec.ts hr smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
+                  <td style="font-weight: 600;">API: Employee roster must be non-empty with valid structure</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">7.79s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="validate tin, create vendor, edit, remove purchase/vendor.spec.ts purchase smoke full">
                   <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
-                  <td style="font-weight: 600;">API: Approved bill must post a debit to Accounts Payable</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/procurement-accounting-logic.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">19.27s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="api: employee must be created with all required fields hr/hr-employees.spec.ts hr smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
-                  <td style="font-weight: 600;">API: Employee must be created with all required fields</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">40.79s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="validate tin, create customer, edit, remove sales/customer.spec.ts sales smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
-                  <td style="font-weight: 600;">Validate TIN, create customer, edit, remove</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/customer.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">52.95s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="api: org chart must return company context and department segments hr/hr-employees.spec.ts hr smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
-                  <td style="font-weight: 600;">API: Org chart must return company context and department segments</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">5.98s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="create po via api, approve, create linked bill, verify in vendor profile purchase/bill-ui.spec.ts purchase smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
-                  <td style="font-weight: 600;">Create PO via API, approve, create linked bill, verify in vendor profile</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/bill-ui.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">165.15s</td>
-                  <td><span class="badge badge-failed">failed</span></td>
-                </tr>
-              
-                <tr data-text="guardrail: duplicate employee email must be rejected by the system hr/hr-employees.spec.ts hr smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
-                  <td style="font-weight: 600;">Guardrail: Duplicate employee email must be rejected by the system</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">6.43s</td>
-                  <td><span class="badge badge-healthy">passed</span></td>
-                </tr>
-              
-                <tr data-text="guardrail: employee creation must reject payload missing required fields hr/hr-employees.spec.ts hr smoke full">
-                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
-                  <td style="font-weight: 600;">Guardrail: Employee creation must reject payload missing required fields</td>
-                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">6.05s</td>
+                  <td style="font-weight: 600;">Validate TIN, create vendor, edit, remove</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/vendor.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">47.45s</td>
                   <td><span class="badge badge-healthy">passed</span></td>
                 </tr>
               
@@ -733,7 +706,55 @@ Call log:
                   <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
                   <td style="font-weight: 600;">UI: Employees page must load and display employee records</td>
                   <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">40.00s</td>
+                  <td style="font-family: var(--font-mono);">39.01s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="create po via api, approve, create linked bill, verify in vendor profile purchase/bill-ui.spec.ts purchase smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
+                  <td style="font-weight: 600;">Create PO via API, approve, create linked bill, verify in vendor profile</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/bill-ui.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">160.54s</td>
+                  <td><span class="badge badge-failed">failed</span></td>
+                </tr>
+              
+                <tr data-text="api: vendor outstanding balance increases after bill approval purchase/procurement-accounting-logic.spec.ts purchase smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
+                  <td style="font-weight: 600;">API: Vendor outstanding balance increases after bill approval</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/procurement-accounting-logic.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">18.36s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="ui: org chart page must render the department hierarchy hr/hr-employees.spec.ts hr smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
+                  <td style="font-weight: 600;">UI: Org Chart page must render the department hierarchy</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">14.18s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="api: employee must be created with all required fields hr/hr-employees.spec.ts hr smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
+                  <td style="font-weight: 600;">API: Employee must be created with all required fields</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">39.96s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="purchase ui: approved bill reflects outstanding balance in vendor profile cross-module/cross-module-ui-flows.spec.ts sales purchase smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Cross-Module</span></td>
+                  <td style="font-weight: 600;">Purchase UI: Approved bill reflects outstanding balance in vendor profile</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">cross-module/cross-module-ui-flows.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">93.31s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="api: approved bill must post a debit to accounts payable purchase/procurement-accounting-logic.spec.ts purchase smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Purchase</span></td>
+                  <td style="font-weight: 600;">API: Approved bill must post a debit to Accounts Payable</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">purchase/procurement-accounting-logic.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">18.16s</td>
                   <td><span class="badge badge-healthy">passed</span></td>
                 </tr>
               
@@ -741,15 +762,63 @@ Call log:
                   <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
                   <td style="font-weight: 600;">UI Audit: Approved invoice reflects outstanding balance in customer profile</td>
                   <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/sales-customer-balance-ui.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">24.39s</td>
+                  <td style="font-family: var(--font-mono);">23.16s</td>
                   <td><span class="badge badge-healthy">passed</span></td>
                 </tr>
               
-                <tr data-text="api: employee roster must be non-empty with valid structure hr/hr-employees.spec.ts hr smoke full">
+                <tr data-text="ui audit: approved invoice reflects outstanding balance in customer profile sales/customer-balance-ui.spec.ts sales smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
+                  <td style="font-weight: 600;">UI Audit: Approved invoice reflects outstanding balance in customer profile</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/customer-balance-ui.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">51.52s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="ui audit: customer profile shows zero balance after full payment sales/sales-customer-balance-ui.spec.ts sales smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
+                  <td style="font-weight: 600;">UI Audit: Customer profile shows zero balance after full payment</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/sales-customer-balance-ui.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">47.60s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="sales ui: partial payment updates invoice amount due correctly cross-module/cross-module-ui-flows.spec.ts sales purchase smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Cross-Module</span></td>
+                  <td style="font-weight: 600;">Sales UI: Partial payment updates invoice Amount Due correctly</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">cross-module/cross-module-ui-flows.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">36.52s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="guardrail: employee creation must reject payload missing required fields hr/hr-employees.spec.ts hr smoke full">
                   <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
-                  <td style="font-weight: 600;">API: Employee roster must be non-empty with valid structure</td>
+                  <td style="font-weight: 600;">Guardrail: Employee creation must reject payload missing required fields</td>
                   <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
-                  <td style="font-family: var(--font-mono);">8.95s</td>
+                  <td style="font-family: var(--font-mono);">5.28s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="guardrail: duplicate employee email must be rejected by the system hr/hr-employees.spec.ts hr smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
+                  <td style="font-weight: 600;">Guardrail: Duplicate employee email must be rejected by the system</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">36.34s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="api: org chart must return company context and department segments hr/hr-employees.spec.ts hr smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">HR</span></td>
+                  <td style="font-weight: 600;">API: Org chart must return company context and department segments</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">hr/hr-employees.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">8.22s</td>
+                  <td><span class="badge badge-healthy">passed</span></td>
+                </tr>
+              
+                <tr data-text="validate tin, create customer, edit, remove sales/customer.spec.ts sales smoke full">
+                  <td><span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">Sales</span></td>
+                  <td style="font-weight: 600;">Validate TIN, create customer, edit, remove</td>
+                  <td style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">sales/customer.spec.ts</td>
+                  <td style="font-family: var(--font-mono);">52.36s</td>
                   <td><span class="badge badge-healthy">passed</span></td>
                 </tr>
               
@@ -807,7 +876,7 @@ Call log:
         labels: ['Run #619', 'Run #620', 'Run #621', 'Run #622', 'Run #626', 'Run #627', 'Run #630', 'Run #631', 'Today'],
         datasets: [{
           label: 'Health Score %',
-          data: [78.9, 84.2, 73.6, 94.7, 81.0, 84.2, 94.7, 84.5, 84],
+          data: [78.9, 84.2, 73.6, 94.7, 81.0, 84.2, 94.7, 84.5, 89],
           borderColor: '#06b6d4',
           backgroundColor: 'rgba(6, 182, 212, 0.1)',
           fill: true,
@@ -823,7 +892,7 @@ Call log:
       data: {
         labels: ['Logic Bugs', 'Security & Race', 'API Instability', 'UI Flakiness'],
         datasets: [{
-          data: [1, 0, 0, 2],
+          data: [1, 0, 0, 1],
           backgroundColor: ['#ef4444', '#8b5cf6', '#3b82f6', '#f59e0b'],
           borderWidth: 0
         }]
@@ -833,13 +902,37 @@ Call log:
 
     function copySummary() {
       const summary = `### 🚀 BEFFA ERP QA Executive Health Summary
-- **Date**: Aug 13, 2026, 10:25:59 UTC
+- **Date**: Aug 13, 2026, 10:41:34 UTC
 - **Flows Verified**: 19
-- **Pass Rate**: 84%
+- **Pass Rate**: 89%
 - **System Health**: DEGRADED
 `;
       navigator.clipboard.writeText(summary);
       alert('Executive Summary copied to clipboard!');
+    }
+    // Auth Logic
+    if (sessionStorage.getItem('beffa_qa_auth') === 'true') {
+      document.getElementById('login-overlay').style.display = 'none';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-user').value.trim();
+      const p = document.getElementById('login-pass').value.trim();
+      const err = document.getElementById('login-error');
+
+      if (u === 'beffa' && p === 'beffa@2026') {
+        sessionStorage.setItem('beffa_qa_auth', 'true');
+        document.getElementById('login-overlay').style.display = 'none';
+        err.style.display = 'none';
+      } else {
+        err.style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('beffa_qa_auth');
+      location.reload();
     }
   </script>
 </body>
