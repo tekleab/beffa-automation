@@ -1,0 +1,17 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+12:19:41 [PERFORMANCE] API - Auth API Verification: 252.76ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002538 (ID: 3dfde0d9-ecd9-4d99-800a-41b6016ec8ef)
+12:19:51 [INFO] Advancing inventory-adjustments "3dfde0d9-ecd9-4d99-800a-41b6016ec8ef"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786623590370 (32546db6-fbd2-4ddf-8cf2-e716eea3815d) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:19:55 [PERFORMANCE] API - Auth API Verification: 273.01ms
+12:20:03 [PERFORMANCE] API - Auth API Verification: 319.24ms
+12:20:06 [INFO] Advancing invoices "91b249b3-3c47-4eb6-8174-2f1b3d723459"...
+[RECEIPT] amount=500 | invoice=91b249b3... | year=2019
+[PASS/BUG] Transaction failed or was blocked: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/08/13/001692 outstanding balance is 100.00 but 500.00 was applied"
+}
+

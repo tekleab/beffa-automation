@@ -1,0 +1,33 @@
+12:27:30 [PERFORMANCE] API - Auth API Verification: 283.71ms
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002587 (ID: 838c435c-a75c-4133-8548-a7ea16ce14af)
+12:27:44 [INFO] Advancing inventory-adjustments "838c435c-a75c-4133-8548-a7ea16ce14af"...
+12:27:44 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+12:27:44 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1786624062793 (512c84f3-4bd0-4703-aca7-f1e4e63eef43) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:27:49 [PERFORMANCE] API - Auth API Verification: 256.96ms
+12:27:56 [PERFORMANCE] API - Auth API Verification: 277.29ms
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

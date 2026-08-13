@@ -1,0 +1,43 @@
+12:33:23 [PERFORMANCE] API - Auth API Verification: 283.45ms
+12:33:34 [PERFORMANCE] API - Auth API Verification: 266.75ms
+12:33:40 [PERFORMANCE] API - Auth API Verification: 268.19ms
+[STEP 1] Creating item to deactivate: DEACT-GUARD-1786624423056...
+[OK] Item created: DEACT-GUARD-1786624423056 (ID: cf272cc9-61ab-4531-98d6-add283727da8)
+[STEP 2] Deactivating item via API...
+[OK] Item deactivated.
+[ATTACK] Attempting stock adjustment on deactivated item...
+[ADJ] quantity | qty=10 @ $0 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002629 (ID: 8a1fa6d9-79ee-4f49-9d36-97b0f977ed35)
+12:33:45 [INFO] Advancing inventory-adjustments "8a1fa6d9-79ee-4f49-9d36-97b0f977ed35"...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║      DEACTIVATED ITEM GUARDRAIL — TEST SUMMARY            ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : DEACT-GUARD-1786624423056              ║
+  ║  Item ID      : cf272cc9-61ab-4531-98d6-add283727da8   ║
+  ║  Status set   : inactive                                   ║
+  ║  Attack       : POST /inventory-adjustments qty=10         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : ACCEPTED ✕ — VULNERABILITY CONFIRMED  ║
+  ║  Adj Ref : ADJ/2026/08/13/002629                        ║
+  ║  Adj ID  : 8a1fa6d9-79ee-4f49-9d36-97b0f977ed35         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : Ghost stock written to inactive item           ║
+  ║  Fix     : Reject adjustments if item.status != active    ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Deactivated Item Adjustment Guardrail                                   │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ DEACT-GUARD-1786624423056            │
+  │ Item ID                          │ cf272cc9-61ab-4531-98d6-add283727da… │
+  │ Item Status                      │ inactive (set in Step 2)             │
+  │ Attack: Adj Qty                  │ 10 units (write-up)                  │
+  │ Adjustment Ref                   │ ADJ/2026/08/13/002629                │
+  │ Adjustment ID                    │ 8a1fa6d9-79ee-4f49-9d36-97b0f977ed3… │
+  │ Block Reason                     │ Adjustment ADJ/2026/08/13/002629 cr… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✗ FAIL — VULNERABILITY — ghost stoc… │
+  └───────────────────────────────────────────────────────────────────────────┘
+

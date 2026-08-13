@@ -1,0 +1,38 @@
+12:28:22 [PERFORMANCE] API - Auth API Verification: 905.27ms
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002591 (ID: ed1ec778-5f1b-453d-8627-8413a5383c29)
+12:29:15 [INFO] Advancing inventory-adjustments "ed1ec778-5f1b-453d-8627-8413a5383c29"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: WAC-Item-1786624153984 (de11536b-56f4-446f-be15-d3393023a970) | method=WAC | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:29:18 [PERFORMANCE] API - Auth API Verification: 285.65ms
+12:29:25 [PERFORMANCE] API - Auth API Verification: 699.94ms
+[STEP 1] Creating PO for 10 units...
+12:29:30 [INFO] Advancing purchase-orders "382b8f14-4eed-41fe-9542-353148efc733"...
+[OK] PO PO/2026/08/13/000928 approved.
+[STEP 2] Receiving only 5 / 10 units via partial PO bill...
+12:29:34 [INFO] Advancing bills "b21191d9-2144-44d8-8c9e-c91765223907"...
+[OK] Bill BILL/2026/08/13/001329 approved for 5 units.
+[STEP 3] Verifying partial release via bill detail...
+
+  ┌───────────────────────────────────────────────────────────────────┐
+  │ Partial PO Release Audit                                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Ref                       │ PO/2026/08/13/000928             │
+  │ PO ID                        │ 382b8f14-4eed-41fe-9542-353148e… │
+  │ Bill Ref                     │ BILL/2026/08/13/001329           │
+  │ Bill ID                      │ b21191d9-2144-44d8-8c9e-c917652… │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Qty Authorized            │ 10 units                         │
+  │ Received (this bill)         │ 5 units                          │
+  │ Remaining on PO              │ 5 units                          │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Unit Price                   │ $5000.00                         │
+  │ Bill Amount                  │ $25000.00                        │
+  │ Remaining Liability          │ $25000.00                        │
+  │ PO Total                     │ $50000.00                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Result                       │ ✓ PASS — Partial tracking corre… │
+  └───────────────────────────────────────────────────────────────────┘
+
+[PASS] Partial PO release confirmed: 5 received, 5 remaining.
