@@ -1,0 +1,17 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+11:31:54 [PERFORMANCE] API - Auth API Verification: 185.58ms
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002505 (ID: 3ce33653-9c8a-456e-8cad-b2101a6db4a3)
+11:32:05 [INFO] Advancing inventory-adjustments "3ce33653-9c8a-456e-8cad-b2101a6db4a3"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786620724112 (52d42532-6242-48a0-a61a-19d2bf195757) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/13/000909 for Vendor Gentium Concrite Industry (8c8b8d32-3171-4290-ae83-17e58ccaf323)
+11:32:07 [INFO] Advancing purchase-orders "a2a5b999-70f8-43db-9991-bd4fb414c07a"...
+[OK] PO PO/2026/08/13/000909 approved
+[STEP] Phase 2: Create linked Bill via API
+11:32:10 [INFO] Advancing bills "22f9b995-6392-4650-b1e1-400f7a6407bb"...
+[OK] Bill BILL/2026/08/13/001291 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+11:33:29 [WARN] GET http://168.119.175.142:8001/api/bills?page=10&pageSize=100&year=2019&period=yearly&calendar=ec → apiRequestContext.get: read ECONNRESET. Retry 1/4 in 1500ms...
