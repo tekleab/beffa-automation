@@ -1,0 +1,30 @@
+16:03:03 [PERFORMANCE] API - Auth API Verification: 264.26ms
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002885 (ID: 07df49c4-2d27-4e20-a030-c5c052b3e12a)
+16:03:12 [INFO] Advancing inventory-adjustments "07df49c4-2d27-4e20-a030-c5c052b3e12a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786636990717 (6feddda9-29ef-426f-b818-a916eec673d3) | method=WAC | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1786636990717 | stock:20
+16:03:16 [INFO] Advancing bills "70004b37-27c7-4cc7-bec0-6bea5066dd17"...
+[BILL] BILL/2026/08/13/001436 (70004b37-27c7-4cc7-bec0-6bea5066dd17) approved | amount: 4000
+
+===================================================================
+  AP GL AUDIT — Bill Approval
+  Ref: BILL/2026/08/13/001436 | ID: 70004b37-27c7-4cc7-bec0-6bea5066dd17
+===================================================================
+  | Account                              |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────
+  | Cash - Branch Office                 |      4000.00 |            — |
+  | Cost of Others                       |            — |      4000.00 |
+  | Inventory                            |      4000.00 |            — |
+  | Accounts Payable                     |            — |      4000.00 |
+  ───────────────────────────────────────────────────────────────────
+  | TOTAL                                |      8000.00 |      8000.00 |
+  | ✓ BALANCED (Dr = Cr)                                                |
+  ───────────────────────────────────────────────────────────────────
+
+[PASS] AP credited: Accounts Payable | Cr:4000
+[PASS] Debit posted: Cash - Branch Office | Dr:4000
+[PASS] Bill GL balanced: Dr=8000.00 = Cr=8000.00
+[PASS] AP credit 4000.00 matches bill amount 4000

@@ -1,0 +1,53 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+16:26:36 [PERFORMANCE] API - Auth API Verification: 246.15ms
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/003001 (ID: 9bf702d2-893f-400e-bc72-27d9324f9aa2)
+16:26:48 [INFO] Advancing inventory-adjustments "9bf702d2-893f-400e-bc72-27d9324f9aa2"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1786638407094 (e595d3c8-6786-4b40-b67c-4966b174012d) | method=WAC | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1786638407094 (e595d3c8-6786-4b40-b67c-4966b174012d) | Stock before: 10
+[STEP 2] Creating Purchase Order...
+[PO] Created PO/2026/08/13/001012 (badd954d-c5c3-4a59-8c1c-24109e9c09f5)
+16:26:51 [INFO] Advancing purchase-orders "badd954d-c5c3-4a59-8c1c-24109e9c09f5"...
+[PO] Approved/Released PO/2026/08/13/001012
+[STEP 3] Billing and Receiving PO items...
+[BILL] Created from PO: BILL/2026/08/13/001501 (297c367f-76e1-4504-8e33-70ac9ad7fad3)
+16:26:54 [INFO] Advancing bills "297c367f-76e1-4504-8e33-70ac9ad7fad3"...
+[BILL] Approved BILL/2026/08/13/001501
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[STOCK] Expected: 15, Got: 15
+[BILL] Outstanding balance after Approval: 2500
+[BILL GL] Entries found: 4
+[BILL GL DETAILS] [
+  {
+    "accountCode": "1002",
+    "accountName": "Cash - Branch Office",
+    "debit": 2500,
+    "credit": 0
+  },
+  {
+    "accountCode": "5103",
+    "accountName": "Cost of Others",
+    "debit": 0,
+    "credit": 2500
+  },
+  {
+    "accountCode": "1301",
+    "accountName": "Inventory",
+    "debit": 2500,
+    "credit": 0
+  },
+  {
+    "accountCode": "2003",
+    "accountName": "Accounts Payable",
+    "debit": 0,
+    "credit": 2500
+  }
+]
+[STEP 4] Creating Payment for Bill...
+[ACTION] Creating Bill Payment for 297c367f-76e1-4504-8e33-70ac9ad7fad3 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 1/5) — topping up 5318...
+16:26:59 [INFO] Seeding 53180 → Dr "Cash - Main Office" / Cr "Service Income"

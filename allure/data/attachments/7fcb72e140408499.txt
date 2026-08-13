@@ -1,0 +1,32 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+16:07:52 [PERFORMANCE] API - Auth API Verification: 274.19ms
+[DateHelper] Resolved in-period date: 2026-08-13T00:00:00Z (day=13, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002908 (ID: 1e10e236-f544-4373-80ed-605d5d55bfd0)
+16:08:11 [INFO] Advancing inventory-adjustments "1e10e236-f544-4373-80ed-605d5d55bfd0"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786637290405 (54acfc30-3ebd-4cac-9f99-050203053cb9) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+16:08:15 [PERFORMANCE] API - Auth API Verification: 294.87ms
+16:08:22 [PERFORMANCE] API - Auth API Verification: 275.71ms
+[STEP 1] Creating & approving Bill for 5000...
+16:08:26 [INFO] Advancing bills "6fe0ee42-f366-465c-9ac4-0165d5a7ed92"...
+[BILL] BILL/2026/08/13/001462 (6fe0ee42-f366-465c-9ac4-0165d5a7ed92)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for 6fe0ee42-f366-465c-9ac4-0165d5a7ed92 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/13/001462               │
+  │ Bill ID                          │ 6fe0ee42-f366-465c-9ac4-0165d5a7ed9… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.

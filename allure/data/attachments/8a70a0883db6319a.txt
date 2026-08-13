@@ -1,0 +1,30 @@
+[DateHelper] Resolved in-period date: 2026-08-13T00:00:00Z (day=13, ecYear=2019)
+16:05:36 [PERFORMANCE] API - Auth API Verification: 296.87ms
+[DateHelper] Resolved in-period date: 2026-08-13T00:00:00Z (day=13, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002899 (ID: f24f5429-4231-4e37-a4a6-7255075f8e0b)
+16:05:52 [INFO] Advancing inventory-adjustments "f24f5429-4231-4e37-a4a6-7255075f8e0b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786637151207 (cc331aea-0b10-4a59-9136-138b06bd66a3) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+16:05:55 [PERFORMANCE] API - Auth API Verification: 263.62ms
+16:06:03 [PERFORMANCE] API - Auth API Verification: 304.58ms
+[ATTACK] Injecting Bill with future date: 2028-08-13T00:00:00Z...
+16:06:08 [INFO] Advancing bills "d889d3b7-ae08-44d7-8dc7-3ab49aec017f"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/13/001455                   │
+  │ Bill ID                          │ d889d3b7-ae08-44d7-8dc7-3ab49aec017f     │
+  │ Invoice Date                     │ 2028-08-13T00:00:00Z                     │
+  │ Today                            │ 2026-08-13                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
