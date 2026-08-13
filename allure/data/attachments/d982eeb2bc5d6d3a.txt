@@ -1,0 +1,16 @@
+[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002681 (ID: 15a0699b-9f23-4a2e-b960-d18d5f4edb8c)
+13:16:40 [INFO] Advancing inventory-adjustments "15a0699b-9f23-4a2e-b960-d18d5f4edb8c"...
+13:16:41 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:16:41 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786626999232 (3f39a3e7-7c31-4221-88f6-038f94a56b19) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:16:46 [INFO] Advancing invoices "e4649818-d455-4c3a-b150-8cd8b63d8ab1"...
+[STRESS] Invoice INV/2026/08/13/001756 approved | amount: 2000
+[STRESS] Creating 2 concurrent receipts for full amount...
+[RECEIPT] amount=2000 | invoice=e4649818... | year=2019
+[RECEIPT] amount=2000 | invoice=e4649818... | year=2019
+[STRESS] Created 0 receipt documents.
+[PASS] Concurrent draft creation rejected duplicate call correctly.

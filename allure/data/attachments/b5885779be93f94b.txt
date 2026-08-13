@@ -1,0 +1,36 @@
+13:29:05 [PERFORMANCE] API - Auth API Verification: 290.02ms
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/13/002752 (ID: 5e8ff20d-04a1-4cef-aba3-d733bae1c393)
+13:29:14 [INFO] Advancing inventory-adjustments "5e8ff20d-04a1-4cef-aba3-d733bae1c393"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786627752846 (c893832f-6cde-4334-bf62-36300d38d8f0) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  WAC-Item-1786627752846 | Stock: 20
+[PLAN]  PO: 10 | Batch1: 4 | Batch2: 6 | Over: 1
+=========================================
+
+[STEP 1] Creating & approving PO for 10 units...
+13:29:22 [INFO] Advancing purchase-orders "d461291f-8115-4339-a8c1-ed2fe7722451"...
+[OK] PO PO/2026/08/13/000972 approved (ID: d461291f-8115-4339-a8c1-ed2fe7722451)
+[STEP 2] Receiving Batch 1: 4 units...
+13:29:25 [INFO] Advancing bills "6f6a0367-176c-430a-8381-7204ee171b75"...
+[OK] Batch 1 bill BILL/2026/08/13/001400 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+13:29:28 [INFO] Advancing bills "266a400e-438c-4fb8-9c16-0bdd9e06c7b9"...
+[OK] Batch 2 bill BILL/2026/08/13/001402 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO    : PO/2026/08/13/000972 (d461291f-8115-4339-a8c1-ed2fe7722451)
+[DOCUMENT] Bill1 : BILL/2026/08/13/001400 (6f6a0367-176c-430a-8381-7204ee171b75) — 4 units
+[DOCUMENT] Bill2 : BILL/2026/08/13/001402 (266a400e-438c-4fb8-9c16-0bdd9e06c7b9) — 6 units
+[STOCK] Before: 20 | After: 30 | Expected: 30
+=============================================
+
+[STEP 5] Attempting over-receive (1 unit beyond fully received PO)...
+[PASS] Over-receive correctly rejected at bill creation (HTTP 422).
+[PASS] Split bill audit complete: 4 + 6 = 10 units received correctly.
