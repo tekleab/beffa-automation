@@ -1,0 +1,16 @@
+14:04:34 [PERFORMANCE] API - Auth API Verification: 207.53ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/14/003142 (ID: 48cf7f66-63a6-4740-a8b9-aa4330411d74)
+14:04:42 [INFO] Advancing inventory-adjustments "48cf7f66-63a6-4740-a8b9-aa4330411d74"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786716281227 (a64a0bdb-4552-4e72-94ad-6aa6feca0330) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+14:04:45 [PERFORMANCE] API - Auth API Verification: 260.00ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+14:04:51 [INFO] Advancing bills "d5dbf9cd-171a-4f67-a6dd-ea7aaa59251c"...
+[ATTACK] Submitting Payment under Vendor B, linking to Vendor A's Bill!
+14:04:54 [INFO] Advancing payments "cd952a4e-6775-40be-bdea-189cbe57dd0a"...
+14:04:55 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+14:04:55 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...

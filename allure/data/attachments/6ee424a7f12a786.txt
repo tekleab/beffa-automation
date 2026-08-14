@@ -1,0 +1,37 @@
+[DateHelper] Resolved in-period date: 2026-08-14T00:00:00Z (day=14, ecYear=2019)
+13:59:10 [PERFORMANCE] API - Auth API Verification: 185.56ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/14/003111 (ID: f2b6d74b-531b-47f7-a66a-6855f6412a39)
+13:59:18 [INFO] Advancing inventory-adjustments "f2b6d74b-531b-47f7-a66a-6855f6412a39"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: WAC-Item-1786715956262 (b4fc0546-315e-42bd-a312-41a520315b9e) | method=WAC | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:59:23 [INFO] Advancing purchase-orders "d157bd45-b7d9-4528-8b74-b4585f28c66e"...
+[SETUP] Bill created: BILL/2026/08/14/001542 (65960ac0-6de2-4290-a564-229893e0db5a)
+[TEST 1] Querying GET /bill/65960ac0-6de2-4290-a564-229893e0db5a or /bills/65960ac0-6de2-4290-a564-229893e0db5a...
+[DTO AUDIT] Bill Detail HTTP Status: 200
+[DTO DATA SUCCESS]: {
+  "accounts_payable": {
+    "account_id": "2003",
+    "id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+    "name": "Accounts Payable"
+  },
+  "currency": {
+    "code": "BRR",
+    "id": "ffbf8ef2-bffe-4c52-b588-17472d6baeb3",
+    "name": "Birr",
+    "rate": 1
+  },
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": true,
+    "color": "#7D838D",
+    "created_at": "2026-07-27T11:53:31.579232Z",
+    "description": "Ini
+[PASS] Bill Number in DTO: BILL/2026/08/14/001542
+[PASS] Bill Status in DTO: draft
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 0

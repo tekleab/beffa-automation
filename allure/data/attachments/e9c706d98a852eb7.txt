@@ -1,0 +1,17 @@
+14:04:25 [PERFORMANCE] API - Auth API Verification: 207.30ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/14/003140 (ID: 138b603d-fab2-4f38-acba-5e3326666770)
+14:04:33 [INFO] Advancing inventory-adjustments "138b603d-fab2-4f38-acba-5e3326666770"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786716272600 (ff6fb3e2-43da-467f-8336-49682d3c99bd) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+14:04:37 [PERFORMANCE] API - Auth API Verification: 304.36ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating Payment with back date: 2017-12-31T00:00:00Z
+14:04:38 [INFO] Advancing bills "d0b426e3-af01-4cf9-8245-83f4810a3f80"...
+[ACTION] Creating Bill Payment for d0b426e3-af01-4cf9-8245-83f4810a3f80 via API (CashAcct: b521c276-a826-4a32-a674-6d20550c0b4a)...
+[SUCCESS] Payment created: PAY/2026/08/14/000369 (ID: e583d84b-b062-414c-a20f-cb9ddd730418)
+14:04:43 [INFO] Advancing payments "e583d84b-b062-414c-a20f-cb9ddd730418"...
+[KNOWN_BUG] System approved back-dated Payment (2017-12-31T00:00:00Z). ERP does not enforce period control. Bug logged for remediation.
