@@ -2,7 +2,7 @@
  * DateHelper — resolves a valid in-period date by probing the ERP API.
  *
  * Strategy:
- *   1. POST a minimal PO with a sentinel date (2099-01-01) → ERP returns 422 with
+ *   1. POST a minimal PO with a sentinel date (2000-01-01) → ERP returns 422 with
  *      "between DD/MM/YYYY and DD/MM/YYYY" → parse period start → use that date.
  *   2. Fallback: derive from BEFFA_YEAR env (EC year N starts ~Aug 7 of GC year N+7).
  *   3. Last resort: today.
@@ -39,8 +39,7 @@ export class DateHelper {
   }
 
   // ── Strategy 1: probe API with sentinel date, parse period bounds from 422 ──
-  // Tries env year first; if the resolved period start is in the past, increments
-  // year until a current/future period is found (handles stale BEFFA_YEAR env).
+  // Probes the target BEFFA_YEAR directly to ensure we remain strictly within open fiscal bounds.
   private static async _probeAPI(page: Page): Promise<ResolvedDate | null> {
     try {
       let base = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
@@ -90,29 +89,24 @@ export class DateHelper {
       };
 
       const now = new Date();
+      const year = baseYear;
+      const qs = `year=${year}&period=${period}&calendar=${calendar}`;
 
-      // Try env year first (yearOffset = 0), then past and future years
-      for (const yearOffset of [0, 1, 2, 3, -1, -2]) {
-        const year = baseYear + yearOffset;
-        const qs = `year=${year}&period=${period}&calendar=${calendar}`;
+      const [vendorResp, acctResp, currResp] = await Promise.all([
+        page.request.get(`${base}/vendors?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
+        page.request.get(`${base}/accounts?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
+        page.request.get(`${base}/currency?${qs}`, { headers }).catch(() => null),
+      ]);
 
-        // Discover vendor + account + currency for this year's context
-        const [vendorResp, acctResp, currResp] = await Promise.all([
-          page.request.get(`${base}/vendors?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
-          page.request.get(`${base}/accounts?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
-          page.request.get(`${base}/currency?${qs}`, { headers }).catch(() => null),
-        ]);
+      const vendorData = await vendorResp?.json().catch(() => ({})) as any;
+      const acctData   = await acctResp?.json().catch(() => ({})) as any;
+      const currData   = await currResp?.json().catch(() => ({})) as any;
 
-        const vendorData = await vendorResp?.json().catch(() => ({})) as any;
-        const acctData   = await acctResp?.json().catch(() => ({})) as any;
-        const currData   = await currResp?.json().catch(() => ({})) as any;
+      const vendorId = vendorData?.data?.[0]?.id ?? vendorData?.items?.[0]?.id;
+      const acctId   = acctData?.data?.[0]?.id   ?? acctData?.items?.[0]?.id;
+      const currId   = currData?.data?.[0]?.id   ?? currData?.items?.[0]?.id;
 
-        const vendorId = vendorData?.data?.[0]?.id ?? vendorData?.items?.[0]?.id;
-        const acctId   = acctData?.data?.[0]?.id   ?? acctData?.items?.[0]?.id;
-        const currId   = currData?.data?.[0]?.id   ?? currData?.items?.[0]?.id;
-
-        if (!vendorId || !acctId || !currId) continue;
-
+      if (vendorId && acctId && currId) {
         // POST with sentinel date far in the past — guaranteed out of period → 422 with bounds
         const probeResp = await page.request.post(`${base}/purchase-orders?${qs}`, {
           headers,
@@ -126,74 +120,66 @@ export class DateHelper {
           }
         }).catch(() => null);
 
-        if (!probeResp) continue;
+        if (probeResp) {
+          const errText = await probeResp.text().catch(() => '');
+          // Parse date bounds from error response: supports both MM/DD/YYYY and DD/MM/YYYY formats.
+          const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
+          if (match) {
+            const [, val1_1, val1_2, y1, val2_1, val2_2, y2] = match;
+            let m1 = parseInt(val1_1, 10);
+            let d1 = parseInt(val1_2, 10);
+            let m2 = parseInt(val2_1, 10);
+            let d2 = parseInt(val2_2, 10);
 
-        const errText = await probeResp.text().catch(() => '');
-        // Parse date bounds from error response: supports both MM/DD/YYYY and DD/MM/YYYY formats.
-        const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
-        if (!match) {
-          if (probeResp.status() === 200 || probeResp.status() === 201) {
+            // If the parsed month is > 12, it must be DD/MM/YYYY format
+            if (m1 > 12 || m2 > 12) {
+              m1 = parseInt(val1_2, 10);
+              d1 = parseInt(val1_1, 10);
+              m2 = parseInt(val2_2, 10);
+              d2 = parseInt(val2_1, 10);
+            }
+
+            const periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
+            const periodEnd   = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
+
+            let useDate: Date;
+            if (now >= periodStart && now <= periodEnd) {
+              useDate = now;
+            } else {
+              // Select an early day in the valid open period to guarantee date is within bounds
+              const safeInPeriod = new Date(periodStart.getTime() + 5 * 86400000);
+              useDate = (safeInPeriod >= periodStart && safeInPeriod <= periodEnd) ? safeInPeriod : periodStart;
+            }
+            return DateHelper._fromDate(useDate, year);
+          } else if (probeResp.status() === 200 || probeResp.status() === 201) {
             return DateHelper._fromDate(now, year);
           }
-          continue;
         }
-
-        const [, val1_1, val1_2, y1, val2_1, val2_2, y2] = match;
-        let m1 = parseInt(val1_1, 10);
-        let d1 = parseInt(val1_2, 10);
-        let m2 = parseInt(val2_1, 10);
-        let d2 = parseInt(val2_2, 10);
-
-        // If the parsed month is > 12, it must be DD/MM/YYYY format
-        if (m1 > 12 || m2 > 12) {
-          m1 = parseInt(val1_2, 10);
-          d1 = parseInt(val1_1, 10);
-          m2 = parseInt(val2_2, 10);
-          d2 = parseInt(val2_1, 10);
-        }
-
-        const periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
-        const periodEnd   = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
-
-        let useDate: Date;
-        if (now >= periodStart && now <= periodEnd) {
-          useDate = now;
-        } else {
-          // Select an early day in the valid open period to guarantee date is within bounds
-          const safeInPeriod = new Date(periodStart.getTime() + 5 * 86400000);
-          useDate = (safeInPeriod >= periodStart && safeInPeriod <= periodEnd) ? safeInPeriod : periodStart;
-        }
-        return DateHelper._fromDate(useDate, year);
       }
 
       return null;
     } catch { return null; }
   }
 
-  // ── Strategy 2: derive from BEFFA_YEAR (EC year N starts Sep 11 of GC year N+7) ──
-  // Uses Sep 15 (Meskerem ~5) as the safe UI-compatible date within the EC year.
+  // ── Strategy 2: derive strictly from BEFFA_YEAR ─────────────────────────────────
   private static _fromEnv(): ResolvedDate | null {
-    const baseYear = parseInt(process.env.BEFFA_YEAR || '', 10);
-    if (!baseYear || isNaN(baseYear)) return null;
-    const now = new Date();
-    for (const offset of [0, 1, 2, 3, -1, -2]) {
-      const ecYear = baseYear + offset;
-      // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
-      const gcYear = ecYear + 7;
-      const periodStart = new Date(`${gcYear}-09-11T00:00:00Z`);
-      const periodEnd   = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
+    const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
+    const ecYear = baseYear;
+    // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
+    const gcYear = ecYear + 7;
+    const periodStart = new Date(`${gcYear}-08-07T00:00:00Z`);
+    const periodEnd   = new Date(`${gcYear + 1}-07-07T00:00:00Z`);
 
-      const safeDate = new Date(`${gcYear}-09-15T00:00:00Z`);
-      let useDate: Date;
-      if (now >= periodStart && now <= periodEnd) {
-        useDate = now;
-      } else {
-        useDate = safeDate >= periodStart && safeDate <= periodEnd ? safeDate : periodStart;
-      }
-      console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
-      return DateHelper._fromDate(useDate, ecYear);
+    const safeDate = new Date(`${gcYear}-08-14T00:00:00Z`);
+    const now = new Date();
+    let useDate: Date;
+    if (now >= periodStart && now <= periodEnd) {
+      useDate = now;
+    } else {
+      useDate = safeDate >= periodStart && safeDate <= periodEnd ? safeDate : periodStart;
     }
-    return null;
+    console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
+    return DateHelper._fromDate(useDate, ecYear);
   }
 
   // ── Strategy 3: today ────────────────────────────────────────────────────────
