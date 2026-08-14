@@ -479,7 +479,7 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    
+
     const _typeOf = (a: any) => {
       if (typeof a.type === 'string') return a.type.toLowerCase();
       if (a.type?.name && typeof a.type.name === 'string') return a.type.name.toLowerCase();
@@ -487,7 +487,7 @@ export class PurchaseAPI extends BasePage {
       if (a.account_type?.name && typeof a.account_type.name === 'string') return a.account_type.name.toLowerCase();
       return '';
     };
-    
+
     const discoveredAp =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
       allAccounts.find((a: any) => _typeOf(a).includes('payable')) ||

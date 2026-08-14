@@ -201,10 +201,10 @@ export class AuthManager extends BasePage {
       await this.startTacticalTimer();
       await option.click();
       // Use 'commit' — avoids blocking on the 7.9MB JS bundle re-download
-      await this.page.waitForURL('**/', { waitUntil: 'commit', timeout: 30000 }).catch(() => {});
+      await this.page.waitForURL('**/', { waitUntil: 'commit', timeout: 30000 }).catch(() => { });
       await this.stopTacticalTimer(`${cleanTarget} Context Mount`, 'UI');
       // Wait for company button to re-render (React mount) instead of fixed delay
-      await this.companyBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+      await this.companyBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { });
     } else {
       console.log(`[WARN] Company option "${cleanTarget}" not found in menu. Staying on "${currentName}"`);
       await this.page.keyboard.press('Escape');

@@ -189,7 +189,7 @@ export class BasePage {
                 // nosec CWE-79 — test automation framework; token stored in ERP's own localStorage schema
                 localStorage.setItem('token', t);
                 localStorage.setItem('auth-token', t);
-              }, newToken).catch(() => {});
+              }, newToken).catch(() => { });
               headers['Authorization'] = `Bearer ${newToken}`;
               Logger.info('Re-authenticated successfully — retrying advance...');
               continue;
@@ -534,7 +534,7 @@ ${curlCmd}
           Logger.info(`Resolved active company: "${Logger.sanitize(company)}"`);
         }
         process.env.BEFFA_COMPANY = company;
-        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), company).catch(() => {});
+        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), company).catch(() => { });
         return company;
       }
     }
@@ -565,7 +565,7 @@ ${curlCmd}
         const note = preferred && resolved.toLowerCase() !== preferredLower ? ` (fallback — "${preferred}" not found)` : '';
         Logger.info(`Resolved company from API list: "${Logger.sanitize(resolved)}"${Logger.sanitize(note)}`);
         process.env.BEFFA_COMPANY = resolved;
-        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
+        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => { });
         return resolved;
       }
     }
@@ -579,7 +579,7 @@ ${curlCmd}
       if (resolved) {
         Logger.info(`Resolved company from user profile: "${Logger.sanitize(resolved)}"`);
         process.env.BEFFA_COMPANY = resolved;
-        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => {});
+        await this.page.evaluate((c) => localStorage.setItem('currentCompany', c), resolved).catch(() => { });
         return resolved;
       }
     }
@@ -850,7 +850,7 @@ ${curlCmd}
     const formReady = await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 90000 }).then(() => true).catch(() => false);
     if (!formReady) {
       // SPA bundle still loading — wait for network idle then retry
-      await this.page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
+      await this.page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => { });
       await this.page.locator('input, button').first().waitFor({ state: 'visible', timeout: 30000 });
     }
 
@@ -930,8 +930,8 @@ ${curlCmd}
         if (!yearMatch) return null;
         const year = parseInt(yearMatch[1]);
         const monthNames = [
-          'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','pag',
-          'መስ','ጥቅ','ህዳ','ታህ','ጥር','የካ','መጋ','ሚያ','ግን','ሰኔ','ሐም','ነሐ','ጳጉ'
+          'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'pag',
+          'መስ', 'ጥቅ', 'ህዳ', 'ታህ', 'ጥር', 'የካ', 'መጋ', 'ሚያ', 'ግን', 'ሰኔ', 'ሐም', 'ነሐ', 'ጳጉ'
         ];
         const lower = headerText.toLowerCase();
         const monthIdx = monthNames.findIndex(m => lower.includes(m));
@@ -991,7 +991,7 @@ ${curlCmd}
         await this.page.waitForTimeout(1500);
         const options = this.page.locator(optionSelector).filter({ visible: true });
         // Wait for at least one option to appear before counting
-        await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+        await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
         const count = await options.count();
         if (count > 0) {
           const randomIndex = Math.floor(Math.random() * count);
@@ -1005,7 +1005,7 @@ ${curlCmd}
           if (isOptional) return 0;
         }
       } catch (e: any) {
-        await this.page.keyboard.press('Escape').catch(() => {});
+        await this.page.keyboard.press('Escape').catch(() => { });
         if (
           e.message?.includes('Target page') ||
           e.message?.includes('page has been closed') ||
@@ -1229,8 +1229,8 @@ ${curlCmd}
     const cashAccount = cashAccountId
       ? allAccounts.find((a: any) => a.id === cashAccountId)
       : allAccounts.find((a: any) => typeOf(a).includes('cash'))
-        ?? allAccounts.find((a: any) => typeOf(a).includes('bank'))
-        ?? allAccounts[0];
+      ?? allAccounts.find((a: any) => typeOf(a).includes('bank'))
+      ?? allAccounts[0];
 
     // Offset: revenue account (Cr side of the receipt journal entry)
     const revenueAccount =
