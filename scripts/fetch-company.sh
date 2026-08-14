@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# scripts/fetch_company.sh
+# scripts/fetch-company.sh
 set -uo pipefail
 
 BASE="${API_URL:-${BASE_URL:-http://localhost:8001}}"
 # Strip trailing /api if present to avoid double /api/api
 BASE="${BASE%/api}"
-YEAR="${BEFFA_YEAR:-2018}"
+YEAR="${BEFFA_YEAR:-2019}"
 PERIOD="${BEFFA_PERIOD:-yearly}"
 CALENDAR="${BEFFA_CALENDAR:-ec}"
 
@@ -20,8 +20,8 @@ LOGIN_RESPONSE=$(curl -s --max-time 10 -X POST "${LOGIN_URL}" \
 TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.auth_token // empty' 2>/dev/null || echo "")
 
 if [ -z "$TOKEN" ]; then
-  echo "[WARN] Could not retrieve auth token. Using secret BEFFA_COMPANY."
-  echo "BEFFA_COMPANY=${BEFFA_COMPANY:-BM Tech}" >> "$GITHUB_ENV"
+  echo "[WARN] Could not retrieve auth token. Using default BM Tech."
+  echo "BEFFA_COMPANY=BM Tech" >> "$GITHUB_ENV"
   exit 0
 fi
 
@@ -33,11 +33,12 @@ ME_RESPONSE=$(curl -s --max-time 10 \
   -H "Accept: application/json" \
   "${BASE}/api/users/me" 2>/dev/null || echo "{}")
 
-COMPANY=$(echo "$ME_RESPONSE" | jq -r '.user.companies[0].name // .companies[0].name // empty' 2>/dev/null || echo "")
+# Look specifically for BM Tech in the user's company list
+COMPANY=$(echo "$ME_RESPONSE" | jq -r '(.user.companies // .companies // [])[] | select(.name | test("BM Tech"; "i")) | .name' 2>/dev/null | head -n 1 || echo "")
 
 if [ -z "$COMPANY" ]; then
-  echo "[WARN] Could not resolve company from API. Using secret BEFFA_COMPANY."
-  COMPANY="${BEFFA_COMPANY:-BM Tech}"
+  # Fallback to BM Tech
+  COMPANY="BM Tech"
 fi
 
 echo "[RESULT] Company resolved: ${COMPANY}"
