@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 
 // Load env — CI uses process.env directly, local uses .env file (silent mode to suppress verbose logs)
@@ -77,33 +78,46 @@ export default defineConfig({
 
     actionTimeout: 90000,
     navigationTimeout: 180000,
+    storageState: fs.existsSync(path.resolve(__dirname, 'playwright/.auth/user.json'))
+      ? path.resolve(__dirname, 'playwright/.auth/user.json')
+      : undefined,
   },
 
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      use: { storageState: undefined },
+    },
+    {
       name: 'Sales',
       testMatch: '**/sales/*.spec.ts',
-      use: { channel: 'chrome' },
+      dependencies: ['setup'],
     },
     {
       name: 'Purchase',
       testMatch: '**/purchase/*.spec.ts',
+      dependencies: ['setup'],
     },
     {
       name: 'Inventory',
       testMatch: '**/inventory/*.spec.ts',
+      dependencies: ['setup'],
     },
     {
       name: 'HR',
       testMatch: '**/hr/*.spec.ts',
+      dependencies: ['setup'],
     },
     {
       name: 'Project-Management',
       testMatch: '**/project/*.spec.ts',
+      dependencies: ['setup'],
     },
     {
       name: 'Cross-Module',
       testMatch: '**/cross-module/*.spec.ts',
+      dependencies: ['setup'],
     },
   ],
 

@@ -92,18 +92,32 @@ export class HrAPI extends BasePage {
         const byEmail = emailList.find((e: any) => e.email === email);
         if (byEmail) return byEmail;
       }
-      // Fallback: full list scan
+      // Fallback: search page 1 and last page (since newly created employees are appended at the end of the database)
       const listResp = await this.safeGet(
-        `${this.apiBase}/employees?page=1&pageSize=100&sort=created_at:desc&${this.params}`, { headers: h });
+        `${this.apiBase}/employees?page=1&pageSize=100&${this.params}`, { headers: h });
       if (listResp.ok()) {
         const listJson = await listResp.json();
-        const list = listJson.data || [];
-        console.log(`[HR] Attempt ${attempt + 1}: list total=${listJson.total ?? listJson.count ?? '?'} | checking ${list.length} rows for email=${email}`);
-        if (attempt === 0) console.log(`[HR] Sample emails: ${list.slice(0, 5).map((e: any) => e.email).join(', ')}`);
-        const found = list.find((e: any) => e.email === email)
+        const list = listJson.data || listJson.items || (Array.isArray(listJson) ? listJson : []);
+        const totalPages = parseInt(listJson.pagination?.total || listJson.total || '1', 10);
+        console.log(`[HR] Attempt ${attempt + 1}: list total pages=${totalPages} | checking ${list.length} rows for email=${email}`);
+        let found = list.find((e: any) => e.email === email)
           || list.find((e: any) => e.name === name || e.full_name === name
             || (e.full_name || '').toLowerCase().includes(name.toLowerCase())
             || (e.name || '').toLowerCase().includes(name.toLowerCase()));
+        
+        if (!found && totalPages > 1) {
+          console.log(`[HR] Fetching last page ${totalPages} for newly appended employee...`);
+          const lastResp = await this.safeGet(
+            `${this.apiBase}/employees?page=${totalPages}&pageSize=100&${this.params}`, { headers: h });
+          if (lastResp.ok()) {
+            const lastJson = await lastResp.json();
+            const lastList = lastJson.data || lastJson.items || [];
+            found = lastList.find((e: any) => e.email === email)
+              || lastList.find((e: any) => e.name === name || e.full_name === name
+                || (e.full_name || '').toLowerCase().includes(name.toLowerCase())
+                || (e.name || '').toLowerCase().includes(name.toLowerCase()));
+          }
+        }
         if (found) return found;
       }
       await this.page.waitForTimeout(3000);
@@ -131,10 +145,38 @@ export class HrAPI extends BasePage {
 
   async getEmployee(id: string): Promise<any> {
     const h = await this.headers();
-    const resp = await this.safeGet(
+    let resp = await this.safeGet(
       `${this.apiBase}/employees/${id}?${this.params}`, { headers: h });
-    if (!resp.ok()) throw new Error(`Get employee failed: ${resp.status()}`);
-    return resp.json();
+    if (!resp.ok() && resp.status() === 404) {
+      resp = await this.safeGet(
+        `${this.apiBase}/employee/${id}?${this.params}`, { headers: h });
+    }
+    if (resp.ok()) {
+      const json = await resp.json();
+      return json.data || json.employee || json;
+    }
+    // Fallback: list scan (check page 1 and last page)
+    const listResp = await this.safeGet(
+      `${this.apiBase}/employees?page=1&pageSize=100&${this.params}`, { headers: h });
+    if (listResp.ok()) {
+      const listJson = await listResp.json();
+      const list = listJson.data || listJson.items || [];
+      let found = list.find((e: any) => e.id === id);
+      if (found) return found;
+
+      const totalPages = parseInt(listJson.pagination?.total || listJson.total || '1', 10);
+      if (totalPages > 1) {
+        const lastResp = await this.safeGet(
+          `${this.apiBase}/employees?page=${totalPages}&pageSize=100&${this.params}`, { headers: h });
+        if (lastResp.ok()) {
+          const lastJson = await lastResp.json();
+          const lastList = lastJson.data || lastJson.items || [];
+          found = lastList.find((e: any) => e.id === id);
+          if (found) return found;
+        }
+      }
+    }
+    throw new Error(`Get employee failed: ${resp.status()}`);
   }
 
   async listTimesheets(pageSize = 10): Promise<any[]> {

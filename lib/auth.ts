@@ -26,12 +26,48 @@ export class AuthManager extends BasePage {
     this.companyBtn = page.locator('button.chakra-menu__menu-button').first();
   }
 
+  async apiLogin(email?: string, pass?: string): Promise<string> {
+    const cleanEmail = (email || process.env.BEFFA_USER || '').replace(/['"]+/g, '').trim();
+    const cleanPass = (pass || process.env.BEFFA_PASS || '').replace(/['"]+/g, '').trim();
+    const year = process.env.BEFFA_YEAR || '2019';
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+
+    const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
+    const response = await this.page.request.post(loginUrl, {
+      data: { email: cleanEmail, password: cleanPass },
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!response.ok()) throw new Error(`API Login Failed: ${response.status()}`);
+    const session = await response.json();
+    const token = session.auth_token || session.token || session.access_token;
+    if (!token) throw new Error('No token returned from API');
+    this.cachedToken = token;
+    return token;
+  }
+
   async login(email: string | undefined, pass: string | undefined, companyName: string = process.env.BEFFA_COMPANY as string): Promise<void> {
     const cleanEmail = (email || '').replace(/['"]+/g, '').trim();
     const cleanPass = (pass || '').replace(/['"]+/g, '').trim();
 
     if (!cleanEmail || !cleanPass) {
       throw new Error('CRITICAL: Automation credentials (BEFFA_USER or BEFFA_PASS) are missing or empty. If running in CI, ensure GitHub Secrets are configured for this repository.');
+    }
+
+    // Fast-path check: If session token is already set in browser context, reuse it instantly
+    const hasExistingSession = await this.page.evaluate(() => {
+      try {
+        const token = localStorage.getItem('auth-token') || localStorage.getItem('token');
+        return !!token;
+      } catch {
+        return false;
+      }
+    }).catch(() => false);
+
+    if (hasExistingSession) {
+      console.log('[AUTH] Reusing cached signed-in session state — skipping login navigation.');
+      return;
     }
 
     // Resolve the correct fiscal year BEFORE any API call so process.env.BEFFA_YEAR
@@ -92,33 +128,16 @@ export class AuthManager extends BasePage {
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
-      // 5. Navigate home and wait for the JS bundle to fully load (populates browser cache).
-      // This is intentionally slow on first load (~150s on this infra) but makes all
-      // subsequent page.goto calls in the same test instant via browser cache.
-      await this.page.goto('/', { waitUntil: 'load', timeout: 150000 }).catch(() => {
-        console.log('[AUTH] Frontend navigation skipped (unreachable) — API session active.');
-      });
-      // #loading-screen hides once React has mounted — wait for it as the true ready signal
-      await this.page.locator('#loading-screen').waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
-
+      console.log('[AUTH] Session token and local storage injected successfully.');
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
       await this.page.goto('/users/login');
-      await this.emailInput.waitFor({ state: 'visible', timeout: 30000 });
+      await this.emailInput.waitFor({ state: 'visible', timeout: 15000 });
       await this.emailInput.fill(cleanEmail);
       await this.passwordInput.fill(cleanPass);
-      await expect(this.loginBtn).toBeEnabled({ timeout: 20000 });
+      await expect(this.loginBtn).toBeEnabled({ timeout: 15000 });
       await this.loginBtn.click();
-      await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 60000 });
-    }
-
-    // React is now mounted (bundle loaded + #loading-screen hidden above).
-    const uiReady = await this.companyBtn.waitFor({ state: 'visible', timeout: 30000 }).then(() => true).catch(() => false);
-    if (uiReady && companyName) {
-      await this.switchCompany(companyName);
-      await this.switchYear(process.env.BEFFA_YEAR || '2019');
-    } else {
-      console.log('[AUTH] UI not mounted (slow bundle) — API session active, skipping company/year switch.');
+      await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 30000 });
     }
   }
 

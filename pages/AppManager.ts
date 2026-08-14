@@ -113,6 +113,7 @@ export class AppManager {
   get apiBase(): string { return this.base.apiBase; }
 
   async login(...args: Parameters<AuthManager['login']>) { return await this.auth.login(...args); }
+  async apiLogin(...args: Parameters<AuthManager['apiLogin']>) { return await this.auth.apiLogin(...args); }
   async switchCompany(...args: Parameters<AuthManager['switchCompany']>) { return await this.auth.switchCompany(...args); }
   async resolveActiveCompanyAPI(...args: Parameters<BasePage['resolveActiveCompanyAPI']>) { return await this.base.resolveActiveCompanyAPI(...args); }
   async smartSearch(...args: Parameters<BasePage['smartSearch']>) { return await this.base.smartSearch(...args); }

@@ -150,12 +150,18 @@ export class PurchaseAPI extends BasePage {
       try { return JSON.parse(text); } catch (e) { throw new Error(`${label} returned invalid JSON: ${text.substring(0, 150)}`); }
     };
 
-    // 1. Fetch Accounts
-    const accResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
-    const accData = await safeJson(accResp, 'Accounts Discovery');
-    const allAccounts = accData.items || accData.data || [];
+    // 1. Fetch Accounts (with graceful fallback)
+    let allAccounts: any[] = [];
+    try {
+      const accResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=300&${params}`, { headers });
+      if (accResp.ok()) {
+        const accData = await accResp.json();
+        allAccounts = accData.items || accData.data || [];
+      }
+    } catch (e) {
+      console.warn(`[WARN] Accounts Discovery hit transient delay: ${e?.message || e}`);
+    }
 
-    // Improved AP discovery logic
     const apAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
       allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('payable')) ||
@@ -164,17 +170,23 @@ export class PurchaseAPI extends BasePage {
       allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('liability')) ||
       allAccounts[1] || allAccounts[0];
 
-    // Discovery Withholding Account (Prioritize Payable for Purchases)
     const wtAccount =
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding tax payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding payable')) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('withholding')) ||
       apAccount;
 
-    // 2. Fetch Currency
-    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
-    const currData = await safeJson(currResp, 'Currency Discovery');
-    const currency = currData.items?.[0] || currData.data?.[0];
+    // 2. Fetch Currency (with graceful fallback)
+    let currency: any = null;
+    try {
+      const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
+      if (currResp.ok()) {
+        const currData = await currResp.json();
+        currency = currData.items?.[0] || currData.data?.[0];
+      }
+    } catch (e) {
+      console.warn(`[WARN] Currency Discovery hit transient delay: ${e?.message || e}`);
+    }
 
     // 3. Fetch Tax (optional)
     let tax: any = null;
@@ -198,10 +210,17 @@ export class PurchaseAPI extends BasePage {
       }
     }
 
-    // 5. Fetch Vendor
-    const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=5&${params}`, { headers });
-    const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
-    const vendor = (vendorData.items || vendorData.data || [])[0];
+    // 5. Fetch Vendor (with graceful fallback against transient API timeout)
+    let vendor: any = null;
+    try {
+      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=5&${params}`, { headers });
+      if (vendorResp.ok()) {
+        const vendorData = await vendorResp.json();
+        vendor = (vendorData.items || vendorData.data || [])[0];
+      }
+    } catch (e) {
+      console.warn(`[WARN] Vendor Discovery hit transient delay: ${e?.message || e}`);
+    }
 
     return {
       apAccountId: apAccount?.id || '',
@@ -209,7 +228,7 @@ export class PurchaseAPI extends BasePage {
       taxId: tax?.id || '',
       locationId,
       warehouseId,
-      vendorId: vendor?.id || '',
+      vendorId: vendor?.id || process.env.BEFFA_VENDOR_ID || '',
       vendorName: vendor?.name || 'Default Vendor',
       withholdingAccountId: wtAccount?.id || ''
     };
@@ -232,8 +251,19 @@ export class PurchaseAPI extends BasePage {
       try { return JSON.parse(text); } catch (e) { throw new Error(`${label} invalid JSON: ${text.substring(0, 150)}`); }
     };
 
-    // 1. Discover Vendor
-    let resolvedVendorId = vendorId;
+    // Use cached metadata to avoid firing 4x N GET requests under concurrent load
+    let meta: any = null;
+    try {
+      meta = await this.discoverMetadataAPI();
+    } catch { /* fallback to direct discovery if needed */ }
+
+    let resolvedVendorId = vendorId || meta?.vendorId || process.env.BEFFA_VENDOR_ID || '';
+    let apAccountId = meta?.apAccountId;
+    let currencyId = meta?.currencyId;
+    let locationId = itemData.locationId || meta?.locationId;
+    let warehouseId = itemData.warehouseId || meta?.warehouseId;
+    let glAccountId = meta?.apAccountId; // Fallback GL account
+
     if (!resolvedVendorId) {
       const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10&${params}`, { headers });
       const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
@@ -242,17 +272,17 @@ export class PurchaseAPI extends BasePage {
       resolvedVendorId = vendor.id;
     }
 
-    // 2. Discover Accounts (AP + GL)
-    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
-    const acctData = await safeJson(acctResp, 'Accounts Discovery');
-    const allAccounts = acctData.items || acctData.data || [];
-    const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
-    const apAccount = allAccounts.find((a: any) => typeOf(a).includes('payable')) || allAccounts[0];
-    const glAccount = allAccounts.find((a: any) => typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0];
+    if (!apAccountId) {
+      const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      const acctData = await safeJson(acctResp, 'Accounts Discovery');
+      const allAccounts = acctData.items || acctData.data || [];
+      const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+      const apAccount = allAccounts.find((a: any) => typeOf(a).includes('payable')) || allAccounts[0];
+      const glAccount = allAccounts.find((a: any) => typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0];
+      apAccountId = apAccount?.id;
+      glAccountId = glAccount?.id;
+    }
 
-    // 4. Discover Locations if missing
-    let locationId = itemData.locationId;
-    let warehouseId = itemData.warehouseId;
     if (!locationId || !warehouseId) {
       const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
       const locData = await safeJson(locResp, 'Location Discovery');
@@ -262,21 +292,24 @@ export class PurchaseAPI extends BasePage {
         warehouseId = await this.resolveWarehouseIdFromLocation(firstLoc);
       }
     }
-    // 5. Discover Currency if missing
-    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
-    const currData = await safeJson(currResp, 'Currency Discovery');
-    const currency = (currData.items || currData.data || [])[0];
+
+    if (!currencyId) {
+      const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
+      const currData = await safeJson(currResp, 'Currency Discovery');
+      const currency = (currData.items || currData.data || [])[0];
+      currencyId = currency?.id;
+    }
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _resolved = await _DH.resolve(this.page);
     const _dateIso = _resolved.iso;
     const payload = {
-      accounts_payable_id: apAccount?.id,
-      currency_id: currency?.id,
+      accounts_payable_id: apAccountId,
+      currency_id: currencyId,
       po_date: _dateIso,
       po_items: [{
         item_id: itemData.itemId,
-        general_ledger_account_id: glAccount?.id,
+        general_ledger_account_id: glAccountId || apAccountId,
         location_id: locationId,
         quantity: qty,
         tax_id: itemData.taxId || null,

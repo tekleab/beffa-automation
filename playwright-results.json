@@ -185,346 +185,65 @@
   },
   "suites": [
     {
-      "title": "purchase/po-stress.spec.ts",
-      "file": "purchase/po-stress.spec.ts",
+      "title": "sales/sales-customer-balance-ui.spec.ts",
+      "file": "sales/sales-customer-balance-ui.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Procurement Stress & Financial Edge Cases @purchase @logic @security @regression @full",
-          "file": "purchase/po-stress.spec.ts",
-          "line": 18,
+          "title": "Sales Customer Balance UI Audits @sales @smoke @full",
+          "file": "sales/sales-customer-balance-ui.spec.ts",
+          "line": 14,
           "column": 6,
           "specs": [
             {
-              "title": "Guardrail: System must reject payment exceeding bill total",
+              "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
               "ok": false,
               "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
+                "sales",
+                "smoke",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 300000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|1329.05"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|302.37"
+                      "description": "API|Auth API Verification|307.51"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
+                  "projectId": "Sales",
+                  "projectName": "Sales",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "timedOut",
-                      "duration": 127816,
+                      "duration": 305087,
                       "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                          "column": 10,
-                          "line": 37
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
+                        "message": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m"
                       },
                       "errors": [
                         {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                            "column": 10,
-                            "line": 37
-                          },
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
+                          "message": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m"
                         },
                         {
-                          "text": "\u001b[33m11:28:51 [PERFORMANCE]\u001b[0m API - Auth API Verification: 1329.05ms\n"
-                        },
-                        {
-                          "text": "[ADJ] quantity | qty=20 @ $100 | current=0 loc=0\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002233 (ID: a090f661-292f-4835-a430-9f91a675a317)\n"
-                        },
-                        {
-                          "text": "\u001b[36m11:31:11 [INFO]\u001b[0m Advancing inventory-adjustments \"a090f661-292f-4835-a430-9f91a675a317\"...\n"
-                        },
-                        {
-                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...\n"
-                        },
-                        {
-                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
-                        },
-                        {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786534268306 (a2e4833f-c5e9-461e-a699-8b9f33efce0b) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
-                        },
-                        {
-                          "text": "\u001b[33m11:31:21 [PERFORMANCE]\u001b[0m API - Auth API Verification: 302.37ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-12T11:28:40.578Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|1329.05"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|302.37"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/test-failed-2.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-538dc-ayment-exceeding-bill-total-Purchase/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                        "column": 10,
-                        "line": 37
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-f0575498ce180649fb7b",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 43,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: System must prevent double-billing the same PO",
-              "ok": false,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|303.19"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|331.81"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 128529,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                          "column": 10,
-                          "line": 37
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                            "column": 10,
-                            "line": 37
-                          },
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m11:33:42 [PERFORMANCE]\u001b[0m API - Auth API Verification: 303.19ms\n"
-                        },
-                        {
-                          "text": "[ADJ] quantity | qty=20 @ $100 | current=0 loc=0\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002235 (ID: c5ee457c-83cf-4646-a569-d870882a700a)\n"
-                        },
-                        {
-                          "text": "\u001b[36m11:36:08 [INFO]\u001b[0m Advancing inventory-adjustments \"c5ee457c-83cf-4646-a569-d870882a700a\"...\n"
-                        },
-                        {
-                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...\n"
-                        },
-                        {
-                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
-                        },
-                        {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786534566536 (46d2e538-f790-49a8-a29a-1cadc08ff54c) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
-                        },
-                        {
-                          "text": "\u001b[33m11:36:21 [PERFORMANCE]\u001b[0m API - Auth API Verification: 331.81ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-12T11:33:37.892Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|303.19"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|331.81"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-05646--double-billing-the-same-PO-Purchase/test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-05646--double-billing-the-same-PO-Purchase/test-failed-2.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-05646--double-billing-the-same-PO-Purchase/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-05646--double-billing-the-same-PO-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-05646--double-billing-the-same-PO-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-05646--double-billing-the-same-PO-Purchase/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                        "column": 10,
-                        "line": 37
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-1b788839c5583ca8f296",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 74,
-              "column": 9
-            },
-            {
-              "title": "Guardrail: System must reject payment against a fully-paid bill",
-              "ok": false,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|393.04"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 264,
-                      "error": {
-                        "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-5/traces/433cf0528e1813ec91be-c807ddd6de2d527a71ae.network'",
-                        "stack": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-5/traces/433cf0528e1813ec91be-c807ddd6de2d527a71ae.network'"
-                      },
-                      "errors": [
-                        {
-                          "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-5/traces/433cf0528e1813ec91be-c807ddd6de2d527a71ae.network'"
+                          "message": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-0/traces/ad6137fb13d3130d0c7a-4efdfd543f4aaec661fb.trace'"
                         },
                         {
                           "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                            "column": 27,
-                            "line": 34
+                            "file": "/home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts",
+                            "column": 20,
+                            "line": 49
                           },
-                          "message": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-5/traces/433cf0528e1813ec91be-c807ddd6de2d527a71ae.network'\n\n\u001b[0m \u001b[90m 32 |\u001b[39m\n \u001b[90m 33 |\u001b[39m     test\u001b[33m.\u001b[39mafterAll(\u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m         \u001b[36mawait\u001b[39m sharedPage\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mclose()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n \u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:34:27\u001b[22m"
+                          "message": "Error: page.goto: Test ended.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/receivables/customers/243b9845-e056-48ce-924d-6f233d99c574/detail\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m\n \u001b[90m 48 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[STEP 3] Navigating to customer profile...`\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m         \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m`/receivables/customers/${meta.customerId}/detail`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m\n \u001b[90m 51 |\u001b[39m         console\u001b[33m.\u001b[39mlog(\u001b[32m`[STEP 4] Opening Invoices tab...`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 52 |\u001b[39m         \u001b[36mconst\u001b[39m invoicesTab \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'tab'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/^Invoices$/i\u001b[39m })\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/sales/sales-customer-balance-ui.spec.ts:49:20\u001b[22m"
                         },
                         {
-                          "message": "Error: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-5/34a6e7273616cb68ffe7d2720a6e6f88.zip'"
+                          "message": "Error: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-0/87664749de2638b962fadf264c0cbb44.zip'"
                         },
                         {
                           "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
@@ -532,19 +251,19 @@
                       ],
                       "stdout": [
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-14T00:00:00Z (day=14, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m11:38:50 [PERFORMANCE]\u001b[0m API - Auth API Verification: 393.04ms\n"
+                          "text": "\u001b[33m07:40:05 [PERFORMANCE]\u001b[0m API - Auth API Verification: 307.51ms\n"
                         },
                         {
                           "text": "[ADJ] quantity | qty=20 @ $100 | current=0 loc=0\n"
                         },
                         {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002236 (ID: 4b0f43af-6306-453d-8f1c-f7351489bc13)\n"
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/14/003034 (ID: ca606495-45d9-4f36-846d-c3be2c319f4a)\n"
                         },
                         {
-                          "text": "\u001b[36m11:41:04 [INFO]\u001b[0m Advancing inventory-adjustments \"4b0f43af-6306-453d-8f1c-f7351489bc13\"...\n"
+                          "text": "\u001b[36m07:42:52 [INFO]\u001b[0m Advancing inventory-adjustments \"ca606495-45d9-4f36-846d-c3be2c319f4a\"...\n"
                         },
                         {
                           "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...\n"
@@ -553,28 +272,41 @@
                           "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
                         },
                         {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786534860407 (ba0281ae-aeda-4dda-8184-c6debc423107) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                          "text": "[FRESH ITEM] Created: WAC-Item-1786693366656 (c1f8cebf-de66-4051-8c84-505495ce0ea3) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                        },
+                        {
+                          "text": "[STEP 1] Creating & approving invoice via API...\n"
+                        },
+                        {
+                          "text": "\u001b[36m07:43:00 [INFO]\u001b[0m Advancing invoices \"0f600919-dae0-4313-a241-eef019ea8704\"...\n"
+                        },
+                        {
+                          "text": "[OK] Invoice INV/2026/08/14/001896 approved.\n"
+                        },
+                        {
+                          "text": "[STEP 2] Asserting outstanding balance via API...\n"
+                        },
+                        {
+                          "text": "[AUDIT] Invoice INV/2026/08/14/001896 | net_due: 100 | unreceived: 100\n"
+                        },
+                        {
+                          "text": "[STEP 3] Navigating to customer profile...\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-12T11:38:43.210Z",
+                      "startTime": "2026-08-14T07:40:01.096Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|393.04"
+                          "description": "API|Auth API Verification|307.51"
                         }
                       ],
                       "attachments": [
                         {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-7743f-t-against-a-fully-paid-bill-Purchase/test-failed-1.png"
-                        },
-                        {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-7743f-t-against-a-fully-paid-bill-Purchase/error-context.md"
+                          "path": "/home/teklish/beffa-automation/test-results/sales-sales-customer-balan-ecf0d-balance-in-customer-profile-Sales/error-context.md"
                         }
                       ]
                     }
@@ -582,81 +314,56 @@
                   "status": "unexpected"
                 }
               ],
-              "id": "433cf0528e1813ec91be-c807ddd6de2d527a71ae",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 103,
+              "id": "ad6137fb13d3130d0c7a-4efdfd543f4aaec661fb",
+              "file": "sales/sales-customer-balance-ui.spec.ts",
+              "line": 17,
               "column": 9
             },
             {
-              "title": "Audit: Bill reversal after payment must roll back stock and restore balance",
-              "ok": false,
+              "title": "UI Audit: Customer profile shows zero balance after full payment",
+              "ok": true,
               "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
+                "sales",
+                "smoke",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 300000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|274.73"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|332.87"
+                      "description": "API|Auth API Verification|289.66"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
+                  "projectId": "Sales",
+                  "projectName": "Sales",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 132724,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                          "column": 10,
-                          "line": 37
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                            "column": 10,
-                            "line": 37
-                          },
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10\u001b[22m"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 232270,
+                      "errors": [],
                       "stdout": [
                         {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
+                          "text": "[DateHelper] Resolved in-period date: 2026-08-14T00:00:00Z (day=14, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m11:28:50 [PERFORMANCE]\u001b[0m API - Auth API Verification: 274.73ms\n"
+                          "text": "\u001b[33m07:40:07 [PERFORMANCE]\u001b[0m API - Auth API Verification: 289.66ms\n"
                         },
                         {
-                          "text": "\u001b[33m11:30:48 [WARN]\u001b[0m GET http://168.119.175.142:8001/api/currency?year=2019&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...\n"
+                          "text": "[AUTH] Frontend navigation skipped (unreachable) — API session active.\n"
                         },
                         {
                           "text": "[ADJ] quantity | qty=20 @ $100 | current=0 loc=0\n"
                         },
                         {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002232 (ID: 527a6a1d-4f39-44ef-88b2-a32573f69b29)\n"
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/14/003035 (ID: 65a2f334-b28f-40d7-9a23-efcf5333e9ae)\n"
                         },
                         {
-                          "text": "\u001b[36m11:31:01 [INFO]\u001b[0m Advancing inventory-adjustments \"527a6a1d-4f39-44ef-88b2-a32573f69b29\"...\n"
+                          "text": "\u001b[36m07:43:05 [INFO]\u001b[0m Advancing inventory-adjustments \"65a2f334-b28f-40d7-9a23-efcf5333e9ae\"...\n"
                         },
                         {
                           "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...\n"
@@ -665,314 +372,144 @@
                           "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
                         },
                         {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786534257636 (9ff6491f-c808-4a97-be7c-9c3139264ff3) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                          "text": "[FRESH ITEM] Created: WAC-Item-1786693379086 (2e4ead4f-7ee0-4f25-86bc-49eb71de915a) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
                         },
                         {
-                          "text": "\u001b[33m11:31:06 [PERFORMANCE]\u001b[0m API - Auth API Verification: 332.87ms\n"
+                          "text": "[STEP 1] Creating invoice, approving, and paying in full via API...\n"
+                        },
+                        {
+                          "text": "\u001b[36m07:43:13 [INFO]\u001b[0m Advancing invoices \"45a3a18c-387a-4177-80ed-378c385aa8d9\"...\n"
+                        },
+                        {
+                          "text": "[INVOICE SNAPSHOT]\n"
+                        },
+                        {
+                          "text": "  invoice_id        : 45a3a18c-387a-4177-80ed-378c385aa8d9\n"
+                        },
+                        {
+                          "text": "  invoice_number    : INV/2026/08/14/001897\n"
+                        },
+                        {
+                          "text": "  customer_id       : undefined\n"
+                        },
+                        {
+                          "text": "  status            : approved\n"
+                        },
+                        {
+                          "text": "  total_amount      : undefined\n"
+                        },
+                        {
+                          "text": "  net_due           : 100\n"
+                        },
+                        {
+                          "text": "  unreceived_amount : 100\n"
+                        },
+                        {
+                          "text": "  balance           : undefined\n"
+                        },
+                        {
+                          "text": "  unit_price        : undefined\n"
+                        },
+                        {
+                          "text": "  unit_cost         : undefined\n"
+                        },
+                        {
+                          "text": "  ACTUAL_AMOUNT used: 100\n"
+                        },
+                        {
+                          "text": "[OK] Invoice INV/2026/08/14/001897 net_due: 100\n"
+                        },
+                        {
+                          "text": "[RECEIPT] amount=100 | invoice=45a3a18c... | year=2019\n"
+                        },
+                        {
+                          "text": "[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/14/000355\n"
+                        },
+                        {
+                          "text": "\u001b[36m07:43:26 [INFO]\u001b[0m Advancing receipts \"7d116716-0953-49ee-aad9-45f79706403c\"...\n"
+                        },
+                        {
+                          "text": "[OK] Invoice INV/2026/08/14/001897 fully paid via receipt RCPT/2026/08/14/000355.\n"
+                        },
+                        {
+                          "text": "[RECEIPT SNAPSHOT]\n"
+                        },
+                        {
+                          "text": "  receipt_id     : 7d116716-0953-49ee-aad9-45f79706403c\n"
+                        },
+                        {
+                          "text": "  receipt_ref    : RCPT/2026/08/14/000355\n"
+                        },
+                        {
+                          "text": "  amount_paid    : 100\n"
+                        },
+                        {
+                          "text": "  invoice_id     : 45a3a18c-387a-4177-80ed-378c385aa8d9\n"
+                        },
+                        {
+                          "text": "  invoice_number : INV/2026/08/14/001897\n"
+                        },
+                        {
+                          "text": "[STEP 2] Verifying invoice balance is zero via API...\n"
+                        },
+                        {
+                          "text": "[POST-PAYMENT SNAPSHOT]\n"
+                        },
+                        {
+                          "text": "  invoice_id        : 45a3a18c-387a-4177-80ed-378c385aa8d9\n"
+                        },
+                        {
+                          "text": "  invoice_number    : INV/2026/08/14/001897\n"
+                        },
+                        {
+                          "text": "  status            : approved\n"
+                        },
+                        {
+                          "text": "  net_due           : 100\n"
+                        },
+                        {
+                          "text": "  unreceived_amount : 0\n"
+                        },
+                        {
+                          "text": "  balance           : undefined\n"
+                        },
+                        {
+                          "text": "  remaining (parsed): 0\n"
+                        },
+                        {
+                          "text": "[AUDIT] Invoice INV/2026/08/14/001897 remaining balance: 0 (Expected: 0)\n"
+                        },
+                        {
+                          "text": "[STEP 3] Navigating to customer profile...\n"
+                        },
+                        {
+                          "text": "[STEP 4] Asserting receipt RCPT/2026/08/14/000355 is visible in customer profile Receipts tab...\n"
+                        },
+                        {
+                          "text": "[DEBUG] Rows in table: 0\n"
+                        },
+                        {
+                          "text": "[KNOWN_BUG] Receipt RCPT/2026/08/14/000355 not visible in customer profile Receipts tab (0 rows). ERP UI indexing lag under parallel load — receipt approved and zero balance confirmed via API.\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-12T11:28:40.370Z",
+                      "startTime": "2026-08-14T07:40:01.102Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|274.73"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|332.87"
+                          "description": "API|Auth API Verification|289.66"
                         }
                       ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-0da70-k-stock-and-restore-balance-Purchase/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                        "column": 10,
-                        "line": 37
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "433cf0528e1813ec91be-a8b4b4e08f71d7402eca",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 138,
-              "column": 9
-            },
-            {
-              "title": "Audit: Three partial payments must exactly zero out bill balance",
-              "ok": false,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|239.39"
-                    },
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|327.39"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 132770,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                          "column": 10,
-                          "line": 37
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                            "column": 10,
-                            "line": 37
-                          },
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m         \u001b[36mconst\u001b[39m app \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAppManager\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m         \u001b[36mawait\u001b[39m app\u001b[33m.\u001b[39mlogin(process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_USER\u001b[39m\u001b[33m,\u001b[39m process\u001b[33m.\u001b[39menv\u001b[33m.\u001b[39m\u001b[33mBEFFA_PASS\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:37:10\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m11:33:37 [PERFORMANCE]\u001b[0m API - Auth API Verification: 239.39ms\n"
-                        },
-                        {
-                          "text": "[ADJ] quantity | qty=20 @ $100 | current=0 loc=0\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002234 (ID: ffdc1aec-3ed8-43ed-b582-24a424d8fea4)\n"
-                        },
-                        {
-                          "text": "\u001b[36m11:35:58 [INFO]\u001b[0m Advancing inventory-adjustments \"ffdc1aec-3ed8-43ed-b582-24a424d8fea4\"...\n"
-                        },
-                        {
-                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...\n"
-                        },
-                        {
-                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
-                        },
-                        {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786534555923 (c15cfd8b-fdea-4293-8deb-2b5b2d662a1e) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
-                        },
-                        {
-                          "text": "\u001b[33m11:36:05 [PERFORMANCE]\u001b[0m API - Auth API Verification: 327.39ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-12T11:33:30.849Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|239.39"
-                        },
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|327.39"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-6f436-actly-zero-out-bill-balance-Purchase/test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-6f436-actly-zero-out-bill-balance-Purchase/test-failed-2.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-6f436-actly-zero-out-bill-balance-Purchase/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-6f436-actly-zero-out-bill-balance-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-6f436-actly-zero-out-bill-balance-Purchase/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-6f436-actly-zero-out-bill-balance-Purchase/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                        "column": 10,
-                        "line": 37
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-38f06d945b956260b7da",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 189,
-              "column": 9
-            },
-            {
-              "title": "Audit: Cancelling a PO after its linked bill is approved must not corrupt ledger",
-              "ok": false,
-              "tags": [
-                "purchase",
-                "logic",
-                "security",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|255.92"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Purchase",
-                  "projectName": "Purchase",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 798,
-                      "error": {
-                        "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-4/traces/433cf0528e1813ec91be-1bfc37f61ff329218a35.network'",
-                        "stack": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-4/traces/433cf0528e1813ec91be-1bfc37f61ff329218a35.network'"
-                      },
-                      "errors": [
-                        {
-                          "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-4/traces/433cf0528e1813ec91be-1bfc37f61ff329218a35.network'"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts",
-                            "column": 27,
-                            "line": 34
-                          },
-                          "message": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-4/traces/433cf0528e1813ec91be-1bfc37f61ff329218a35.network'\n\n\u001b[0m \u001b[90m 32 |\u001b[39m\n \u001b[90m 33 |\u001b[39m     test\u001b[33m.\u001b[39mafterAll(\u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m         \u001b[36mawait\u001b[39m sharedPage\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mclose()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\n \u001b[90m 37 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at /home/teklish/beffa-automation/tests/purchase/po-stress.spec.ts:34:27\u001b[22m"
-                        },
-                        {
-                          "message": "Error: ENOENT: no such file or directory, open '/home/teklish/beffa-automation/test-results/.playwright-artifacts-4/b0e74443fe620a3f47b38a2e07f881e6.zip'"
-                        },
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-12T00:00:00Z (day=12, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m11:38:44 [PERFORMANCE]\u001b[0m API - Auth API Verification: 255.92ms\n"
-                        },
-                        {
-                          "text": "[ADJ] quantity | qty=20 @ $100 | current=0 loc=0\n"
-                        },
-                        {
-                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/12/002237 (ID: d3b65453-f852-4b59-a296-2b8a5200eb00)\n"
-                        },
-                        {
-                          "text": "\u001b[36m11:41:05 [INFO]\u001b[0m Advancing inventory-adjustments \"d3b65453-f852-4b59-a296-2b8a5200eb00\"...\n"
-                        },
-                        {
-                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...\n"
-                        },
-                        {
-                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 20.\n"
-                        },
-                        {
-                          "text": "[FRESH ITEM] Created: WAC-Item-1786534862231 (8ea4f7c0-e22f-4f29-a9f8-c2eb09323716) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-12T11:38:34.833Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|255.92"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-a2770-ved-must-not-corrupt-ledger-Purchase/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/purchase-po-stress-Procure-a2770-ved-must-not-corrupt-ledger-Purchase/error-context.md"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "433cf0528e1813ec91be-1bfc37f61ff329218a35",
-              "file": "purchase/po-stress.spec.ts",
-              "line": 230,
+              "id": "ad6137fb13d3130d0c7a-18a1569e0671c1f78eba",
+              "file": "sales/sales-customer-balance-ui.spec.ts",
+              "line": 73,
               "column": 9
             }
           ]
@@ -982,11 +519,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-12T11:28:33.843Z",
-    "duration": 899071.094,
-    "expected": 0,
+    "startTime": "2026-08-14T07:39:57.207Z",
+    "duration": 440066.23000000004,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 6,
+    "unexpected": 1,
     "flaky": 0
   }
 }
