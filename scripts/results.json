@@ -1,29 +1,37 @@
 {
-  "total": 19,
-  "passed": 9,
-  "failed": 10,
+  "total": 23,
+  "passed": 18,
+  "failed": 5,
   "skipped": 0,
-  "passRate": 47.4,
-  "avgDurationMs": 20469,
-  "lastUpdated": "2026-08-12T12:38:16.989Z",
+  "passRate": 78.3,
+  "avgDurationMs": 43834,
+  "lastUpdated": "2026-08-16T04:33:25.224Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 9,
-      "failed": 10,
+      "passed": 18,
+      "failed": 5,
       "skipped": 0,
       "trend": [
-        94.7,
         81.4,
         84.2,
         94.7,
         84.8,
         42.1,
-        47.4
+        47.4,
+        78.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "651",
+      "commit": "6de6ec5",
+      "trigger": "push (smoke)",
+      "duration": "16m 48s",
+      "passRate": 78.3,
+      "status": "failed"
+    },
     {
       "run": "634",
       "commit": "05a62cc",
@@ -95,78 +103,38 @@
       "duration": "12m 34s",
       "passRate": 84.2,
       "status": "success"
-    },
-    {
-      "run": "619",
-      "commit": "c79de03",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "15m 53s",
-      "passRate": 78.9,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:30:50.267Z",
-      "occurrences": 2,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
+      "severity": "critical",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:30:50.203Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:624\n\n  622 |     }\n ",
+      "firstSeen": "2026-08-16T04:22:04.209Z",
       "occurrences": 2,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "medium",
+      "severity": "critical",
+      "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
+      "error": "Error: Direct customer receipt creation failed with HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)",
+      "firstSeen": "2026-08-16T04:22:05.692Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "high",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:30:50.133Z",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+      "firstSeen": "2026-08-16T04:22:38.731Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:31:31.486Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:31:47.598Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:31:48.743Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Sales UI: Partial payment updates invoice Amount Due correctly",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:32:23.073Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2025-07-13 falls in a closed or missin\n\n   at ../lib/base-page.ts:205\n\n  203 |         if (success) break;\n  204 |",
-      "firstSeen": "2026-08-12T12:32:34.553Z",
+      "title": "Validate TIN, create vendor, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  62 |         await page.waitForLoadState('",
+      "firstSeen": "2026-08-16T04:24:09.626Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
