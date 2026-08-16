@@ -1,0 +1,152 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: project/project-ui-list.spec.ts >> Project Management: UI List Page @project @ui @smoke @regression @full >> UI-01: Projects list page loads with all key table columns
+- Location: tests/project/project-ui-list.spec.ts:33:9
+
+# Error details
+
+```
+Error: Column "Project Name" not visible
+
+expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+```
+
+# Test source
+
+```ts
+  1   | import { test, expect } from '@playwright/test';
+  2   | import { AppManager } from '../../pages/AppManager';
+  3   | 
+  4   | /**
+  5   |  * PROJECT UI LIST PAGE — List View Functionality
+  6   |  *
+  7   |  * UI-only tests for the projects list page
+  8   |  * Covers: Table columns, filters, sorting, search, pagination, navigation
+  9   |  */
+  10  | test.describe('Project Management: UI List Page @project @ui @smoke @regression @full', () => {
+  11  | 
+  12  |     async function setup(page: any) {
+  13  |         const app = new AppManager(page);
+  14  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  15  |         const meta = await app.api.project.discoverMetadataAPI();
+  16  |         return { app, meta };
+  17  |     }
+  18  | 
+  19  |     async function createProject(app: AppManager, meta: any, overrides: Record<string, any> = {}) {
+  20  |         const name = `E2E-Project-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
+  21  |         const project = await app.api.project.createProjectAPI({
+  22  |             name,
+  23  |             customerId: meta.customerId,
+  24  |             estimatedRevenue: 200000,
+  25  |             estimatedExpense: 80000,
+  26  |             ...overrides
+  27  |         });
+  28  |         return { project, name };
+  29  |     }
+  30  | 
+  31  |     // ── UI: LIST PAGE ───────────────────────────────────────────────────────────
+  32  | 
+  33  |     test('UI-01: Projects list page loads with all key table columns', async ({ page }) => {
+  34  |         const { app } = await setup(page);
+  35  |         await page.goto('/project-management/projects');
+  36  |         await page.waitForLoadState('domcontentloaded');
+  37  |         // Scope to table header to avoid matching sidebar nav items (e.g. "Customers")
+  38  |         const thead = page.locator('table thead, thead, [role="columnheader"]');
+  39  |         for (const col of ['Project Name', 'Customer', 'Status', 'Budget', 'Tasks', 'Start Date', 'End Date']) {
+  40  |             const inHeader = thead.getByText(col, { exact: false }).first();
+  41  |             const inPage = page.getByText(col, { exact: true }).first();
+  42  |             const visible =
+  43  |                 await inHeader.isVisible({ timeout: 8000 }).catch(() => false) ||
+  44  |                 await inPage.isVisible({ timeout: 3000 }).catch(() => false);
+> 45  |             expect(visible, `Column "${col}" not visible`).toBe(true);
+      |                                                            ^ Error: Column "Project Name" not visible
+  46  |         }
+  47  |     });
+  48  | 
+  49  |     test('UI-02: Filter pills (Workspace, Workflow, Status, Budget) are visible', async ({ page }) => {
+  50  |         const { app } = await setup(page);
+  51  |         await page.goto('/project-management/projects');
+  52  |         await page.waitForLoadState('domcontentloaded');
+  53  |         for (const pill of ['Workspace', 'Workflow', 'Status', 'Budget']) {
+  54  |             await expect(page.getByRole('button', { name: new RegExp(pill, 'i') }).first()).toBeVisible({ timeout: 8000 });
+  55  |         }
+  56  |     });
+  57  | 
+  58  |     test('UI-03: Sort and View buttons are visible in toolbar', async ({ page }) => {
+  59  |         const { app } = await setup(page);
+  60  |         await page.goto('/project-management/projects');
+  61  |         await page.waitForLoadState('domcontentloaded');
+  62  |         await expect(page.getByRole('button', { name: /Sort/i }).first()).toBeVisible({ timeout: 8000 });
+  63  |         const viewBtn = page.getByRole('button', { name: /View/i }).first();
+  64  |         const viewVisible = await viewBtn.isVisible({ timeout: 5000 }).catch(() => false);
+  65  |         if (!viewVisible) console.log('[INFO] View button not present in toolbar — UI may have changed layout');
+  66  |         else await expect(viewBtn).toBeVisible();
+  67  |         console.log('[PASS] Toolbar controls verified');
+  68  |     });
+  69  | 
+  70  |     test('UI-04: Advanced filters and Command filters links are present', async ({ page }) => {
+  71  |         const { app } = await setup(page);
+  72  |         await page.goto('/project-management/projects');
+  73  |         await page.waitForLoadState('domcontentloaded');
+  74  |         await expect(page.getByText(/Advanced filters/i).first()).toBeVisible({ timeout: 8000 });
+  75  |         await expect(page.getByText(/Command filters/i).first()).toBeVisible({ timeout: 8000 });
+  76  |     });
+  77  | 
+  78  |     test('UI-05: Add Project button and Export button are visible', async ({ page }) => {
+  79  |         const { app } = await setup(page);
+  80  |         await page.goto('/project-management/projects');
+  81  |         await page.waitForLoadState('domcontentloaded');
+  82  |         const addProjectEl = page.getByRole('link', { name: /Add Project/i }).or(page.getByRole('button', { name: /Add Project/i })).first();
+  83  |         await expect(addProjectEl).toBeVisible({ timeout: 8000 });
+  84  |         await expect(page.getByRole('button', { name: /Export/i })).toBeVisible({ timeout: 8000 });
+  85  |     });
+  86  | 
+  87  |     test('UI-06: Search input is present and accepts text', async ({ page }) => {
+  88  |         const { app } = await setup(page);
+  89  |         await page.goto('/project-management/projects');
+  90  |         await page.waitForLoadState('domcontentloaded');
+  91  |         const search = page.getByPlaceholder(/Search/i).first();
+  92  |         await expect(search).toBeVisible({ timeout: 8000 });
+  93  |         await search.fill('test');
+  94  |         await page.waitForTimeout(1000);
+  95  |         await search.clear();
+  96  |     });
+  97  | 
+  98  |     test('UI-07: Pagination shows rows-per-page and page count', async ({ page }) => {
+  99  |         const { app } = await setup(page);
+  100 |         await page.goto('/project-management/projects');
+  101 |         await page.waitForLoadState('domcontentloaded');
+  102 |         await expect(page.getByText(/Rows per page/i).first()).toBeVisible({ timeout: 8000 });
+  103 |         await expect(page.getByText(/Page [0-9]+ of [0-9]+/i).first()).toBeVisible({ timeout: 8000 });
+  104 |     });
+  105 | 
+  106 |     test('UI-08: Project created via API appears in the list', async ({ page }) => {
+  107 |         const { app, meta } = await setup(page);
+  108 |         const { project } = await createProject(app, meta);
+  109 |         await page.goto('/project-management/projects');
+  110 |         await page.waitForLoadState('domcontentloaded');
+  111 |         await expect(page.getByText(project.ref, { exact: false }).first()).toBeVisible({ timeout: 15000 });
+  112 |     });
+  113 | 
+  114 |     test('UI-09: Clicking project row navigates to detail view', async ({ page }) => {
+  115 |         const { app, meta } = await setup(page);
+  116 |         const { project } = await createProject(app, meta);
+  117 |         await page.goto('/project-management/projects');
+  118 |         await page.waitForLoadState('domcontentloaded');
+  119 |         await page.getByText(project.ref, { exact: false }).first().click();
+  120 |         await page.waitForLoadState('domcontentloaded');
+  121 |         expect(page.url()).toContain('project');
+  122 |         await expect(page.getByText(project.ref, { exact: false }).first()).toBeVisible({ timeout: 10000 });
+  123 |     });
+  124 | });
+  125 | 
+```

@@ -1,0 +1,19 @@
+[DateHelper] Resolved in-period date: 2026-08-16T00:00:00Z (day=16, ecYear=2019)
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/16/003368 (ID: 0c16e74c-6076-414d-b576-6db64f6e17d6)
+05:50:39 [INFO] Advancing inventory-adjustments "0c16e74c-6076-414d-b576-6db64f6e17d6"...
+05:50:40 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+05:50:40 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+05:50:42 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+05:50:42 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: WAC-Item-1786859434702 (edf7f83e-94ad-4db4-97b8-f80f6b8aa0b5) | method=WAC | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DEST] Using system location: 87d66495-1719-4402-9b0d-147859d3bc6c | Warehouse: ae638681-f2ae-492a-898e-edab3be6186b
+[SETUP] Item: "WAC-Item-1786859434702" | Src stock: 30 | Dest stock: 0
+[SETUP] Src loc: 539ab667-5559-4db7-8cd4-24f797d57ebb | Dest loc: 87d66495-1719-4402-9b0d-147859d3bc6c
+[MOVE ORDER] Created: 7d9f8dd0-895b-4389-8b86-28512116aa31 (status: draft)
+05:50:51 [INFO] Advancing move-orders "7d9f8dd0-895b-4389-8b86-28512116aa31"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 25...
+[SUCCESS] API Confirmed: Stock correctly reached 25.
+[TC-01] Source: 30 → 25 (expected: 25)

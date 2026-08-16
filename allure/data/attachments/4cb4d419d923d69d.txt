@@ -1,0 +1,58 @@
+05:46:26 [PERFORMANCE] API - Auth API Verification: 526.66ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-16
+[DateHelper] Resolved in-period date: 2026-08-16T00:00:00Z (day=16, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/16/003327 (ID: 0e767ba4-43c4-4438-b5c0-13d2728fcf30)
+05:47:37 [INFO] Advancing inventory-adjustments "0e767ba4-43c4-4438-b5c0-13d2728fcf30"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786859256164 (44f3a5d1-01c8-42ab-9e62-8a9f4ce59398) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:47:41 [PERFORMANCE] API - Auth API Verification: 239.22ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving Bill for 5000...
+05:47:42 [INFO] Advancing bills "1519a181-9e2e-4e80-a991-aa53a7a1833e"...
+[BILL] BILL/2026/08/16/001648 (1519a181-9e2e-4e80-a991-aa53a7a1833e)
+[COA SNAPSHOT] Cash before: 2930.272857144475 | AP before: 5924840
+[ATTACK] Sending payment total=5000 but bill_payments sum=3000 (2000 unaccounted)...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║         PAYMENT MISMATCH — SYSTEM RESPONSE SUMMARY       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  What we sent:                                           ║
+  ║    • Payment total (header)  : $5000                      ║
+  ║    • Allocated to bill       : $3000                      ║
+  ║    • Gap (unaccounted)        : $2000                      ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response: REJECTED ✓                             ║
+  ║  The API enforces amount == sum(bill_payments).           ║
+  ║  No journal entry was created. Ledger is clean.           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Split Array Mismatch Guardrail                                          │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/16/001648               │
+  │ Bill ID                          │ 1519a181-9e2e-4e80-a991-aa53a7a1833… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Payment Total (header)           │ $5000.00                             │
+  │ Allocated to Bill                │ $3000.00                             │
+  │ Unaccounted Amount               │ $2000.00                             │
+  │ Payment Ref                      │ N/A (blocked)                        │
+  │ Bill Balance After               │ N/A (blocked)                        │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ COA: Cash - Main Office Before   │ $2930.27                             │
+  │ COA: Cash - Main Office After    │ N/A                                  │
+  │ COA: Cash Movement               │ N/A                                  │
+  │ COA: Accounts Payable Before     │ $5924840.00                          │
+  │ COA: Accounts Payable After      │ N/A                                  │
+  │ COA: AP Movement                 │ N/A                                  │
+  │ ─────────────────────────────    │ ───────────────────────────────────… │
+  │ Vulnerability Finding            │ HTTP 422 — rejected at creation      │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Mismatch rejected at API l… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Mismatched payment correctly rejected.

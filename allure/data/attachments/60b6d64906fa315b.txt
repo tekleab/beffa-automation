@@ -1,0 +1,23 @@
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-16
+[DateHelper] Resolved in-period date: 2026-08-16T00:00:00Z (day=16, ecYear=2019)
+05:49:09 [PERFORMANCE] API - Auth API Verification: 258.69ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/16/003341 (ID: be6a189b-9c23-4406-a1fd-277f730d136e)
+05:49:18 [INFO] Advancing inventory-adjustments "be6a189b-9c23-4406-a1fd-277f730d136e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786859356539 (b5df2f13-0464-4673-9371-b5a85a461b5c) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:49:21 [PERFORMANCE] API - Auth API Verification: 239.17ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving PO...
+05:49:25 [INFO] Advancing purchase-orders "4e194ba1-c52a-4e52-a821-b53ca790b416"...
+[PO] PO/2026/08/16/001152 (4e194ba1-c52a-4e52-a821-b53ca790b416)
+[STEP 2] Creating & approving linked Bill...
+05:49:27 [INFO] Advancing bills "94ec928f-ed33-4809-aa95-b00d783e52dd"...
+[BILL] BILL/2026/08/16/001669 (94ec928f-ed33-4809-aa95-b00d783e52dd) — approved
+[ATTACK] Attempting to cancel source PO PO/2026/08/16/001152 after bill BILL/2026/08/16/001669 is approved...
+[INFO] PO PO/2026/08/16/001152 cancel attempt: HTTP 403
+[AUDIT] Bill BILL/2026/08/16/001669 status after PO cancel: approved
+[PASS] Bill BILL/2026/08/16/001669 integrity maintained after PO PO/2026/08/16/001152 cancel attempt.

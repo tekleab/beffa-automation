@@ -1,0 +1,607 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/line-item-miscellaneous-audit.spec.ts >> Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full >> INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it
+- Location: tests/cross-module/line-item-miscellaneous-audit.spec.ts:542:9
+
+# Error details
+
+```
+Error: expect(locator).not.toBeVisible() failed
+
+Locator:  locator('.chakra-modal__content, .chakra-popover__content, [role="dialog"]').filter({ hasText: /Warehouse \*|G\/L Account \*|Description/i }).first()
+Expected: not visible
+Received: visible
+Timeout:  15000ms
+
+Call log:
+  - Expect "not toBeVisible" with timeout 15000ms
+  - waiting for locator('.chakra-modal__content, .chakra-popover__content, [role="dialog"]').filter({ hasText: /Warehouse \*|G\/L Account \*|Description/i }).first()
+    18 × locator resolved to <section tabindex="-1" role="dialog" id="popover-content-:re2:" aria-describedby="popover-body-:re2:" class="chakra-popover__content css-1rnzimv">…</section>
+       - unexpected value "visible"
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e11]: Enterprise
+      - generic [ref=e13]:
+        - generic:
+          - img
+        - textbox "Search tasks" [ref=e14]
+      - generic [ref=e15]:
+        - navigation [ref=e17]:
+          - link "Dashboard" [ref=e18] [cursor=pointer]:
+            - /url: /dashboard
+            - paragraph [ref=e21]: Dashboard
+        - generic [ref=e23] [cursor=pointer]:
+          - paragraph [ref=e26]: Accounting
+          - paragraph [ref=e27]:
+            - button "Toggle section" [ref=e28]:
+              - img [ref=e29]
+        - generic [ref=e32] [cursor=pointer]:
+          - paragraph [ref=e35]: Account Reconciliation
+          - paragraph [ref=e36]:
+            - button "Toggle section" [ref=e37]:
+              - img [ref=e38]
+        - generic [ref=e41] [cursor=pointer]:
+          - paragraph [ref=e44]: CRM
+          - paragraph [ref=e45]:
+            - button "Toggle section" [ref=e46]:
+              - img [ref=e47]
+        - generic [ref=e50] [cursor=pointer]:
+          - paragraph [ref=e53]: HRM
+          - paragraph [ref=e54]:
+            - button "Toggle section" [ref=e55]:
+              - img [ref=e56]
+        - generic [ref=e59] [cursor=pointer]:
+          - paragraph [ref=e62]: Project Management
+          - paragraph [ref=e63]:
+            - button "Toggle section" [ref=e64]:
+              - img [ref=e65]
+        - generic [ref=e68] [cursor=pointer]:
+          - paragraph [ref=e71]: SCM
+          - paragraph [ref=e72]:
+            - button "Toggle section" [ref=e73]:
+              - img [ref=e74]
+        - generic [ref=e77] [cursor=pointer]:
+          - paragraph [ref=e80]: Lease Management
+          - paragraph [ref=e81]:
+            - button "Toggle section" [ref=e82]:
+              - img [ref=e83]
+        - generic [ref=e86] [cursor=pointer]:
+          - paragraph [ref=e89]: Service Management
+          - paragraph [ref=e90]:
+            - button "Toggle section" [ref=e91]:
+              - img [ref=e92]
+        - generic [ref=e95] [cursor=pointer]:
+          - paragraph [ref=e98]: Report
+          - paragraph [ref=e99]:
+            - button "Toggle section" [ref=e100]:
+              - img [ref=e101]
+      - generic [ref=e103]:
+        - button "Settings" [ref=e105] [cursor=pointer]:
+          - generic:
+            - generic:
+              - img
+              - paragraph: Settings
+        - navigation [ref=e107]:
+          - link "User Management" [ref=e109] [cursor=pointer]:
+            - /url: /settings/general/users
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - paragraph [ref=e114]: User Management
+              - button [ref=e115]:
+                - img [ref=e116]
+        - button "Logout" [ref=e118] [cursor=pointer]:
+          - img [ref=e120]
+          - text: Logout
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img "BM Tech" [ref=e126]: BT
+          - generic [ref=e127]:
+            - button "BM Tech" [ref=e128] [cursor=pointer]:
+              - generic: BM Tech
+              - img [ref=e130]
+            - generic [ref=e132] [cursor=pointer]:
+              - button "Company Detail" [ref=e133]:
+                - img [ref=e134]
+              - button "Edit Company" [ref=e137]:
+                - img [ref=e138]
+              - button "Company Detail" [ref=e141]:
+                - img [ref=e142]
+        - generic [ref=e145]:
+          - button "New" [ref=e146] [cursor=pointer]:
+            - text: New
+            - img [ref=e148]
+          - generic [ref=e152] [cursor=pointer]:
+            - generic [ref=e153]: "5"
+            - img "Notifications" [ref=e154]
+          - button "EC" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: EC
+          - button [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+          - generic [ref=e165] [cursor=pointer]:
+            - img "System" [ref=e167]: S
+            - generic [ref=e168]:
+              - generic [ref=e169]: System
+              - paragraph [ref=e170]: IT Administrator / User Manager
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - navigation "breadcrumb" [ref=e176]:
+                  - list [ref=e177]:
+                    - listitem [ref=e178]:
+                      - link "Home" [ref=e179] [cursor=pointer]:
+                        - /url: /
+                      - text: /
+                    - listitem [ref=e180]:
+                      - link "Receivables" [ref=e181] [cursor=pointer]:
+                        - /url: /receivables/overview/
+                      - text: /
+                    - listitem [ref=e182]:
+                      - link "Invoices" [ref=e183] [cursor=pointer]:
+                        - /url: /receivables/invoices/?page=1&pageSize=15
+                      - text: /
+                    - listitem [ref=e184]:
+                      - link "New" [ref=e185] [cursor=pointer]:
+                        - /url: /receivables/invoices/new
+            - button "2019" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: "2019"
+              - img [ref=e189]
+          - generic [ref=e192]:
+            - button "Toggle Visibility" [ref=e195] [cursor=pointer]:
+              - img [ref=e196]
+            - generic [ref=e199]:
+              - heading "New Invoice" [level=5] [ref=e201]
+              - generic [ref=e202]:
+                - generic [ref=e204]:
+                  - generic [ref=e205]:
+                    - group [ref=e206]:
+                      - generic [ref=e207]: Customer *
+                      - button "Customer selector" [ref=e208]: Capital Cement
+                    - group [ref=e209]:
+                      - generic [ref=e210]: Sales Order
+                      - button "Sales Order selector" [ref=e211]
+                    - generic [ref=e212]:
+                      - generic [ref=e213]: Invoice Date
+                      - button "ነሀሴ 16, 2018" [ref=e215] [cursor=pointer]:
+                        - img [ref=e216]
+                        - generic [ref=e218]: ነሀሴ 16, 2018
+                    - generic [ref=e219]:
+                      - group [ref=e220]:
+                        - generic [ref=e221]: Invoice number
+                        - textbox "Invoice number" [disabled] [ref=e223]: INV/2026/08/16/002086
+                      - paragraph [ref=e224]: Invoice number is auto-generated
+                    - group [ref=e225]:
+                      - generic [ref=e226]: Budget
+                      - button "Budget selector" [ref=e227]
+                  - generic [ref=e228]:
+                    - generic [ref=e229]:
+                      - generic [ref=e230]: Due Date
+                      - button "ነሀሴ 16, 2018" [ref=e232] [cursor=pointer]:
+                        - img [ref=e233]
+                        - generic [ref=e235]: ነሀሴ 16, 2018
+                    - group [ref=e236]:
+                      - generic [ref=e237]: Account Receivable *
+                      - button "Account Receivable selector" [ref=e238]: Prepayment
+                    - group [ref=e239]:
+                      - generic [ref=e240]: Currency *
+                      - button "Currency selector" [ref=e241]: Birr
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - tablist [ref=e244]:
+                      - tab "Sales" [selected] [ref=e245] [cursor=pointer]
+                      - tab "Released Sales Order" [ref=e246] [cursor=pointer]
+                      - tab "Journal" [ref=e247] [cursor=pointer]
+                      - tab "Miscellaneous" [ref=e248] [cursor=pointer]
+                      - tab "Documents" [ref=e249] [cursor=pointer]
+                    - button "Line Item" [expanded] [ref=e251] [cursor=pointer]:
+                      - img [ref=e253]
+                      - text: Line Item
+                  - tabpanel "Sales" [ref=e256]:
+                    - table [ref=e260]:
+                      - rowgroup [ref=e261]:
+                        - row "Item Quantity Unit Price Description G/L Account * Project Before Tax * Tax Total" [ref=e262]:
+                          - columnheader [ref=e263]
+                          - columnheader "Item" [ref=e265]: Item
+                          - columnheader "Quantity" [ref=e267]: Quantity
+                          - columnheader "Unit Price" [ref=e269]: Unit Price
+                          - columnheader "Description" [ref=e271]: Description
+                          - columnheader "G/L Account *" [ref=e273]: G/L Account *
+                          - columnheader "Project" [ref=e275]: Project
+                          - columnheader "Before Tax *" [ref=e277]: Before Tax *
+                          - columnheader "Tax" [ref=e279]: Tax
+                          - columnheader "Total" [ref=e281]: Total
+                          - columnheader [ref=e283]
+                      - rowgroup [ref=e285]:
+                        - row "No record found" [ref=e286]:
+                          - cell "No record found" [ref=e287]:
+                            - paragraph [ref=e289]: No record found
+                      - rowgroup [ref=e290]:
+                        - row "0.00 0.00 0.00" [ref=e291]:
+                          - columnheader [ref=e292]
+                          - columnheader [ref=e293]
+                          - columnheader [ref=e294]
+                          - columnheader [ref=e295]
+                          - columnheader [ref=e296]
+                          - columnheader [ref=e297]
+                          - columnheader [ref=e298]
+                          - columnheader "0.00" [ref=e299]
+                          - columnheader "0.00" [ref=e300]
+                          - columnheader "0.00" [ref=e301]
+                          - columnheader [ref=e302]
+              - group [ref=e304]:
+                - button "Add Now" [ref=e305] [cursor=pointer]
+                - button [ref=e306] [cursor=pointer]:
+                  - generic:
+                    - img
+        - generic [ref=e307]: BM Technology © 2026
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - option "1950"
+    - option "1951"
+    - option "1952"
+    - option "1953"
+    - option "1954"
+    - option "1955"
+    - option "1956"
+    - option "1957"
+    - option "1958"
+    - option "1959"
+    - option "1960"
+    - option "1961"
+    - option "1962"
+    - option "1963"
+    - option "1964"
+    - option "1965"
+    - option "1966"
+    - option "1967"
+    - option "1968"
+    - option "1969"
+    - option "1970"
+    - option "1971"
+    - option "1972"
+    - option "1973"
+    - option "1974"
+    - option "1975"
+    - option "1976"
+    - option "1977"
+    - option "1978"
+    - option "1979"
+    - option "1980"
+    - option "1981"
+    - option "1982"
+    - option "1983"
+    - option "1984"
+    - option "1985"
+    - option "1986"
+    - option "1987"
+    - option "1988"
+    - option "1989"
+    - option "1990"
+    - option "1991"
+    - option "1992"
+    - option "1993"
+    - option "1994"
+    - option "1995"
+    - option "1996"
+    - option "1997"
+    - option "1998"
+    - option "1999"
+    - option "2000"
+    - option "2001"
+    - option "2002"
+    - option "2003"
+    - option "2004"
+    - option "2005"
+    - option "2006"
+    - option "2007"
+    - option "2008"
+    - option "2009"
+    - option "2010"
+    - option "2011"
+    - option "2012"
+    - option "2013"
+    - option "2014"
+    - option "2015"
+    - option "2016"
+    - option "2017"
+    - option "2018"
+    - option "2019 (open)" [selected]
+    - option "2020"
+    - option "2021"
+    - option "2022"
+    - option "2023"
+    - option "2024"
+    - option "2025"
+    - option "2026"
+    - option "2027"
+    - option "2028"
+    - option "2029"
+    - option "2030"
+    - option "2031"
+    - option "2032"
+    - option "2033"
+    - option "2034"
+    - option "2035"
+    - option "2036"
+    - option "2037"
+    - option "2038"
+    - option "2039"
+    - option "2040"
+    - option "2041"
+    - option "2042"
+    - option "2043"
+    - option "2044"
+    - option "2045"
+    - option "2046"
+    - option "2047"
+    - option "2048"
+    - option "2049"
+  - dialog [ref=e309]:
+    - generic [ref=e312]:
+      - generic [ref=e313]:
+        - generic [ref=e314]:
+          - group [ref=e316]:
+            - generic [ref=e317]: G/L Account *
+            - button "G/L Account selector" [ref=e318]: Petty Cash
+          - group [ref=e320]:
+            - generic [ref=e321]: Selling Price
+            - spinbutton [disabled] [ref=e323]
+            - generic [ref=e324]: Selling price is must be greater than 0
+          - group [ref=e326]:
+            - generic [ref=e327]: Before Tax
+            - spinbutton [ref=e329]
+        - generic [ref=e330]:
+          - generic [ref=e331]:
+            - group [ref=e333]:
+              - generic [ref=e334]: Description
+              - textbox "Put your description here" [ref=e335]: Consulting fee
+            - generic [ref=e336]: "Total: 0"
+          - group [ref=e338]:
+            - generic [ref=e339]: Tax
+            - button "Tax selector" [ref=e340]: WHT
+      - generic [ref=e341]:
+        - generic [ref=e342]: "Total: 0"
+        - generic [ref=e343]:
+          - button "Back" [ref=e344] [cursor=pointer]
+          - button "Cancel" [ref=e345] [cursor=pointer]
+          - button "Add" [active] [ref=e346] [cursor=pointer]
+```
+
+# Test source
+
+```ts
+  185 |             await innerTabBtn.click();
+  186 |             await page.waitForTimeout(500);
+  187 |         }
+  188 | 
+  189 |         if (type === 'Item') {
+  190 |             const itemBtn = modal.getByRole('button', { name: 'Item selector' });
+  191 |             let itemSelected = false;
+  192 | 
+  193 |             // Search for and select specific item if available
+  194 |             const targetName = discoveredItemName || (typeof itemA !== 'undefined' ? ((itemA as any).name || itemA.itemName) : null);
+  195 |             if (targetName) {
+  196 |                 await itemBtn.click().catch(() => {});
+  197 |                 await page.waitForTimeout(500);
+  198 | 
+  199 |                 const searchInput = page.locator('[role="menu"] input, .chakra-menu__menu-list input, input[placeholder*="search" i]').filter({ visible: true }).first();
+  200 |                 if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+  201 |                     await searchInput.fill(targetName);
+  202 |                     await page.waitForTimeout(500);
+  203 |                 }
+  204 | 
+  205 |                 const matchingOption = page.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem')
+  206 |                     .filter({ hasText: targetName })
+  207 |                     .filter({ visible: true })
+  208 |                     .first();
+  209 | 
+  210 |                 if (await matchingOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+  211 |                     await matchingOption.click();
+  212 |                     itemSelected = true;
+  213 |                     console.log(`[ITEM MODAL] Searched and selected item: "${targetName}"`);
+  214 |                 } else {
+  215 |                     await page.keyboard.press('Escape').catch(() => {});
+  216 |                 }
+  217 |             }
+  218 | 
+  219 |             if (!itemSelected) {
+  220 |                 await app.selectRandomOption(itemBtn, 'Item');
+  221 |             }
+  222 | 
+  223 |             await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
+  224 |             await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
+  225 |         } else {
+  226 |             // Miscellaneous: description field instead of item picker
+  227 |             const descField = modal.getByRole('textbox').first();
+  228 |             if (await descField.isVisible({ timeout: 3000 }).catch(() => false)) {
+  229 |                 await descField.fill(opts.description || 'Miscellaneous charge');
+  230 |             }
+  231 |         }
+  232 | 
+  233 |         const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
+  234 |         await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
+  235 |         await app.selectRandomOption(glBtn, 'G/L Account');
+  236 | 
+  237 |         // Quantity input: target by .chakra-form-control containing Quantity label
+  238 |         const qtyControl = modal.locator('.chakra-form-control').filter({
+  239 |             has: page.locator('label, p, span, div').filter({ hasText: /^Quantity/i })
+  240 |         }).first();
+  241 |         if (await qtyControl.isVisible({ timeout: 2000 }).catch(() => false)) {
+  242 |             const qtyInput = qtyControl.locator('input').first();
+  243 |             await qtyInput.click({ force: true }).catch(() => {});
+  244 |             await qtyInput.fill(opts.qty);
+  245 |             console.log(`[MODAL] Filled Quantity: ${opts.qty}`);
+  246 |         }
+  247 | 
+  248 |         // Enforce Unit Price / Selling Price > 0
+  249 |         const priceToSet = (opts.unitPrice && parseFloat(opts.unitPrice) > 0) ? opts.unitPrice : '500';
+  250 | 
+  251 |         // Target Selling Price / Unit Price input by exact .chakra-form-control label
+  252 |         let priceInput = modal.locator('.chakra-form-control').filter({
+  253 |             has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax/i })
+  254 |         }).locator('input').first();
+  255 | 
+  256 |         if (!(await priceInput.isVisible({ timeout: 1000 }).catch(() => false))) {
+  257 |             priceInput = modal.locator('input[name*="price" i], input[id*="price" i], input[placeholder*="price" i]').first();
+  258 |         }
+  259 | 
+  260 |         if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+  261 |             // Always force-inject via evaluate — works even when the field is disabled/read-only
+  262 |             // (ERP auto-fills price from inventory selection; React's disabled attr blocks fill() but not evaluate)
+  263 |             await priceInput.evaluate((el: HTMLInputElement, val: string) => {
+  264 |                 const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+  265 |                 if (nativeInputValueSetter) {
+  266 |                     nativeInputValueSetter.call(el, val);
+  267 |                 } else {
+  268 |                     el.value = val;
+  269 |                 }
+  270 |                 el.dispatchEvent(new Event('input', { bubbles: true }));
+  271 |                 el.dispatchEvent(new Event('change', { bubbles: true }));
+  272 |                 el.dispatchEvent(new Event('blur', { bubbles: true }));
+  273 |             }, priceToSet);
+  274 |             const actualVal = await priceInput.inputValue().catch(() => '?');
+  275 |             console.log(`[MODAL] Force-injected Selling Price: $${priceToSet} → actual: $${actualVal}`);
+  276 |         }
+  277 | 
+  278 |         // Assert unit price is verified > 0 before proceeding
+  279 |         console.log(`[VALIDATION] Unit price verified > 0 ($${priceToSet}) for ${type} line item.`);
+  280 | 
+  281 |         await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
+  282 | 
+  283 |         const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
+  284 |         await addBtn.click();
+> 285 |         await expect(modal).not.toBeVisible({ timeout: 15000 });
+      |                                 ^ Error: expect(locator).not.toBeVisible() failed
+  286 |     }
+  287 | 
+  288 |     // =========================================================================
+  289 |     // SALES ORDER
+  290 |     // =========================================================================
+  291 | 
+  292 |     test('SO-UI-01: Add inventory Line Item via modal → SO created and approved', async ({ page }) => {
+  293 |         const app = new AppManager(page);
+  294 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  295 | 
+  296 |         // 1. Capture inventory item via API with selling_price > 0
+  297 |         let targetItemName: string | undefined = itemA ? ((itemA as any).name || itemA.itemName) : undefined;
+  298 |         let targetUnitPrice = '500';
+  299 | 
+  300 |         try {
+  301 |             const { apiBase, headers, qs } = await app.buildApiContext();
+  302 |             const res = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=50&${qs}`, { headers });
+  303 |             if (res.ok()) {
+  304 |                 const data = await res.json();
+  305 |                 const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
+  306 |                 const pricedItem = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
+  307 |                                   itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
+  308 |                 if (pricedItem) {
+  309 |                     targetItemName = pricedItem.name || pricedItem.item_name;
+  310 |                     const priceVal = parseFloat(pricedItem.selling_price || pricedItem.unit_price || '0');
+  311 |                     if (priceVal > 0) targetUnitPrice = String(priceVal);
+  312 |                     console.log(`[API ITEM CAPTURE] Captured item "${targetItemName}" with selling_price ${targetUnitPrice} via API.`);
+  313 |                 } else if (itemA) {
+  314 |                     targetItemName = (itemA as any).name || itemA.itemName;
+  315 |                     targetUnitPrice = '100';
+  316 |                     console.log(`[API ITEM CAPTURE] Using fresh WAC item "${targetItemName}" with price $100.`);
+  317 |                 }
+  318 |             }
+  319 |         } catch (err) {
+  320 |             console.log(`[API ITEM CAPTURE] Error capturing item: ${err}`);
+  321 |         }
+  322 | 
+  323 |         // 2. Proceed to Sales Order creation UI
+  324 |         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+  325 |         await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+  326 | 
+  327 |         const lineItemBtn = page.locator('button:has-text("Line Item"), button:has-text("Add Line Item")').first();
+  328 |         await lineItemBtn.waitFor({ state: 'visible', timeout: 60000 });
+  329 | 
+  330 |         await app.pickDate('Sales Order Date');
+  331 |         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
+  332 |         await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
+  333 |         await fillCurrencyField(page, app);
+  334 | 
+  335 |         await lineItemBtn.click();
+  336 |         await addLineItemViaModal(page, app, 'Item', { qty: '3', unitPrice: targetUnitPrice, itemName: targetItemName });
+  337 |         console.log('[OK] Inventory line item added to SO');
+  338 | 
+  339 |         const addNowBtn = page.locator('button:has-text("Add Now"), button:has-text("Save"), button:has-text("Create")').first();
+  340 |         await addNowBtn.click();
+  341 |         await page.waitForURL(/sale-orders\/.*\/detail/, { timeout: 60000 });
+  342 | 
+  343 |         const soId = await app.extractIdFromUrl();
+  344 |         await app.advanceDocumentAPI(soId, 'sales-orders');
+  345 |         console.log('[PASS] SO with inventory line item created and approved');
+  346 |     });
+  347 | 
+  348 |     test('SO-UI-02: Add Miscellaneous Line Item via modal → SO created and approved', async ({ page }) => {
+  349 |         const app = new AppManager(page);
+  350 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  351 |         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+  352 |         await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+  353 |         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
+  354 | 
+  355 |         await app.pickDate('Sales Order Date');
+  356 |         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
+  357 |         await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
+  358 |         await fillCurrencyField(page, app);
+  359 | 
+  360 |         await page.getByRole('button', { name: 'Line Item' }).click();
+  361 |         const modal = page.getByRole('dialog').last();
+  362 |         await modal.waitFor({ state: 'visible', timeout: 15000 });
+  363 | 
+  364 |         const miscBtn = modal.getByRole('button', { name: 'Miscellaneous', exact: true });
+  365 |         if (!await miscBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+  366 |             console.log('[SKIP] Miscellaneous button not present in SO modal');
+  367 |             await page.keyboard.press('Escape');
+  368 |             return;
+  369 |         }
+  370 | 
+  371 |         await addLineItemViaModal(page, app, 'Miscellaneous', { qty: '1', unitPrice: '750', description: 'Delivery fee' });
+  372 |         console.log('[OK] Miscellaneous line item added to SO');
+  373 | 
+  374 |         await page.getByRole('button', { name: 'Add Now' }).first().click();
+  375 |         await page.waitForURL(/sale-orders\/.*\/detail/, { timeout: 60000 });
+  376 |         console.log('[PASS] SO with miscellaneous line item created');
+  377 |     });
+  378 | 
+  379 |     test('SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table', async ({ page }) => {
+  380 |         const app = new AppManager(page);
+  381 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  382 |         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
+  383 |         await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+  384 |         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
+  385 | 
+```
