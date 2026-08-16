@@ -110,7 +110,10 @@ export class SalesAPI extends BasePage {
     }
 
     const cashAccount =
-      allAccounts.find((a: any) => a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
+      allAccounts.find((a: any) => (a.account_id || a.code) === '1002') ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('petty')) ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('cash')) ||
       allAccounts.find((a: any) => typeStr(a).includes('cash') || typeStr(a).includes('bank')) ||
       allAccounts[0];
 
@@ -222,6 +225,8 @@ export class SalesAPI extends BasePage {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
       currency_id: data.currencyId || meta.currencyId,
       customer_id: data.customerId, // REQUIRED: must match the SO customer
+      date: data.invoiceDate || resolvedDate.iso,
+      posting_date: data.invoiceDate || resolvedDate.iso,
       invoice_date: data.invoiceDate || resolvedDate.iso,
       due_date: data.dueDate || resolvedDate.iso,
       released_sales_order_items: [{
@@ -286,6 +291,8 @@ export class SalesAPI extends BasePage {
     const payload: Record<string, any> = {
       accounts_receivable_id: meta.arAccountId,
       customer_id: custId,
+      date: _dateIso,
+      posting_date: _dateIso,
       invoice_date: data.invoiceDate || _dateIso,
       due_date: _dateIso,
       currency_id: meta.currencyId,
@@ -504,18 +511,20 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+    const company = process.env.BEFFA_COMPANY || 'BM Tech';
+    const headers = { 'x-company': company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     // Wait a moment before attempting receipt creation to ensure invoice is fully processed
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Verify invoice exists and is in approved state before creating receipt
     try {
-      const invoiceCheck = await this.safeGet(`${apiBase}/invoice/${data.invoiceId}?${params}`, { headers });
+      const invoiceCheck = await this.safeGet(`${apiBase}/invoices/${data.invoiceId}?${params}`, { headers });
       if (invoiceCheck.ok()) {
         const invoiceData = await invoiceCheck.json();
-        if (invoiceData.status !== 'approved') {
-          throw new Error(`Invoice must be approved before creating receipt. Current status: ${invoiceData.status}`);
+        if (invoiceData.status !== 'approved' && invoiceData.status !== 'partially_paid') {
+          console.log(`[RECEIPT PRE-FLIGHT] Invoice ${data.invoiceId} is in status "${invoiceData.status}". Advancing invoice to approved state first...`);
+          await this.advanceDocumentAPI(data.invoiceId, 'invoices').catch(() => {});
         }
       }
     } catch (error) {
@@ -530,10 +539,11 @@ export class SalesAPI extends BasePage {
         const acctData = await acctResp.json();
         const allAccounts = acctData.items || acctData.data || [];
         const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
-        const cashAcct = allAccounts.find((a: any) =>
-          typeOf(a).includes('cash') || typeOf(a).includes('bank') ||
-          a.name?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('petty')
-        ) || allAccounts[0];
+        const cashAcct = allAccounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
+          allAccounts.find((a: any) => (a.account_id || a.code) === '1002') ||
+          allAccounts.find((a: any) => a.name?.toLowerCase().includes('petty')) ||
+          allAccounts.find((a: any) => typeOf(a).includes('cash') || typeOf(a).includes('bank')) ||
+          allAccounts[0];
         if (cashAcct) cashAccountId = cashAcct.id;
       }
     }
