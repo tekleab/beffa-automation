@@ -1,29 +1,37 @@
 {
   "total": 23,
-  "passed": 18,
-  "failed": 5,
+  "passed": 22,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 78.3,
-  "avgDurationMs": 43834,
-  "lastUpdated": "2026-08-16T04:33:25.224Z",
+  "passRate": 95.7,
+  "avgDurationMs": 27621,
+  "lastUpdated": "2026-08-16T05:11:12.285Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 5,
+      "passed": 22,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        81.4,
         84.2,
         94.7,
         84.8,
         42.1,
         47.4,
-        78.3
+        78.3,
+        95.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "652",
+      "commit": "a0ffb13",
+      "trigger": "push (smoke)",
+      "duration": "10m 35s",
+      "passRate": 95.7,
+      "status": "success"
+    },
     {
       "run": "651",
       "commit": "6de6ec5",
@@ -95,46 +103,14 @@
       "duration": "64m 17s",
       "passRate": 73.6,
       "status": "failed"
-    },
-    {
-      "run": "620",
-      "commit": "f71c9ea",
-      "trigger": "push (smoke)",
-      "duration": "12m 34s",
-      "passRate": 84.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: HTTP 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:624\n\n  622 |     }\n ",
-      "firstSeen": "2026-08-16T04:22:04.209Z",
-      "occurrences": 2,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
-      "error": "Error: Direct customer receipt creation failed with HTTP 500: {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)",
-      "firstSeen": "2026-08-16T04:22:05.692Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-      "firstSeen": "2026-08-16T04:22:38.731Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  62 |         await page.waitForLoadState('",
-      "firstSeen": "2026-08-16T04:24:09.626Z",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: [ERP_BUG #RCT-UI-01] Approved receipt RCPT/2026/08/16/000380 not visible in Customer Profile Receipts tab (63 rows present).\n\n  112 |         if (!rcptVisible) {\n  113 |             const rowCo",
+      "firstSeen": "2026-08-16T05:01:55.791Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
