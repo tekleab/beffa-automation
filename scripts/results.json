@@ -1,29 +1,37 @@
 {
-  "total": 249,
-  "passed": 215,
-  "failed": 34,
+  "total": 23,
+  "passed": 23,
+  "failed": 0,
   "skipped": 0,
-  "passRate": 86.3,
-  "avgDurationMs": 17441,
-  "lastUpdated": "2026-08-17T06:45:56.204Z",
+  "passRate": 100,
+  "avgDurationMs": 25877,
+  "lastUpdated": "2026-08-17T07:05:26.075Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 215,
-      "failed": 34,
+      "passed": 23,
+      "failed": 0,
       "skipped": 0,
       "trend": [
-        47.4,
         78.3,
         95.7,
         100,
         86.5,
         100,
-        86.3
+        86.3,
+        100
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "657",
+      "commit": "98625cd",
+      "trigger": "push (smoke)",
+      "duration": "9m 55s",
+      "passRate": 100,
+      "status": "success"
+    },
     {
       "run": "656",
       "commit": "b80f457",
@@ -95,96 +103,7 @@
       "duration": "93m 50s",
       "passRate": 84.5,
       "status": "success"
-    },
-    {
-      "run": "630",
-      "commit": "85dc452",
-      "trigger": "push (smoke)",
-      "duration": "12m 18s",
-      "passRate": 94.7,
-      "status": "success"
     }
   ],
-  "criticalBlockers": [
-    {
-      "severity": "medium",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: apiRequestContext.patch: connect ECONNREFUSED 168.119.175.142:8001\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/inventory-adjustments/a765939b-8ee7-46e9-a92a-3502d6027ad2/advance?y",
-      "firstSeen": "2026-08-17T06:12:39.252Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: [FRESH ITEM] Stock adjustment failed for 634d228b-5db1-41f0-ad9b-df57f48ce277: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:736\n\n  7",
-      "firstSeen": "2026-08-17T06:12:39.189Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\n\n  28 |         console.log('[STEP] Phase 1: TIN validatio",
-      "firstSeen": "2026-08-17T06:12:39.246Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
-      "error": "Error: Direct customer receipt creation failed with HTTP 422: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"currency_id\": [\n\t\t\t\"Unable to find Currency.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating Receipt",
-      "firstSeen": "2026-08-17T06:12:41.054Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "LOAD: Concurrently approving 5 receipts must succeed without database deadlocks",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/17/00",
-      "firstSeen": "2026-08-17T06:12:46.038Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "STRESS: Concurrent duplicate receipt submittals against same invoice must be blocked",
-      "error": "Error: apiRequestContext.post: socket hang up\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2019&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X",
-      "firstSeen": "2026-08-17T06:13:00.857Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "STRESS: Receipt against an invoice reversed mid-flight must be rejected",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/17/00",
-      "firstSeen": "2026-08-17T06:13:13.927Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
-      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/invoices/78ff1e29-bc8b-4096-932f-346345e16a9d/advance?year=2019&period=yearly&calendar=ec\u001b[22m\n",
-      "firstSeen": "2026-08-17T06:15:09.592Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
-      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/inventory-adjustments/a0fff253-598c-41b6-82e9-d39f43ffb022/advance?year=2019&period=yearly&cale",
-      "firstSeen": "2026-08-17T06:15:12.322Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
-      "error": "Error: Item Creation API Failed: apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001\n\n   at ../lib/api/InventoryAPI.ts:142\n\n  140 |         resp = await this.page.request.post(`${apiBase",
-      "firstSeen": "2026-08-17T06:15:21.863Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    }
-  ]
+  "criticalBlockers": []
 }
