@@ -1,0 +1,54 @@
+[WARN] API Login failed (apiRequestContext.post: socket hang up
+Call log:
+  - → POST http://168.119.175.142:8001/api/users/login?year=2019&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+    - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4NzAzNzE5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODcwMzcxOTl9.pboVrrU0ievj6JqLw4taoysg7y2evfNFO7u_Nd4A3YI; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4NzAzNzE5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODcwMzcxOTl9.pboVrrU0ievj6JqLw4taoysg7y2evfNFO7u_Nd4A3YI
+). Falling back to UI Login...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003580 (ID: b5209071-94b3-4a33-a74a-6f4e6fbf8a30)
+07:14:54 [INFO] Advancing inventory-adjustments "b5209071-94b3-4a33-a74a-6f4e6fbf8a30"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786950893175 (ba40eeb5-f4e6-4917-82ca-c3dd6acca181) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating invoice, approving, and paying in full via API...
+07:14:59 [INFO] Advancing invoices "de5278ef-6643-4ff3-a5ce-2d74a5daeac6"...
+[INVOICE SNAPSHOT]
+  invoice_id        : de5278ef-6643-4ff3-a5ce-2d74a5daeac6
+  invoice_number    : INV/2026/08/17/002181
+  customer_id       : undefined
+  status            : approved
+  total_amount      : undefined
+  net_due           : 100
+  unreceived_amount : 100
+  balance           : undefined
+  unit_price        : undefined
+  unit_cost         : undefined
+  ACTUAL_AMOUNT used: 100
+[OK] Invoice INV/2026/08/17/002181 net_due: 100
+[RECEIPT] amount=100 | invoice=de5278ef... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/17/000423
+07:15:06 [INFO] Advancing receipts "a1ee16a2-47fe-4050-b73a-cba5ee53d728"...
+[OK] Invoice INV/2026/08/17/002181 fully paid via receipt RCPT/2026/08/17/000423.
+[RECEIPT SNAPSHOT]
+  receipt_id     : a1ee16a2-47fe-4050-b73a-cba5ee53d728
+  receipt_ref    : RCPT/2026/08/17/000423
+  amount_paid    : 100
+  invoice_id     : de5278ef-6643-4ff3-a5ce-2d74a5daeac6
+  invoice_number : INV/2026/08/17/002181
+[STEP 2] Verifying invoice balance is zero via API...
+[POST-PAYMENT SNAPSHOT]
+  invoice_id        : de5278ef-6643-4ff3-a5ce-2d74a5daeac6
+  invoice_number    : INV/2026/08/17/002181
+  status            : approved
+  net_due           : 100
+  unreceived_amount : 0
+  balance           : undefined
+  remaining (parsed): 0
+[AUDIT] Invoice INV/2026/08/17/002181 remaining balance: 0 (Expected: 0)
+[STEP 3] Navigating to customer profile...
+[STEP 4] Asserting receipt RCPT/2026/08/17/000423 is visible in customer profile Receipts tab...
+[DEBUG] Rows in table: 63

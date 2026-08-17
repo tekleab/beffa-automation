@@ -1,0 +1,40 @@
+
+=======================================================
+  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test 
+=======================================================
+[OPERATING DATE] Date: 2026-08-14T00:00:00Z
+[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, and Inventory Item...
+  ├── Customer ID      : 243b9845-e056-48ce-924d-6f233d99c574
+  ├── Cash Account ID  : bd32401d-9a1c-4637-9dfe-dbf0e79dc766 (Cash - Main Office)
+  ├── Currency ID      : ffbf8ef2-bffe-4c52-b588-17472d6baeb3 (BRR)
+  ├── AR Account ID    : bd0e0b51-b32d-4925-b442-05a3e63abf16 (Accounts Receivable)
+  ├── Sales Account ID : bd0e0b51-b32d-4925-b442-05a3e63abf16 (Accounts Receivable)
+  ├── Warehouse ID     : ae638681-f2ae-492a-898e-edab3be6186b
+  └── Inventory Item ID: 62d1df95-1b1e-43eb-ba2e-5aaa381965a5
+[STEP 3A] Creating Sales Order...
+[PASS] Sales Order Created: 9ac9ab13-aaa6-4359-b15e-91d3d28e074d
+[STEP 3B] Creating Sales Invoice...
+[PASS] Invoice Created: 94e257cd-c29d-47a5-958b-0e5a6f830b02 | Status: draft
+[PASS] Invoice Advance Status: 422
+[STEP 3C] Creating Receipt linked to Invoice 94e257cd-c29d-47a5-958b-0e5a6f830b02...
+[HTTP POST] /api/receipts (linked to draft invoice) -> Status: 500
+[⚠️ BACKEND DEFECT DETECTED] Linking draft invoice to receipt returned HTTP 500
+[SERVER RESPONSE] {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[STEP 3D] Creating Standalone Customer Receipt (unlinked to draft invoice)...
+[HTTP POST] /api/receipts (standalone customer receipt) -> Status: 201
+[PASS] Standalone Receipt Created Successfully!
+  ├── Receipt ID  : 1d944460-63ae-47ae-beda-7ffbce16a9aa
+  ├── Ref Number  : RCPT/2026/08/17/000420
+  ├── Status      : draft
+  └── Amount      : 0
+[STEP 3E] Verifying Direct GET /api/receipt/1d944460-63ae-47ae-beda-7ffbce16a9aa...
+[HTTP GET] Direct Receipt Inspection -> Status: 200
+[STEP 3F] Approving Receipt via Document Workflow...
+[FALLBACK] PATCH /api/receipt/1d944460-63ae-47ae-beda-7ffbce16a9aa/advance returned 404. Trying plural...
+[HTTP PATCH] Advance Receipt -> Status: 200
+[PASS] Receipt 1d944460-63ae-47ae-beda-7ffbce16a9aa Approved Successfully!
+[DIAGNOSTIC STATUS] ✅ Receipt API Diagnostics Completed Successfully.

@@ -1,0 +1,29 @@
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-17
+[DateHelper] Resolved in-period date: 2026-08-17T00:00:00Z (day=17, ecYear=2019)
+[WARN] API Login failed (apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001
+Call log:
+  - → POST http://168.119.175.142:8001/api/users/login?year=2019&period=yearly&calendar=ec&month=6
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json
+    - content-length: 49
+    - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4NzAzNzE5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODcwMzcxOTl9.pboVrrU0ievj6JqLw4taoysg7y2evfNFO7u_Nd4A3YI; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4NzAzNzE5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODcwMzcxOTl9.pboVrrU0ievj6JqLw4taoysg7y2evfNFO7u_Nd4A3YI
+). Falling back to UI Login...
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003582 (ID: e00d4ddd-7eea-4b3e-ba05-3a69eedfcf84)
+07:14:56 [INFO] Advancing inventory-adjustments "e00d4ddd-7eea-4b3e-ba05-3a69eedfcf84"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786950895312 (8ad6e76c-aa40-48f6-95a4-25a5771d26f3) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/17/001200 for Vendor Gentium Concrite Industry (8c8b8d32-3171-4290-ae83-17e58ccaf323)
+07:15:04 [INFO] Advancing purchase-orders "f48af5eb-c839-4de7-95d1-2177b876c486"...
+[OK] PO PO/2026/08/17/001200 approved
+[STEP] Phase 2: Create linked Bill via API
+07:15:06 [INFO] Advancing bills "2479cc5b-f7b8-418d-92f5-0dda97f66695"...
+[OK] Bill BILL/2026/08/17/001766 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/08/17/001766 is physically present in Gentium Concrite Industry's ledger.
+[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection
+[WARN] Bill BILL/2026/08/17/001766 confirmed via API ledger. UI table did not show row within 1 pages.
