@@ -890,6 +890,21 @@ ${curlCmd}
       }
     }
 
+    // Strategy 3: Fallback for forms where the label is simply "Date" (e.g. Receipt New page)
+    if (!btn && /date/i.test(label)) {
+      const genericLabel = this.page.getByText(/^Date\*?$/i).first();
+      if (await genericLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
+        for (const ancestor of ['xpath=..', 'xpath=../..', 'xpath=../../..']) {
+          const parent = genericLabel.locator(ancestor);
+          const parentBtn = parent.locator('button').first();
+          if (await parentBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+            btn = parentBtn;
+            break;
+          }
+        }
+      }
+    }
+
     if (!btn) {
       throw new Error(`[pickDate] Could not find date trigger button for label "${label}"`);
     }

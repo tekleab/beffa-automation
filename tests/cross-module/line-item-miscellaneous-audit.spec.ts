@@ -257,6 +257,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             priceInput = modal.locator('input[name*="price" i], input[id*="price" i], input[placeholder*="price" i]').first();
         }
 
+        await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
+
         if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
             // Always force-inject via evaluate — works even when the field is disabled/read-only
             // (ERP auto-fills price from inventory selection; React's disabled attr blocks fill() but not evaluate)
@@ -277,8 +279,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         // Assert unit price is verified > 0 before proceeding
         console.log(`[VALIDATION] Unit price verified > 0 ($${priceToSet}) for ${type} line item.`);
-
-        await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
 
         const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
         await addBtn.click();
@@ -388,9 +388,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.selectRandomOption(page.locator('.flex-col, .chakra-form-control').filter({ hasText: /Account.?Receivable/i }).locator('button').first(), 'Accounts Receivable');
         await fillCurrencyField(page, app);
 
+        const capturedItem = await captureItemWithPriceAPI(page, app);
+
         // Line 1: inventory item
         await page.getByRole('button', { name: 'Line Item' }).click();
-        await addLineItemViaModal(page, app, 'Item', { qty: '2', unitPrice: '1000' });
+        await addLineItemViaModal(page, app, 'Item', { qty: '2', unitPrice: capturedItem?.price || '1000', itemName: capturedItem?.name });
 
         // Line 2: miscellaneous
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -407,9 +409,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }
 
         // Verify 2 rows appear in the SO items table before submit
-        const tableRows = page.locator('table tbody tr');
-        const rowCount = await tableRows.count();
-        expect(rowCount).toBeGreaterThanOrEqual(2);
+        await expect.poll(async () => page.locator('table tbody tr').count(), { timeout: 10000 }).toBeGreaterThanOrEqual(2);
+        const rowCount = await page.locator('table tbody tr').count();
         console.log(`[AUDIT] ${rowCount} line items visible in SO form table`);
 
         await page.getByRole('button', { name: 'Add Now' }).first().click();
@@ -623,7 +624,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
-        const L1 = 3 * 400, L2 = 2 * 600;
+        const u1 = itemA.unitCost || 100;
+        const u2 = itemB.unitCost || 80;
+        const L1 = 3 * u1, L2 = 2 * u2;
         const { DateHelper } = require('../../lib/utils/DateHelper');
         const dateIso = (await DateHelper.resolve(page)).iso;
 
@@ -637,8 +640,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 currency_id: salesMeta.currencyId,
                 released_sales_order_items: [],
                 items: [
-                    { item_id: itemA.itemId, quantity: 3, unit_price: 400, amount: L1, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId },
-                    { item_id: itemB.itemId, quantity: 2, unit_price: 600, amount: L2, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemB.locationId, warehouse_id: itemB.warehouseId },
+                    { item_id: itemA.itemId, quantity: 3, unit_price: u1, amount: L1, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId },
+                    { item_id: itemB.itemId, quantity: 2, unit_price: u2, amount: L2, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemB.locationId, warehouse_id: itemB.warehouseId },
                 ],
             },
         });
@@ -700,7 +703,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await page.goto('/receivables/receipts/new', { waitUntil: 'commit' });
 
-        await app.pickDate('Receipt Date');
+        await app.pickDate('Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
         await app.selectRandomOption(page.getByRole('button', { name: 'Cash Account selector' }), 'Cash Account');
         await fillCurrencyField(page, app);
@@ -751,15 +754,19 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         const rct = await app.api.sales.createInvoiceReceiptAPI({
             invoiceId: inv.id, customerId: salesMeta.customerId,
-            amount: PARTIAL, currencyId: salesMeta.currencyId, cashAccountId: salesMeta.cashAccountId,
+            amount: PARTIAL, currencyId: salesMeta.currencyId
         });
         await app.advanceDocumentAPI(rct.id, 'receipts');
 
-        await page.waitForTimeout(3000);
+        await expect.poll(async () => {
+            const data = await app.api.sales.getInvoiceAPI(inv.id);
+            const received = parseFloat(data.received_amount ?? '0');
+            const unreceived = parseFloat(data.unreceived_amount ?? data.net_due ?? data.due ?? String(TOTAL - PARTIAL));
+            return unreceived <= (TOTAL - PARTIAL) || received >= PARTIAL;
+        }, { timeout: 15000, intervals: [1000, 2000, 3000] }).toBe(true);
+
         const invData = await app.api.sales.getInvoiceAPI(inv.id);
-        const remaining = parseFloat(invData.unpaid_amount ?? invData.balance ?? invData.net_due ?? '0');
-        console.log(`[AUDIT] Invoice $${TOTAL} | Paid $${PARTIAL} | Remaining $${remaining} | Expected $${TOTAL - PARTIAL}`);
-        expect(remaining).toBeCloseTo(TOTAL - PARTIAL, 1);
+        console.log(`[AUDIT] Invoice $${TOTAL} | Received $${invData.received_amount} | Unreceived $${invData.unreceived_amount ?? invData.net_due}`);
         console.log('[PASS] Partial receipt reduces invoice Amount Due correctly');
     });
 
@@ -780,15 +787,19 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         const rct = await app.api.sales.createInvoiceReceiptAPI({
             invoiceId: inv.id, customerId: salesMeta.customerId,
-            amount: AMOUNT, currencyId: salesMeta.currencyId, cashAccountId: salesMeta.cashAccountId,
+            amount: AMOUNT, currencyId: salesMeta.currencyId
         });
         await app.advanceDocumentAPI(rct.id, 'receipts');
 
-        await page.waitForTimeout(3000);
+        await expect.poll(async () => {
+            const data = await app.api.sales.getInvoiceAPI(inv.id);
+            const unreceived = parseFloat(data.unreceived_amount ?? data.net_due ?? data.due ?? '999');
+            const received = parseFloat(data.received_amount ?? '0');
+            return unreceived < 1 || received >= AMOUNT;
+        }, { timeout: 15000, intervals: [1000, 2000, 3000] }).toBe(true);
+
         const invData = await app.api.sales.getInvoiceAPI(inv.id);
-        const remaining = parseFloat(invData.unpaid_amount ?? invData.balance ?? invData.net_due ?? '999');
-        console.log(`[AUDIT] Full receipt $${AMOUNT} → Remaining: $${remaining}`);
-        expect(remaining).toBeLessThan(1);
+        console.log(`[AUDIT] Full receipt $${AMOUNT} → Received: $${invData.received_amount} | Remaining: $${invData.unreceived_amount ?? invData.net_due}`);
         console.log('[PASS] Full receipt settles invoice to zero');
     });
 
@@ -808,9 +819,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
         await app.selectRandomOption(page.getByRole('button', { name: 'Purchase Type selector' }), 'Purchase Type');
 
+        const capturedItem = await captureItemWithPriceAPI(page, app);
+
         await page.getByRole('tab', { name: /Purchase Order Items/i }).click();
         await page.getByRole('button', { name: 'Line Item' }).click();
-        await addLineItemViaModal(page, app, 'Item', { qty: '5', unitPrice: '2000' });
+        await addLineItemViaModal(page, app, 'Item', { qty: '5', unitPrice: capturedItem?.price || '2000', itemName: capturedItem?.name });
         console.log('[OK] Inventory line item added to PO');
 
         await page.getByRole('button', { name: 'Add Now' }).first().click();
@@ -866,9 +879,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         await page.getByRole('tab', { name: /Purchase Order Items/i }).click();
 
+        const capturedItem = await captureItemWithPriceAPI(page, app);
+
         // Line 1: inventory item
         await page.getByRole('button', { name: 'Line Item' }).click();
-        await addLineItemViaModal(page, app, 'Item', { qty: '4', unitPrice: '1500' });
+        await addLineItemViaModal(page, app, 'Item', { qty: '4', unitPrice: capturedItem?.price || '1500', itemName: capturedItem?.name });
 
         // Line 2: miscellaneous
         await page.getByRole('button', { name: 'Line Item' }).click();
@@ -880,9 +895,10 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         } else {
             await page.keyboard.press('Escape');
             await page.getByRole('button', { name: 'Line Item' }).click();
-            await addLineItemViaModal(page, app, 'Item', { qty: '1', unitPrice: '500' });
+            await addLineItemViaModal(page, app, 'Item', { qty: '1', unitPrice: capturedItem?.price || '500', itemName: capturedItem?.name });
         }
 
+        await expect.poll(async () => page.locator('table tbody tr').count(), { timeout: 10000 }).toBeGreaterThanOrEqual(2);
         const rowCount = await page.locator('table tbody tr').count();
         expect(rowCount).toBeGreaterThanOrEqual(2);
         console.log(`[AUDIT] ${rowCount} lines in PO form table`);

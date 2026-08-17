@@ -292,9 +292,11 @@ export class InventoryAPI extends BasePage {
         // type is a plain string on this ERP (e.g. "Expense", "Cost of Goods Sold")
         const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
         const expAcct = allAccounts.find((a: any) =>
-          typeOf(a).includes('expense') || typeOf(a).includes('cost') ||
-          a.name?.toLowerCase().includes('expense')
-        ) || allAccounts[0];
+          !a.is_header && !a.is_parent && (
+            typeOf(a).includes('expense') || typeOf(a).includes('cost') ||
+            a.name?.toLowerCase().includes('expense') || a.name?.toLowerCase().includes('cost')
+          )
+        ) || allAccounts.find((a: any) => !a.is_header && !a.is_parent) || allAccounts[0];
         if (expAcct) adjustmentAccountId = expAcct.id;
       }
     }
