@@ -1,0 +1,36 @@
+06:19:30 [INFO] Advancing purchase-orders "aa686b5d-e7c6-40d8-a4df-c8543f7abf5e"...
+06:19:33 [INFO] Advancing bills "951ceab5-6788-486d-8ba7-8008377c8cc1"...
+
+=================== [SYSTEM API RESPONSE] ===================
+Document Pair : PO: PO/2026/08/17/001171 ↔ Bill: BILL/2026/08/17/001716
+PO Gross      : $36000.00 (8 units @ $4500.00)
+Withholding   : -$720.00 (2% statutory AP withholding tax)
+Net Payable   : $35280.00
+Raw Payload   : {
+  "po_id": "aa686b5d-e7c6-40d8-a4df-c8543f7abf5e",
+  "bill_id": "951ceab5-6788-486d-8ba7-8008377c8cc1",
+  "po_total": 36000,
+  "bill_net_due": 35280,
+  "withholding_tax": 720,
+  "vendor": "Gentium Concrite Industry"
+}
+=============================================================
+
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ 1:1 Reconciliation Audit — PO/2026/08/17/001171 ↔ BILL/2026/08/17/001716    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ PO Ref                           │ PO/2026/08/17/001171                     │
+  │ Bill Ref                         │ BILL/2026/08/17/001716                   │
+  │ Vendor                           │ Gentium Concrite Industry                │
+  │ Qty (PO)                         │ 8 units                                  │
+  │ Unit Price                       │ $4500.00                                 │
+  │ PO Gross Total                   │ $36000.00                                │
+  │ Withholding Tax                  │ -$720.00 (2%)                            │
+  │ Bill Net Payable                 │ $35280.00                                │
+  │ Result                           │ ✓ BALANCED & RECONCILED                  │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+[PASS] 1:1 reconciliation audit succeeded. Bill maps perfectly to Purchase Order.

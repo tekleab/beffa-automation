@@ -1,0 +1,17 @@
+06:16:45 [PERFORMANCE] API - Auth API Verification: 296.10ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003459 (ID: 94f7de13-3d52-4f32-a5cf-0e3e63f572e8)
+06:16:52 [INFO] Advancing inventory-adjustments "94f7de13-3d52-4f32-a5cf-0e3e63f572e8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786947411260 (87157de0-2c51-4291-ae37-9ae62dbf0b99) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:16:56 [PERFORMANCE] API - Auth API Verification: 262.82ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ATTACK] Submitting Invoice forged for: 2021-04-29T00:00:00Z
+[VULNERABILITY] Backend API accepted back-dated payload! ID: INV/2026/08/17/002150
+06:16:58 [INFO] Advancing invoices "1d0d1459-d53d-4660-b439-d1e8dd92d8e9"...
+[PASS] Backend safely intercepted rogue date during advancement: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2021-04-29 falls in a closed or missin

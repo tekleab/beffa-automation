@@ -1,0 +1,46 @@
+06:16:56 [PERFORMANCE] API - Auth API Verification: 323.79ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003460 (ID: 74592e9f-3cdd-46c4-990a-9ea857d4c360)
+06:17:02 [INFO] Advancing inventory-adjustments "74592e9f-3cdd-46c4-990a-9ea857d4c360"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786947418518 (ec7c2ff9-1fa1-4add-99c5-9514fd40862a) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : ec7c2ff9-1fa1-4add-99c5-9514fd40862a (WAC-Item-1786947418518)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+06:17:06 [INFO] Advancing sales-orders "b27082f8-499d-41bc-9362-94412c5f474b"...
+[OK] SO SO/2026/08/17/000555 approved (ID: b27082f8-499d-41bc-9362-94412c5f474b)
+[STEP 2] Releasing Batch 1: 4 units...
+06:17:10 [INFO] Advancing invoices "73b3924e-1226-47fa-a1b5-e6594d72d452"...
+[OK] Batch 1 invoice INV/2026/08/17/002151 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+06:17:14 [INFO] Advancing invoices "a65f8403-fcf1-4996-9722-d14db865b62e"...
+06:17:15 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+06:17:15 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[OK] Batch 2 invoice INV/2026/08/17/002154 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/08/17/000555 (ID: b27082f8-499d-41bc-9362-94412c5f474b)
+[DOCUMENT] Invoice 1    : INV/2026/08/17/002151 (ID: 73b3924e-1226-47fa-a1b5-e6594d72d452) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/08/17/002154 (ID: a65f8403-fcf1-4996-9722-d14db865b62e) — 6 units
+[ITEM]     Item         : WAC-Item-1786947418518 (ec7c2ff9-1fa1-4add-99c5-9514fd40862a)
+[STOCK]    Before       : 20
+[STOCK]    After        : 10
+[STOCK]    Expected     : 10
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[PASS] Over-release correctly rejected at invoice creation.
+[PASS] SO split invoice audit complete: 4 + 6 = 10 units correctly released and tracked.

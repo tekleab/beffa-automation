@@ -1,0 +1,36 @@
+[DateHelper] Resolved in-period date: 2026-08-17T00:00:00Z (day=17, ecYear=2019)
+06:21:10 [PERFORMANCE] API - Auth API Verification: 469.88ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] Resolved in-period date: 2026-08-17T00:00:00Z (day=17, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003489 (ID: 6d0a6318-fc9e-44f1-846f-1567a49af3e5)
+06:21:23 [INFO] Advancing inventory-adjustments "6d0a6318-fc9e-44f1-846f-1567a49af3e5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786947679866 (fa43481d-eca8-47d0-affd-336d76a2efa2) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:21:29 [PERFORMANCE] API - Auth API Verification: 635.71ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving Bill for 5000...
+06:21:33 [INFO] Advancing bills "1a799b04-c097-4845-87f2-1ef979289fa8"...
+06:21:34 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+06:21:34 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[BILL] BILL/2026/08/17/001720 (1a799b04-c097-4845-87f2-1ef979289fa8)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for 1a799b04-c097-4845-87f2-1ef979289fa8 via API (CashAcct: bd32401d-9a1c-4637-9dfe-dbf0e79dc766)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/17/001720               │
+  │ Bill ID                          │ 1a799b04-c097-4845-87f2-1ef979289fa… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.

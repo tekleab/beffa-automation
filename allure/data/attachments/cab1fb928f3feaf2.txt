@@ -1,0 +1,16 @@
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003531 (ID: ff77761c-9a75-48ba-9304-db5ab2aa0678)
+06:25:36 [INFO] Advancing inventory-adjustments "ff77761c-9a75-48ba-9304-db5ab2aa0678"...
+06:25:36 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+06:25:36 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: WAC-Item-1786947934492 (5c4ac43f-3ad0-4c72-9c78-6c285612a01e) | method=WAC | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DEST] Using system location: 87d66495-1719-4402-9b0d-147859d3bc6c | Warehouse: ae638681-f2ae-492a-898e-edab3be6186b
+[SETUP] Item: "WAC-Item-1786947934492" | Src stock: 30 | Dest stock: 0
+[SETUP] Src loc: 539ab667-5559-4db7-8cd4-24f797d57ebb | Dest loc: 87d66495-1719-4402-9b0d-147859d3bc6c
+[MOVE ORDER] Created: 90ff3b94-2f10-440b-aab0-e3a38539f34c (status: draft)
+06:25:43 [INFO] Advancing move-orders "90ff3b94-2f10-440b-aab0-e3a38539f34c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 27...
+[SUCCESS] API Confirmed: Stock correctly reached 27.
+[TC-03] Total before: 30 | Total after: 30 | Src: 27 | Dest: 3
