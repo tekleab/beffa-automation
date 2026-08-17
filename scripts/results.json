@@ -1,29 +1,45 @@
 {
   "total": 249,
-  "passed": 212,
-  "failed": 33,
-  "skipped": 4,
-  "passRate": 85.1,
-  "avgDurationMs": 20010,
-  "lastUpdated": "2026-08-16T06:14:08.180Z",
+  "passed": 215,
+  "failed": 34,
+  "skipped": 0,
+  "passRate": 86.3,
+  "avgDurationMs": 17441,
+  "lastUpdated": "2026-08-17T06:45:56.204Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 212,
-      "failed": 33,
-      "skipped": 4,
+      "passed": 215,
+      "failed": 34,
+      "skipped": 0,
       "trend": [
-        84.8,
-        42.1,
         47.4,
         78.3,
         95.7,
         100,
-        86.5
+        86.5,
+        100,
+        86.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "656",
+      "commit": "b80f457",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "72m 22s",
+      "passRate": 86.3,
+      "status": "success"
+    },
+    {
+      "run": "655",
+      "commit": "4169f59",
+      "trigger": "push (smoke)",
+      "duration": "9m 34s",
+      "passRate": 100,
+      "status": "success"
+    },
     {
       "run": "654",
       "commit": "5f2b906",
@@ -87,102 +103,86 @@
       "duration": "12m 18s",
       "passRate": 94.7,
       "status": "success"
-    },
-    {
-      "run": "627",
-      "commit": "638418c",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "12m 15s",
-      "passRate": 84.2,
-      "status": "success"
-    },
-    {
-      "run": "626",
-      "commit": "f79c21c",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "89m 5s",
-      "passRate": 81,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: apiRequestContext.patch: connect ECONNREFUSED 168.119.175.142:8001\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/inventory-adjustments/a765939b-8ee7-46e9-a92a-3502d6027ad2/advance?y",
+      "firstSeen": "2026-08-17T06:12:39.252Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [FRESH ITEM] Stock adjustment failed for 634d228b-5db1-41f0-ad9b-df57f48ce277: {\n\t\"code\": 400,\n\t\"message\": \"Unable to create Inventory Adjustment.\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:736\n\n  7",
+      "firstSeen": "2026-08-17T06:12:39.189Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\n\n  28 |         console.log('[STEP] Phase 1: TIN validatio",
+      "firstSeen": "2026-08-17T06:12:39.246Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
+      "error": "Error: Direct customer receipt creation failed with HTTP 422: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"currency_id\": [\n\t\t\t\"Unable to find Currency.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating Receipt",
+      "firstSeen": "2026-08-17T06:12:41.054Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
       "title": "LOAD: Concurrently approving 5 receipts must succeed without database deadlocks",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/16/00",
-      "firstSeen": "2026-08-16T05:37:33.518Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/17/00",
+      "firstSeen": "2026-08-17T06:12:46.038Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "STRESS: Concurrent duplicate receipt submittals against same invoice must be blocked",
+      "error": "Error: apiRequestContext.post: socket hang up\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2019&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X",
+      "firstSeen": "2026-08-17T06:13:00.857Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "STRESS: Receipt against an invoice reversed mid-flight must be rejected",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/16/00",
-      "firstSeen": "2026-08-16T05:38:14.667Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "LOAD: 10 concurrent invoices for same customer must all be created with distinct IDs",
-      "error": "Error: 1 non-transient invoice(s) failed under load\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31",
-      "firstSeen": "2026-08-16T05:40:33.604Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Receipt: Reject back-dated Receipt from previous fiscal year (2017)",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-      "firstSeen": "2026-08-16T05:41:14.367Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "high",
-      "title": "Receipt: Reject future-dated Receipt from next fiscal year (2019)",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-      "firstSeen": "2026-08-16T05:43:16.179Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Exact-amount receipt must be accepted and reduce invoice AR balance to zero",
-      "error": "Error: Receipt failed: 500 {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n  147 |             data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method",
-      "firstSeen": "2026-08-16T05:41:10.734Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "LOAD: Concurrently approving 5 bill payments must succeed without database deadlocks",
-      "error": "Error: [CASH_TOPUP] Receipt creation failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/base-page.ts:1286\n\n  1284 |     if (!response.ok()) {\n  1285 |       const errTe",
-      "firstSeen": "2026-08-16T05:42:38.659Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Error: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/17/00",
+      "firstSeen": "2026-08-17T06:13:13.927Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "STRESS: Concurrent duplicate payment submittals against same bill must be blocked",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m2\u001b[39m\nReceived:   \u001b[31m2\u001b[39m\n\n  156 |             }\n  157 |\n> 158 |          ",
-      "firstSeen": "2026-08-16T05:42:43.483Z",
+      "title": "Audit: Credit note (void) must reverse AR debit from original invoice",
+      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/invoices/78ff1e29-bc8b-4096-932f-346345e16a9d/advance?year=2019&period=yearly&calendar=ec\u001b[22m\n",
+      "firstSeen": "2026-08-17T06:15:09.592Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "STRESS: Payment against a bill reversed mid-flight must be rejected",
-      "error": "Error: Should not allow payment on reversed bill\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31",
-      "firstSeen": "2026-08-16T05:42:49.669Z",
+      "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
+      "error": "Error: apiRequestContext.patch: socket hang up\nCall log:\n\u001b[2m  - → PATCH http://168.119.175.142:8001/api/inventory-adjustments/a0fff253-598c-41b6-82e9-d39f43ffb022/advance?year=2019&period=yearly&cale",
+      "firstSeen": "2026-08-17T06:15:12.322Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
-      "title": "Guardrail: System must reject approval of a future-dated Bill",
-      "error": "Error: [CRITICAL_LOGIC_BUG] System approved a bill dated 2028-08-16T00:00:00Z. Future-period AP liability injection possible — balance sheet manipulation.\n\n  104 |                 }, null, 2));\n  105 ",
-      "firstSeen": "2026-08-16T05:43:54.914Z",
+      "severity": "medium",
+      "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+      "error": "Error: Item Creation API Failed: apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001\n\n   at ../lib/api/InventoryAPI.ts:142\n\n  140 |         resp = await this.page.request.post(`${apiBase",
+      "firstSeen": "2026-08-17T06:15:21.863Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
