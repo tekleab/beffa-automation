@@ -1,0 +1,45 @@
+[WARN] Receipt creation failed on attempt 1: Attempt 1: HTTP 500 - {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[WARN] Receipt creation error on attempt 2: page.waitForTimeout: Target page, context or browser has been closed
+    at SalesAPI.safePost (/home/runner/work/beffa-automation/beffa-automation/lib/base-page.ts:490:25)
+    at SalesAPI.createInvoiceReceiptAPI (/home/runner/work/beffa-automation/beffa-automation/lib/api/SalesAPI.ts:598:26)
+    at /home/runner/work/beffa-automation/beffa-automation/tests/sales/so-period-control.spec.ts:263:21 {
+  [Symbol(step)]: {
+    location: {
+      file: '/home/runner/work/beffa-automation/beffa-automation/lib/base-page.ts',
+      line: 490,
+      column: 25,
+      function: 'SalesAPI.safePost'
+    },
+    category: 'pw:api',
+    title: 'Wait for timeout',
+    apiName: 'page.waitForTimeout',
+    params: { waitTimeout: 3000 },
+    group: undefined,
+    stepId: 'pw:api@172',
+    boxedStack: undefined,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [TestInfoImpl],
+      _stepId: 'pw:api@172',
+      _title: 'Wait for timeout',
+      _parentStep: [TestStepInfoImpl],
+      skip: [Function (anonymous)]
+    },
+    complete: [Function: complete],
+    endWallTime: 1786958875334,
+    error: {
+      message: 'Error: page.waitForTimeout: Target page, context or browser has been closed',
+      stack: 'Error: page.waitForTimeout: Target page, context or browser has been closed\n' +
+        '    at SalesAPI.safePost (/home/runner/work/beffa-automation/beffa-automation/lib/base-page.ts:490:25)\n' +
+        '    at SalesAPI.createInvoiceReceiptAPI (/home/runner/work/beffa-automation/beffa-automation/lib/api/SalesAPI.ts:598:26)\n' +
+        '    at /home/runner/work/beffa-automation/beffa-automation/tests/sales/so-period-control.spec.ts:263:21',
+      cause: undefined
+    }
+  }
+}

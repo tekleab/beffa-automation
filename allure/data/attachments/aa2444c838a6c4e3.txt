@@ -1,0 +1,32 @@
+[DateHelper] Resolved in-period date: 2026-08-17T00:00:00Z (day=17, ecYear=2019)
+09:24:47 [PERFORMANCE] API - Auth API Verification: 218.51ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003718 (ID: d93d99d3-1a73-44b9-bb49-314a5e416cff)
+09:24:51 [INFO] Advancing inventory-adjustments "d93d99d3-1a73-44b9-bb49-314a5e416cff"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786958689556 (18cd75c3-89ed-4f86-b9c9-01775fa0ea43) | method=WAC | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1786958689556 | stock:20
+09:24:57 [INFO] Advancing bills "d94b671c-9c21-44a8-a9a6-96109de6bb9c"...
+[BILL] BILL/2026/08/17/001777 (d94b671c-9c21-44a8-a9a6-96109de6bb9c) approved | amount: 4000
+
+===================================================================
+  AP GL AUDIT — Bill Approval
+  Ref: BILL/2026/08/17/001777 | ID: d94b671c-9c21-44a8-a9a6-96109de6bb9c
+===================================================================
+  | Account                              |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────
+  | Cash - Branch Office                 |      4000.00 |            — |
+  | Cost of Others                       |            — |      4000.00 |
+  | Inventory                            |      4000.00 |            — |
+  | Accounts Payable                     |            — |      4000.00 |
+  ───────────────────────────────────────────────────────────────────
+  | TOTAL                                |      8000.00 |      8000.00 |
+  | ✓ BALANCED (Dr = Cr)                                                |
+  ───────────────────────────────────────────────────────────────────
+
+[PASS] AP credited: Accounts Payable | Cr:4000
+[PASS] Debit posted: Cash - Branch Office | Dr:4000
+[PASS] Bill GL balanced: Dr=8000.00 = Cr=8000.00
+[PASS] AP credit 4000.00 matches bill amount 4000

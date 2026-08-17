@@ -1,0 +1,15 @@
+[DateHelper] Resolved in-period date: 2026-08-17T00:00:00Z (day=17, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/17/003735 (ID: 3defa2e3-c42a-449a-be28-d08c53eeb141)
+09:27:29 [INFO] Advancing inventory-adjustments "3defa2e3-c42a-449a-be28-d08c53eeb141"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1786958848060 (265f8789-cd6f-4a75-bf37-9743541746ad) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:27:37 [INFO] Advancing purchase-orders "139433cc-2268-4d4f-b778-15ac368a6ddf"...
+09:27:40 [INFO] Advancing bills "40fb9e89-e176-474a-9f7b-3da24bda4c0a"...
+[BILL 1] BILL/2026/08/17/001804 — received 10/10 | PO remaining: 0
+[PASS] Overflow bill creation rejected at API level: HTTP 422 — {
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quantity": [
+			"Unable to consume 1 items from purchas
