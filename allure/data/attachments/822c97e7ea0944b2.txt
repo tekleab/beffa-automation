@@ -1,0 +1,23 @@
+
+=======================================================
+  [RECEIPT API] 2. Guardrail: Empty/Invalid Payload Test 
+=======================================================
+[ATTACK PAYLOAD] POST /api/receipts with empty/null fields: {"customer_id":null,"amount":0,"cash_account_id":null}
+[HTTP RESPONSE] Status Code: 422
+[DIAGNOSTIC STATUS] ✅ Guardrail operational. Server rejected payload with HTTP 422
+[SERVER REJECTION MESSAGE] {
+	"code": 422,
+	"details": {
+		"cash_account_id": [
+			"Cash Account is required."
+		],
+		"currency_id": [
+			"Unable to find Currency."
+		],
+		"customer_id": [
+			"Customer is required."
+		],
+		"payment_method": [
+			"Invalid Payment Method."
+		]
+	

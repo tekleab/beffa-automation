@@ -1,29 +1,37 @@
 {
   "total": 23,
-  "passed": 19,
-  "failed": 4,
+  "passed": 22,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 82.6,
-  "avgDurationMs": 32962,
-  "lastUpdated": "2026-08-17T07:24:31.587Z",
+  "passRate": 95.7,
+  "avgDurationMs": 32517,
+  "lastUpdated": "2026-08-17T09:11:11.481Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 19,
-      "failed": 4,
+      "passed": 22,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        95.7,
         100,
         86.5,
         100,
         86.3,
         100,
-        82.6
+        82.6,
+        95.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "659",
+      "commit": "5d4b5ba",
+      "trigger": "push (smoke)",
+      "duration": "12m 27s",
+      "passRate": 95.7,
+      "status": "success"
+    },
     {
       "run": "658",
       "commit": "85ae236",
@@ -95,46 +103,14 @@
       "duration": "6m 28s",
       "passRate": 47.4,
       "status": "failed"
-    },
-    {
-      "run": "632",
-      "commit": "1df8916",
-      "trigger": "push (smoke)",
-      "duration": "6m 39s",
-      "passRate": 42.1,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\n\n  56 |         await app.editCustomerBtn.click({ force: t",
-      "firstSeen": "2026-08-17T07:13:25.063Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
-      "error": "Error: Invoice INV/2026/08/17/002182 should be visible in customer profile Invoices tab (63 rows visible)\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.",
-      "firstSeen": "2026-08-17T07:14:16.029Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI Audit: Customer profile shows zero balance after full payment",
-      "error": "Error: Receipt RCPT/2026/08/17/000423 should be visible in customer profile Receipts tab (63 rows visible)\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object",
-      "firstSeen": "2026-08-17T07:14:21.405Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "medium",
       "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill BILL/2026/08/17/001768 should be visible in vendor \"Gentium Concrite Industry\" profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Obje",
-      "firstSeen": "2026-08-17T07:15:59.497Z",
+      "error": "Error: Bill BILL/2026/08/17/001772 should be visible in vendor \"Gentium Concrite Industry\" profile Bills tab\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Obje",
+      "firstSeen": "2026-08-17T09:02:53.373Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
