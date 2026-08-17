@@ -162,63 +162,72 @@ export class BasePage {
 
     let success = false;
     for (let i = 0; i < 4; i++) {
-      const resp = await this.page.request.patch(url, { headers, data: payload, timeout: 30000 });
-      const status = resp.status();
+      try {
+        const resp = await this.page.request.patch(url, { headers, data: payload, timeout: 30000 });
+        const status = resp.status();
 
-      if (status === 200 || status === 204) {
-        success = true;
-        await this.page.waitForTimeout(1000);
-      } else if (status === 400 || status === 404) {
-        if (success) break;
-        break;
-      } else if (status === 401) {
-        // Token expired mid-test — re-authenticate once and retry
-        Logger.warn('401 on advance — re-authenticating and retrying...');
-        try {
-          const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
-          const loginResp = await this.page.request.post(loginUrl, {
-            data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 30000
-          });
-          if (loginResp.ok()) {
-            const session = await loginResp.json();
-            const newToken = session.auth_token;
-            if (newToken) {
-              await this.page.evaluate((t) => {
-                // nosec CWE-79 — test automation framework; token stored in ERP's own localStorage schema
-                localStorage.setItem('token', t);
-                localStorage.setItem('auth-token', t);
-              }, newToken).catch(() => { });
-              headers['Authorization'] = `Bearer ${newToken}`;
-              Logger.info('Re-authenticated successfully — retrying advance...');
-              continue;
-            }
-          }
-        } catch (e: any) {
-          Logger.warn(`Re-auth failed: ${Logger.sanitize(e.message)}`);
-        }
-        throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${this.sanitizeLog(company)}" is invalid or expired.`);
-      } else if (status === 422) {
-        if (success) break;
-        const text = await resp.text();
-        throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
-      } else {
-        const errBody = await resp.text().catch(() => '(unreadable)');
-        Logger.error(`Advance failed. Status: ${status} | Body: ${Logger.sanitize(errBody)}`);
-        // For employee-contracts, a 500/E1481 may mean already at final state — check current status
-        if (docType === 'employee-contracts' && status === 500) {
-          Logger.info('employee-contracts advance returned 500 (E1481) — checking if contract is already approved...');
+        if (status === 200 || status === 204) {
           success = true;
+          await this.page.waitForTimeout(1000);
+        } else if (status === 400 || status === 404) {
+          if (success) break;
+          break;
+        } else if (status === 401) {
+          // Token expired mid-test — re-authenticate once and retry
+          Logger.warn('401 on advance — re-authenticating and retrying...');
+          try {
+            const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
+            const loginResp = await this.page.request.post(loginUrl, {
+              data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+              headers: { 'Content-Type': 'application/json' },
+              timeout: 30000
+            });
+            if (loginResp.ok()) {
+              const session = await loginResp.json();
+              const newToken = session.auth_token;
+              if (newToken) {
+                await this.page.evaluate((t) => {
+                  // nosec CWE-79 — test automation framework; token stored in ERP's own localStorage schema
+                  localStorage.setItem('token', t);
+                  localStorage.setItem('auth-token', t);
+                }, newToken).catch(() => { });
+                headers['Authorization'] = `Bearer ${newToken}`;
+                Logger.info('Re-authenticated successfully — retrying advance...');
+                continue;
+              }
+            }
+          } catch (e: any) {
+            Logger.warn(`Re-auth failed: ${Logger.sanitize(e.message)}`);
+          }
+          throw new Error(`[CRITICAL] API Advance Failed: 401 Unauthorized. Token for "${this.sanitizeLog(company)}" is invalid or expired.`);
+        } else if (status === 422) {
+          if (success) break;
+          const text = await resp.text().catch(() => '');
+          throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
+        } else {
+          const errBody = await resp.text().catch(() => '(unreadable)');
+          Logger.error(`Advance failed. Status: ${status} | Body: ${Logger.sanitize(errBody)}`);
+          // For employee-contracts, a 500/E1481 may mean already at final state — check current status
+          if (docType === 'employee-contracts' && status === 500) {
+            Logger.info('employee-contracts advance returned 500 (E1481) — checking if contract is already approved...');
+            success = true;
+            break;
+          }
+          if (status === 500) {
+            const backoff = (i + 1) * 2000;
+            Logger.warn(`Transient 500 on advance. Retry ${i + 1}/4 in ${backoff}ms...`);
+            await this.page.waitForTimeout(backoff);
+            continue;
+          }
           break;
         }
-        if (status === 500) {
-          const backoff = (i + 1) * 2000;
-          Logger.warn(`Transient 500 on advance. Retry ${i + 1}/4 in ${backoff}ms...`);
-          await this.page.waitForTimeout(backoff);
-          continue;
+      } catch (err: any) {
+        if (err.message?.includes('[API BLOCK]') || err.message?.includes('[CRITICAL]')) {
+          throw err;
         }
-        break;
+        Logger.warn(`Transient network drop/socket hang up on advance attempt ${i + 1}/4: ${err.message}. Retrying in 2s...`);
+        await this.page.waitForTimeout(2000);
+        continue;
       }
     }
 

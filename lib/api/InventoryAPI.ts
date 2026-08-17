@@ -73,19 +73,18 @@ export class InventoryAPI extends BasePage {
 
     if (!incAcct || !expAcct || !invAcct) {
       try {
-        const acctResp = await this.page.request.get(`${apiBase}/accounts?page=1&pageSize=100&${params}`, { headers, timeout: 10000 });
-        if (acctResp.ok()) {
+        const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });
+        if (acctResp && acctResp.ok()) {
           const adata = await acctResp.json();
           const accounts = adata.items || adata.data || [];
-          incAcct = incAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('sales'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'income')?.id || accounts[0]?.id;
-          expAcct = expAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('cogs') || a.name?.toLowerCase().includes('cost of goods'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'expense')?.id || accounts[0]?.id;
-          invAcct = invAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('inventory'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'asset')?.id || accounts[0]?.id;
+          if (accounts.length > 0) {
+            incAcct = incAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('sales'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'income')?.id || accounts[0].id;
+            expAcct = expAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('cogs') || a.name?.toLowerCase().includes('cost of goods'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'expense')?.id || accounts[0].id;
+            invAcct = invAcct || accounts.find((a: any) => a.name?.toLowerCase().includes('inventory'))?.id || accounts.find((a: any) => a.account_type?.toLowerCase() === 'asset')?.id || accounts[0].id;
+          }
         }
-      } catch { /* fall through to hardcoded defaults */ }
+      } catch { /* proceed with discovered values */ }
     }
-    incAcct = incAcct || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
-    expAcct = expAcct || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
-    invAcct = invAcct || '5beb2d62-bb7e-4c1b-8298-556ac8ebe25e';
 
     let locId = typeof data === 'string' ? undefined : data.default_location_id;
     let warehouseId = typeof data === 'string' ? undefined : data.default_warehouse_id;
@@ -721,18 +720,24 @@ export class InventoryAPI extends BasePage {
       default_warehouse_id: warehouseId,
     });
 
-    // Inject stock via adjustment. Pass current_quantity=0 and location_quantity=0 explicitly
-    // so the ERP's consistency check passes (item was just created with zero stock).
-    const adj = await this.createInventoryAdjustmentAPI({
-      itemId: item.id,
-      quantity: opts.quantity,
-      cost: opts.unit_cost,
-      locationId,
-      warehouseId,
-      adjusted_by: 'quantity',
-      _overrideCurrentQty: 0,
-      _overrideLocationQty: 0,
-    });
+    // Inject stock via adjustment with up to 3 retries for transient DB lock/lag.
+    // Pass current_quantity=0 and location_quantity=0 explicitly so ERP consistency check passes.
+    let adj: any;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      adj = await this.createInventoryAdjustmentAPI({
+        itemId: item.id,
+        quantity: opts.quantity,
+        cost: opts.unit_cost,
+        locationId,
+        warehouseId,
+        adjusted_by: 'quantity',
+        _overrideCurrentQty: 0,
+        _overrideLocationQty: 0,
+      });
+      if (adj.success && adj.id) break;
+      console.warn(`[FRESH ITEM] Stock adjustment attempt ${attempt} failed: ${adj.error}. Retrying in 1s...`);
+      await this.page.waitForTimeout(1000);
+    }
     if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
     await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
     if (!opts.skipStockPoll) {

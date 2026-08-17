@@ -110,21 +110,31 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         throw new Error('[CURRENCY] Could not locate Currency field as button or text input');
     }
 
-    async function captureItemWithPriceAPI(page: any, app: AppManager): Promise<{ name: string; price: string } | null> {
+    async function captureItemWithPriceAPI(page: any, app: AppManager): Promise<{ name: string; price: string; validNames: Set<string> } | null> {
         try {
             const { apiBase, headers, qs } = await app.buildApiContext();
             const res = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=100&${qs}`, { headers });
             if (!res.ok()) return null;
             const data = await res.json();
-            const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
-            // Prefer selling_price > 0, then unit_price > 0
-            const found = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
-                itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
-            if (!found) return null;
-            const name = found.name || found.item_name;
-            const price = String(parseFloat(found.selling_price || found.unit_price || '0'));
-            console.log(`[API PRE-CAPTURE] Item "${name}" with selling_price $${price}`);
-            return { name, price };
+            const itemsList: any[] = Array.isArray(data) ? data : (data.items || data.data || []);
+
+            const validNames = new Set<string>();
+            let firstPricedItem: { name: string; price: string } | null = null;
+
+            for (const i of itemsList) {
+                const price = parseFloat(i.selling_price ?? i.unit_price ?? i.purchase_price ?? i.unit_cost ?? '0');
+                const name = i.name || i.item_name;
+                if (price > 0 && name) {
+                    validNames.add(name.toLowerCase().trim());
+                    if (!firstPricedItem) {
+                        firstPricedItem = { name, price: String(price) };
+                    }
+                }
+            }
+
+            if (!firstPricedItem) return null;
+            console.log(`[API PRE-CAPTURE] Found ${validNames.size} priced items. First: "${firstPricedItem.name}" @ $${firstPricedItem.price}`);
+            return { name: firstPricedItem.name, price: firstPricedItem.price, validNames };
         } catch (err) {
             console.log(`[API PRE-CAPTURE] Error: ${err}`);
             return null;
@@ -140,101 +150,119 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             .filter({ hasText: /Warehouse \*|G\/L Account \*|Description/i })
             .first();
 
-        // Wait up to 5s for either the popover or the modal to appear
+        // ── Open the modal ────────────────────────────────────────────────────
         await Promise.race([
             popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { }),
             modal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { })
         ]);
 
-        // If type selection popover is visible, click the button matching type first to open the modal
         if (await popover.isVisible().catch(() => false)) {
-            const typeBtn = popover.getByRole('button', { name: type, exact: true });
-            await typeBtn.click();
+            await popover.getByRole('button', { name: type, exact: true }).click();
             await page.waitForTimeout(500);
         }
 
         await modal.waitFor({ state: 'visible', timeout: 15000 });
 
-        // itemName passed from caller (pre-captured via API with selling_price > 0)
-        // Fallback: discover inside the modal if not provided
-        let discoveredItemName: string | null = opts.itemName || null;
-
-        if (type === 'Item' && !discoveredItemName) {
-            // Fallback API discovery inside modal when no pre-captured item name
-            try {
-                const { apiBase, headers, qs } = await app.buildApiContext();
-                const res = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=100&${qs}`, { headers });
-                if (res.ok()) {
-                    const data = await res.json();
-                    const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
-                    const found = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
-                        itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
-                    if (found) {
-                        discoveredItemName = found.name || found.item_name;
-                        console.log(`[API FALLBACK] Discovered item "${discoveredItemName}" with selling_price > 0`);
-                    }
-                }
-            } catch (err) {
-                console.log(`[API FALLBACK] Item discovery error: ${err}`);
-            }
-        }
-
-        // Choose Item vs Miscellaneous tab inside the modal if the inner button/tab is visible
+        // Choose Item vs Miscellaneous tab inside the modal if visible
         const innerTabBtn = modal.getByRole('button', { name: type, exact: true });
         if (await innerTabBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
             await innerTabBtn.click();
             await page.waitForTimeout(500);
         }
 
+        // ── Item type: API-first item discovery & exact match selection ────────
         if (type === 'Item') {
             const itemBtn = modal.getByRole('button', { name: 'Item selector' });
+
+            const targetItemName = opts.itemName || (itemA ? ((itemA as any).name || itemA.itemName) : null);
+            const targetItemPrice = opts.unitPrice || '100';
+
             let itemSelected = false;
 
-            // Search for and select specific item if available
-            const targetName = discoveredItemName || (typeof itemA !== 'undefined' ? ((itemA as any).name || itemA.itemName) : null);
-            if (targetName) {
-                await itemBtn.click().catch(() => { });
-                await page.waitForTimeout(500);
+            for (let attempt = 0; attempt < 3 && !itemSelected; attempt++) {
+                await itemBtn.click({ force: true }).catch(() => { });
+                await page.waitForTimeout(600);
 
-                const searchInput = page.locator('[role="menu"] input, .chakra-menu__menu-list input, input[placeholder*="search" i]').filter({ visible: true }).first();
-                if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-                    await searchInput.fill(targetName);
-                    await page.waitForTimeout(500);
+                const menuList = page.locator('.chakra-menu__menu-list, [role="menu"], [role="listbox"], .chakra-popover__content')
+                    .filter({ visible: true }).last();
+
+                await menuList.waitFor({ state: 'visible', timeout: 3000 }).catch(() => { });
+
+                const searchInput = menuList.locator('input[placeholder*="search" i], input[type="text"], input').filter({ visible: true }).first();
+
+                if (targetItemName && await searchInput.isVisible().catch(() => false)) {
+                    await searchInput.focus();
+                    await searchInput.clear();
+                    await searchInput.pressSequentially(targetItemName, { delay: 20 });
+                    await page.waitForTimeout(600);
                 }
 
-                const matchingOption = page.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem')
-                    .filter({ hasText: targetName })
-                    .filter({ visible: true })
-                    .first();
+                const options = menuList.locator('[role="menuitem"], [role="option"], .chakra-menu__menuitem, div.chakra-stack')
+                    .filter({ hasNotText: /^Clear$/i })
+                    .filter({ visible: true });
 
-                if (await matchingOption.isVisible({ timeout: 3000 }).catch(() => false)) {
-                    await matchingOption.click();
+                let count = await options.count();
+
+                if (count > 0) {
+                    let clickedIndex = -1;
+                    if (targetItemName) {
+                        for (let k = 0; k < count; k++) {
+                            const txt = (await options.nth(k).textContent().catch(() => ''))?.toLowerCase() || '';
+                            if (txt.includes(targetItemName.toLowerCase())) {
+                                clickedIndex = k;
+                                break;
+                            }
+                        }
+                    }
+                    if (clickedIndex === -1) {
+                        clickedIndex = 0;
+                    }
+
+                    const selOpt = options.nth(clickedIndex);
+                    const optText = await selOpt.textContent().catch(() => '');
+                    await selOpt.evaluate((node: HTMLElement) => (node as HTMLElement).click()).catch(() => selOpt.click({ force: true }));
+                    console.log(`[ITEM MODAL] Selected item option [${clickedIndex}]: "${optText?.trim().replace(/\s+/g, ' ')}"`);
+                    await page.waitForTimeout(1000);
+
+                    // Inspect Selling Price field state
+                    const priceInput = modal.locator('.chakra-form-control').filter({
+                        has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax/i })
+                    }).locator('input').first();
+
+                    if (await priceInput.isVisible({ timeout: 1500 }).catch(() => false)) {
+                        const val = parseFloat(await priceInput.inputValue().catch(() => '0')) || 0;
+                        const isDisabled = await priceInput.isDisabled().catch(() => false);
+                        console.log(`[ITEM MODAL] Price check: val=$${val}, disabled=${isDisabled}`);
+
+                        if (!isDisabled && val <= 0) {
+                            await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
+                            await page.keyboard.type(targetItemPrice, { delay: 30 }).catch(() => { });
+                            await page.keyboard.press('Tab').catch(() => { });
+                        }
+                    }
                     itemSelected = true;
-                    console.log(`[ITEM MODAL] Searched and selected item: "${targetName}"`);
                 } else {
                     await page.keyboard.press('Escape').catch(() => { });
+                    await page.waitForTimeout(300);
                 }
-            }
-
-            if (!itemSelected) {
-                await app.selectRandomOption(itemBtn, 'Item');
             }
 
             await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
             await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
         } else {
-            // Miscellaneous: description field instead of item picker
+            // Miscellaneous: fill description
             const descField = modal.getByRole('textbox').first();
             if (await descField.isVisible({ timeout: 3000 }).catch(() => false)) {
                 await descField.fill(opts.description || 'Miscellaneous charge');
             }
         }
 
+        // ── G/L Account ───────────────────────────────────────────────────────
         const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
         await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => { });
         await app.selectRandomOption(glBtn, 'G/L Account');
 
-        // Quantity input: target by .chakra-form-control containing Quantity label
+        // ── Quantity ──────────────────────────────────────────────────────────
         const qtyControl = modal.locator('.chakra-form-control').filter({
             has: page.locator('label, p, span, div').filter({ hasText: /^Quantity/i })
         }).first();
@@ -245,44 +273,25 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             console.log(`[MODAL] Filled Quantity: ${opts.qty}`);
         }
 
-        // Enforce Unit Price / Selling Price > 0
-        const priceToSet = (opts.unitPrice && parseFloat(opts.unitPrice) > 0) ? opts.unitPrice : '500';
-
-        // Target Selling Price / Unit Price input by exact .chakra-form-control label
-        let priceInput = modal.locator('.chakra-form-control').filter({
-            has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax/i })
-        }).locator('input').first();
-
-        if (!(await priceInput.isVisible({ timeout: 1000 }).catch(() => false))) {
-            priceInput = modal.locator('input[name*="price" i], input[id*="price" i], input[placeholder*="price" i]').first();
-        }
-
+        // ── Tax (optional) ────────────────────────────────────────────────────
         await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
 
-        if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-            // Always force-inject via evaluate — works even when the field is disabled/read-only
-            // (ERP auto-fills price from inventory selection; React's disabled attr blocks fill() but not evaluate)
-            await priceInput.evaluate((el: HTMLInputElement, val: string) => {
-                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                if (nativeInputValueSetter) {
-                    nativeInputValueSetter.call(el, val);
-                } else {
-                    el.value = val;
-                }
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-                el.dispatchEvent(new Event('blur', { bubbles: true }));
-            }, priceToSet);
-            const actualVal = await priceInput.inputValue().catch(() => '?');
-            console.log(`[MODAL] Force-injected Selling Price: $${priceToSet} → actual: $${actualVal}`);
-        }
-
-        // Assert unit price is verified > 0 before proceeding
-        console.log(`[VALIDATION] Unit price verified > 0 ($${priceToSet}) for ${type} line item.`);
-
+        // ── Click Add / Save and verify modal closes ──────────────────────────
         const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
+        await addBtn.scrollIntoViewIfNeeded();
         await addBtn.click();
-        await expect(modal).not.toBeVisible({ timeout: 15000 });
+
+        const closed = await modal.waitFor({ state: 'hidden', timeout: 15000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            const errorText = await modal.locator(
+                '[class*="error"], [class*="invalid"], [role="alert"], .chakra-form__error-message, [data-status="error"]'
+            ).allTextContents().catch(() => []);
+            throw new Error(
+                `[MODAL] Line item modal did not close after clicking Add/Save. ` +
+                `Validation errors: ${errorText.join('; ') || 'none visible'}`
+            );
+        }
+        console.log(`[MODAL] ${type} line item added successfully`);
     }
 
     // =========================================================================

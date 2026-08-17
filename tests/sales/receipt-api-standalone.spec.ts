@@ -103,7 +103,9 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
         const customer = (await custResp.json()).data?.[0];
         const cashAccounts = (await cashResp.json()).data || (await cashResp.json()).items || [];
         const currencyData = await currResp.json();
-        const currency = currencyData.data?.[0] || currencyData.items?.[0] || { id: 'bd0e0b51-b32d-4925-b442-05a3e63abf16' };
+        const currencyList = Array.isArray(currencyData) ? currencyData : (currencyData.data || currencyData.items || currencyData.currencies || []);
+        const currency = currencyList[0] || (currencyData.id ? currencyData : null);
+        expect(currency?.id, 'Valid Currency is required').toBeTruthy();
         const cashAccount = cashAccounts.find((a: any) => /cash|bank/i.test(a.name || a.type)) || cashAccounts[0];
         const warehouse = (await whResp.json()).data?.[0];
         const item = (await itemResp.json()).data?.[0] || (await itemResp.json()).items?.[0];
