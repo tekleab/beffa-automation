@@ -65,8 +65,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         if (so.success) {
             try {
                 await app.advanceDocumentAPI(so.id, 'sales-orders');
-                console.log(`[KNOWN_BUG] System approved back-dated SO from previous fiscal year (${backDate}). ERP does not enforce period control at SO approval. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (${backDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] SO created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -96,8 +97,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         if (so.success) {
             try {
                 await app.advanceDocumentAPI(so.id, 'sales-orders');
-                console.log(`[KNOWN_BUG] System approved future-dated SO (${futureDate}). ERP does not enforce period control at SO approval. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated SO (${futureDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Future-dated SO blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -163,8 +165,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         if (inv.success) {
             try {
                 await app.advanceDocumentAPI(inv.id, 'invoices');
-                console.log(`[KNOWN_BUG] System approved future-dated Invoice (${futureDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated Invoice (${futureDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Future-dated Invoice blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -267,8 +270,9 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         if (rct.success) {
             try {
                 await app.advanceDocumentAPI(rct.id, 'receipts');
-                console.log(`[KNOWN_BUG] System approved future-dated Receipt (${futureDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated Receipt (${futureDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Future-dated Receipt blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -329,7 +333,7 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         });
 
         if (inv.success) {
-            console.log(`[KNOWN_BUG] System accepted pre-epoch date (${epochDate}). ERP does not validate date boundaries. Bug logged for remediation.`);
+            throw new Error(`[PERIOD_CONTROL_BUG] System accepted pre-epoch date (${epochDate})!`);
         } else {
             console.log(`[PASS] Pre-epoch date rejected`);
         }

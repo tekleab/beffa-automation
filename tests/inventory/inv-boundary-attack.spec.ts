@@ -102,6 +102,7 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @l
 
         if (resp.ok()) {
             BUG('BUG-INV-001', 'Zero-quantity adjustment accepted — ghost stock entry', { adj_doc: body.ref, adj_id: body.id, item_id: item.id, item_name: item.name, adjusted_quantity: 0, http_status: resp.status(), impact: 'Ghost adjustment record in ledger — data integrity risk' });
+            expect(resp.ok(), 'Zero-quantity adjustment should be rejected by server').toBe(false);
         } else {
             expect(resp.status()).toBeGreaterThanOrEqual(400);
             console.log(`[PASS] Zero-quantity correctly rejected: ${resp.status()}`);
@@ -109,7 +110,7 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @l
     });
 
     // ── 2. FLOAT-QUANTITY ─────────────────────────────────────────────────────
-    test('[KNOWN_BUG] Float-quantity adjustment (1.5 units) must be rejected or rounded', async ({ request }) => {
+    test('Float-quantity adjustment (1.5 units) must be rejected or rounded', async ({ request }) => {
         const resp = await postAdj(request, { adjusted_quantity: 1.5, reason: 'E2E boundary — float qty' });
         const body = await resp.json();
         const storedQty = parseFloat(body.adjusted_quantity ?? '0');
@@ -118,6 +119,7 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @l
         if (resp.ok()) {
             if (!Number.isInteger(storedQty)) {
                 BUG('BUG-INV-002', 'Float-quantity stored as fractional — stock count corrupted', { adj_doc: body.ref, adj_id: body.id, item_id: item.id, item_name: item.name, sent_quantity: 1.5, stored_quantity: storedQty, impact: 'Fractional stock units corrupt WAC costing and stock counts' });
+                expect(Number.isInteger(storedQty), 'Float-quantity adjustment must be rounded or rejected').toBe(true);
             } else {
                 console.log(`[PASS] Float qty rounded to integer: ${storedQty}`);
             }
@@ -146,6 +148,7 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @l
                 const finalStock = loc?.quantity ?? 0;
                 if (finalStock < 0) {
                     BUG('BUG-INV-003', 'Negative stock created — no stock floor enforcement', { adj_doc: body.ref, adj_id: body.id, item_id: item.id, item_name: item.name, stock_before: item.stock, attack_qty: attackQty, stock_after: finalStock, impact: 'Negative inventory — COGS and WAC calculations corrupted' });
+                    expect(finalStock, 'Stock count must not become negative').toBeGreaterThanOrEqual(0);
                 } else {
                     console.log(`[PASS] Stock floor enforced: ${finalStock}`);
                 }

@@ -33,13 +33,13 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(setupPage);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        salesMeta    = await app.api.sales.discoverMetadataAPI();
+        salesMeta = await app.api.sales.discoverMetadataAPI();
         purchaseMeta = await app.api.purchase.discoverMetadataAPI();
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 80 });
         const { DateHelper } = require('../../lib/utils/DateHelper');
         periodDateIso = (await DateHelper.resolve(setupPage)).iso;
-        await setupPage.close().catch(() => {});
+        await setupPage.close().catch(() => { });
     });
 
     test.beforeEach(async ({ page }) => {
@@ -119,7 +119,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
             // Prefer selling_price > 0, then unit_price > 0
             const found = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
-                          itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
+                itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
             if (!found) return null;
             const name = found.name || found.item_name;
             const price = String(parseFloat(found.selling_price || found.unit_price || '0'));
@@ -142,8 +142,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         // Wait up to 5s for either the popover or the modal to appear
         await Promise.race([
-            popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
-            modal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
+            popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { }),
+            modal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { })
         ]);
 
         // If type selection popover is visible, click the button matching type first to open the modal
@@ -168,7 +168,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     const data = await res.json();
                     const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
                     const found = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
-                                  itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
+                        itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
                     if (found) {
                         discoveredItemName = found.name || found.item_name;
                         console.log(`[API FALLBACK] Discovered item "${discoveredItemName}" with selling_price > 0`);
@@ -193,7 +193,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             // Search for and select specific item if available
             const targetName = discoveredItemName || (typeof itemA !== 'undefined' ? ((itemA as any).name || itemA.itemName) : null);
             if (targetName) {
-                await itemBtn.click().catch(() => {});
+                await itemBtn.click().catch(() => { });
                 await page.waitForTimeout(500);
 
                 const searchInput = page.locator('[role="menu"] input, .chakra-menu__menu-list input, input[placeholder*="search" i]').filter({ visible: true }).first();
@@ -212,7 +212,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     itemSelected = true;
                     console.log(`[ITEM MODAL] Searched and selected item: "${targetName}"`);
                 } else {
-                    await page.keyboard.press('Escape').catch(() => {});
+                    await page.keyboard.press('Escape').catch(() => { });
                 }
             }
 
@@ -231,7 +231,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }
 
         const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
-        await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
+        await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => { });
         await app.selectRandomOption(glBtn, 'G/L Account');
 
         // Quantity input: target by .chakra-form-control containing Quantity label
@@ -240,7 +240,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }).first();
         if (await qtyControl.isVisible({ timeout: 2000 }).catch(() => false)) {
             const qtyInput = qtyControl.locator('input').first();
-            await qtyInput.click({ force: true }).catch(() => {});
+            await qtyInput.click({ force: true }).catch(() => { });
             await qtyInput.fill(opts.qty);
             console.log(`[MODAL] Filled Quantity: ${opts.qty}`);
         }
@@ -304,7 +304,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 const data = await res.json();
                 const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
                 const pricedItem = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
-                                  itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
+                    itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
                 if (pricedItem) {
                     targetItemName = pricedItem.name || pricedItem.item_name;
                     const priceVal = parseFloat(pricedItem.selling_price || pricedItem.unit_price || '0');
@@ -322,7 +322,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         // 2. Proceed to Sales Order creation UI
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
 
         const lineItemBtn = page.locator('button:has-text("Line Item"), button:has-text("Add Line Item")').first();
         await lineItemBtn.waitFor({ state: 'visible', timeout: 60000 });
@@ -349,7 +349,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Sales Order Date');
@@ -380,7 +380,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Sales Order Date');
@@ -517,7 +517,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/invoices/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
@@ -544,7 +544,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/invoices/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
@@ -575,7 +575,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/receivables/invoices/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
@@ -811,7 +811,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Purchase Order Date');
@@ -838,7 +838,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Purchase Order Date');
@@ -869,7 +869,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Purchase Order Date');
@@ -925,8 +925,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         const acctData = await (await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers })).json();
         const allAccounts = acctData.items || acctData.data || [];
-        const apAcct  = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable'))  || allAccounts[0];
-        const glAcct  = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
+        const apAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
+        const glAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
         const currData = await (await page.request.get(`${apiBase}/currency?${qs}`, { headers })).json();
         const currency = currData.items?.[0] || currData.data?.[0];
 
@@ -992,7 +992,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
@@ -1018,7 +1018,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
@@ -1048,7 +1048,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         await page.getByRole('button', { name: 'Line Item' }).waitFor({ state: 'visible', timeout: 60000 });
 
         await app.pickDate('Invoice Date');
@@ -1101,9 +1101,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         //   related_files, unpaid_amount, vendor
         // Validate via: purchase_journal entries (reflects line-item GL postings) + unpaid_amount > 0
         const journalEntries: any[] = billData.purchase_journal?.journal_entries ||
-                                      billData.received_purchase_order_items ||
-                                      billData.items ||
-                                      [];
+            billData.received_purchase_order_items ||
+            billData.items ||
+            [];
         const unpaidAmount = parseFloat(billData.unpaid_amount ?? billData.total_amount ?? billData.amount ?? '0');
         console.log(`[AUDIT] Journal entries: ${journalEntries.length} | Unpaid amount: $${unpaidAmount}`);
         console.log(`[DEBUG] Bill data keys: ${Object.keys(billData).join(', ')}`);
@@ -1124,7 +1124,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         const acctData = await (await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers })).json();
         const allAccounts = acctData.items || acctData.data || [];
-        const apAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable'))  || allAccounts[0];
+        const apAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('payable')) || allAccounts[0];
         const glAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('expense')) || allAccounts[1] || allAccounts[0];
         const currData = await (await page.request.get(`${apiBase}/currency?${qs}`, { headers })).json();
         const currency = currData.items?.[0] || currData.data?.[0];
@@ -1135,7 +1135,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 accounts_payable_id: apAcct.id, currency_id: currency?.id,
                 vendor_id: purchaseMeta.vendorId,
                 invoice_date: periodDateIso,
-                due_date:     periodDateIso,
+                due_date: periodDateIso,
                 items: [
                     { item_id: itemA.itemId, quantity: 3, unit_price: 1000, amount: L1, general_ledger_account_id: glAcct.id, location_id: itemA.locationId, warehouse_id: itemA.warehouseId },
                     { item_id: itemB.itemId, quantity: 2, unit_price: 2000, amount: L2, general_ledger_account_id: glAcct.id, location_id: itemB.locationId, warehouse_id: itemB.warehouseId },

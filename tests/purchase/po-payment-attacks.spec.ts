@@ -339,7 +339,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
         ], blocked, blocked ? 'Mismatch rejected at API layer' : 'VULNERABILITY — broken double-entry');
 
         if (!blocked) {
-            console.log(`[KNOWN_BUG] ${blockReason}. Sent amount=${PAYMENT_TOTAL}, bill_payments sum=${ALLOCATED}. COA: Dr Cash=${cashMovement}, Cr AP=${apMovement}, imbalance=${Math.abs(cashMovement - apMovement).toFixed(2)}. ERP does not validate that amount == sum(bill_payments). Bug logged for remediation.`);
+            throw new Error(`[PAYMENT_ATTACK_VULNERABILITY] ${blockReason}. Sent amount=${PAYMENT_TOTAL}, bill_payments sum=${ALLOCATED}. ERP does not validate that amount == sum(bill_payments).`);
         } else {
             console.log(`[PASS] Mismatched payment correctly rejected.`);
         }
