@@ -63,8 +63,7 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
             const tableText = await page.locator('table tbody').textContent().catch(() => '');
             console.log(`[DEBUG] Rows in Invoices tab: ${rowCount}`);
             console.log(`[DEBUG] Table content: ${tableText?.substring(0, 500)}`);
-            console.log(`[KNOWN_BUG] Invoice ${inv.ref} not visible in customer profile Invoices tab (${rowCount} rows). ERP UI indexing lag under parallel load — invoice approved and balance confirmed via API.`);
-            return;
+            expect(isVisible, `Invoice ${inv.ref} should be visible in customer profile Invoices tab (${rowCount} rows visible)`).toBe(true);
         }
 
         console.log(`[PASS] Invoice ${inv.ref} confirmed visible. Outstanding balance ${outstanding} verified.`);
@@ -185,8 +184,7 @@ test.describe('Sales Customer Balance UI Audits @sales @smoke @full', () => {
         if (!rcptVisible) {
             const rowCount = await page.locator('table tbody tr').count();
             console.log(`[DEBUG] Rows in table: ${rowCount}`);
-            console.log(`[KNOWN_BUG] Receipt ${rct.ref} not visible in customer profile Receipts tab (${rowCount} rows). ERP UI indexing lag under parallel load — receipt approved and zero balance confirmed via API.`);
-            return;
+            expect(rcptVisible, `Receipt ${rct.ref} should be visible in customer profile Receipts tab (${rowCount} rows visible)`).toBe(true);
         }
 
         console.log(`[PASS] Receipt ${rct.ref} confirmed in customer profile. Balance cleared to zero.`);

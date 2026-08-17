@@ -31,12 +31,9 @@ test.describe('Inventory Temporal & Data Isolation Audits @inventory @security @
                 date: backDate // Attempted payload injection
             } as any);
 
-            // [KNOWN_BUG] ERP does not enforce period control on inventory adjustments.
-            // Back-dated adjustments from closed periods (e.g. 2022) are accepted without
-            // rejection. This opens a fraudulent stock balancing vector.
-            // CI passes — finding documented for developer remediation.
-            console.log(`[KNOWN_BUG] Historical back-dating accepted by ERP (2022 adjustment approved). Period control not enforced on inventory adjustments.`);
+            throw new Error(`[PERIOD_CONTROL_BUG] Historical back-dated inventory adjustment from ${backDate} was accepted! Period control not enforced.`);
         } catch (err: any) {
+            if (err.message.includes('PERIOD_CONTROL_BUG')) throw err;
             console.log(`[PASS] Historical back-dating blocked or rejected: ${err.message}`);
         }
     });

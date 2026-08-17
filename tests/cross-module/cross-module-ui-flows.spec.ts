@@ -105,11 +105,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
             if (fallbackVisible) {
                 await fallbackTab.click();
             } else {
-                console.log(`[KNOWN_BUG] Bills tab not found on vendor profile page. ERP UI may not render tabs for this vendor. Verifying via API instead.`);
-                const billData2 = await app.api.purchase.getBillAPI(bill.id);
-                expect(billData2.id, 'Bill must exist in API').toBe(bill.id);
-                console.log(`[PASS] Bill ${bill.ref} confirmed via API fallback.`);
-                return;
+                expect(fallbackVisible, 'Bills tab should be visible on vendor profile page').toBe(true);
             }
         }
         await page.waitForTimeout(3000);
@@ -134,8 +130,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         if (!billVisible) {
             const rowCount = await page.locator('table tbody tr').count();
             console.log(`[DEBUG] Rows in Bills tab: ${rowCount}`);
-            console.log(`[KNOWN_BUG] Bill ${bill.ref} not visible in vendor "${vendorName}" profile Bills tab (${rowCount} rows). ERP UI indexing lag under parallel load — bill approved and confirmed via API.`);
-            return;
+            expect(billVisible, `Bill ${bill.ref} should be visible in vendor "${vendorName}" profile Bills tab`).toBe(true);
         }
 
         console.log(`[PASS] Bill ${bill.ref} confirmed visible in vendor "${vendorName}" profile. Outstanding balance reflected.`);

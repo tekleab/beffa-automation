@@ -151,8 +151,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @load @stress @regres
             console.log(`[STRESS] Final bill balance: ${balance}`);
 
             if (approvedCount === 2) {
-                console.log(`[KNOWN_BUG] Race condition allowed: both payments approved. Bill balance is negative: ${balance}`);
-                test.fail(true, '[KNOWN_BUG] Double-payment approved concurrently — negative balance allowed');
+                throw new Error(`[DOUBLE_PAYMENT_BUG] Race condition allowed: both payments approved concurrently for bill ${bill.ref}!`);
             }
 
             expect(approvedCount).toBeLessThan(2);
@@ -202,9 +201,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @load @stress @regres
         }
 
         if (approved) {
-            console.log(`[KNOWN_BUG] Payment approved against reversed bill!`);
-            test.fail(true, '[KNOWN_BUG] Payment allowed on reversed bill');
-            expect(false, 'Should not allow payment on reversed bill').toBe(true);
+            throw new Error(`[REVERSED_BILL_BUG] Payment ${payment.ref} approved against reversed bill ${bill.ref}!`);
         }
     });
 });

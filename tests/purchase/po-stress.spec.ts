@@ -127,9 +127,9 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
             const ghost = await app.api.purchase.createBillPaymentAPI({ amount: billAmount, billId: bill.id, vendorId: meta.vendorId });
             await app.advanceDocumentAPI(ghost.id, 'payments');
             console.log(`[GHOST PAYMENT] ${ghost.ref} (${ghost.id})`);
-            console.log(`[KNOWN_BUG] Ghost payment ${ghost.ref} accepted on fully-paid bill ${bill.ref}! ERP does not block payments on fully-paid bills (E2888 only blocks re-approval of same payment ID). Bug logged for remediation.`);
-            Logger.fail(`Ghost payment bug confirmed on bill ${bill.ref}`);
+            throw new Error(`[GHOST_PAYMENT_BUG] Ghost payment ${ghost.ref} accepted on fully-paid bill ${bill.ref}! ERP does not block payments on fully-paid bills.`);
         } catch (err: any) {
+            if (err.message.includes('GHOST_PAYMENT_BUG')) throw err;
             console.log(`[PASS] Ghost payment correctly blocked: ${err.message}`);
         }
     });

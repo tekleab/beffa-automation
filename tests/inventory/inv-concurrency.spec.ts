@@ -49,11 +49,7 @@ test.describe('Inventory Concurrency & Race Condition Audits @inventory @concurr
         
         console.log(`[SNAPSHOT] Start: ${initialStock} | Final: ${finalStock} | Expected: ${expectedStock}`);
 
-        if (finalStock !== expectedStock) {
-            console.log(`[KNOWN_BUG] Stock Race Condition: Concurrent adjustments caused lost updates (E1481 deadlock). Expected ${expectedStock}, found ${finalStock}. ERP does not handle concurrent stock adjustments atomically. Bug logged for remediation.`);
-        } else {
-            expect(finalStock).toBe(expectedStock);
-            console.log(`[PASS] Inventory Concurrency verified. No lost updates detected.`);
-        }
+        expect(finalStock, `Concurrent adjustments caused lost updates: expected ${expectedStock}, got ${finalStock}`).toBe(expectedStock);
+        console.log(`[PASS] Inventory Concurrency verified. No lost updates detected.`);
     });
 });

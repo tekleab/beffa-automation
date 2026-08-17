@@ -102,13 +102,7 @@ test.describe('Load: Concurrent Sales Invoices @sales @load @full', () => {
         }
 
         console.log(`[LOAD] Total AR: ${totalNetDue} | Expected: ${expectedTotal}`);
-        // [KNOWN_BUG] ERP posts invoice at unit_cost not unit_price — net_due reflects cost price.
-        // Confirmed: 5 × unitPrice=1000 invoices all return net_due=100 (= unit_cost).
-        // Documenting as Bug #7. Test passes CI; finding logged for developer remediation.
-        if (Math.abs(totalNetDue - expectedTotal) > 0.01) {
-            console.log(`[KNOWN_BUG] AR mismatch: expected ${expectedTotal}, got ${totalNetDue} — ERP uses unit_cost not unit_price for net_due. Bug #7.`);
-        } else {
-            console.log(`[PASS] AR correct after ${CONCURRENCY} concurrent approvals`);
-        }
+        expect(totalNetDue, `AR mismatch: expected ${expectedTotal}, got ${totalNetDue}`).toBeCloseTo(expectedTotal, 2);
+        console.log(`[PASS] AR correct after ${CONCURRENCY} concurrent approvals`);
     });
 });

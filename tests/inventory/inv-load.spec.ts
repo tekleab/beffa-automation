@@ -50,17 +50,8 @@ test.describe('Load: Concurrent Inventory Adjustments @inventory @load @full', (
         const finalStock = await app.api.inventory.pollStockAPI(item.itemId, expectedStock, item.locationId, 30);
         console.log(`[LOAD] final=${finalStock} | expected=${expectedStock} | net=+${finalStock - initialStock}`);
 
-        // [KNOWN_BUG] E1481 backend deadlock under concurrent advance — some adjustments fail to apply.
-        // Confirmed: 10 concurrent advances trigger 500/E1481; stock ends below expected.
-        // Documenting as Bug #8. Test passes CI; finding logged for developer remediation.
-        if (finalStock !== expectedStock) {
-            console.log(
-                `[KNOWN_BUG] Lost update under concurrent advance: expected ${expectedStock}, got ${finalStock}. ` +
-                `E1481 deadlock on concurrent inventory-adjustment advance. Bug #8.`
-            );
-        } else {
-            console.log(`[PASS] All ${CONCURRENCY} adjustments applied atomically`);
-        }
+        expect(finalStock, `Lost update under concurrent advance: expected ${expectedStock}, got ${finalStock}`).toBe(expectedStock);
+        console.log(`[PASS] All ${CONCURRENCY} adjustments applied atomically`);
     });
 
     test('LOAD: 10 concurrent -2 adjustments on 20-unit stock must not go below zero', async () => {

@@ -62,8 +62,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         if (po.success) {
             try {
                 await app.advanceDocumentAPI(po.poId, 'purchase-orders');
-                console.log(`[KNOWN_BUG] System approved back-dated PO (${backDate}). ERP does not enforce period control at PO approval. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated PO (${backDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] PO created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -90,8 +91,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         if (po.success) {
             try {
                 await app.advanceDocumentAPI(po.poId, 'purchase-orders');
-                console.log(`[KNOWN_BUG] System approved future-dated PO (${futureDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated PO (${futureDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Future-dated PO blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -123,8 +125,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         if (bill.success) {
             try {
                 await app.advanceDocumentAPI(bill.id, 'bills');
-                console.log(`[KNOWN_BUG] System approved back-dated Bill (${backDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated Bill (${backDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Bill created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -152,8 +155,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         if (bill.success) {
             try {
                 await app.advanceDocumentAPI(bill.id, 'bills');
-                console.log(`[KNOWN_BUG] System approved future-dated Bill (${futureDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated Bill (${futureDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Future-dated Bill blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -201,8 +205,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         if (payment.success) {
             try {
                 await app.advanceDocumentAPI(payment.id, 'payments');
-                console.log(`[KNOWN_BUG] System approved back-dated Payment (${backDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated Payment (${backDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Payment created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
@@ -246,8 +251,9 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         if (payment.success) {
             try {
                 await app.advanceDocumentAPI(payment.id, 'payments');
-                console.log(`[KNOWN_BUG] System approved future-dated Payment (${futureDate}). ERP does not enforce period control. Bug logged for remediation.`);
+                throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated Payment (${futureDate})!`);
             } catch (advanceErr: any) {
+                if (advanceErr.message.includes('PERIOD_CONTROL_BUG')) throw advanceErr;
                 console.log(`[PASS] Future-dated Payment blocked at approval: ${advanceErr.message}`);
             }
         } else {

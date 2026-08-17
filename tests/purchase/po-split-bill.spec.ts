@@ -101,10 +101,7 @@ test.describe('Procurement PO Split Bill Audit @purchase @logic @regression @ful
                 } catch { /* advance blocked — expected */ }
 
                 if (bill3Status === 'approved') {
-                    console.log(
-                        `[KNOWN_BUG] Over-Receive Allowed: ${bill3.billNumber} — ${OVER_QTY} unit beyond fully received PO ${po.poNumber}.` +
-                        ` ERP does not enforce PO quantity cap at bill creation. Logged for remediation.`
-                    );
+                    throw new Error(`[OVER_RECEIVE_BUG] Over-Receive Allowed: ${bill3.billNumber} — ${OVER_QTY} unit beyond fully received PO ${po.poNumber}! ERP does not enforce PO quantity cap at bill creation.`);
                 } else {
                     console.log(`[PASS] Over-receive bill created but approval blocked (status: ${bill3Status}).`);
                 }
@@ -112,6 +109,7 @@ test.describe('Procurement PO Split Bill Audit @purchase @logic @regression @ful
                 console.log(`[PASS] Over-receive correctly rejected at bill creation (HTTP ${bill3.status}).`);
             }
         } catch (err: any) {
+            if (err.message.includes('OVER_RECEIVE_BUG')) throw err;
             console.log(`[PASS] Over-receive correctly blocked: ${err.message.substring(0, 100)}`);
         }
 

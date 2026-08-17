@@ -139,7 +139,7 @@ test.describe('RBAC & User Management Security Audit @security @regression @full
     });
 
     // ── 6. AUDITOR RBAC ───────────────────────────────────────────────────────
-    test('[KNOWN_BUG] Auditor role must not be able to create financial documents', async ({ request }) => {
+    test('Auditor role must not be able to create financial documents', async ({ request }) => {
         const email = `auditor.rbac.${Date.now()}@test-beffa.com`;
         const cr = await request.post(`${apiBase}/users?${QS()}`, { headers: h(token), data: { email, first_name: 'AuditorRBAC', father_name: 'Test', password: 'Admin@12345!Secure#99X', role_id: AUDITOR_ROLE_ID } });
         if (!cr.ok()) { console.log(`[SKIP] Could not create auditor (${cr.status()})`); return; }
@@ -160,6 +160,7 @@ test.describe('RBAC & User Management Security Audit @security @regression @full
 
         if (soR.ok()) {
             BUG('BUG-RBAC-006', 'Auditor role can create Sales Orders — RBAC not enforced', { auditor_user_id: auditorUser.id, auditor_email: email, role_id: AUDITOR_ROLE_ID, so_doc: soBody.so_number, created_so_id: soBody.id, impact: 'Privilege escalation — auditor-role users can create financial documents' });
+            expect(soR.ok(), 'Auditor role must be blocked from creating Sales Orders').toBe(false);
         } else {
             console.log(`[PASS] Auditor blocked from creating SO: ${soR.status()}`);
             expect(soR.status()).not.toBe(201);

@@ -269,9 +269,6 @@ test.describe('Sales GL & Ledger Audits @sales @logic @regression @full', () => 
                 console.log(`[PASS] Void confirmed: sales_journal cleared (0 entries), GL fully reversed for ${inv.ref}`);
             } else if (Math.abs(arNetOnVoid) <= 0.01) {
                 console.log(`[PASS] Void confirmed: mirror entries present, net AR = ${arNetOnVoid.toFixed(2)} (balanced) for ${inv.ref}`);
-            } else {
-                // ERP does not reverse GL on void — known limitation, log but don't hard-fail CI
-                console.log(`[KNOWN_BUG] GL not reversed after void — invoice ${inv.ref} has ${voidEntries.length} entries, net AR = ${arNetOnVoid.toFixed(2)} (expected 0). AR balance inflated by $${arDebitAmt}.`);
             }
 
             expect(

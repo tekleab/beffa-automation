@@ -55,11 +55,12 @@ test.describe('Procurement: Three-Way Match Audit @purchase @logic @regression @
                 
                 // If it approved, log as a known bug or warning
                 if (status === 'approved') {
-                    console.log(`[KNOWN_BUG] System approved Bill ${varianceBill.billNumber} with price variance (billed 600 vs PO 500).`);
+                    throw new Error(`[PRICE_VARIANCE_BUG] System approved Bill ${varianceBill.billNumber} with price variance (billed 600 vs PO 500)!`);
                 } else {
                     console.log(`[PASS] Variance Bill created but approval blocked (status: ${status}).`);
                 }
             } catch (err: any) {
+                if (err.message.includes('PRICE_VARIANCE_BUG')) throw err;
                 console.log(`[PASS] Variance Bill approval blocked: ${err.message}`);
             }
         } else {

@@ -71,12 +71,8 @@ test.describe('Cross-Module Stress & Financial Integrity @cross-module @logic @s
         if (finalStock < 0) {
             Logger.fail(`[CRITICAL_LOGIC_BUG] Negative stock after concurrent AP bill + AR invoice: ${finalStock}`);
         }
-        expect.soft(finalStock, `[CRITICAL_LOGIC_BUG] Stock desync after concurrent AP+AR. Expected ${expectedStock}, got ${finalStock}`).toBe(expectedStock);
-        if (finalStock !== expectedStock) {
-            console.log(`[KNOWN_BUG] AP/AR concurrent race: expected ${expectedStock}, got ${finalStock}`);
-        } else {
-            console.log(`[PASS] Concurrent AP+AR produced correct stock: ${finalStock}`);
-        }
+        expect(finalStock, `Stock desync after concurrent AP+AR. Expected ${expectedStock}, got ${finalStock}`).toBe(expectedStock);
+        console.log(`[PASS] Concurrent AP+AR produced correct stock: ${finalStock}`);
     });
 
     // ── 2. SIMULTANEOUS AP + AR SETTLEMENT — BALANCE SHEET INTEGRITY ─────────
@@ -170,10 +166,10 @@ test.describe('Cross-Module Stress & Financial Integrity @cross-module @logic @s
             console.log(`  Balance     : unreceived_amount=${invData.unreceived_amount} | net_due=${invData.net_due}`);
             console.log(`  Resolved to : $${arBalance}  ← expected 0 after receipt approval`);
             console.log(`${'═'.repeat(70)}\n`);
-            console.log(`[KNOWN_ERP_BUG] AR invoice balance not zeroed after receipt. ERP settlement bug logged.`);
+            expect(Math.abs(arBalance), `AR invoice ${inv.ref} balance not zeroed after receipt: ${arBalance}`).toBeLessThanOrEqual(0.01);
         }
 
-        expect.soft(Math.abs(arBalance), `[CRITICAL_LOGIC_BUG] AR invoice ${inv.ref} balance not zeroed after receipt: ${arBalance}`).toBeLessThanOrEqual(0.01);
+        expect(Math.abs(arBalance), `AR invoice ${inv.ref} balance not zeroed after receipt: ${arBalance}`).toBeLessThanOrEqual(0.01);
 
         if (Math.abs(apBalance) > 0.01) Logger.fail(`AP balance not zeroed: ${apBalance}`);
         if (Math.abs(arBalance) > 0.01) Logger.fail(`AR balance not zeroed: ${arBalance}`);

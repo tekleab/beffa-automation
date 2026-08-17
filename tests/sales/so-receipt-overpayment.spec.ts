@@ -110,7 +110,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
     }
 
     // ── 1. OVERPAYMENT ────────────────────────────────────────────────────────
-    test('[KNOWN_BUG] Overpayment receipt must be rejected — not silently stored as amount=0', async ({ request }) => {
+    test('Overpayment receipt must be rejected — not silently stored as amount=0', async ({ request }) => {
         const AMOUNT = 3000;
         const inv = await createApprovedInvoice(request, AMOUNT);
         console.log(`[SETUP] Invoice ${inv.invoice_number} (${inv.id}) | total: ${AMOUNT}`);
@@ -124,12 +124,8 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
         console.log(`[RESULT] status=${resp.status()} | receipt_id=${body.id ?? 'N/A'} | stored_amount=${stored}`);
 
         if (resp.ok()) {
-            if (stored === 0) {
-                BUG('BUG-RECEIPT-001', 'Ghost receipt: overpayment accepted but stored as amount=0', { receipt_doc: body.ref, receipt_id: body.id, invoice_doc: inv.invoice_number, invoice_id: inv.id, sent_amount: AMOUNT * 10, stored_amount: 0, impact: 'AR not reduced, cash not debited — silent accounting black hole' });
-                expect(stored).toBe(0);
-            } else {
-                BUG('BUG-RECEIPT-002', 'Overpayment accepted and stored — no overpayment guard', { receipt_doc: body.ref, receipt_id: body.id, invoice_doc: inv.invoice_number, invoice_id: inv.id, invoice_total: AMOUNT, stored_amount: stored });
-            }
+            BUG('BUG-RECEIPT-001', 'Overpayment accepted — server should reject excess receipt', { receipt_doc: body.ref, receipt_id: body.id, invoice_doc: inv.invoice_number, invoice_id: inv.id, sent_amount: AMOUNT * 10, stored_amount: stored });
+            expect(resp.ok(), 'Overpayment receipt should be rejected by server').toBe(false);
         } else {
             expect(resp.status()).toBeGreaterThanOrEqual(400);
             console.log(`[PASS] Overpayment correctly rejected: ${resp.status()}`);
@@ -175,7 +171,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
     });
 
     // ── 3. DOUBLE-RECEIPT ─────────────────────────────────────────────────────
-    test('[KNOWN_BUG] Second receipt on a fully-paid invoice must be rejected', async ({ request }) => {
+    test('Second receipt on a fully-paid invoice must be rejected', async ({ request }) => {
         const AMOUNT = 1800;
         const inv = await createApprovedInvoice(request, AMOUNT);
 
@@ -205,6 +201,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
         if (resp2.ok()) {
             BUG('BUG-RECEIPT-004', 'Double-receipt accepted on fully-paid invoice — duplicate AR credit', { invoice_doc: inv.invoice_number, invoice_id: inv.id, first_receipt_doc: rct1.ref, first_receipt_id: rct1.id, second_receipt_doc: body2.ref, second_receipt_id: body2.id, duplicate_amount: stored2, impact: 'Duplicate AR credit — cash overstated, AR understated' });
+            expect(resp2.ok(), 'Second receipt on fully-paid invoice should be rejected').toBe(false);
         } else {
             expect(resp2.status()).toBeGreaterThanOrEqual(400);
             console.log(`[PASS] Double-receipt correctly rejected: ${resp2.status()}`);

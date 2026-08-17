@@ -144,8 +144,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
             console.log(`[STRESS] Final invoice balance: ${balance}`);
 
             if (approvedCount === 2) {
-                console.log(`[KNOWN_BUG] Race condition allowed: both receipts approved. Invoice balance is negative: ${balance}`);
-                test.fail(true, '[KNOWN_BUG] Double-receipt approved concurrently — negative balance allowed');
+                throw new Error(`[DOUBLE_RECEIPT_BUG] Race condition allowed: both receipts approved concurrently for invoice ${inv.ref}!`);
             }
 
             expect(approvedCount).toBeLessThan(2);
@@ -190,9 +189,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
         console.log(`[STRESS] Attempting to approve receipt ${receipt.ref} against reversed invoice...`);
         try {
             await app.advanceDocumentAPI(receipt.id, 'receipts');
-            console.log(`[KNOWN_BUG] Receipt approved against reversed invoice!`);
-            test.fail(true, '[KNOWN_BUG] Receipt allowed on reversed invoice');
-            expect(false, 'Should not allow receipt on reversed invoice').toBe(true);
+            throw new Error(`[REVERSED_INVOICE_BUG] Receipt ${receipt.ref} approved against reversed invoice ${inv.ref}!`);
         } catch (err: any) {
             console.log(`[PASS] Receipt rejected correctly: ${err.message}`);
         }

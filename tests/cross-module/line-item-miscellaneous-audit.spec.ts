@@ -504,9 +504,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             },
         });
 
-        if (resp.ok()) console.log('[KNOWN_BUG] SO accepted negative unit price — revenue manipulation risk');
-        else console.log(`[PASS] Negative price SO line rejected: HTTP ${resp.status()}`);
-        expect([201, 400, 422]).toContain(resp.status());
+        if (resp.ok()) {
+            expect(resp.ok(), 'SO with negative unit price must be rejected by server').toBe(false);
+        } else {
+            console.log(`[PASS] Negative price SO line rejected: HTTP ${resp.status()}`);
+        }
     });
 
     // =========================================================================

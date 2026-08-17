@@ -59,10 +59,8 @@ test.describe('Sales Stress & Financial Edge Cases @sales @logic @security @regr
             const netDue = parseFloat(invData.net_due ?? invData.total ?? '0');
             console.log(`[RESULT] Zero-price invoice ${inv.ref} approved | net_due=${netDue}`);
             if (netDue === 0) {
-                console.log(`[KNOWN_BUG] Zero-price invoice accepted and approved — silent revenue black hole. AR not credited.`);
-                Logger.fail(`Zero-price invoice bug: ${inv.ref} approved with net_due=0`);
+                expect(netDue, `[CRITICAL_LOGIC_BUG] Zero-price invoice ${inv.ref} accepted and approved with net_due=0 — revenue not recorded`).toBeGreaterThan(0);
             }
-            expect.soft(netDue, `[CRITICAL_LOGIC_BUG] Zero-price invoice ${inv.ref} accepted — revenue not recorded`).toBeGreaterThan(0);
         } catch (err: any) {
             console.log(`[PASS] Zero-price invoice correctly rejected: ${err.message.slice(0, 100)}`);
         }
