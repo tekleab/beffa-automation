@@ -1,0 +1,105 @@
+[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)
+10:45:47 [WARN] GET http://168.119.175.142:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=200 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004125 (ID: 5a0fa7dd-42b3-4bf7-aaf6-f84333845723)
+10:45:57 [INFO] Advancing inventory-adjustments "5a0fa7dd-42b3-4bf7-aaf6-f84333845723"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 200...
+[SUCCESS] API Confirmed: Stock correctly reached 200.
+[FRESH ITEM] Created: WAC-Item-1787049956528 (e709808b-2007-45e1-97e3-f2d8f2da1259) | method=WAC | stock=200@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] Firing 20 concurrent PO creations...
+[LOAD] 3 passed | 17 failed | 66211ms
+[FAIL 1] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 2] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 3] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 4] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 5] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 6] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 7] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 8] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 9] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 10] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 11] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 12] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 13] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 14] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 15] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 16] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+[FAIL 17] PO API Creation Failed: 400 - {
+	"code": 400,
+	"message": "ERROR: duplicate key value violates unique constraint \"unique_po_company\" (SQLSTATE 23505) (E2418)"
+}
+
+
+=================== [CRITICAL CONCURRENCY BUG DETECTED] ===================
+Bug Category   : Non-Atomic PO Reference Sequence Generator
+Failing Status : HTTP 400 (SQLSTATE 23505) — unique_po_company constraint
+Collisions     : 17 out of 20 concurrent PO submissions failed
+Root Cause     : Backend uses non-thread-safe SELECT MAX(po_number) + 1
+Impact         : Multi-user purchase order submission fails under peak load
+Fix Suggestion : Use PostgreSQL atomic sequence nextval() or SELECT ... FOR UPDATE
+===========================================================================
+

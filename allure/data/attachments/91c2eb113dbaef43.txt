@@ -1,0 +1,33 @@
+[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004162 (ID: 0b8ef247-b99f-414c-8771-c8dcb4b03a38)
+10:52:07 [INFO] Advancing inventory-adjustments "0b8ef247-b99f-414c-8771-c8dcb4b03a38"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1787050325731 (fc51a47c-3eff-461f-be94-8558c85709dc) | method=WAC | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] "WAC-Item-1787050325731" | initial=10 | expected=60
+[LOAD] Firing 10 concurrent +5 adjustments...
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004165 (ID: 82ae5cf0-7ab6-47a2-8d47-cd2d3fd3c42c)
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004166 (ID: 732286b1-18fa-4e70-a532-28cf4d7ebd03)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004167 (ID: a1f88a3d-ae61-4eba-ae2e-02ef1395875b)
+[LOAD] Created: 10 | Failed: 0
+10:52:12 [INFO] Advancing inventory-adjustments "82ae5cf0-7ab6-47a2-8d47-cd2d3fd3c42c"...
+10:52:12 [INFO] Advancing inventory-adjustments "732286b1-18fa-4e70-a532-28cf4d7ebd03"...
+10:52:12 [INFO] Advancing inventory-adjustments "a1f88a3d-ae61-4eba-ae2e-02ef1395875b"...
+10:52:13 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+10:52:13 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+10:52:14 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+10:52:14 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 60...
+[WARN] pollStockAPI timed out. Expected 60, actual 25.
+[LOAD] final=25 | expected=60 | net=+15

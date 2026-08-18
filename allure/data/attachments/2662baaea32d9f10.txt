@@ -1,0 +1,33 @@
+10:45:54 [PERFORMANCE] API - Auth API Verification: 265.32ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004127 (ID: 1757c28c-b883-4c87-9179-2d71b621f8ff)
+10:47:07 [INFO] Advancing inventory-adjustments "1757c28c-b883-4c87-9179-2d71b621f8ff"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787050025830 (3f602d40-acf4-4054-a287-cd9a35695fd7) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+10:47:11 [PERFORMANCE] API - Auth API Verification: 246.57ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving Bill for 5000...
+10:47:20 [INFO] Advancing bills "f9f717e6-2cf5-4ca8-b6bf-1ab0efa22123"...
+[BILL] BILL/2026/08/18/001994 (f9f717e6-2cf5-4ca8-b6bf-1ab0efa22123)
+[ATTACK] Attempting to create and approve a 0.00 payment against live bill...
+[ACTION] Creating Bill Payment for f9f717e6-2cf5-4ca8-b6bf-1ab0efa22123 via API (CashAcct: b2fd8a4b-199a-417b-92d8-a8e4ec7151ba)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Zero-Amount Payment Guardrail                                           │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/18/001994               │
+  │ Bill ID                          │ f9f717e6-2cf5-4ca8-b6bf-1ab0efa2212… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $0.00                                │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 400 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Zero-amount payment blocke… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Zero-amount payment correctly blocked.
