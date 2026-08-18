@@ -364,8 +364,25 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         // ── G/L Account (Item path only — Miscellaneous already filled it above) ──
         if (type === 'Item') {
             const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
-            await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => { });
-            await app.selectRandomOption(glBtn, 'G/L Account');
+            await glBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
+            await glBtn.click();
+            await page.waitForTimeout(1000);
+            const glOverlay = page.locator('.chakra-menu__menu-list, [role="listbox"], .chakra-popover__content, [role="menu"]')
+                .filter({ visible: true }).last();
+            const glOptions = glOverlay.locator('[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem')
+                .filter({ visible: true });
+            await glOptions.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
+            const glCount = await glOptions.count();
+            if (glCount > 0) {
+                const glTarget = glOptions.nth(Math.floor(Math.random() * glCount));
+                await glTarget.evaluate((node: HTMLElement) => node.click());
+                // Wait for overlay to close naturally — do NOT press Escape (would close the modal)
+                await glOverlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
+                await page.waitForTimeout(300);
+                console.log('[MODAL] G/L Account selected for Item line');
+            } else {
+                await page.keyboard.press('Escape').catch(() => { });
+            }
         }
 
         // ── Quantity ──────────────────────────────────────────────────────────
@@ -408,32 +425,10 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        // 1. Capture inventory item via API with selling_price > 0
-        let targetItemName: string | undefined = itemA ? ((itemA as any).name || itemA.itemName) : undefined;
-        let targetUnitPrice = '500';
-
-        try {
-            const { apiBase, headers, qs } = await app.buildApiContext();
-            const res = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=50&${qs}`, { headers });
-            if (res.ok()) {
-                const data = await res.json();
-                const itemsList = Array.isArray(data) ? data : (data.items || data.data || []);
-                const pricedItem = itemsList.find((i: any) => parseFloat(i.selling_price || '0') > 0) ||
-                    itemsList.find((i: any) => parseFloat(i.unit_price || '0') > 0);
-                if (pricedItem) {
-                    targetItemName = pricedItem.name || pricedItem.item_name;
-                    const priceVal = parseFloat(pricedItem.selling_price || pricedItem.unit_price || '0');
-                    if (priceVal > 0) targetUnitPrice = String(priceVal);
-                    console.log(`[API ITEM CAPTURE] Captured item "${targetItemName}" with selling_price ${targetUnitPrice} via API.`);
-                } else if (itemA) {
-                    targetItemName = (itemA as any).name || itemA.itemName;
-                    targetUnitPrice = '100';
-                    console.log(`[API ITEM CAPTURE] Using fresh WAC item "${targetItemName}" with price $100.`);
-                }
-            }
-        } catch (err) {
-            console.log(`[API ITEM CAPTURE] Error capturing item: ${err}`);
-        }
+        // Always use itemA — guaranteed 50 units created in beforeAll, avoids zero-stock random picks
+        const targetItemName: string | undefined = (itemA as any).name || itemA.itemName;
+        const targetUnitPrice = String(itemA.unitCost || 100);
+        console.log(`[SO-UI-01] Using guaranteed-stock item "${targetItemName}" @ $${targetUnitPrice}`);
 
         // 2. Proceed to Sales Order creation UI
         await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });

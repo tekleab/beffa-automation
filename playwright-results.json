@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "projects": [
@@ -20,7 +20,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "setup",
         "name": "setup",
@@ -36,7 +36,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Sales",
         "name": "Sales",
@@ -52,7 +52,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Purchase",
         "name": "Purchase",
@@ -68,7 +68,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Inventory",
         "name": "Inventory",
@@ -84,7 +84,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "HR",
         "name": "HR",
@@ -100,7 +100,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Project-Management",
         "name": "Project-Management",
@@ -116,7 +116,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "Cross-Module",
         "name": "Cross-Module",
@@ -216,7 +216,7 @@
               "annotations": [
                 {
                   "type": "tactical-perf",
-                  "description": "API|Auth API Verification|285.35"
+                  "description": "API|Auth API Verification|250.79"
                 }
               ],
               "expectedStatus": "passed",
@@ -227,7 +227,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 14944,
+                  "duration": 28732,
                   "errors": [],
                   "stdout": [
                     {
@@ -237,7 +237,7 @@
                       "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
                     },
                     {
-                      "text": "\u001b[33m08:24:34 [PERFORMANCE]\u001b[0m API - Auth API Verification: 285.35ms\n"
+                      "text": "\u001b[33m11:18:24 [PERFORMANCE]\u001b[0m API - Auth API Verification: 250.79ms\n"
                     },
                     {
                       "text": "[AUTH] Session token and local storage injected successfully.\n"
@@ -248,11 +248,11 @@
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-08-18T08:24:26.364Z",
+                  "startTime": "2026-08-18T11:18:06.769Z",
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|285.35"
+                      "description": "API|Auth API Verification|250.79"
                     }
                   ],
                   "attachments": []
@@ -269,1397 +269,234 @@
       ]
     },
     {
-      "title": "project/project-ui-detail.spec.ts",
-      "file": "project/project-ui-detail.spec.ts",
+      "title": "cross-module/line-item-miscellaneous-audit.spec.ts",
+      "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Project Management: UI Detail & Guardrails @project @ui @smoke @regression @full",
-          "file": "project/project-ui-detail.spec.ts",
-          "line": 10,
+          "title": "Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full",
+          "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+          "line": 21,
           "column": 6,
           "specs": [
             {
-              "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
-              "ok": false,
+              "title": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+              "ok": true,
               "tags": [
-                "project",
-                "ui",
-                "smoke",
+                "sales",
+                "purchase",
+                "logic",
                 "regression",
                 "full"
               ],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 600000,
                   "annotations": [
                     {
                       "type": "tactical-perf",
-                      "description": "API|Auth API Verification|466.19"
+                      "description": "API|Auth API Verification|220.62"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "API|Auth API Verification|911.04"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Pick Date: Sales Order Date|4214.32"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Customer|6405.46"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Accounts Receivable|2914.30"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Warehouse|2971.77"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Location|3516.52"
+                    },
+                    {
+                      "type": "tactical-perf",
+                      "description": "UI|Random Selection: Tax|5952.54"
                     }
                   ],
                   "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
+                  "projectId": "Cross-Module",
+                  "projectName": "Cross-Module",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 133472,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                            "column": 20,
-                            "line": 37
-                          },
-                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects/fefb4238-6777-4c8a-bd48-656af626b354/detail\", waiting until \"load\"\u001b[22m\n\n\n  35 |         const { project } = await createProject(app, meta);\n  36 |         // Correct detail route: /project-management/projects/:projectID/detail\n> 37 |         await page.goto(`/project-management/projects/${project.id}/detail`);\n     |                    ^\n  38 |         await page.waitForSelector('h1, h2, [class*=\"heading\"], [class*=\"title\"], main', { timeout: 30000 }).catch(() => {});\n  39 |\n  40 |         const financialVisible =\n    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:37:20"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 266576,
+                      "errors": [],
                       "stdout": [
                         {
                           "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m08:25:01 [PERFORMANCE]\u001b[0m API - Auth API Verification: 466.19ms\n"
+                          "text": "\u001b[33m11:18:45 [PERFORMANCE]\u001b[0m API - Auth API Verification: 220.62ms\n"
                         },
                         {
                           "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:24:45.776Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|466.19"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/video.webm"
                         },
                         {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/error-context.md"
+                          "text": "[ADJ] quantity | qty=50 @ $100 | current=0 loc=0\n"
                         },
                         {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--da4e4-ata-budget-revenue-balance--Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7edff9a93a69a426f48f-a499952baf1606c70b93",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 33,
-              "column": 9
-            },
-            {
-              "title": "UI-13: Project detail page shows a status indicator",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|422.64"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 133311,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004213 (ID: eaef68dc-3b7a-4f2f-a4f6-6ab2d0a9eb73)\n"
                         },
                         {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                            "column": 20,
-                            "line": 52
-                          },
-                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects/615406d7-1a4e-4ef6-95bc-6ab34cdde424/detail\", waiting until \"load\"\u001b[22m\n\n\n  50 |         const { project } = await createProject(app, meta);\n  51 |         // Correct detail route: /project-management/projects/:projectID/detail\n> 52 |         await page.goto(`/project-management/projects/${project.id}/detail`);\n     |                    ^\n  53 |         await page.waitForSelector('h1, h2, [class*=\"heading\"], [class*=\"title\"], main', { timeout: 30000 }).catch(() => {});\n  54 |\n  55 |         const statusVisible =\n    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:52:20"
-                        }
-                      ],
-                      "stdout": [
+                          "text": "\u001b[36m11:18:58 [INFO]\u001b[0m Advancing inventory-adjustments \"eaef68dc-3b7a-4f2f-a4f6-6ab2d0a9eb73\"...\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1787051935677 (39e2ebb5-9b0b-44dd-bec1-e85cc025b363) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                        },
+                        {
+                          "text": "[ADJ] quantity | qty=50 @ $80 | current=0 loc=0\n"
+                        },
+                        {
+                          "text": "[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004214 (ID: cb0ef178-eaa1-45ec-8f6d-8121b1430730)\n"
+                        },
+                        {
+                          "text": "\u001b[36m11:19:20 [INFO]\u001b[0m Advancing inventory-adjustments \"cb0ef178-eaa1-45ec-8f6d-8121b1430730\"...\n"
+                        },
+                        {
+                          "text": "[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...\n"
+                        },
+                        {
+                          "text": "[SUCCESS] API Confirmed: Stock correctly reached 50.\n"
+                        },
+                        {
+                          "text": "[FRESH ITEM] Created: WAC-Item-1787051957098 (a5cb6425-ce63-4e88-a324-5a468bd09caf) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb\n"
+                        },
                         {
                           "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
                         },
                         {
-                          "text": "\u001b[33m08:25:01 [PERFORMANCE]\u001b[0m API - Auth API Verification: 422.64ms\n"
+                          "text": "\u001b[33m11:19:47 [PERFORMANCE]\u001b[0m API - Auth API Verification: 911.04ms\n"
                         },
                         {
                           "text": "[AUTH] Session token and local storage injected successfully.\n"
+                        },
+                        {
+                          "text": "[AUTH] Reusing cached signed-in session state — skipping login navigation.\n"
+                        },
+                        {
+                          "text": "[SO-UI-01] Using guaranteed-stock item \"WAC-Item-1787051935677\" @ $100\n"
+                        },
+                        {
+                          "text": "\u001b[36m11:22:36 [INFO]\u001b[0m Picking date: \"Sales Order Date\" → target 2026-8-18\n"
+                        },
+                        {
+                          "text": "\u001b[32m11:22:39 [PASS]\u001b[0m \"Sales Order Date\" set to day 18.\n"
+                        },
+                        {
+                          "text": "\u001b[33m11:22:40 [PERFORMANCE]\u001b[0m UI - Pick Date: Sales Order Date: 4214.32ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m11:22:46 [PERFORMANCE]\u001b[0m UI - Random Selection: Customer: 6405.46ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m11:22:49 [PERFORMANCE]\u001b[0m UI - Random Selection: Accounts Receivable: 2914.30ms\n"
+                        },
+                        {
+                          "text": "[CURRENCY] Selected via button: Birr\n"
+                        },
+                        {
+                          "text": "[ITEM MODAL] Selected item option: \"WAC-Item-1785153772564\"\n"
+                        },
+                        {
+                          "text": "[ITEM MODAL] Price check: val=$100, disabled=true\n"
+                        },
+                        {
+                          "text": "\u001b[33m11:23:11 [PERFORMANCE]\u001b[0m UI - Random Selection: Warehouse: 2971.77ms\n"
+                        },
+                        {
+                          "text": "\u001b[33m11:23:15 [PERFORMANCE]\u001b[0m UI - Random Selection: Location: 3516.52ms\n"
+                        },
+                        {
+                          "text": "[MODAL] G/L Account selected for Item line\n"
+                        },
+                        {
+                          "text": "[MODAL] Filled Quantity: 3\n"
+                        },
+                        {
+                          "text": "\u001b[33m11:23:31 [PERFORMANCE]\u001b[0m UI - Random Selection: Tax: 5952.54ms\n"
+                        },
+                        {
+                          "text": "[MODAL] Item line item added successfully\n"
+                        },
+                        {
+                          "text": "[OK] Inventory line item added to SO\n"
+                        },
+                        {
+                          "text": "\u001b[36m11:23:47 [INFO]\u001b[0m Advancing sales-orders \"1d0fad52-658f-4f35-aa2c-0e3b1945ccd8\"...\n"
+                        },
+                        {
+                          "text": "[PASS] SO with inventory line item created and approved\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-18T08:24:45.942Z",
+                      "startTime": "2026-08-18T11:18:39.342Z",
                       "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|422.64"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--6e2f7-ge-shows-a-status-indicator-Project-Management/video.webm"
+                          "description": "API|Auth API Verification|220.62"
                         },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--6e2f7-ge-shows-a-status-indicator-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--6e2f7-ge-shows-a-status-indicator-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7edff9a93a69a426f48f-5f751dd88b1d4b6b9ff1",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 48,
-              "column": 9
-            },
-            {
-              "title": "UI-14: Project detail page shows customer name",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|755.26"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 137759,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                            "column": 83,
-                            "line": 67
-                          },
-                          "message": "Error: expect.toBeVisible: Target page, context or browser has been closed\n\n  65 |         await page.goto(`/project-management/projects/${project.id}/detail`);\n  66 |         await page.waitForSelector('h1, h2, main', { timeout: 30000 }).catch(() => {});\n> 67 |         await expect(page.getByText(meta.customerName, { exact: false }).first()).toBeVisible({ timeout: 10000 });\n     |                                                                                   ^\n  68 |     });\n  69 |\n  70 |     test('UI-15: Direct URL to non-existent project shows error or redirects', async ({ page }) => {\n    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:67:83"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:27:14 [PERFORMANCE]\u001b[0m API - Auth API Verification: 755.26ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:27:05.558Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|755.26"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--6297f-il-page-shows-customer-name-Project-Management/video.webm"
+                          "description": "API|Auth API Verification|911.04"
                         },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--6297f-il-page-shows-customer-name-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--6297f-il-page-shows-customer-name-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7edff9a93a69a426f48f-1f14a8d62ce0f61eb5b9",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 62,
-              "column": 9
-            },
-            {
-              "title": "UI-15: Direct URL to non-existent project shows error or redirects",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|263.03"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 131905,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                            "column": 20,
-                            "line": 72
-                          },
-                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects/00000000-0000-0000-0000-000000000000/detail\", waiting until \"load\"\u001b[22m\n\n\n  70 |     test('UI-15: Direct URL to non-existent project shows error or redirects', async ({ page }) => {\n  71 |         const { app } = await setup(page);\n> 72 |         await page.goto('/project-management/projects/00000000-0000-0000-0000-000000000000/detail');\n     |                    ^\n  73 |         await page.waitForLoadState('domcontentloaded');\n  74 |         await page.waitForTimeout(3000);\n  75 |         const errorOrRedirect =\n    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:72:20"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:27:14 [PERFORMANCE]\u001b[0m API - Auth API Verification: 263.03ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:27:05.961Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|263.03"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--d69ea-ct-shows-error-or-redirects-Project-Management/video.webm"
+                          "description": "UI|Pick Date: Sales Order Date|4214.32"
                         },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--d69ea-ct-shows-error-or-redirects-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--d69ea-ct-shows-error-or-redirects-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7edff9a93a69a426f48f-e924def1732866d58e97",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 70,
-              "column": 9
-            },
-            {
-              "title": "UI-GUARD-02: Unauthenticated browser access to projects redirects to login",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 16994,
-                      "error": {
-                        "message": "Error: Expected redirect to login or login form to be visible\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: Expected redirect to login or login form to be visible\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:93:99",
-                        "location": {
-                          "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                          "column": 99,
-                          "line": 93
-                        },
-                        "snippet": "  91 |             .isVisible({ timeout: 5000 }).catch(() => false);\n  92 |         console.log(`[UI-GUARD-02] redirected=${redirected} loginForm=${loginForm} url=${page.url()}`);\n> 93 |         expect(redirected || loginForm, 'Expected redirect to login or login form to be visible').toBe(true);\n     |                                                                                                   ^\n  94 |         await ctx.close();\n  95 |     });\n  96 |"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                            "column": 99,
-                            "line": 93
-                          },
-                          "message": "Error: Expected redirect to login or login form to be visible\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  91 |             .isVisible({ timeout: 5000 }).catch(() => false);\n  92 |         console.log(`[UI-GUARD-02] redirected=${redirected} loginForm=${loginForm} url=${page.url()}`);\n> 93 |         expect(redirected || loginForm, 'Expected redirect to login or login form to be visible').toBe(true);\n     |                                                                                                   ^\n  94 |         await ctx.close();\n  95 |     });\n  96 |\n    at /home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts:93:99"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[UI-GUARD-02] redirected=false loginForm=false url=http://168.119.175.142:4173/project-management/projects\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:29:29.766Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--5ddf2-projects-redirects-to-login-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--5ddf2-projects-redirects-to-login-Project-Management/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/home/teklish/beffa-automation/tests/project/project-ui-detail.spec.ts",
-                        "column": 99,
-                        "line": 93
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7edff9a93a69a426f48f-cc2def5c285553848248",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 83,
-              "column": 9
-            },
-            {
-              "title": "UI-GUARD-03: Status filter pill click opens filter options",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|256.62"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 150550,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:29:42 [PERFORMANCE]\u001b[0m API - Auth API Verification: 256.62ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:29:34.107Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|256.62"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--adfe1--click-opens-filter-options-Project-Management/video.webm"
+                          "description": "UI|Random Selection: Customer|6405.46"
                         },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--adfe1--click-opens-filter-options-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-detail--adfe1--click-opens-filter-options-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7edff9a93a69a426f48f-ddd05405d3da02e0ce53",
-              "file": "project/project-ui-detail.spec.ts",
-              "line": 97,
-              "column": 9
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "project/project-ui-list.spec.ts",
-      "file": "project/project-ui-list.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Project Management: UI List Page @project @ui @smoke @regression @full",
-          "file": "project/project-ui-list.spec.ts",
-          "line": 10,
-          "column": 6,
-          "specs": [
-            {
-              "title": "UI-01: Projects list page loads with all key table columns",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|293.07"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 133670,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 60,
-                            "line": 42
-                          },
-                          "message": "Error: Column \"Project Name\" not visible\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  40 |                 await page.locator('table thead, thead, [role=\"columnheader\"]').getByText(col, { exact: false }).first().isVisible({ timeout: 5000 }).catch(() => false) ||\n  41 |                 await page.getByText(col, { exact: true }).first().isVisible({ timeout: 3000 }).catch(() => false);\n> 42 |             expect(visible, `Column \"${col}\" not visible`).toBe(true);\n     |                                                            ^\n  43 |         }\n  44 |     });\n  45 |\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:42:60"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:30:04 [PERFORMANCE]\u001b[0m API - Auth API Verification: 293.07ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:29:56.932Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|293.07"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-b2b2b--with-all-key-table-columns-Project-Management/test-failed-1.png"
+                          "description": "UI|Random Selection: Accounts Receivable|2914.30"
                         },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-b2b2b--with-all-key-table-columns-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-b2b2b--with-all-key-table-columns-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-b2b2b--with-all-key-table-columns-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-756e0052d7d47fbd8c62",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 33,
-              "column": 9
-            },
-            {
-              "title": "UI-02: Filter pills (Workspace, Workflow, Status, Budget) are visible",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|357.81"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 8,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 137850,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 93,
-                            "line": 51
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /Workspace/i }).first()\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 8000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /Workspace/i }).first()\u001b[22m\n\n\n  49 |         await page.waitForLoadState('domcontentloaded');\n  50 |         for (const pill of ['Workspace', 'Workflow', 'Status', 'Budget']) {\n> 51 |             await expect(page.getByRole('button', { name: new RegExp(pill, 'i') }).first()).toBeVisible({ timeout: 8000 });\n     |                                                                                             ^\n  52 |         }\n  53 |     });\n  54 |\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:51:93"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:32:24 [PERFORMANCE]\u001b[0m API - Auth API Verification: 357.81ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:32:15.764Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|357.81"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-a0ce7-w-Status-Budget-are-visible-Project-Management/video.webm"
+                          "description": "UI|Random Selection: Warehouse|2971.77"
                         },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-a0ce7-w-Status-Budget-are-visible-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-a0ce7-w-Status-Budget-are-visible-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-acb24652315dc8bd973f",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 46,
-              "column": 9
-            },
-            {
-              "title": "UI-03: Sort and View buttons are visible in toolbar",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|336.52"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 136355,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 75,
-                            "line": 59
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: /Sort/i }).first()\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 8000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: /Sort/i }).first()\u001b[22m\n\n\n  57 |         await page.goto('/project-management/projects');\n  58 |         await page.waitForLoadState('domcontentloaded');\n> 59 |         await expect(page.getByRole('button', { name: /Sort/i }).first()).toBeVisible({ timeout: 8000 });\n     |                                                                           ^\n  60 |         const viewBtn = page.getByRole('button', { name: /View/i }).first();\n  61 |         const viewVisible = await viewBtn.isVisible({ timeout: 5000 }).catch(() => false);\n  62 |         if (!viewVisible) console.log('[INFO] View button not present in toolbar — UI may have changed layout');\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:59:75"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:32:28 [PERFORMANCE]\u001b[0m API - Auth API Verification: 336.52ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:32:19.834Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|336.52"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-0b035-tons-are-visible-in-toolbar-Project-Management/video.webm"
+                          "description": "UI|Random Selection: Location|3516.52"
                         },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-0b035-tons-are-visible-in-toolbar-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-0b035-tons-are-visible-in-toolbar-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-409ddaad2408b8c95bc1",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 55,
-              "column": 9
-            },
-            {
-              "title": "UI-04: Advanced filters and Command filters links are present",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|245.09"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 144330,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 67,
-                            "line": 71
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/Advanced filters/i).first()\nExpected: visible\nTimeout: 8000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 8000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Advanced filters/i).first()\u001b[22m\n\n\n  69 |         await page.waitForLoadState('domcontentloaded');\n  70 |         await expect(page.getByText(/Advanced filters/i).first()).toBeVisible({ timeout: 8000 });\n> 71 |         await expect(page.getByText(/Command filters/i).first()).toBeVisible({ timeout: 8000 });\n     |                                                                   ^\n  72 |     });\n  73 |\n  74 |     test('UI-05: Add Project button and Export button are visible', async ({ page }) => {\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:71:67"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:34:56 [PERFORMANCE]\u001b[0m API - Auth API Verification: 245.09ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:34:44.178Z",
-                      "annotations": [
                         {
                           "type": "tactical-perf",
-                          "description": "API|Auth API Verification|245.09"
+                          "description": "UI|Random Selection: Tax|5952.54"
                         }
                       ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-c7e8c-d-filters-links-are-present-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-c7e8c-d-filters-links-are-present-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-c7e8c-d-filters-links-are-present-Project-Management/trace.zip"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "9fb40b54a1fc4eeffeda-b02f9b02eb571b482091",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 67,
-              "column": 9
-            },
-            {
-              "title": "UI-05: Add Project button and Export button are visible",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|223.92"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 11,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 134733,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 20,
-                            "line": 77
-                          },
-                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects\", waiting until \"load\"\u001b[22m\n\n\n  75 |         const { app } = await setup(page);\n  76 |         await page.goto('/project-management/projects');\n> 77 |         await page.waitForLoadState('domcontentloaded');\n     |                    ^\n  78 |         const addProjectEl = page.getByRole('link', { name: /Add Project/i }).or(page.getByRole('button', { name: /Add Project/i })).first();\n  79 |         await expect(addProjectEl).toBeVisible({ timeout: 8000 });\n  80 |         await expect(page.getByRole('button', { name: /Export/i })).toBeVisible({ timeout: 8000 });\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:77:20"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:34:55 [PERFORMANCE]\u001b[0m API - Auth API Verification: 223.92ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:34:44.616Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|223.92"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-df6bb-d-Export-button-are-visible-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-df6bb-d-Export-button-are-visible-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-df6bb-d-Export-button-are-visible-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-fed450b9667acefd358e",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 75,
-              "column": 9
-            },
-            {
-              "title": "UI-06: Search input is present and accepts text",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|1002.65"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 12,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 151072,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 30,
-                            "line": 89
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByPlaceholder(/Search/i).first()\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 8000ms\u001b[22m\n\u001b[2m  - waiting for getByPlaceholder(/Search/i).first()\u001b[22m\n\n\n  87 |         const search = page.getByPlaceholder(/Search/i).first();\n  88 |         await expect(search).toBeVisible({ timeout: 8000 });\n> 89 |         await search.fill('test');\n     |                              ^\n  90 |         await page.waitForTimeout(1000);\n  91 |         await search.clear();\n  92 |     });\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:89:30"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:37:23 [PERFORMANCE]\u001b[0m API - Auth API Verification: 1002.65ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:37:13.502Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|1002.65"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-2173f-is-present-and-accepts-text-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-2173f-is-present-and-accepts-text-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-2173f-is-present-and-accepts-text-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-14b96b99326db00a332f",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 84,
-              "column": 9
-            },
-            {
-              "title": "UI-07: Pagination shows rows-per-page and page count",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|914.59"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 13,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 149505,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 64,
-                            "line": 99
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/Rows per page/i).first()\nExpected: visible\nTimeout: 8000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 8000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Rows per page/i).first()\u001b[22m\n\n\n   97 |         await page.waitForLoadState('domcontentloaded');\n   98 |         await expect(page.getByText(/Rows per page/i).first()).toBeVisible({ timeout: 8000 });\n>  99 |         await expect(page.getByText(/Page [0-9]+ of [0-9]+/i).first()).toBeVisible({ timeout: 8000 });\n      |                                                                ^\n  100 |     });\n  101 |\n  102 |     test('UI-08: Project created via API appears in the list', async ({ page }) => {\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:99:64"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:37:26 [PERFORMANCE]\u001b[0m API - Auth API Verification: 914.59ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:37:17.566Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|914.59"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-22101-ows-per-page-and-page-count-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-22101-ows-per-page-and-page-count-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-22101-ows-per-page-and-page-count-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-071906c09a53dde4a6e8",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 95,
-              "column": 9
-            },
-            {
-              "title": "UI-08: Project created via API appears in the list",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|217.71"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 14,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 134304,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 20,
-                            "line": 106
-                          },
-                          "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://168.119.175.142:4173/project-management/projects\", waiting until \"load\"\u001b[22m\n\n\n  104 |         const { project } = await createProject(app, meta);\n  105 |         await page.goto('/project-management/projects');\n> 106 |         await page.waitForLoadState('domcontentloaded');\n      |                    ^\n  107 |         await expect(page.getByText(project.ref, { exact: false }).first()).toBeVisible({ timeout: 15000 });\n  108 |     });\n  109 |\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:106:20"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:40:09 [PERFORMANCE]\u001b[0m API - Auth API Verification: 217.71ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:39:58.512Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|217.71"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-dbf86-via-API-appears-in-the-list-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-dbf86-via-API-appears-in-the-list-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-dbf86-via-API-appears-in-the-list-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-638af99a0446b550c80c",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 103,
-              "column": 9
-            },
-            {
-              "title": "UI-09: Clicking project row navigates to detail view",
-              "ok": false,
-              "tags": [
-                "project",
-                "ui",
-                "smoke",
-                "regression",
-                "full"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [
-                    {
-                      "type": "tactical-perf",
-                      "description": "API|Auth API Verification|247.22"
-                    }
-                  ],
-                  "expectedStatus": "passed",
-                  "projectId": "Project-Management",
-                  "projectName": "Project-Management",
-                  "results": [
-                    {
-                      "workerIndex": 15,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 139427,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts",
-                            "column": 69,
-                            "line": 116
-                          },
-                          "message": "Error: locator.click: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('PROJ-0779').first()\u001b[22m\n\n\n  114 |         await page.waitForLoadState('domcontentloaded');\n  115 |         await page.getByText(project.ref, { exact: false }).first().click();\n> 116 |         await page.waitForLoadState('domcontentloaded');\n      |                                                         ^\n  117 |         expect(page.url()).toContain('project');\n  118 |         await expect(page.getByText(project.ref, { exact: false }).first()).toBeVisible({ timeout: 10000 });\n  119 |     });\n    at /home/teklish/beffa-automation/tests/project/project-ui-list.spec.ts:116:69"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)\n"
-                        },
-                        {
-                          "text": "\u001b[33m08:40:09 [PERFORMANCE]\u001b[0m API - Auth API Verification: 247.22ms\n"
-                        },
-                        {
-                          "text": "[AUTH] Session token and local storage injected successfully.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-18T08:39:58.883Z",
-                      "annotations": [
-                        {
-                          "type": "tactical-perf",
-                          "description": "API|Auth API Verification|247.22"
-                        }
-                      ],
-                      "attachments": [
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-3bf74-ow-navigates-to-detail-view-Project-Management/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-3bf74-ow-navigates-to-detail-view-Project-Management/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/home/teklish/beffa-automation/test-results/project-project-ui-list-Pr-3bf74-ow-navigates-to-detail-view-Project-Management/trace.zip"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "9fb40b54a1fc4eeffeda-c4f621c3ca0c8dd587b5",
-              "file": "project/project-ui-list.spec.ts",
-              "line": 111,
+              "id": "5dc60173c5454776a922-fbccbd4d7894309cf5dc",
+              "file": "cross-module/line-item-miscellaneous-audit.spec.ts",
+              "line": 424,
               "column": 9
             }
           ]
@@ -1669,11 +506,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-18T08:24:22.998Z",
-    "duration": 1089181.528,
-    "expected": 1,
+    "startTime": "2026-08-18T11:17:53.140Z",
+    "duration": 393653.929,
+    "expected": 2,
     "skipped": 0,
-    "unexpected": 15,
+    "unexpected": 0,
     "flaky": 0
   }
 }
