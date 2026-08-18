@@ -11,7 +11,6 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
 
     async function setup(page: any) {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = await app.api.project.discoverMetadataAPI();
         return { app, meta };
     }
@@ -33,15 +32,12 @@ test.describe('Project Management: UI List Page @project @ui @smoke @regression 
     test('UI-01: Projects list page loads with all key table columns', async ({ page }) => {
         const { app } = await setup(page);
         await page.goto('/project-management/projects');
-        await page.waitForLoadState('domcontentloaded');
-        // Scope to table header to avoid matching sidebar nav items (e.g. "Customers")
-        const thead = page.locator('table thead, thead, [role="columnheader"]');
+        // Wait for SPA to render — poll until any table header or "Project Name" text appears
+        await page.waitForSelector('table thead th, [role="columnheader"], th', { timeout: 30000 }).catch(() => {});
         for (const col of ['Project Name', 'Customer', 'Status', 'Budget', 'Tasks', 'Start Date', 'End Date']) {
-            const inHeader = thead.getByText(col, { exact: false }).first();
-            const inPage = page.getByText(col, { exact: true }).first();
             const visible =
-                await inHeader.isVisible({ timeout: 8000 }).catch(() => false) ||
-                await inPage.isVisible({ timeout: 3000 }).catch(() => false);
+                await page.locator('table thead, thead, [role="columnheader"]').getByText(col, { exact: false }).first().isVisible({ timeout: 5000 }).catch(() => false) ||
+                await page.getByText(col, { exact: true }).first().isVisible({ timeout: 3000 }).catch(() => false);
             expect(visible, `Column "${col}" not visible`).toBe(true);
         }
     });

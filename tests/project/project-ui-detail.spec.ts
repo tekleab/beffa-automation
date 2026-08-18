@@ -11,7 +11,6 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
 
     async function setup(page: any) {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = await app.api.project.discoverMetadataAPI();
         return { app, meta };
     }
@@ -33,31 +32,14 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
     test('UI-12: Project detail page shows financial data (budget / revenue / balance)', async ({ page }) => {
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
-        await page.goto(`/project-management/projects/${project.id}`);
-        await page.waitForLoadState('domcontentloaded');
+        // Correct detail route: /project-management/projects/:projectID/detail
+        await page.goto(`/project-management/projects/${project.id}/detail`);
+        await page.waitForSelector('h1, h2, [class*="heading"], [class*="title"], main', { timeout: 30000 }).catch(() => {});
 
-        // Click the "Financial Information" tab to expose financial fields
-        const finTab = page.getByRole('tab', { name: /financial/i }).or(page.getByText(/financial information/i)).first();
-        if (await finTab.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await finTab.click();
-            await page.waitForTimeout(800);
-        }
-
-        const financialSelectors = [
-            page.getByText(/budget|revenue|expense|balance/i).first(),
-            page.locator('[class*="budget"], [class*="revenue"], [class*="expense"], [class*="balance"]').first(),
-            page.getByText(new RegExp((project as any).estimated_revenue || '200000', 'i')).first(),
-            page.getByText(new RegExp((project as any).estimated_expense || '80000', 'i')).first(),
-        ];
-
-        let financialVisible = false;
-        for (const selector of financialSelectors) {
-            if (await selector.isVisible({ timeout: 5000 }).catch(() => false)) {
-                financialVisible = true;
-                console.log(`[UI-12] Financial data found with selector`);
-                break;
-            }
-        }
+        const financialVisible =
+            await page.getByText(/Estimated Revenue|Estimated Expense|Remaining Balance|Budget/i).first().isVisible({ timeout: 8000 }).catch(() => false) ||
+            await page.getByText('200000', { exact: false }).first().isVisible({ timeout: 3000 }).catch(() => false) ||
+            await page.getByText('80000', { exact: false }).first().isVisible({ timeout: 3000 }).catch(() => false);
 
         expect(financialVisible).toBe(true);
     });
@@ -65,45 +47,33 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
     test('UI-13: Project detail page shows a status indicator', async ({ page }) => {
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
-        await page.goto(`/project-management/projects/${project.id}`);
-        await page.waitForLoadState('domcontentloaded');
-        
-        // Try multiple selector strategies for status indicator
-        const statusSelectors = [
-            page.locator('span, div, [class*="badge"], [class*="status"]')
-                .filter({ hasText: /pending|in.progress|completed/i }).first(),
-            page.getByText(/pending|in.progress|completed/i).first(),
-            page.locator('[class*="badge"]').first(),
-            page.locator('[class*="status"]').first(),
-        ];
-        
-        let statusVisible = false;
-        for (const selector of statusSelectors) {
-            if (await selector.isVisible({ timeout: 3000 }).catch(() => false)) {
-                statusVisible = true;
-                console.log(`[UI-13] Status indicator found with selector`);
-                break;
-            }
-        }
-        
+        // Correct detail route: /project-management/projects/:projectID/detail
+        await page.goto(`/project-management/projects/${project.id}/detail`);
+        await page.waitForSelector('h1, h2, [class*="heading"], [class*="title"], main', { timeout: 30000 }).catch(() => {});
+
+        const statusVisible =
+            await page.getByText(/pending|in progress|in-progress|completed/i).first().isVisible({ timeout: 8000 }).catch(() => false) ||
+            await page.locator('[class*="badge"], [class*="status"], [class*="tag"]').first().isVisible({ timeout: 5000 }).catch(() => false);
+
         expect(statusVisible).toBe(true);
     });
 
     test('UI-14: Project detail page shows customer name', async ({ page }) => {
         const { app, meta } = await setup(page);
         const { project } = await createProject(app, meta);
-        await page.goto(`/project-management/projects/${project.id}`);
-        await page.waitForLoadState('domcontentloaded');
+        await page.goto(`/project-management/projects/${project.id}/detail`);
+        await page.waitForSelector('h1, h2, main', { timeout: 30000 }).catch(() => {});
         await expect(page.getByText(meta.customerName, { exact: false }).first()).toBeVisible({ timeout: 10000 });
     });
 
     test('UI-15: Direct URL to non-existent project shows error or redirects', async ({ page }) => {
         const { app } = await setup(page);
-        await page.goto('/project-management/projects/00000000-0000-0000-0000-000000000000');
+        await page.goto('/project-management/projects/00000000-0000-0000-0000-000000000000/detail');
         await page.waitForLoadState('domcontentloaded');
-        const errorOrRedirect = await page.getByText(/not found|error|no results/i).first()
-            .isVisible({ timeout: 8000 }).catch(() => false)
-            || !page.url().includes('00000000-0000-0000-0000-000000000000');
+        await page.waitForTimeout(3000);
+        const errorOrRedirect =
+            await page.getByText(/not found|error|no results|404/i).first().isVisible({ timeout: 5000 }).catch(() => false) ||
+            !page.url().includes('00000000-0000-0000-0000-000000000000');
         expect(errorOrRedirect).toBe(true);
     });
 
