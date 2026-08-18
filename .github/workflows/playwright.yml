@@ -158,12 +158,8 @@ jobs:
         echo "Company Target     : $BEFFA_COMPANY"
         echo "Trigger            : ${{ github.event_name }}"
 
-        # Reset accumulator and Allure results for a clean run
-        mkdir -p deploy
-        rm -f deploy/dashboard-accumulated.json
-        rm -rf allure-results
-        mkdir -p allure-results
-        echo "🗑️ Reset dashboard accumulator and Allure results for clean $TEST_TYPE run."
+        # Reset Allure results for a clean run (always, before any test execution)
+        rm -rf allure-results && mkdir -p allure-results
 
         set +e
         FINAL_EXIT_CODE=0
@@ -221,13 +217,29 @@ jobs:
           exit $FINAL_EXIT_CODE
         fi
 
-    - name: Get Allure history
+    - name: Cache Allure CLI
+      uses: actions/cache@v4
+      id: allure-cli-cache
+      with:
+        path: ~/.npm-global
+        key: allure-cli-2.32.0
+
+    - name: Install Allure CLI
+      if: steps.allure-cli-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p ~/.npm-global
+        npm install -g --prefix ~/.npm-global allure-commandline@2.32.0
+
+    - name: Get Allure history (shallow)
       uses: actions/checkout@v4
       if: always()
       continue-on-error: true
       with:
         ref: gh-pages
         path: gh-pages
+        sparse-checkout: |
+          allure/history
+        fetch-depth: 1
 
     - name: Generate Allure Executor Info
       if: always()
@@ -241,7 +253,6 @@ jobs:
           \"buildName\": \"[${{ env.TEST_TYPE }}] Playwright Tests #${{ github.run_id }}\",
           \"buildUrl\": \"https://github.com/tekleab/beffa-automation/actions/runs/${{ github.run_id }}\"
         }" > allure-results/executor.json
-
         cat > allure-results/environment.properties << EOF
         Test.Suite=${{ env.TEST_TYPE }}
         Company=${{ env.BEFFA_COMPANY }}
@@ -253,102 +264,48 @@ jobs:
         Engine=Integrated-Allure-Reporter
         EOF
 
-    - name: Setup Java for Allure
-      uses: actions/setup-java@v4
-      if: always()
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-
-    - name: Install Allure CLI
-      if: always()
-      run: |
-        # Use local allure-commandline from node_modules to match allure-playwright version
-        npm install -g allure-commandline@2.32.0
-        export PATH=$(npm bin -g):$PATH
-        allure --version
-
     - name: Generate Allure Report
       if: always()
       run: |
-        # Restore history from previous deploy so trend/retry/category charts populate
+        export PATH=~/.npm-global/bin:$PATH
         if [ -d "gh-pages/allure/history" ]; then
-          echo "[INFO] Restoring Allure history from gh-pages..."
           cp -r gh-pages/allure/history allure-results/history
-        else
-          echo "[INFO] No prior Allure history found — first run or history missing."
         fi
-
-        # Inject failure categories — classifies backend timeouts, network errors,
-        # context-disposed, 5xx, 4xx, UI selector failures as distinct Allure categories
         if [ -f "allure-categories.json" ]; then
           cp allure-categories.json allure-results/categories.json
-          echo "[INFO] Injected allure-categories.json → allure-results/categories.json"
         fi
-
-        ls allure-results/ | head -20 || echo "[WARN] allure-results is empty"
-        npx allure generate allure-results --clean -o temp-report
+        allure generate allure-results --clean -o temp-report
         if [ ! -f "temp-report/index.html" ]; then
-          echo "ERROR: Allure report index.html not found"
-          exit 1
+          echo "ERROR: Allure report index.html not found"; exit 1
         fi
-        echo "Allure report generated successfully"
-        npx ts-node scripts/latency.ts || true
 
     - name: Finalize & Deploy Preparation
       if: always()
       run: |
         mkdir -p deploy
-        echo "[INFO] Generating Integrated Dashboard from Playwright results..."
-        npx ts-node scripts/dashboard-builder.ts || true
-
-        echo "[INFO] Generating results.json for QA Dashboard..."
         node scripts/results.js || true
-        
-        # Generate module statistics report for full test runs
         if [ "$TEST_TYPE" = "full" ]; then
-          echo "[INFO] Generating module statistics for full test run..."
           node scripts/modules.js || true
           node scripts/modules.js --markdown || true
-          
-          # Copy module reports to deploy if they exist
-          if [ -f "test-results/module-statistics.json" ]; then
-            cp test-results/module-statistics.json deploy/
-            echo "[SUCCESS] Module statistics copied to deploy directory"
-          fi
-          if [ -f "test-results/module-report.md" ]; then
-            cp test-results/module-report.md deploy/
-            echo "[SUCCESS] Module markdown report copied to deploy directory"
-          fi
+          [ -f test-results/module-statistics.json ] && cp test-results/module-statistics.json deploy/
+          [ -f test-results/module-report.md ] && cp test-results/module-report.md deploy/
         fi
-
-        echo "[INFO] Copying QA Dashboard to deploy directory..."
-        cp scripts/qa-dashboard.html deploy/qa-dashboard.html
         cp scripts/qa-dashboard.html deploy/index.html
+        cp scripts/qa-dashboard.html deploy/qa-dashboard.html
         cp scripts/results.json deploy/results.json
-
-        if [ -d "temp-report" ]; then
+        if [ -d temp-report ]; then
           mv temp-report deploy/allure
-          echo "[SUCCESS] Allure report finalized in deploy/allure"
-        elif [ -d "gh-pages/allure" ]; then
-          echo "[WARN] No new Allure report generated — preserving previous report from gh-pages"
-          cp -r gh-pages/allure deploy/allure
-        else
-          echo "[ERROR] No Allure report available (new or previous). Skipping."
         fi
-
-        if [ -f "deploy/allure/index.html" ]; then
+        # Always preserve previous Allure history in deploy so keep_files=false doesn't lose trend data
+        if [ -d gh-pages/allure/history ] && [ -d deploy/allure ]; then
+          cp -r gh-pages/allure/history deploy/allure/history
+        fi
+        if [ -f deploy/allure/index.html ]; then
           sed -i 's|<head>|<head><script>localStorage.setItem("allure-playwright-marks", JSON.stringify({failed:true,broken:true,passed:true,skipped:true,unknown:true}));</script>|' deploy/allure/index.html
         fi
-
         echo "Primary Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
         echo "QA Dashboard: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/qa-dashboard.html" >> $GITHUB_STEP_SUMMARY
         echo "Detailed Allure: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/" >> $GITHUB_STEP_SUMMARY
-        
-        # Add module report links for full test runs
-        if [ "$TEST_TYPE" = "full" ] && [ -f "deploy/module-report.md" ]; then
-          echo "Module Statistics: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/module-report.md" >> $GITHUB_STEP_SUMMARY
-        fi
 
     - name: Commit and push results.json
       if: always()
@@ -356,17 +313,10 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add scripts/results.json scripts/results-accumulated.json
-        git diff --staged --quiet || git commit -m "chore: update results.json from CI run [skip ci]"
-        # Stash any unstaged changes (generated artifacts) so rebase can proceed cleanly
-        git stash --include-untracked || true
-        # Rebase on any commits that landed on main while the CI run was in progress
-        for attempt in 1 2 3; do
-          git pull --rebase origin main && break
-          echo "[WARN] git pull --rebase failed on attempt $attempt — retrying in 5s..."
-          sleep 5
-        done
-        # Restore stashed artifacts (ignore errors — stash may be empty)
-        git stash pop || true
+        git diff --staged --quiet && exit 0
+        git commit -m "chore: update results.json from CI run [skip ci]"
+        # Rebase on any commits that landed while CI was running, then push
+        git pull --rebase origin main
         git push origin HEAD:main
 
     - name: Deploy to GitHub Pages
@@ -376,7 +326,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: deploy
         publish_branch: gh-pages
-        keep_files: true
+        keep_files: false
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
 

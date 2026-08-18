@@ -305,25 +305,48 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
             await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
         } else {
-            // Miscellaneous: fill description & selling price
+            // Miscellaneous modal field order varies by document type:
+            // SO/Invoice: Description → Selling Price/Unit Price (label-based)
+            // Bill/PO:    G/L Account → Description → price (placeholder, disabled until G/L selected)
+            // Fill G/L Account first so the price field becomes enabled
+            const glBtnMisc = modal.getByRole('button', { name: 'G/L Account selector' });
+            if (await glBtnMisc.isVisible({ timeout: 3000 }).catch(() => false)) {
+                await app.selectRandomOption(glBtnMisc, 'G/L Account');
+                await page.waitForTimeout(300);
+            }
+
+            // Fill description
             const descField = modal.getByRole('textbox').first();
             if (await descField.isVisible({ timeout: 3000 }).catch(() => false)) {
                 await descField.fill(opts.description || 'Miscellaneous charge');
+                await page.waitForTimeout(300);
             }
-            const priceInput = modal.locator('.chakra-form-control').filter({
+
+            // Price field: try label-based first (SO/Invoice), then placeholder-based (Bill/PO)
+            const priceByLabel = modal.locator('.chakra-form-control').filter({
                 has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax|^Price/i })
-            }).locator('input').first();
-            if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-                await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
-                await priceInput.fill(opts.unitPrice || '100');
-                console.log(`[MODAL] Filled Miscellaneous Price: ${opts.unitPrice || '100'}`);
-            }
+            }).locator('input[type="number"], input[type="text"], input').first();
+            const priceByPlaceholder = modal.locator('input[placeholder="price" i], input[placeholder*="price" i]').first();
+
+            // Pick whichever is visible and enabled (or will become enabled)
+            let priceInput = priceByLabel;
+            const labelVisible = await priceByLabel.isVisible({ timeout: 2000 }).catch(() => false);
+            const placeholderVisible = await priceByPlaceholder.isVisible({ timeout: 2000 }).catch(() => false);
+            if (!labelVisible && placeholderVisible) priceInput = priceByPlaceholder;
+
+            await priceInput.waitFor({ state: 'visible', timeout: 10000 }).catch(() => { });
+            await expect(priceInput).toBeEnabled({ timeout: 15000 });
+            await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
+            await priceInput.fill(opts.unitPrice || '100');
+            console.log(`[MODAL] Filled Miscellaneous Price: ${opts.unitPrice || '100'}`);
         }
 
-        // ── G/L Account ───────────────────────────────────────────────────────
-        const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
-        await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => { });
-        await app.selectRandomOption(glBtn, 'G/L Account');
+        // ── G/L Account (Item path only — Miscellaneous already filled it above) ──
+        if (type === 'Item') {
+            const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
+            await glBtn.waitFor({ state: 'attached', timeout: 5000 }).catch(() => { });
+            await app.selectRandomOption(glBtn, 'G/L Account');
+        }
 
         // ── Quantity ──────────────────────────────────────────────────────────
         const qtyControl = modal.locator('.chakra-form-control').filter({

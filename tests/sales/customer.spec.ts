@@ -63,8 +63,8 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @full', ()
         await saveBtn.waitFor({ state: 'visible', timeout: 10000 });
         await saveBtn.click({ force: true });
         await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
-        // Confirm the updated name is visible before proceeding to remove
-        await expect(page.getByText(updatedName).first()).toBeVisible({ timeout: 15000 });
+        // Poll for updated name — React re-render may lag behind networkidle
+        await expect(page.getByText(updatedName).first()).toBeVisible({ timeout: 30000 });
         console.log('[OK] Customer updated');
 
         // ── Phase 4: Remove ───────────────────────────────────────────────────
