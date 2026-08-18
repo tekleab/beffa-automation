@@ -308,12 +308,32 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             // Miscellaneous modal field order varies by document type:
             // SO/Invoice: Description → Selling Price/Unit Price (label-based)
             // Bill/PO:    G/L Account → Description → price (placeholder, disabled until G/L selected)
-            // Fill G/L Account first so the price field becomes enabled
+            // Fill G/L Account first so the price field becomes enabled.
+            // G/L can render as a selector button OR a plain text input with autocomplete.
             const glBtnMisc = modal.getByRole('button', { name: 'G/L Account selector' });
-            if (await glBtnMisc.isVisible({ timeout: 3000 }).catch(() => false)) {
+            const glInputMisc = modal.locator('.chakra-form-control').filter({
+                has: page.locator('label, p, span, div').filter({ hasText: /^G\/L Account/i })
+            }).locator('input').first();
+
+            if (await glBtnMisc.isVisible({ timeout: 2000 }).catch(() => false)) {
                 await app.selectRandomOption(glBtnMisc, 'G/L Account');
+            } else if (await glInputMisc.isVisible({ timeout: 2000 }).catch(() => false)) {
+                await glInputMisc.click();
+                await glInputMisc.fill('');
                 await page.waitForTimeout(300);
+                // Type a space to trigger the autocomplete dropdown
+                await glInputMisc.pressSequentially(' ', { delay: 50 });
+                await page.waitForTimeout(600);
+                const glOption = page.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem')
+                    .filter({ visible: true }).first();
+                if (await glOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+                    await glOption.click();
+                    console.log('[MODAL] G/L Account selected via autocomplete input');
+                } else {
+                    await page.keyboard.press('Escape').catch(() => {});
+                }
             }
+            await page.waitForTimeout(300);
 
             // Fill description
             const descField = modal.getByRole('textbox').first();

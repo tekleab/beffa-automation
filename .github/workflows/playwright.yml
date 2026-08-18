@@ -315,8 +315,10 @@ jobs:
         git add scripts/results.json scripts/results-accumulated.json
         git diff --staged --quiet && exit 0
         git commit -m "chore: update results.json from CI run [skip ci]"
-        # Rebase on any commits that landed while CI was running, then push
+        # Stash any unstaged CI artifacts before rebasing, then restore
+        git stash --include-untracked
         git pull --rebase origin main
+        git stash pop || true
         git push origin HEAD:main
 
     - name: Deploy to GitHub Pages
