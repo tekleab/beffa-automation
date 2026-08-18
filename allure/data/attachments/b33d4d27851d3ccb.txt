@@ -1,0 +1,34 @@
+[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)
+11:47:11 [PERFORMANCE] API - Auth API Verification: 253.36ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004270 (ID: 703393d1-1c0b-4ac5-907b-3ac6d63c838c)
+11:47:26 [INFO] Advancing inventory-adjustments "703393d1-1c0b-4ac5-907b-3ac6d63c838c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787053644794 (3b0ad6e6-1973-4af8-baae-ac034eba0b38) | method=WAC | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:47:29 [INFO] Advancing bills "b5976b80-4c46-420b-85b2-5134bc9cc818"...
+[BILL] BILL/2026/08/18/002044 approved | amount: 3500
+[STEP] AP credit on bill: 3500.00
+[ACTION] Creating Bill Payment for b5976b80-4c46-420b-85b2-5134bc9cc818 via API (CashAcct: b2fd8a4b-199a-417b-92d8-a8e4ec7151ba)...
+[SUCCESS] Payment created: PAY/2026/08/18/000536 (ID: fa5c33ee-bdaf-452a-8a4e-73d73812db6d)
+11:47:35 [INFO] Advancing payments "fa5c33ee-bdaf-452a-8a4e-73d73812db6d"...
+[PAYMENT] PAY/2026/08/18/000536 (fa5c33ee-bdaf-452a-8a4e-73d73812db6d) approved | amount: 3500
+[PAYMENT JOURNAL] PAY/2026/08/18/000536 (2 entries)
+
+===================================================================
+  AP GL AUDIT — Bill Payment
+  Ref: PAY/2026/08/18/000536 | ID: fa5c33ee-bdaf-452a-8a4e-73d73812db6d
+===================================================================
+  | Account                              |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────
+  | Accounts Payable                     |      3500.00 |            — |
+  | Cash - Branch Office                 |            — |      3500.00 |
+  ───────────────────────────────────────────────────────────────────
+  | TOTAL                                |      3500.00 |      3500.00 |
+  | ✓ BALANCED (Dr = Cr)                                                |
+  ───────────────────────────────────────────────────────────────────
+
+[PASS] AP debited on payment: Accounts Payable | Dr:3500
+[PASS] Cash credited on payment: Cash - Branch Office | Cr:3500
+[PASS] Payment GL balanced: Dr=3500.00 = Cr=3500.00

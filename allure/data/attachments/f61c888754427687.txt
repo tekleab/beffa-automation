@@ -1,0 +1,26 @@
+11:47:27 [PERFORMANCE] API - Auth API Verification: 235.29ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004271 (ID: 0ee7e211-c650-4dfe-a6ea-130f879034e2)
+11:47:36 [INFO] Advancing inventory-adjustments "0ee7e211-c650-4dfe-a6ea-130f879034e2"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787053654565 (ae28ef46-6cae-4ddc-974c-96c30fc94efd) | method=WAC | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:47:40 [INFO] Advancing bills "c4a07822-7f15-411e-9b8b-e0b1a81bccc8"...
+[BILL] BILL/2026/08/18/002045 approved
+[PRE-REVERSAL] AP credit: 2500.00
+[ACTION] Reversing/Voiding Bill c4a07822-7f15-411e-9b8b-e0b1a81bccc8 via API...
+[REVERSAL] Bill BILL/2026/08/18/002045 reversed
+
+===================================================================
+  AP GL AUDIT — Bill After Reversal
+  Ref: BILL/2026/08/18/002045 | ID: c4a07822-7f15-411e-9b8b-e0b1a81bccc8
+===================================================================
+  | Account                              |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────
+  ───────────────────────────────────────────────────────────────────
+  | TOTAL                                |         0.00 |         0.00 |
+  | ✓ BALANCED (Dr = Cr)                                                |
+  ───────────────────────────────────────────────────────────────────
+
+[PASS] GL fully cleared after reversal — 0 posted entries (undo-to-draft pattern)

@@ -1,0 +1,36 @@
+12:02:11 [PERFORMANCE] API - Auth API Verification: 249.69ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004359 (ID: f6393958-e4c4-4b82-96d0-e00f2d0f7360)
+12:02:21 [INFO] Advancing inventory-adjustments "f6393958-e4c4-4b82-96d0-e00f2d0f7360"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787054539061 (af90c719-7590-49eb-9ffa-e3495e54a7f4) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/18/004360 (ID: 40a5e8c7-dea8-4bca-b94f-c3fab705c146)
+12:02:27 [INFO] Advancing inventory-adjustments "40a5e8c7-dea8-4bca-b94f-c3fab705c146"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787054546287 (29dca4b7-9195-4218-80b2-4707d4c12532) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] Resolved in-period date: 2026-08-18T00:00:00Z (day=18, ecYear=2019)
+12:02:36 [PERFORMANCE] API - Auth API Verification: 239.35ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+12:03:10 [INFO] Picking date: "Purchase Order Date" → target 2026-8-18
+12:03:12 [PASS] "Purchase Order Date" set to day 18.
+12:03:13 [PERFORMANCE] UI - Pick Date: Purchase Order Date: 2470.66ms
+12:03:15 [PERFORMANCE] UI - Random Selection: Vendor: 2088.54ms
+12:03:17 [PERFORMANCE] UI - Random Selection: Accounts Payable: 2225.64ms
+12:03:19 [PERFORMANCE] UI - Random Selection: Purchase Type: 2253.22ms
+[API PRE-CAPTURE] Using guaranteed-stock item "WAC-Item-1787054539061" @ $100
+[ITEM MODAL] Selected item option: "WAC-Item-1787054508272"
+[ITEM MODAL] Price check: val=$250, disabled=false
+12:03:33 [PERFORMANCE] UI - Random Selection: Warehouse: 2522.47ms
+12:03:36 [PERFORMANCE] UI - Random Selection: Location: 2237.03ms
+[MODAL] G/L Account selected for Item line
+[MODAL] Filled Quantity: 5
+12:03:45 [PERFORMANCE] UI - Random Selection: Tax: 2247.93ms
+[MODAL] Item line item added successfully
+[OK] Inventory line item added to PO
+12:03:48 [INFO] Advancing purchase-orders "d84165ff-3745-42fe-951a-03c87db76341"...
+[PASS] PO with inventory line item created and approved
