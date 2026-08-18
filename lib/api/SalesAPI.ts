@@ -559,20 +559,41 @@ export class SalesAPI extends BasePage {
       }
     }
 
+    // Discover GL account for receipt_items (required by ERP alongside invoice_receipts)
+    let glAccountId = data.glAccountId;
+    if (!glAccountId) {
+      const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+      if (acctResp.ok()) {
+        const acctData = await acctResp.json();
+        const allAccounts = acctData.items || acctData.data || [];
+        const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+        const glAcct =
+          allAccounts.find((a: any) => typeOf(a).includes('receivable') || a.name?.toLowerCase().includes('receivable')) ||
+          allAccounts.find((a: any) => typeOf(a).includes('revenue') || typeOf(a).includes('income')) ||
+          allAccounts[1] || allAccounts[0];
+        if (glAcct) glAccountId = glAcct.id;
+      }
+    }
+
+    const roundedAmount = Math.round(data.amount * 100) / 100;
     const payload = {
-      amount: Math.round(data.amount * 100) / 100, // Round to 2 decimal places
+      amount: roundedAmount,
       cash_account_id: cashAccountId,
-      customer_id: data.customerId, // MUST match the invoice customer
+      customer_id: data.customerId,
       date: data.receiptDate || resolvedDate.iso,
       payment_method: data.payment_method || 'cash',
       currency_id: currencyId,
-      invoice_receipts: [{
-        amount: Math.round(data.amount * 100) / 100, // Round to 2 decimal places
-        invoice_id: data.invoiceId // The target invoice UUID
+      invoice_receipts: [{ amount: roundedAmount, invoice_id: data.invoiceId }],
+      receipt_items: [{
+        amount: roundedAmount,
+        general_ledger_account_id: glAccountId,
+        unit_price: roundedAmount,
+        quantity: 1,
+        description: 'Invoice Receipt'
       }]
     };
 
-    console.log(`[RECEIPT] amount=${payload.amount} | invoice=${data.invoiceId?.substring(0, 8)}... | year=${year}`);
+    console.log(`[RECEIPT] amount=${roundedAmount} | invoice=${data.invoiceId?.substring(0, 8)}... | year=${year}`);
 
     // Validate required fields before making the API call
     if (!cashAccountId) {

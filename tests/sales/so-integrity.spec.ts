@@ -58,6 +58,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         const currency = currData.items?.[0] || currData.data?.[0];
         if (!currency) throw new Error('[SETUP] No currency found — cannot build receipt payload.');
 
+        const glAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('receivable') || a.name?.toLowerCase().includes('receivable')) || allAccounts[1] || allAccounts[0];
         const buildReceiptPayload = (amount: number) => ({
             amount,
             cash_account_id: cashAcct.id,
@@ -65,7 +66,8 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
             date: new Date().toISOString(),
             payment_method: 'cash',
             currency_id: currency.id,
-            invoice_receipts: [{ amount, invoice_id: inv.id }]
+            invoice_receipts: [{ amount, invoice_id: inv.id }],
+            receipt_items: [{ amount, general_ledger_account_id: glAcct.id, unit_price: amount, quantity: 1, description: 'Invoice Receipt' }]
         });
 
         console.log('[ATTACK] Submitting receipt with amount = 0...');
@@ -145,12 +147,13 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
             const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
             const allAccounts = (await acctResp.json()).items || (await acctResp.json()).data || [];
             const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || allAccounts[0];
+            const glAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('receivable') || a.name?.toLowerCase().includes('receivable')) || allAccounts[1] || allAccounts[0];
             const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
             const currency = ((await currResp.json()).items || (await currResp.json()).data || [])[0];
 
             console.log('[ATTACK] Attempting receipt on VOIDED invoice...');
             const ghostReceiptResp = await page.request.post(`${apiBase}/receipts?${qs}`, {
-                data: { amount: 250, cash_account_id: cashAcct.id, customer_id: meta.customerId, date: new Date().toISOString(), payment_method: 'cash', currency_id: currency.id, invoice_receipts: [{ amount: 250, invoice_id: inv.id }] },
+                data: { amount: 250, cash_account_id: cashAcct.id, customer_id: meta.customerId, date: new Date().toISOString(), payment_method: 'cash', currency_id: currency.id, invoice_receipts: [{ amount: 250, invoice_id: inv.id }], receipt_items: [{ amount: 250, general_ledger_account_id: glAcct.id, unit_price: 250, quantity: 1, description: 'Invoice Receipt' }] },
                 headers
             });
 

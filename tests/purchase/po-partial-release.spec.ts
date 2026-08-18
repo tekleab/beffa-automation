@@ -66,7 +66,9 @@ test.describe('Procurement Partial PO Release Audit @purchase @logic @regression
                 received_purchase_order_items: [{
                     po_item_id: poItemId,
                     received_quantity: RECEIVE_QTY,
-                    received_unit_price: UNIT_PRICE
+                    received_unit_price: UNIT_PRICE,
+                    warehouse_id: item.warehouseId || meta.warehouseId,
+                    location_id: item.locationId || meta.locationId
                 }],
                 status: 'draft'
             }

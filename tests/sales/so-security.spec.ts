@@ -46,11 +46,13 @@ test.describe('Security & Temporal Isolation Audits @sales @security @regression
         await app.advanceDocumentAPI(invA.id, 'invoices');
 
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-        const cashAcct = (await acctResp.json()).items?.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || (await acctResp.json()).items?.[0];
+        const acctItems = (await acctResp.json()).items ?? (await acctResp.json()).data ?? [];
+        const cashAcct = acctItems.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || acctItems[0];
+        const glAcct = acctItems.find((a: any) => a.account_type?.toLowerCase().includes('receivable') || a.name?.toLowerCase().includes('receivable')) || acctItems[1] || acctItems[0];
 
         console.log(`[ATTACK] Submitting Receipt under Customer B, linking to Customer A's Invoice!`);
         const attackResp = await page.request.post(`${apiBase}/receipts?${qs}`, {
-            data: { amount: INVOICE_AMT, cash_account_id: cashAcct.id, customer_id: customerB.id, date: new Date().toISOString(), payment_method: 'cash', currency_id: meta.currencyId, invoice_receipts: [{ amount: INVOICE_AMT, invoice_id: invA.id }] },
+            data: { amount: INVOICE_AMT, cash_account_id: cashAcct.id, customer_id: customerB.id, date: new Date().toISOString(), payment_method: 'cash', currency_id: meta.currencyId, invoice_receipts: [{ amount: INVOICE_AMT, invoice_id: invA.id }], receipt_items: [{ amount: INVOICE_AMT, general_ledger_account_id: glAcct.id, unit_price: INVOICE_AMT, quantity: 1, description: 'Invoice Receipt' }] },
             headers
         });
 

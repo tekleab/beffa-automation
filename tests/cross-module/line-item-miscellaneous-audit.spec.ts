@@ -111,6 +111,15 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     }
 
     async function captureItemWithPriceAPI(page: any, app: AppManager): Promise<{ name: string; price: string; validNames: Set<string> } | null> {
+        // Always prefer itemA — it has guaranteed stock (50 units created in beforeAll)
+        if (itemA) {
+            const name = (itemA as any).name || itemA.itemName;
+            const price = String(itemA.unitCost || 100);
+            if (name) {
+                console.log(`[API PRE-CAPTURE] Using guaranteed-stock item "${name}" @ $${price}`);
+                return { name, price, validNames: new Set([name.toLowerCase().trim()]) };
+            }
+        }
         try {
             const { apiBase, headers, qs } = await app.buildApiContext();
             const res = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=100&${qs}`, { headers });
@@ -123,8 +132,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
             for (const i of itemsList) {
                 const price = parseFloat(i.selling_price ?? i.unit_price ?? i.purchase_price ?? i.unit_cost ?? '0');
+                const stock = parseFloat(i.quantity ?? i.stock ?? i.available_quantity ?? '0');
                 const name = i.name || i.item_name;
-                if (price > 0 && name) {
+                if (price > 0 && stock > 0 && name) {
                     validNames.add(name.toLowerCase().trim());
                     if (!firstPricedItem) {
                         firstPricedItem = { name, price: String(price) };
@@ -133,7 +143,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             }
 
             if (!firstPricedItem) return null;
-            console.log(`[API PRE-CAPTURE] Found ${validNames.size} priced items. First: "${firstPricedItem.name}" @ $${firstPricedItem.price}`);
+            console.log(`[API PRE-CAPTURE] Found ${validNames.size} priced+stocked items. First: "${firstPricedItem.name}" @ $${firstPricedItem.price}`);
             return { name: firstPricedItem.name, price: firstPricedItem.price, validNames };
         } catch (err) {
             console.log(`[API PRE-CAPTURE] Error: ${err}`);
@@ -194,35 +204,80 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     await searchInput.focus();
                     await searchInput.clear();
                     await searchInput.pressSequentially(targetItemName, { delay: 20 });
-                    await page.waitForTimeout(600);
+                    // Wait for the list to filter: poll until count stabilises (stops changing)
+                    let prevCount = -1;
+                    for (let p = 0; p < 8; p++) {
+                        await page.waitForTimeout(400);
+                        const opts = menuList.locator(
+                            '[role="menuitem"], [role="option"], .chakra-menu__menuitem, p.chakra-text, label, .chakra-checkbox, div.chakra-stack'
+                        ).filter({ hasNotText: /^(Clear|No more items)$/i }).filter({ visible: true });
+                        const c = await opts.count();
+                        if (c === prevCount) break;
+                        prevCount = c;
+                    }
                 }
 
-                const options = menuList.locator('[role="menuitem"], [role="option"], .chakra-menu__menuitem, div.chakra-stack')
-                    .filter({ hasNotText: /^Clear$/i })
-                    .filter({ visible: true });
+                let clickedOpt: any = null;
+                if (targetItemName) {
+                    // Try exact text match first — scoped to the filtered menu list
+                    const textMatch = menuList.getByText(targetItemName, { exact: false }).first();
+                    if (await textMatch.isVisible({ timeout: 1500 }).catch(() => false)) {
+                        clickedOpt = textMatch;
+                    }
+                }
 
-                let count = await options.count();
+                if (!clickedOpt) {
+                    const options = menuList.locator(
+                        '[role="menuitem"], [role="option"], .chakra-menu__menuitem, p.chakra-text, label, .chakra-checkbox, div.chakra-stack'
+                    )
+                        .filter({ hasNotText: /^(Clear|No more items)$/i })
+                        .filter({ visible: true });
 
-                if (count > 0) {
-                    let clickedIndex = -1;
-                    if (targetItemName) {
-                        for (let k = 0; k < count; k++) {
-                            const txt = (await options.nth(k).textContent().catch(() => ''))?.toLowerCase() || '';
-                            if (txt.includes(targetItemName.toLowerCase())) {
-                                clickedIndex = k;
-                                break;
+                    const optCount = await options.count();
+                    if (optCount > 0) {
+                        clickedOpt = options.first();
+                    }
+                }
+
+                if (clickedOpt) {
+                    const optText = await clickedOpt.textContent().catch(() => '');
+                    const selectedName = optText?.trim().replace(/\s+/g, ' ') || '';
+                    await clickedOpt.evaluate((node: HTMLElement) => (node as HTMLElement).click()).catch(() => clickedOpt.click({ force: true }));
+                    console.log(`[ITEM MODAL] Selected item option: "${selectedName}"`);
+                    // Wait for dropdown to fully close before interacting with next selectors
+                    await menuList.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+                    await page.waitForTimeout(800);
+
+                    // ── Stock guard: verify selected item has stock > 0 via locations sub-endpoint ──
+                    try {
+                        const { apiBase, headers, qs } = await app.buildApiContext();
+                        const itemsResp = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=200&${qs}`, { headers });
+                        if (itemsResp.ok()) {
+                            const itemsData = await itemsResp.json();
+                            const itemsList: any[] = Array.isArray(itemsData) ? itemsData : (itemsData.items || itemsData.data || []);
+                            const matched = itemsList.find((i: any) => selectedName.includes(i.name) || (i.name && selectedName.includes(i.name)));
+                            if (matched) {
+                                // List endpoint quantity is creation-time only — check live stock via locations sub-endpoint
+                                const locResp = await page.request.get(`${apiBase}/inventory-item/${matched.id}/locations?${qs}`, { headers });
+                                let liveStock = 0;
+                                if (locResp.ok()) {
+                                    const locData = await locResp.json();
+                                    const locs: any[] = locData.data || locData.items || [];
+                                    liveStock = locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
+                                }
+                                if (liveStock <= 0) {
+                                    console.log(`[ITEM MODAL] Stock guard: "${matched.name}" has 0 live stock — retrying with itemA`);
+                                    await page.keyboard.press('Escape').catch(() => {});
+                                    (opts as any).itemName = (itemA as any)?.name || itemA?.itemName;
+                                    itemSelected = false;
+                                    continue;
+                                }
+                                console.log(`[ITEM MODAL] Stock guard OK: "${matched.name}" has ${liveStock} live units`);
                             }
                         }
+                    } catch (e) {
+                        console.log(`[ITEM MODAL] Stock guard skipped: ${e}`);
                     }
-                    if (clickedIndex === -1) {
-                        clickedIndex = 0;
-                    }
-
-                    const selOpt = options.nth(clickedIndex);
-                    const optText = await selOpt.textContent().catch(() => '');
-                    await selOpt.evaluate((node: HTMLElement) => (node as HTMLElement).click()).catch(() => selOpt.click({ force: true }));
-                    console.log(`[ITEM MODAL] Selected item option [${clickedIndex}]: "${optText?.trim().replace(/\s+/g, ' ')}"`);
-                    await page.waitForTimeout(1000);
 
                     // Inspect Selling Price field state
                     const priceInput = modal.locator('.chakra-form-control').filter({
@@ -250,10 +305,18 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             await app.selectRandomOption(modal.getByRole('button', { name: 'Warehouse selector' }), 'Warehouse');
             await app.selectRandomOption(modal.getByRole('button', { name: 'Location selector' }), 'Location');
         } else {
-            // Miscellaneous: fill description
+            // Miscellaneous: fill description & selling price
             const descField = modal.getByRole('textbox').first();
             if (await descField.isVisible({ timeout: 3000 }).catch(() => false)) {
                 await descField.fill(opts.description || 'Miscellaneous charge');
+            }
+            const priceInput = modal.locator('.chakra-form-control').filter({
+                has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax|^Price/i })
+            }).locator('input').first();
+            if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+                await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
+                await priceInput.fill(opts.unitPrice || '100');
+                console.log(`[MODAL] Filled Miscellaneous Price: ${opts.unitPrice || '100'}`);
             }
         }
 

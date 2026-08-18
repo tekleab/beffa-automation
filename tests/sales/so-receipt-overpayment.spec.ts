@@ -42,20 +42,35 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
         token = await apiLogin(request);
         // Discover metadata in parallel
         const [custR, currR, acctR, locR, whR] = await Promise.all([
-            request.get(`${API()}/customers?page=1&pageSize=1&${QS()}`, { headers: h(token) }),
+            request.get(`${API()}/customers?page=1&pageSize=10&${QS()}`, { headers: h(token) }),
             request.get(`${API()}/currency?${QS()}`, { headers: h(token) }),
             request.get(`${API()}/accounts?page=1&pageSize=200&${QS()}`, { headers: h(token) }),
-            request.get(`${API()}/locations?page=1&pageSize=1&${QS()}`, { headers: h(token) }),
-            request.get(`${API()}/warehouses?page=1&pageSize=1&${QS()}`, { headers: h(token) }),
+            request.get(`${API()}/locations?page=1&pageSize=10&${QS()}`, { headers: h(token) }),
+            request.get(`${API()}/warehouses?page=1&pageSize=10&${QS()}`, { headers: h(token) }),
         ]);
-        const accounts = ((await acctR.json()).data || []);
-        const cash = accounts.find((a: any) => a.name?.toLowerCase().includes('cash')) || accounts[0];
-        const ar = accounts.find((a: any) => a.name?.toLowerCase().includes('receivable')) || accounts[0];
-        const loc = ((await locR.json()).data || [])[0];
-        const wh = ((await whR.json()).data || [])[0];
+        const acctData = await acctR.json();
+        const accounts = acctData.items || acctData.data || (Array.isArray(acctData) ? acctData : []);
+        const cash = accounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
+            accounts.find((a: any) => (a.account_id || a.code) === '1002') ||
+            accounts.find((a: any) => a.name?.toLowerCase().includes('petty')) ||
+            accounts.find((a: any) => a.name?.toLowerCase().includes('cash')) || accounts[0];
+        const ar = accounts.find((a: any) => a.name?.toLowerCase().includes('receivable') || a.account_type?.toLowerCase().includes('receivable')) || accounts[0];
+
+        const custData = await custR.json();
+        const customers = custData.items || custData.data || (Array.isArray(custData) ? custData : []);
+
+        const currData = await currR.json();
+        const currencies = currData.items || currData.data || (Array.isArray(currData) ? currData : []);
+
+        const locData = await locR.json();
+        const locations = locData.items || locData.data || (Array.isArray(locData) ? locData : []);
+
+        const whData = await whR.json();
+        const warehouses = whData.items || whData.data || (Array.isArray(whData) ? whData : []);
+
         meta = {
-            customerId: ((await custR.json()).data || [])[0]?.id,
-            currencyId: ((await currR.json()).data || [])[0]?.id,
+            customerId: customers[0]?.id,
+            currencyId: currencies[0]?.id,
             cashAccountId: cash?.id,
             arAccountId: ar?.id,
         };
@@ -70,20 +85,21 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
                 serial: 'Z', status: 'active', min_stock: 0, initial_stock: 50,
                 purchase_price: 200, selling_price: 200, unit_cost: 200,
                 gl_sales_account_id: ar?.id, gl_cost_account_id: cash?.id, gl_inventory_account_id: ar?.id,
-                default_location_id: loc?.id, default_warehouse_id: wh?.id,
+                default_location_id: locations[0]?.id, default_warehouse_id: warehouses[0]?.id,
                 description: [{ content: '', type: 'item' }, { content: '', type: 'sales' }, { content: '', type: 'purchase' }],
             }
         });
         const item = await itemR.json();
         itemId = item.id;
-        locationId = loc?.id;
-        warehouseId = wh?.id;
+        locationId = locations[0]?.id;
+        warehouseId = warehouses[0]?.id;
         console.log(`[SETUP] item=${itemId} | customer=${meta.customerId} | currency=${meta.currencyId} | cash=${meta.cashAccountId}`);
     });
 
     async function createApprovedInvoice(request: any, amount: number) {
         const acctR = await request.get(`${API()}/accounts?page=1&pageSize=200&${QS()}`, { headers: h(token) });
-        const accounts = (await acctR.json()).data || [];
+        const acctData = await acctR.json();
+        const accounts = acctData.items || acctData.data || (Array.isArray(acctData) ? acctData : []);
         const arId = accounts.find((a: any) => a.name?.toLowerCase().includes('receivable'))?.id || accounts[0]?.id;
         const salesId = accounts.find((a: any) => a.name?.toLowerCase().includes('sales'))?.id || accounts[0]?.id;
 
@@ -117,7 +133,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
         const resp = await request.post(`${API()}/receipts?${QS()}`, {
             headers: h(token),
-            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT * 10, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT * 10 }] }
+            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT * 10, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT * 10 }], receipt_items: [{ amount: AMOUNT * 10, general_ledger_account_id: meta.arAccountId, unit_price: AMOUNT * 10, quantity: 1, description: 'Invoice Receipt' }] }
         });
         const body = await resp.json();
         const stored = parseFloat(body.amount ?? '-1');
@@ -140,7 +156,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
         const rctR = await request.post(`${API()}/receipts?${QS()}`, {
             headers: h(token),
-            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }] }
+            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }], receipt_items: [{ amount: AMOUNT, general_ledger_account_id: meta.arAccountId, unit_price: AMOUNT, quantity: 1, description: 'Invoice Receipt' }] }
         });
         if (!rctR.ok()) throw new Error(`Receipt failed: ${rctR.status()} ${await rctR.text()}`);
         const rct = await rctR.json();
@@ -177,7 +193,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
         const rct1R = await request.post(`${API()}/receipts?${QS()}`, {
             headers: h(token),
-            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }] }
+            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }], receipt_items: [{ amount: AMOUNT, general_ledger_account_id: meta.arAccountId, unit_price: AMOUNT, quantity: 1, description: 'Invoice Receipt' }] }
         });
         if (!rct1R.ok()) throw new Error(`First receipt failed: ${rct1R.status()} ${await rct1R.text()}`);
         const rct1 = await rct1R.json();
@@ -193,7 +209,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
         const resp2 = await request.post(`${API()}/receipts?${QS()}`, {
             headers: h(token),
-            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }] }
+            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }], receipt_items: [{ amount: AMOUNT, general_ledger_account_id: meta.arAccountId, unit_price: AMOUNT, quantity: 1, description: 'Invoice Receipt' }] }
         });
         const body2 = await resp2.json();
         const stored2 = parseFloat(body2.amount ?? '0');

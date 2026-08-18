@@ -183,9 +183,8 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             amount: 1000,
             date: isoDate,
             reference: `AUTO-RCT-${ts}`,
-            invoice_receipts: [
-                { invoice_id: inv.id, amount: 1000 }
-            ]
+            invoice_receipts: [{ invoice_id: inv.id, amount: 1000 }],
+            receipt_items: [{ amount: 1000, general_ledger_account_id: arAccount.id, unit_price: 1000, quantity: 1, description: 'Invoice Receipt' }]
         };
 
         const rctResp = await request.post(`${apiBase}/receipts?${params}`, {

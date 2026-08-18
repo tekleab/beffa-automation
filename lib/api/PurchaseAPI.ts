@@ -784,7 +784,12 @@ export class PurchaseAPI extends BasePage {
     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
     const acctData = await safeJson(acctResp, 'Accounts Discovery');
     const allAccounts = acctData.items || acctData.data || [];
-    const cashAccount = allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('cash') || (a.type || a.account_type || '').toLowerCase().includes('bank')) || allAccounts[0];
+    const cashAccount =
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
+      allAccounts.find((a: any) => (a.account_id || a.code || a.account_code) === '1002') ||
+      allAccounts.find((a: any) => a.name?.toLowerCase().includes('petty')) ||
+      allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('cash') || (a.type || a.account_type || '').toLowerCase().includes('bank')) ||
+      allAccounts[0];
 
     // 2. Discover Currency
     const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });

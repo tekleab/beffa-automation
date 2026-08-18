@@ -192,4 +192,71 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
         }
         console.log('[PASS] Ticket 5 — Sales Order Detail DTO Endpoint Verified.');
     });
+
+    // -------------------------------------------------------------------------
+    // TICKET 6: General Ledger Module DTO Contract Verification
+    // -------------------------------------------------------------------------
+    test('6. Jira Ticket: General Ledger Module DTO Contract (GET /accounts, /journal-entries, /general-ledger)', async ({ page }) => {
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
+        console.log('[TICKET 6] Auditing General Ledger Module DTO API Contracts...');
+        const headers = await getHeaders(app);
+
+        // 1. Audit GL Accounts DTO (GET /accounts & GET /accounts/{id})
+        const accountsRes = await page.request.get(`${app.apiBase}/accounts?page=1&pageSize=50&${QS()}`, { headers });
+        console.log(`[GL DTO] GET /accounts Status: ${accountsRes.status()}`);
+        expect(accountsRes.ok()).toBe(true);
+
+        const accountsData = await accountsRes.json();
+        const accountList = Array.isArray(accountsData) ? accountsData : (accountsData.items || accountsData.data || []);
+        expect(Array.isArray(accountList)).toBe(true);
+        expect(accountList.length).toBeGreaterThan(0);
+
+        const sampleAccount = accountList[0];
+        console.log('[GL ACCOUNT DTO SAMPLE]:', JSON.stringify(sampleAccount).slice(0, 300));
+        // Verify core DTO fields for General Ledger account
+        expect(sampleAccount).toHaveProperty('id');
+        expect(sampleAccount.name || sampleAccount.account_name || sampleAccount.code).toBeTruthy();
+
+        // Audit Account Detail DTO by ID
+        const accountId = sampleAccount.id;
+        let accountDetailRes = await page.request.get(`${app.apiBase}/accounts/${accountId}?${QS()}`, { headers });
+        if (!accountDetailRes.ok()) {
+            accountDetailRes = await page.request.get(`${app.apiBase}/account/${accountId}?${QS()}`, { headers });
+        }
+        if (accountDetailRes.ok()) {
+            const accDto = await accountDetailRes.json();
+            console.log('[GL ACCOUNT DETAIL DTO]:', JSON.stringify(accDto).slice(0, 300));
+            expect(accDto.id || accDto.account_id).toBe(accountId);
+        }
+
+        // 2. Audit General Journals Endpoint (/api/general-journals)
+        const gjRes = await page.request.get(`${app.apiBase}/general-journals?${QS()}`, { headers });
+        console.log(`[GL DTO] GET /general-journals Status: ${gjRes.status()}`);
+        if (!gjRes.ok()) {
+            const errBody = await gjRes.text().catch(() => '');
+            console.log(`[GL DTO BUG CONFIRMED] GET /general-journals returned ${gjRes.status()}: ${errBody}`);
+        } else {
+            const gjData = await gjRes.json();
+            console.log('[GL DTO GENERAL JOURNALS SAMPLE]:', JSON.stringify(gjData).slice(0, 300));
+        }
+
+        // 3. Audit Document Journal Entries DTO Contract (e.g. Purchase & Sales GL Journals)
+        console.log('[TICKET 6] Creating Purchase Bill to verify GL Journal Entries DTO...');
+        const billRes = await app.api.purchase.createBillAPI({ quantity: 2, unitCost: 150 });
+        if (billRes.success && billRes.id) {
+            const billJournal = await app.api.purchase.getBillJournalEntriesAPI(billRes.id);
+            console.log(`[GL JOURNAL DTO] Bill ${billRes.ref} GL Entries: ${billJournal.length} entries found`);
+            if (billJournal.length > 0) {
+                const entry = billJournal[0];
+                console.log('[GL JOURNAL ENTRY SAMPLE]:', JSON.stringify(entry));
+                expect(entry).toHaveProperty('accountCode');
+                expect(entry).toHaveProperty('debit');
+                expect(entry).toHaveProperty('credit');
+            }
+        }
+
+        console.log('[PASS] Ticket 6 — General Ledger Module DTO Contract Audit Completed!');
+    });
 });

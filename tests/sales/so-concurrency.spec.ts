@@ -56,6 +56,7 @@ test.describe('Concurrency & Race Condition Audits @sales @concurrency @security
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, unitPrice: INVOICE_AMOUNT, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
+        const glAcct = allAccs.find((a: any) => a.account_type?.toLowerCase().includes('receivable') || a.name?.toLowerCase().includes('receivable')) || allAccs[1] || allAccs[0];
         const receiptPayload = {
             amount: INVOICE_AMOUNT,
             cash_account_id: cashAcct.id,
@@ -63,7 +64,8 @@ test.describe('Concurrency & Race Condition Audits @sales @concurrency @security
             date: new Date().toISOString(),
             payment_method: 'cash',
             currency_id: currency.id,
-            invoice_receipts: [{ amount: INVOICE_AMOUNT, invoice_id: inv.id }]
+            invoice_receipts: [{ amount: INVOICE_AMOUNT, invoice_id: inv.id }],
+            receipt_items: [{ amount: INVOICE_AMOUNT, general_ledger_account_id: glAcct.id, unit_price: INVOICE_AMOUNT, quantity: 1, description: 'Invoice Receipt' }]
         };
 
         console.log(`[ATTACK] Firing 2 concurrent receipt API calls for ${INVOICE_AMOUNT} each...`);
