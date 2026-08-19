@@ -1,0 +1,46 @@
+
+=======================================================
+  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test 
+=======================================================
+[OPERATING DATE] Date: 2026-08-14T00:00:00Z
+[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...
+[STOCK DISCOVERY] Checking existing items for sufficient stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb...
+[STOCK DISCOVERY] No existing item with stock >= 1 found. Creating fresh item and seeding stock...
+[ITEM CREATED] Created fresh active item: API-SO-Test-Item-1787122393523 (901bb0a0-85e7-49d8-8613-173a87bbbaab)
+[STOCK SEED] Seeded stock via adjustment cdf6ea2f-48bf-4e4b-afb4-9e687e04a547. Polling for stock commitment...
+[STOCK VERIFIED] Live stock confirmed on attempt 1: 50
+  ├── Customer ID      : 243b9845-e056-48ce-924d-6f233d99c574
+  ├── Cash Account ID  : bd32401d-9a1c-4637-9dfe-dbf0e79dc766 (Cash - Main Office)
+  ├── Currency ID      : ffbf8ef2-bffe-4c52-b588-17472d6baeb3 (BRR)
+  ├── AR Account ID    : bd0e0b51-b32d-4925-b442-05a3e63abf16 (Accounts Receivable)
+  ├── Sales Account ID : 7641cae0-1158-4cd8-9817-704ef86019dc (Sales)
+  ├── Warehouse ID     : 274c6ccf-b0f0-4c67-bbff-309c3f63a871
+  ├── Location ID      : 539ab667-5559-4db7-8cd4-24f797d57ebb
+  └── Inventory Item ID: 901bb0a0-85e7-49d8-8613-173a87bbbaab
+[STEP 3A] Creating Sales Order...
+[PASS] Sales Order Created: 772eb8f7-e6f6-412b-a389-04e541444c6e
+[STEP 3B] Creating Sales Invoice...
+[PASS] Invoice Created: 2f42033e-3c95-4cd2-aba9-43d9dfe73638 | Status: draft
+[PASS] Invoice Advance Status: 422
+[STEP 3C] Creating Receipt linked to Invoice 2f42033e-3c95-4cd2-aba9-43d9dfe73638...
+[HTTP POST] /api/receipts (linked to draft invoice) -> Status: 422
+[⚠️ BACKEND DEFECT DETECTED] Linking draft invoice to receipt returned HTTP 422
+[SERVER RESPONSE] {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/08/19/002560 outstanding balance is 200.00 but 1000.00 was applied"
+}
+
+[STEP 3D] Creating Standalone Customer Receipt (unlinked to draft invoice)...
+[HTTP POST] /api/receipts (standalone customer receipt) -> Status: 201
+[PASS] Standalone Receipt Created Successfully!
+  ├── Receipt ID  : dd076538-b1dd-4c90-8445-5f967a11c777
+  ├── Ref Number  : RCPT/2026/08/19/000523
+  ├── Status      : draft
+  └── Amount      : 0
+[STEP 3E] Verifying Direct GET /api/receipt/dd076538-b1dd-4c90-8445-5f967a11c777...
+[HTTP GET] Direct Receipt Inspection -> Status: 200
+[STEP 3F] Approving Receipt via Document Workflow...
+[FALLBACK] PATCH /api/receipt/dd076538-b1dd-4c90-8445-5f967a11c777/advance returned 404. Trying plural...
+[HTTP PATCH] Advance Receipt -> Status: 200
+[PASS] Receipt dd076538-b1dd-4c90-8445-5f967a11c777 Approved Successfully!
+[DIAGNOSTIC STATUS] ✅ Receipt API Diagnostics Completed Successfully.
