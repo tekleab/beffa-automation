@@ -4,8 +4,8 @@
   "failed": 1,
   "skipped": 0,
   "passRate": 95.7,
-  "avgDurationMs": 29486,
-  "lastUpdated": "2026-08-19T06:04:17.747Z",
+  "avgDurationMs": 29359,
+  "lastUpdated": "2026-08-19T06:41:27.429Z",
   "moduleBreakdown": [
     {
       "module": "Other",
@@ -13,17 +13,25 @@
       "failed": 1,
       "skipped": 0,
       "trend": [
-        100,
         95.7,
         100,
         84.6,
         91.3,
         86.2,
+        95.7,
         95.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "670",
+      "commit": "01e7e88",
+      "trigger": "push (smoke)",
+      "duration": "11m 15s",
+      "passRate": 95.7,
+      "status": "success"
+    },
     {
       "run": "669",
       "commit": "be76bdc",
@@ -95,22 +103,14 @@
       "duration": "12m 27s",
       "passRate": 95.7,
       "status": "success"
-    },
-    {
-      "run": "658",
-      "commit": "85ae236",
-      "trigger": "push (smoke)",
-      "duration": "12m 38s",
-      "passRate": 82.6,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
+      "severity": "medium",
       "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
-      "error": "Error: SO Creation failed: {\n\t\"code\": 500,\n\t\"message\": \"Error creating sales order\"\n}\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nE",
-      "firstSeen": "2026-08-19T06:01:01.377Z",
+      "error": "Error: SO Creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"so_items.0.quantity\": [\n\t\t\t\"Insufficient stock. Available: 0, required: 1.00\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating sales orde",
+      "firstSeen": "2026-08-19T06:38:16.080Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
