@@ -1,13 +1,37 @@
 {
-  "total": 0,
-  "passed": 0,
-  "failed": 0,
+  "total": 23,
+  "passed": 22,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 0,
-  "avgDurationMs": 0,
-  "lastUpdated": "2026-08-19T19:28:18.629Z",
-  "moduleBreakdown": [],
+  "passRate": 95.7,
+  "avgDurationMs": 39749,
+  "lastUpdated": "2026-08-19T19:38:00.876Z",
+  "moduleBreakdown": [
+    {
+      "module": "Other",
+      "passed": 22,
+      "failed": 1,
+      "skipped": 0,
+      "trend": [
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        95.7
+      ]
+    }
+  ],
   "last10Runs": [
+    {
+      "run": "680",
+      "commit": "f4426fa",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "15m 14s",
+      "passRate": 95.7,
+      "status": "success"
+    },
     {
       "run": "679",
       "commit": "79f9de5",
@@ -79,15 +103,16 @@
       "duration": "11m 18s",
       "passRate": 95.7,
       "status": "success"
-    },
-    {
-      "run": "668",
-      "commit": "e607a64",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "81m 9s",
-      "passRate": 86.2,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/19/002308 never appeared in \"Gentium Concrite Industry\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:711\n\n  709 |     }\n  710 |\n> 711 |     throw ",
+      "firstSeen": "2026-08-19T19:33:12.975Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ]
 }
