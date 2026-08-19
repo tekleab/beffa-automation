@@ -73,7 +73,14 @@ jobs:
       id: playwright-version
       run: echo "version=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
 
-    - name: Cache playwright binaries
+    - name: Cache APT packages
+      uses: actions/cache@v4
+      id: apt-cache
+      with:
+        path: /var/cache/apt/archives
+        key: ${{ runner.os }}-apt-playwright-v1
+
+    - name: Cache Playwright browser binaries
       uses: actions/cache@v4
       id: playwright-cache
       with:
@@ -81,13 +88,19 @@ jobs:
           ~/.cache/ms-playwright
         key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
-    - name: Install Playwright Browsers & Deps
+    - name: Install Playwright Browsers & OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: npx playwright install --with-deps
 
-    - name: Install Playwright OS Dependencies
+    - name: Ensure Playwright OS Dependencies
       if: steps.playwright-cache.outputs.cache-hit == 'true'
-      run: npx playwright install-deps
+      run: |
+        # Only run install-deps if missing required libraries to prevent redundant 114MB apt downloads
+        if ! dpkg -l | grep -q libwoff1; then
+          npx playwright install-deps
+        else
+          echo "✅ Playwright OS dependencies are already satisfied."
+        fi
 
     - name: ERP Health Check
       id: erp-health
