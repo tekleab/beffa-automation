@@ -1,0 +1,21 @@
+07:27:50 [PERFORMANCE] API - Auth API Verification: 284.73ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/19/004497 (ID: da124d24-b759-4da5-a1d5-6e0adefeb246)
+07:27:54 [INFO] Advancing inventory-adjustments "da124d24-b759-4da5-a1d5-6e0adefeb246"...
+07:27:55 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+07:27:55 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787124473379 (90c120f9-8b6f-4d4d-924e-2a0781c063da) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+07:28:00 [PERFORMANCE] API - Auth API Verification: 243.68ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating SO for 10 units...
+07:28:03 [INFO] Advancing sales-orders "0a1bc44b-ffe3-41e0-bde3-37c8863d6475"...
+[ATTACK] Attempting to Invoice 50 units against the 10-unit SO...
+[PASS] Over-Invoicing attempt blocked by API: {
+	"code": 400,
+	"message": "sales order balance already exhausted: sales order item 3c21b680-a4b1-4e6b-b39c-b79fe6fc6981 ordered 10, already released 0, requested 50"
+}
+

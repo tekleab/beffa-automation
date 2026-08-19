@@ -1,0 +1,22 @@
+07:26:44 [PERFORMANCE] API - Auth API Verification: 245.78ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/19/004484 (ID: 47bafe6a-f94e-49f0-9bac-13b128e00cb6)
+07:26:49 [INFO] Advancing inventory-adjustments "47bafe6a-f94e-49f0-9bac-13b128e00cb6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787124408400 (1fab696e-a902-42e9-b851-a0c2b334b8f0) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+07:26:53 [PERFORMANCE] API - Auth API Verification: 234.53ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+07:26:55 [INFO] Advancing invoices "9f1063df-06d6-46cd-b61a-5cf8d3479989"...
+[RECEIPT] amount=40 | invoice=9f1063df... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/19/000548
+07:27:02 [INFO] Advancing receipts "62839778-b20b-46b3-9332-c370f22d7da5"...
+[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...
+[RECEIPT] amount=80 | invoice=9f1063df... | year=2019
+[PASS] Overpayment blocked correctly: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/08/19/002638 outstanding balance is 60.00 but 80.00 was applied"
+}
+
