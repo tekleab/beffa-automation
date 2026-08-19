@@ -242,7 +242,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 if (clickedOpt) {
                     const optText = await clickedOpt.textContent().catch(() => '');
                     const selectedName = optText?.trim().replace(/\s+/g, ' ') || '';
-                    await clickedOpt.evaluate((node: HTMLElement) => (node as HTMLElement).click()).catch(() => clickedOpt.click({ force: true }));
+                    await clickedOpt.click({ force: true }).catch(() => clickedOpt.evaluate((node: HTMLElement) => (node as HTMLElement).click()));
                     console.log(`[ITEM MODAL] Selected item option: "${selectedName}"`);
                     // Wait for dropdown to fully close before interacting with next selectors
                     await menuList.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
@@ -265,9 +265,8 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                                     const locs: any[] = locData.data || locData.items || [];
                                     liveStock = locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
                                 }
-                                if (liveStock <= 0) {
+                                if (liveStock <= 0 && attempt < 2) {
                                     console.log(`[ITEM MODAL] Stock guard: "${matched.name}" has 0 live stock — retrying with itemA`);
-                                    await page.keyboard.press('Escape').catch(() => {});
                                     (opts as any).itemName = (itemA as any)?.name || itemA?.itemName;
                                     itemSelected = false;
                                     continue;
@@ -279,18 +278,20 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                         console.log(`[ITEM MODAL] Stock guard skipped: ${e}`);
                     }
 
-                    // Inspect Selling Price field state
+                    // Inspect Selling Price / Unit Price field state and fill price
                     const priceInput = modal.locator('.chakra-form-control').filter({
-                        has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax/i })
+                        has: page.locator('label, p, span, div').filter({ hasText: /^Selling Price|^Unit Price|^Before Tax|^Price/i })
                     }).locator('input').first();
 
-                    if (await priceInput.isVisible({ timeout: 1500 }).catch(() => false)) {
+                    if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+                        await priceInput.waitFor({ state: 'attached', timeout: 3000 }).catch(() => {});
                         const val = parseFloat(await priceInput.inputValue().catch(() => '0')) || 0;
                         const isDisabled = await priceInput.isDisabled().catch(() => false);
                         console.log(`[ITEM MODAL] Price check: val=$${val}, disabled=${isDisabled}`);
 
-                        if (!isDisabled && val <= 0) {
+                        if (!isDisabled || val <= 0) {
                             await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
+                            await priceInput.fill(targetItemPrice).catch(() => {});
                             await page.keyboard.type(targetItemPrice, { delay: 30 }).catch(() => { });
                             await page.keyboard.press('Tab').catch(() => { });
                         }
@@ -431,8 +432,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         console.log(`[SO-UI-01] Using guaranteed-stock item "${targetItemName}" @ $${targetUnitPrice}`);
 
         // 2. Proceed to Sales Order creation UI
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit', timeout: 60000 }).catch(async () => {
+            console.log('[SO-UI-01] Retrying navigation to sale-orders/new...');
+            await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit', timeout: 60000 });
+        });
+        await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => { });
 
         const lineItemBtn = page.locator('button:has-text("Line Item"), button:has-text("Add Line Item")').first();
         await lineItemBtn.waitFor({ state: 'visible', timeout: 60000 });

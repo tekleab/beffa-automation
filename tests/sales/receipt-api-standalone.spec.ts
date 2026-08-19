@@ -91,24 +91,37 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
         console.log(`[OPERATING DATE] Date: ${isoDate}`);
 
         // 1. Discover Metadata
-        console.log(`[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, and Inventory Item...`);
-        const [custResp, cashResp, currResp, whResp, itemResp] = await Promise.all([
-            request.get(`${apiBase}/customers?page=1&pageSize=1&${params}`, { headers }),
-            request.get(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers }),
+        console.log(`[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...`);
+        const [custResp, cashResp, currResp, whResp, locResp, itemResp] = await Promise.all([
+            request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers }),
+            request.get(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers }),
             request.get(`${apiBase}/currency?${params}`, { headers }),
-            request.get(`${apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers }),
-            request.get(`${apiBase}/inventory-items?page=1&pageSize=1&${params}`, { headers }),
+            request.get(`${apiBase}/warehouses?page=1&pageSize=10&${params}`, { headers }),
+            request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers }),
+            request.get(`${apiBase}/inventory-items?page=1&pageSize=50&${params}`, { headers }),
         ]);
 
-        const customer = (await custResp.json()).data?.[0];
+        const customer = (await custResp.json()).data?.[0] || (await custResp.json()).items?.[0];
         const cashAccounts = (await cashResp.json()).data || (await cashResp.json()).items || [];
         const currencyData = await currResp.json();
         const currencyList = Array.isArray(currencyData) ? currencyData : (currencyData.data || currencyData.items || currencyData.currencies || []);
-        const currency = currencyList[0] || (currencyData.id ? currencyData : null);
+        const currency = currencyList[0] || (currencyData.id ? currencyData : { id: 'ETB' });
         expect(currency?.id, 'Valid Currency is required').toBeTruthy();
         const cashAccount = cashAccounts.find((a: any) => /cash|bank/i.test(a.name || a.type)) || cashAccounts[0];
-        const warehouse = (await whResp.json()).data?.[0];
-        const item = (await itemResp.json()).data?.[0] || (await itemResp.json()).items?.[0];
+        
+        const warehouses = (await whResp.json()).data || (await whResp.json()).items || [];
+        const locs = (await locResp.json()).data || (await locResp.json()).items || [];
+        const location = locs[0];
+
+        let warehouseId = location?.warehouse_id || location?.warehouse?.id;
+        if (!warehouseId && typeof location?.warehouse === 'string') {
+            const match = warehouses.find((w: any) => w.name === location.warehouse);
+            warehouseId = match?.id;
+        }
+        if (!warehouseId) {
+            warehouseId = warehouses[0]?.id;
+        }
+        const locationId = location?.id;
 
         const allAccounts = cashAccounts;
         const arAccount =
@@ -122,15 +135,82 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             allAccounts.find((a: any) => a.name?.toLowerCase().includes('sales')) ||
             arAccount;
 
+        // Create fresh active item for guaranteed isolation and stock availability
+        const itemTs = Date.now();
+        const createItemResp = await request.post(`${apiBase}/inventory-items?${params}`, {
+            headers,
+            data: {
+                name: `API-SO-Test-Item-${itemTs}`,
+                type: 'inventory',
+                category: 'Raw Materials',
+                cost_method_code: 'WAC',
+                item_class: 'MER',
+                item_id: `ITM-SO-${itemTs.toString().slice(-6)}`,
+                unit_of_measurement: 'Kilogram (kg)',
+                part_number: `PN-${itemTs.toString().slice(-4)}`,
+                status: 'active',
+                purchase_price: 100,
+                selling_price: 200,
+                unit_cost: 100,
+                gl_sales_account_id: salesAccount.id,
+                gl_cost_account_id: arAccount.id,
+                gl_inventory_account_id: arAccount.id,
+                default_location_id: locationId,
+                default_warehouse_id: warehouseId,
+                quantity: 0
+            }
+        });
+
+        let activeItem: any = null;
+        if (createItemResp.ok()) {
+            activeItem = await createItemResp.json();
+            console.log(`[ITEM CREATED] Created fresh active item: ${activeItem.name} (${activeItem.id})`);
+            
+            // Seed stock via inventory adjustment
+            const adjResp = await request.post(`${apiBase}/inventory-adjustments?${params}`, {
+                headers,
+                data: {
+                    adjusted_by: 'quantity',
+                    adjusted_quantity: 50,
+                    adjustment_account_id: arAccount.id,
+                    inventory_item_id: activeItem.id,
+                    is_write_down: 'false',
+                    location_id: locationId,
+                    warehouse_id: warehouseId,
+                    date: isoDate,
+                    reason: 'API Standalone Receipt Test Seed',
+                    unit_cost: 100,
+                    unit_price: 100,
+                    total_cost: 5000,
+                    current_quantity: 0,
+                    location_quantity: 0,
+                    skip_draft: false,
+                    status: 'draft'
+                }
+            });
+            if (adjResp.ok()) {
+                const adj = await adjResp.json();
+                await request.patch(`${apiBase}/inventory-adjustments/${adj.id}/advance?${params}`, { headers, data: {} });
+                console.log(`[STOCK SEED] Seeded and advanced 50 units for item "${activeItem.name}" (${activeItem.id})`);
+            }
+        }
+
+        if (!activeItem) {
+            const items = (await itemResp.json()).data || (await itemResp.json()).items || [];
+            activeItem = items.find((i: any) => (i.status || '').toLowerCase() !== 'inactive') || items[0];
+        }
+
         expect(customer, 'Customer is required').toBeTruthy();
         expect(cashAccount, 'Cash/Bank Account is required').toBeTruthy();
+
         console.log(`  ├── Customer ID      : ${customer.id}`);
         console.log(`  ├── Cash Account ID  : ${cashAccount.id} (${cashAccount.name || 'N/A'})`);
         console.log(`  ├── Currency ID      : ${currency.id} (${currency.code || currency.name || 'ETB'})`);
         console.log(`  ├── AR Account ID    : ${arAccount.id} (${arAccount.name || 'N/A'})`);
         console.log(`  ├── Sales Account ID : ${salesAccount.id} (${salesAccount.name || 'N/A'})`);
-        console.log(`  ├── Warehouse ID     : ${warehouse?.id || 'N/A'}`);
-        console.log(`  └── Inventory Item ID: ${item?.id || 'N/A'}`);
+        console.log(`  ├── Warehouse ID     : ${warehouseId || 'N/A'}`);
+        console.log(`  ├── Location ID      : ${locationId || 'N/A'}`);
+        console.log(`  └── Inventory Item ID: ${activeItem?.id || 'N/A'}`);
 
         // 2. Create & Advance Sales Order
         const ts = Date.now();
@@ -140,9 +220,20 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             data: {
                 customer_id: customer.id,
                 accounts_receivable_id: arAccount.id,
-                order_date: isoDate,
-                warehouse_id: warehouse?.id,
-                so_items: [{ inventory_item_id: item?.id, quantity: 1, unit_price: 1000, general_ledger_account_id: salesAccount.id }]
+                currency_id: currency.id,
+                so_date: isoDate,
+                so_items: [{
+                    item_id: activeItem?.id,
+                    inventory_item_id: activeItem?.id,
+                    quantity: 1,
+                    unit_price: 1000,
+                    amount: 1000,
+                    general_ledger_account_id: salesAccount.id,
+                    warehouse_id: warehouseId,
+                    location_id: locationId,
+                    description: 'API Standalone Receipt Test'
+                }],
+                status: 'draft'
             }
         });
 
@@ -159,10 +250,21 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             data: {
                 customer_id: customer.id,
                 accounts_receivable_id: arAccount.id,
+                currency_id: currency.id,
                 sales_order_id: so.id,
                 date: isoDate,
+                posting_date: isoDate,
                 due_date: isoDate,
-                items: [{ inventory_item_id: item?.id, quantity: 1, unit_price: 1000, general_ledger_account_id: salesAccount.id }]
+                items: [{
+                    item_id: activeItem?.id,
+                    inventory_item_id: activeItem?.id,
+                    quantity: 1,
+                    unit_price: 1000,
+                    amount: 1000,
+                    general_ledger_account_id: salesAccount.id,
+                    warehouse_id: warehouseId,
+                    location_id: locationId
+                }]
             }
         });
 
