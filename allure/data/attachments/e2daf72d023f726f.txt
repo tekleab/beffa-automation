@@ -1,0 +1,47 @@
+06:02:00 [PERFORMANCE] API - Auth API Verification: 293.99ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/19/004389 (ID: f67f9bd7-cf90-48b1-9f03-b5ef93d6c90a)
+06:02:07 [INFO] Advancing inventory-adjustments "f67f9bd7-cf90-48b1-9f03-b5ef93d6c90a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787119325804 (944da797-6ea0-43bf-9f38-0dcf7ddbb1bb) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating invoice, approving, and paying in full via API...
+06:02:11 [INFO] Advancing invoices "c7341493-6f8a-4045-ac91-40099171e15a"...
+[INVOICE SNAPSHOT]
+  invoice_id        : c7341493-6f8a-4045-ac91-40099171e15a
+  invoice_number    : INV/2026/08/19/002549
+  customer_id       : undefined
+  status            : approved
+  total_amount      : undefined
+  net_due           : 100
+  unreceived_amount : 100
+  balance           : undefined
+  unit_price        : undefined
+  unit_cost         : undefined
+  ACTUAL_AMOUNT used: 100
+[OK] Invoice INV/2026/08/19/002549 net_due: 100
+[RECEIPT] amount=100 | invoice=c7341493... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/19/000517
+06:02:19 [INFO] Advancing receipts "24fdceaa-f311-438e-a5af-c0d3a868ab3b"...
+[OK] Invoice INV/2026/08/19/002549 fully paid via receipt RCPT/2026/08/19/000517.
+[RECEIPT SNAPSHOT]
+  receipt_id     : 24fdceaa-f311-438e-a5af-c0d3a868ab3b
+  receipt_ref    : RCPT/2026/08/19/000517
+  amount_paid    : 100
+  invoice_id     : c7341493-6f8a-4045-ac91-40099171e15a
+  invoice_number : INV/2026/08/19/002549
+[STEP 2] Verifying invoice balance is zero via API...
+[POST-PAYMENT SNAPSHOT]
+  invoice_id        : c7341493-6f8a-4045-ac91-40099171e15a
+  invoice_number    : INV/2026/08/19/002549
+  status            : approved
+  net_due           : 100
+  unreceived_amount : 0
+  balance           : undefined
+  remaining (parsed): 0
+[AUDIT] Invoice INV/2026/08/19/002549 remaining balance: 0 (Expected: 0)
+[STEP 3] Navigating to customer profile...
+[STEP 4] Asserting receipt RCPT/2026/08/19/000517 is visible in customer profile Receipts tab...
+[FALLBACK] Checking main receipts page for RCPT/2026/08/19/000517...
+[PASS] Receipt RCPT/2026/08/19/000517 confirmed in customer profile. Balance cleared to zero.
