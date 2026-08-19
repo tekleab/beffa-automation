@@ -135,70 +135,115 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             allAccounts.find((a: any) => a.name?.toLowerCase().includes('sales')) ||
             arAccount;
 
-        // Create fresh active item for guaranteed isolation and stock availability
-        const itemTs = Date.now();
-        const createItemResp = await request.post(`${apiBase}/inventory-items?${params}`, {
-            headers,
-            data: {
-                name: `API-SO-Test-Item-${itemTs}`,
-                type: 'inventory',
-                category: 'Raw Materials',
-                cost_method_code: 'WAC',
-                item_class: 'MER',
-                item_id: `ITM-SO-${itemTs.toString().slice(-6)}`,
-                unit_of_measurement: 'Kilogram (kg)',
-                part_number: `PN-${itemTs.toString().slice(-4)}`,
-                status: 'active',
-                purchase_price: 100,
-                selling_price: 200,
-                unit_cost: 100,
-                gl_sales_account_id: salesAccount.id,
-                gl_cost_account_id: arAccount.id,
-                gl_inventory_account_id: arAccount.id,
-                default_location_id: locationId,
-                default_warehouse_id: warehouseId,
-                quantity: 0
-            }
-        });
-
+        // 2. Discover / Seed Active Item with Sufficient Stock (minStock >= 1)
+        const items = (await itemResp.json()).data || (await itemResp.json()).items || [];
+        const activeItems = items.filter((i: any) => (i.status || '').toLowerCase() !== 'inactive');
         let activeItem: any = null;
-        if (createItemResp.ok()) {
-            activeItem = await createItemResp.json();
-            console.log(`[ITEM CREATED] Created fresh active item: ${activeItem.name} (${activeItem.id})`);
-            
-            // Seed stock via inventory adjustment
-            const adjResp = await request.post(`${apiBase}/inventory-adjustments?${params}`, {
+        let verifiedStock = 0;
+
+        console.log(`[STOCK DISCOVERY] Checking existing items for sufficient stock at location ${locationId}...`);
+        for (const candidate of activeItems) {
+            try {
+                const locsResp = await request.get(`${apiBase}/inventory-item/${candidate.id}/locations?${params}`, { headers });
+                if (locsResp.ok()) {
+                    const locsData = await locsResp.json();
+                    const locList = locsData.data || locsData.items || (Array.isArray(locsData) ? locsData : []);
+                    const matchedLoc = locList.find((l: any) => (l.id === locationId || l.location_id === locationId) && parseFloat(l.quantity || '0') >= 1);
+                    if (matchedLoc) {
+                        activeItem = candidate;
+                        verifiedStock = parseFloat(matchedLoc.quantity);
+                        console.log(`[STOCK DISCOVERY] Found existing item with sufficient stock: "${activeItem.name}" (${activeItem.id}) - Stock: ${verifiedStock}`);
+                        break;
+                    }
+                }
+            } catch { /* proceed to next candidate */ }
+        }
+
+        // If no existing item has stock >= 1, create a fresh item and seed stock via adjustment + poll verification
+        if (!activeItem) {
+            console.log(`[STOCK DISCOVERY] No existing item with stock >= 1 found. Creating fresh item and seeding stock...`);
+            const itemTs = Date.now();
+            const createItemResp = await request.post(`${apiBase}/inventory-items?${params}`, {
                 headers,
                 data: {
-                    adjusted_by: 'quantity',
-                    adjusted_quantity: 50,
-                    adjustment_account_id: arAccount.id,
-                    inventory_item_id: activeItem.id,
-                    is_write_down: 'false',
-                    location_id: locationId,
-                    warehouse_id: warehouseId,
-                    date: isoDate,
-                    reason: 'API Standalone Receipt Test Seed',
+                    name: `API-SO-Test-Item-${itemTs}`,
+                    type: 'inventory',
+                    category: 'Raw Materials',
+                    cost_method_code: 'WAC',
+                    item_class: 'MER',
+                    item_id: `ITM-SO-${itemTs.toString().slice(-6)}`,
+                    unit_of_measurement: 'Kilogram (kg)',
+                    part_number: `PN-${itemTs.toString().slice(-4)}`,
+                    status: 'active',
+                    purchase_price: 100,
+                    selling_price: 200,
                     unit_cost: 100,
-                    unit_price: 100,
-                    total_cost: 5000,
-                    current_quantity: 0,
-                    location_quantity: 0,
-                    skip_draft: false,
-                    status: 'draft'
+                    gl_sales_account_id: salesAccount.id,
+                    gl_cost_account_id: arAccount.id,
+                    gl_inventory_account_id: arAccount.id,
+                    default_location_id: locationId,
+                    default_warehouse_id: warehouseId,
+                    quantity: 0
                 }
             });
-            if (adjResp.ok()) {
-                const adj = await adjResp.json();
-                await request.patch(`${apiBase}/inventory-adjustments/${adj.id}/advance?${params}`, { headers, data: {} });
-                console.log(`[STOCK SEED] Seeded and advanced 50 units for item "${activeItem.name}" (${activeItem.id})`);
+
+            if (createItemResp.ok()) {
+                activeItem = await createItemResp.json();
+                console.log(`[ITEM CREATED] Created fresh active item: ${activeItem.name} (${activeItem.id})`);
+                
+                // Seed stock via inventory adjustment
+                const adjResp = await request.post(`${apiBase}/inventory-adjustments?${params}`, {
+                    headers,
+                    data: {
+                        adjusted_by: 'quantity',
+                        adjusted_quantity: 50,
+                        adjustment_account_id: arAccount.id,
+                        inventory_item_id: activeItem.id,
+                        is_write_down: 'false',
+                        location_id: locationId,
+                        warehouse_id: warehouseId,
+                        date: isoDate,
+                        reason: 'API Standalone Receipt Test Seed',
+                        unit_cost: 100,
+                        unit_price: 100,
+                        total_cost: 5000,
+                        current_quantity: 0,
+                        location_quantity: 0,
+                        skip_draft: false,
+                        status: 'draft'
+                    }
+                });
+
+                if (adjResp.ok()) {
+                    const adj = await adjResp.json();
+                    await request.patch(`${apiBase}/inventory-adjustments/${adj.id}/advance?${params}`, { headers, data: {} });
+                    console.log(`[STOCK SEED] Seeded stock via adjustment ${adj.id}. Polling for stock commitment...`);
+
+                    // Poll to ensure stock is committed before creating SO
+                    for (let attempt = 1; attempt <= 10; attempt++) {
+                        const locsResp = await request.get(`${apiBase}/inventory-item/${activeItem.id}/locations?${params}`, { headers });
+                        if (locsResp.ok()) {
+                            const locsData = await locsResp.json();
+                            const locList = locsData.data || locsData.items || (Array.isArray(locsData) ? locsData : []);
+                            const matchedLoc = locList.find((l: any) => l.id === locationId || l.location_id === locationId);
+                            const currentStock = parseFloat(matchedLoc?.quantity || '0');
+                            if (currentStock >= 1) {
+                                verifiedStock = currentStock;
+                                console.log(`[STOCK VERIFIED] Live stock confirmed on attempt ${attempt}: ${verifiedStock}`);
+                                break;
+                            }
+                        }
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                }
             }
         }
 
         if (!activeItem) {
-            const items = (await itemResp.json()).data || (await itemResp.json()).items || [];
-            activeItem = items.find((i: any) => (i.status || '').toLowerCase() !== 'inactive') || items[0];
+            activeItem = activeItems[0] || items[0];
         }
+
+        expect(activeItem?.id, 'Active inventory item is required').toBeTruthy();
 
         expect(customer, 'Customer is required').toBeTruthy();
         expect(cashAccount, 'Cash/Bank Account is required').toBeTruthy();
