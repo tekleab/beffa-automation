@@ -14,6 +14,10 @@ async function globalTeardown() {
     }
 
     try {
+        if (process.env.CI) {
+            console.log('[TEARDOWN] CI environment detected. Skipping inline Allure report generation (handled in post-test pipeline).');
+            return;
+        }
         console.log('[TEARDOWN] Generating fresh Allure report...');
         execSync(`npx allure generate ${allureResults} --clean -o ${allureReport}`, {
             cwd: root,
@@ -22,7 +26,7 @@ async function globalTeardown() {
         console.log(`[TEARDOWN] ✓ Allure report generated at: ${allureReport}`);
         console.log(`[TEARDOWN]   → Open with: npx allure open`);
     } catch (e) {
-        console.warn('[TEARDOWN] ⚠ Allure generation failed (is allure installed?). Skipping.');
+        console.warn('[TEARDOWN] ⚠ Allure generation skipped or failed.');
     }
 }
 
