@@ -44,6 +44,8 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
 
     env:
       BASE_URL: ${{ secrets.BASE_URL }}
@@ -73,13 +75,6 @@ jobs:
       id: playwright-version
       run: echo "version=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
 
-    - name: Cache APT packages
-      uses: actions/cache@v4
-      id: apt-cache
-      with:
-        path: /var/cache/apt/archives
-        key: ${{ runner.os }}-apt-playwright-v1
-
     - name: Cache Playwright browser binaries
       uses: actions/cache@v4
       id: playwright-cache
@@ -88,19 +83,9 @@ jobs:
           ~/.cache/ms-playwright
         key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
-    - name: Install Playwright Browsers & OS Dependencies
+    - name: Install Playwright Browsers
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npx playwright install --with-deps
-
-    - name: Ensure Playwright OS Dependencies
-      if: steps.playwright-cache.outputs.cache-hit == 'true'
-      run: |
-        # Only run install-deps if missing required libraries to prevent redundant 114MB apt downloads
-        if ! dpkg -l | grep -q libwoff1; then
-          npx playwright install-deps
-        else
-          echo "✅ Playwright OS dependencies are already satisfied."
-        fi
+      run: npx playwright install chromium
 
     - name: ERP Health Check
       id: erp-health
