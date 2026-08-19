@@ -642,9 +642,9 @@ export class SalesAPI extends BasePage {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
         }
 
-      } catch (error) {
-        lastError = `Attempt ${attempt}: ${error}`;
-        console.warn(`[WARN] Receipt creation error on attempt ${attempt}:`, error);
+      } catch (error: any) {
+        lastError = `Attempt ${attempt}: ${error.message || error}`;
+        console.warn(`[WARN] Receipt creation error on attempt ${attempt}: ${error.message || error}`);
 
         if (attempt < 3) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
