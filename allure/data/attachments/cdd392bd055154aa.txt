@@ -1,0 +1,19 @@
+06:07:51 [PERFORMANCE] API - Auth API Verification: 458.12ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ADJ] quantity | qty=100 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/20/004960 (ID: 0895e9f8-488a-41c5-910e-7e386d1fe0f8)
+06:07:55 [INFO] Advancing inventory-adjustments "0895e9f8-488a-41c5-910e-7e386d1fe0f8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 100...
+[SUCCESS] API Confirmed: Stock correctly reached 100.
+[FRESH ITEM] Created: WAC-Item-1787206073745 (c4e3a421-5d3a-4672-82e0-a0753e1edab6) | method=WAC | stock=100@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating negative adjustment (-50) for: WAC-Item-1787206073745 | Stock before: 100
+[ADJ] quantity | qty=-50 @ $100 | current=100 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/20/004961 (ID: e9a8129d-59a4-4674-b304-5d3fd303c402)
+[STEP 2] Adjustment created: ADJ/2026/08/20/004961 | Approving...
+06:07:58 [INFO] Advancing inventory-adjustments "e9a8129d-59a4-4674-b304-5d3fd303c402"...
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[AUDIT] Stock before: 100 | Adjustment: -50 | Expected: 50 | Final: 50
+[PASS] Negative adjustment applied correctly — stock reduced from 100 to 50.

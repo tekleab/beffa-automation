@@ -1,0 +1,182 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: sales/so-concurrency.spec.ts >> Concurrency & Race Condition Audits @sales @concurrency @security @regression @full >> Guardrail: System must enforce thread-safe serialization for stock reduction limits
+- Location: tests/sales/so-concurrency.spec.ts:97:9
+
+# Error details
+
+```
+Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e6]
+      - img [ref=e8]
+      - generic [ref=e11]:
+        - heading "Welcome to, befa" [level=3] [ref=e12]
+        - paragraph [ref=e13]: Empower Your Finances, Simplify Your Success
+        - paragraph [ref=e14]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+    - generic [ref=e16]:
+      - heading "Login To Your Account" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - text: Not a member?
+        - link "Register" [ref=e19] [cursor=pointer]:
+          - /url: /users/register
+      - generic [ref=e21]:
+        - group [ref=e22]:
+          - generic [ref=e23]: Email *
+          - textbox "Email *" [ref=e25]:
+            - /placeholder: Enter your email
+        - group [ref=e26]:
+          - generic [ref=e27]: Password *
+          - generic [ref=e28]:
+            - textbox "Password *" [ref=e29]:
+              - /placeholder: Enter your password
+            - button "Show password" [ref=e31] [cursor=pointer]:
+              - img [ref=e32]
+        - link "Forget Password?" [ref=e37] [cursor=pointer]:
+          - /url: forget-password
+        - button "Login" [ref=e39] [cursor=pointer]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  29  | 
+  30  |     async function ensureStock(app: AppManager, item: any, quantity: number) {
+  31  |         if (Number(item.currentStock) < quantity) {
+  32  |             const bill = await app.createBillAPI({ itemData: { ...item }, quantity: quantity * 2, unitPrice: 100 });
+  33  |             await app.advanceDocumentAPI(bill.id, 'bills');
+  34  |         }
+  35  |     }
+  36  | 
+  37  |     test('Guardrail: System must handle concurrent duplicate receipts atomically', async ({ page }) => {
+  38  |         test.setTimeout(120000);
+  39  |         const app = new AppManager(page);
+  40  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  41  |         const { apiBase, headers, qs } = await app.buildApiContext();
+  42  |         const meta = sharedMeta;
+  43  |         const item = sharedItem;
+  44  |         await ensureStock(app, item, 5);
+  45  | 
+  46  |         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=200&${qs}`, { headers });
+  47  |         const allAccs = (await acctResp.json()).items || (await acctResp.json()).data || [];
+  48  |         const cashAcct = allAccs.find((a: any) => a.account_type?.toLowerCase().includes('cash') || a.name?.toLowerCase().includes('cash')) || allAccs[0];
+  49  |         if (!cashAcct) throw new Error(`[ERROR] Could not discover a valid Cash Account.`);
+  50  | 
+  51  |         const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
+  52  |         const currency = (await currResp.json()).items?.[0] || (await currResp.json()).data?.[0];
+  53  |         if (!currency) throw new Error(`[ERROR] Could not discover a valid Currency.`);
+  54  | 
+  55  |         const INVOICE_AMOUNT = 1000;
+  56  |         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, unitPrice: INVOICE_AMOUNT, locationId: item.locationId, warehouseId: item.warehouseId });
+  57  |         await app.advanceDocumentAPI(inv.id, 'invoices');
+  58  | 
+  59  |         const glAcct = allAccs.find((a: any) => a.account_type?.toLowerCase().includes('receivable') || a.name?.toLowerCase().includes('receivable')) || allAccs[1] || allAccs[0];
+  60  |         const receiptPayload = {
+  61  |             amount: INVOICE_AMOUNT,
+  62  |             cash_account_id: cashAcct.id,
+  63  |             customer_id: meta.customerId,
+  64  |             date: new Date().toISOString(),
+  65  |             payment_method: 'cash',
+  66  |             currency_id: currency.id,
+  67  |             invoice_receipts: [{ amount: INVOICE_AMOUNT, invoice_id: inv.id }],
+  68  |             receipt_items: [{ amount: INVOICE_AMOUNT, general_ledger_account_id: glAcct.id, unit_price: INVOICE_AMOUNT, quantity: 1, description: 'Invoice Receipt' }]
+  69  |         };
+  70  | 
+  71  |         console.log(`[ATTACK] Firing 2 concurrent receipt API calls for ${INVOICE_AMOUNT} each...`);
+  72  |         const [resp1, resp2] = await Promise.all([
+  73  |             page.request.post(`${apiBase}/receipts?${qs}`, { data: receiptPayload, headers }),
+  74  |             page.request.post(`${apiBase}/receipts?${qs}`, { data: receiptPayload, headers })
+  75  |         ]);
+  76  | 
+  77  |         const created: { id: string; ref: string }[] = [];
+  78  |         for (const resp of [resp1, resp2]) {
+  79  |             if (resp.ok()) { const body = await resp.json(); created.push({ id: body.id, ref: body.ref }); }
+  80  |         }
+  81  | 
+  82  |         if (created.length === 2) {
+  83  |             console.log('[ESCALATION] Both receipts created. Attempting to approve both...');
+  84  |             const approvalResults = await Promise.allSettled(created.map(r => app.advanceDocumentAPI(r.id, 'receipts')));
+  85  |             const approvedCount = approvalResults.filter(r => r.status === 'fulfilled').length;
+  86  | 
+  87  |             await page.waitForTimeout(5000);
+  88  |             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
+  89  |             if (approvedCount === 2 && Number(finalInv.unreceived_amount) < 0) {
+  90  |                 throw new Error(`[CRITICAL_RACE_CONDITION_BUG] Both concurrent receipts approved. AR over-credited: ${finalInv.unreceived_amount}`);
+  91  |             }
+  92  |             console.log(`[PASS] At least one approval layer blocked the duplication. Approved: ${approvedCount}`);
+  93  |         } else {
+  94  |             console.log('[PASS] Concurrent receipt duplication handled at API layer.');        }
+  95  |     });
+  96  | 
+  97  |     test('Guardrail: System must enforce thread-safe serialization for stock reduction limits', async ({ page }) => {
+  98  |         test.setTimeout(180000);
+  99  |         const app = new AppManager(page);
+  100 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  101 |         const { apiBase, headers, qs } = await app.buildApiContext();
+  102 |         const meta = sharedMeta;
+  103 |         const seedItem = sharedItem;
+  104 | 
+  105 |         const bill = await app.createBillAPI({ itemData: { ...seedItem }, quantity: 5, unitPrice: 1500 });
+  106 |         await app.advanceDocumentAPI(bill.id, 'bills');
+  107 | 
+  108 |         const _dateIso = (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso;
+  109 |         const buildRacePayload = () => ({            accounts_receivable_id: meta.arAccountId,
+  110 |             customer_id: meta.customerId,            invoice_date: _dateIso,
+  111 |             currency_id: meta.currencyId,
+  112 |             items: [{ amount: 3000, general_ledger_account_id: meta.salesAccountId, item_id: seedItem.itemId, location_id: seedItem.locationId, quantity: 1, unit_price: 3000, warehouse_id: seedItem.warehouseId }],
+  113 |             released_sales_order_items: [],
+  114 |             status: 'draft'
+  115 |         });
+  116 | 
+  117 |         console.log('[ATTACK] Firing 2 concurrent Invoicing requests for the same single unit...');
+  118 |         const [resp1, resp2] = await Promise.all([
+  119 |             page.request.post(`${apiBase}/invoices?${qs}`, { data: buildRacePayload(), headers }),
+  120 |             page.request.post(`${apiBase}/invoices?${qs}`, { data: buildRacePayload(), headers })
+  121 |         ]);
+  122 | 
+  123 |         if ([200, 201].includes(resp1.status()) && [200, 201].includes(resp2.status())) {
+  124 |             const body1 = await resp1.json();
+  125 |             const body2 = await resp2.json();
+  126 |             try {
+  127 |                 await app.advanceDocumentAPI(body1.id, 'invoices');
+  128 |                 await app.advanceDocumentAPI(body2.id, 'invoices');
+> 129 |                 throw new Error(`[CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.`);
+      |                       ^ Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.
+  130 |             } catch (err: any) {
+  131 |                 if (err.message.includes('CRITICAL_LOGIC_BUG')) throw err;
+  132 |                 console.log(`[PASS] Approval layer blocked the double-spend after DB creation race.`);
+  133 |             }
+  134 |         } else {
+  135 |             console.log('[PASS] Atomic threading handled the stock reduction race successfully.');
+  136 |         }
+  137 |     });
+  138 | });
+  139 | 
+```

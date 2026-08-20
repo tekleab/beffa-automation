@@ -1,0 +1,36 @@
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-20
+[DateHelper] Resolved in-period date: 2026-08-20T00:00:00Z (day=20, ecYear=2019)
+06:02:41 [PERFORMANCE] API - Auth API Verification: 2445.71ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-20
+[DateHelper] Resolved in-period date: 2026-08-20T00:00:00Z (day=20, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/20/004932 (ID: 88011486-76d7-4baf-bb06-36c22fb29e67)
+06:03:15 [INFO] Advancing inventory-adjustments "88011486-76d7-4baf-bb06-36c22fb29e67"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787205794242 (0ef18dcc-d544-435d-bd3f-5ba9aefcdc24) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:03:19 [PERFORMANCE] API - Auth API Verification: 309.00ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving Bill for 5000...
+06:03:20 [INFO] Advancing bills "0d99b9cd-25f1-4c8d-adea-37ddc8dc144b"...
+[BILL] BILL/2026/08/20/002342 (0d99b9cd-25f1-4c8d-adea-37ddc8dc144b)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for 0d99b9cd-25f1-4c8d-adea-37ddc8dc144b via API (CashAcct: b2fd8a4b-199a-417b-92d8-a8e4ec7151ba)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/20/002342               │
+  │ Bill ID                          │ 0d99b9cd-25f1-4c8d-adea-37ddc8dc144… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.
