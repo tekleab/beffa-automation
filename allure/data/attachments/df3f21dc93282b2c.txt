@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-20T00:00:00Z (day=20, ecYear=2019)
+08:43:18 [PERFORMANCE] API - Auth API Verification: 489.03ms
+[AUTH] Session token and local storage injected successfully.
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/20/005054 (ID: ad389cd6-f1e2-4ec6-acfd-97c9d7d8fdce)
+08:43:25 [INFO] Advancing inventory-adjustments "ad389cd6-f1e2-4ec6-acfd-97c9d7d8fdce"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787215404766 (8b80f5fa-a9b0-445d-8059-90784366465a) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/20/001472 for Vendor Gentium Concrite Industry (8c8b8d32-3171-4290-ae83-17e58ccaf323)
+08:43:43 [INFO] Advancing purchase-orders "7d5a9b63-1e8a-4323-bd91-70ebd2d64611"...
+[OK] PO PO/2026/08/20/001472 approved
+[STEP] Phase 2: Create linked Bill via API
+08:43:45 [INFO] Advancing bills "752d19c2-59ec-4c10-bd6d-4441faae6633"...
+[OK] Bill BILL/2026/08/20/002392 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/08/20/002392 is physically present in Gentium Concrite Industry's ledger.
+[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection
+[WARN] Bill BILL/2026/08/20/002392 confirmed via API ledger. UI table did not show row within 1 pages.
