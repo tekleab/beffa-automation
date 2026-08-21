@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - API Security & Authorization Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Unauthenticated PO creation rejected (401)
+ * 2. Cross-tenant PO access rejected (403/404)
+ * 3. Auditor role cannot create or approve PO
+ * =============================================================================
+ */
+
+
 
 /**
  * CATEGORY 4: Security & Temporal Isolation for Procurement

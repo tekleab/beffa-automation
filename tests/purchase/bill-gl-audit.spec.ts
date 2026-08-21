@@ -50,6 +50,17 @@ const isAP = (e: JournalRow) => {
 };
 
 const isCash = (e: JournalRow) => {
+
+/**
+ * =============================================================================
+ * MODULE: Purchase Bill - General Ledger Deep Audit Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bill approval triggers Debit Expense / Credit AP GL entries
+ * 2. Multi-line bill generates one GL entry per line account
+ * 3. Journal Dr == Cr balance verified across bill lifecycle
+ * =============================================================================
+ */
+
     const n = e.accountName.toLowerCase();
     return n.includes('cash') || n.includes('bank');
 };

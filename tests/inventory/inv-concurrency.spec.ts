@@ -1,6 +1,16 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Concurrent Adjustment & Race Condition Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Simultaneous adjustments on same item do not corrupt stock levels
+ * 2. Stock balance remains accurate under concurrent reads/writes
+ * =============================================================================
+ */
+
+
 
 /**
  * INVENTORY CONCURRENCY & RACE CONDITIONS

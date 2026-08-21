@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Project Management - API Input Validation & Guardrail Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Missing customer_id → 422 "Customer is required"
+ * 2. Empty project_name → 422 "Project Name is required"
+ * 3. start_date after end_date → 422 date validation
+ * 4. Negative estimated_revenue → 422 "must be positive"
+ * 5. Invalid project_status value → 400
+ * 6. Non-existent customer_id UUID → 4xx
+ * 7. DELETE /projects/:id → 404 (not implemented)
+ * =============================================================================
+ */
+
+
 
 /**
  * PROJECT API VALIDATION — Input Guardrails & Edge Cases

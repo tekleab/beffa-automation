@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Concurrent Write & Race Condition Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Simultaneous PO approvals on same item do not corrupt inventory
+ * 2. Concurrent bill creation on same PO does not duplicate amounts
+ * 3. Optimistic lock / version conflict handled gracefully
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT CONCURRENCY & RACE CONDITIONS

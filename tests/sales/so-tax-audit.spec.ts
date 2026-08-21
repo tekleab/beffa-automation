@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Tax Calculation & Audit Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Tax amount = line subtotal * tax rate (verified to 2 decimal places)
+ * 2. Multiple tax rules applied to different line items
+ * 3. Tax-exempt items carry zero tax amount
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES TAX GL AUDIT

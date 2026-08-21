@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Financial Integrity & Calculation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Multi-line SO grand total equals sum of all line totals
+ * 2. Tax-inclusive vs tax-exclusive amount calculations verified
+ * 3. Discount application reduces line total correctly
+ * =============================================================================
+ */
+
+
 
 /**
  * CATEGORY 1: Financial Integrity & Sanity Boundaries

@@ -2,6 +2,17 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 /**
+ * =============================================================================
+ * MODULE: Project Management - UI Form & Submission Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Add Project button navigates to /projects/new
+ * 2. Form renders all required inputs (name, customer, dates, budget)
+ * 3. Submit button disabled on empty form (error visibility guard)
+ * =============================================================================
+ */
+
+
+/**
  * PROJECT UI FORM — Add Project Form Tests
  * Route: /project-management/projects/new
  *

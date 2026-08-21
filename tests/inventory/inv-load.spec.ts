@@ -2,6 +2,17 @@ import { test, expect, Browser, Page } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Load & Performance Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bulk inventory item list responds within latency threshold
+ * 2. Adjustment history pagination under large dataset
+ * 3. Stock level query performance across multiple locations
+ * =============================================================================
+ */
+
+
 test.describe('Load: Concurrent Inventory Adjustments @inventory @load @full', () => {
     test.setTimeout(180000);
 

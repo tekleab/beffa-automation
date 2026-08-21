@@ -3,13 +3,15 @@ import { AppManager } from '../../pages/AppManager';
 
 /**
  * =============================================================================
- * MODULE: Detail Page Tab On-Demand Hook Data Fetching Test Suite
+ * MODULE: Detail Tab On-Demand Lazy Data Fetching Suite
  * =============================================================================
  * 
- * JIRA TICKET / REQUIREMENT:
- * "Change fetching with loader into hook in detail tab. In all detail pages,
- * tab data was previously fetched by page loaders causing unnecessary network lag.
- * Refactored to use custom hooks on tab activation."
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * Verifies that tab data (Line Items, Financial Journals, Approval Audit Trail)
+ * is lazily fetched on-demand only when a user activates/clicks the corresponding UI tab:
+ * 1. Invoice Detail Tab Lazy Fetching
+ * 2. Sales Order Detail Tab Lazy Fetching
+ * 3. Purchase Bill Detail Tab Lazy Fetching
  * 
  * AUDIT OBJECTIVES:
  * 1. Confirm initial detail page navigation loads rapidly without pre-fetching all tab data.

@@ -1,5 +1,19 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
+import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
+
+/**
+ * =============================================================================
+ * MODULE: Project Management - API Contract & Schema Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Create project returns valid id, ref and pending status
+ * 2. GET single project returns correct financial fields
+ * 3. remaining_balance = estimated_revenue - estimated_expense
+ * 4. LIST projects pagination, filter by customer_id and status
+ * 5. PATCH project_name and estimated_revenue persist correctly
+ * =============================================================================
+ */
+
 
 
 /**
@@ -11,14 +25,13 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Project Management: API Contract @project @api @smoke @regression @full', () => {
 
     async function setup(page: any) {
-        const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        const app = await apiLoginSetup(page);
         const meta = await app.api.project.discoverMetadataAPI();
         return { app, meta };
     }
 
     async function createProject(app: AppManager, meta: any, overrides: Record<string, any> = {}) {
-        const name = `E2E-Project-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
+        const name = `E2E-Project-${Date.now()}-${process.hrtime.bigint().toString().slice(-6)}-${Math.floor(Math.random() * 900000 + 100000)}`;
         const project = await app.api.project.createProjectAPI({
             name,
             customerId: meta.customerId,

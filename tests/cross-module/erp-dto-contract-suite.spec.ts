@@ -3,19 +3,18 @@ import { AppManager } from '../../pages/AppManager';
 
 /**
  * =============================================================================
- * MODULE: ERP DTO & Route Contract Verification Suite
+ * MODULE: Enterprise ERP DTO & API Contract Audit Suite
  * =============================================================================
  * 
- * JIRA TICKETS COVERED:
- * 1. Invoice Detail DTO (GET /invoice/{id})
- * 2. Bill Payment & Receipt Invoice New Route (POST /bill-payments, POST /receipts)
- * 3. DTO for Payment / Bill Payment (GET /bill-payment/{id})
- * 4. Receipt Detail DTO (GET /receipt/{id})
- * 5. Sales Order Detail DTO (GET /sales-order/{id})
- * 
- * SCOPE & AUDIT TRANSPARENCY:
- * Enforces strict API contract validation, field type checks, line item math,
- * and error handling across all newly deployed DTOs and payment routes.
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * Validates DTO response schemas, pagination contracts, and route availability
+ * across all core ERP modules:
+ * 1. Invoice Detail DTO (`GET /invoice/{id}`)
+ * 2. Bill Payment & Receipt New Route Validation (`POST /bill-payments`, `POST /receipts`)
+ * 3. Bill Payment DTO Schema & Pagination (`GET /bill-payment/{id}`)
+ * 4. Receipt Detail DTO Schema & GL Journals (`GET /receipt/{id}`)
+ * 5. Sales Order Detail DTO (`GET /sales-order/{id}`)
+ * 6. General Ledger Module Contracts (`GET /accounts`, `GET /general-journals`)
  * =============================================================================
  */
 
@@ -41,7 +40,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
     // -------------------------------------------------------------------------
     // TICKET 1: Invoice Detail DTO Verification
     // -------------------------------------------------------------------------
-    test('1. Jira Ticket: Invoice Detail DTO Contract (GET /invoice/{id})', async ({ page }) => {
+    test('1. Invoice Detail DTO Contract (GET /invoice/{id})', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -72,7 +71,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
     // -------------------------------------------------------------------------
     // TICKET 2: Bill Payment & Receipt Invoice New Route Contract
     // -------------------------------------------------------------------------
-    test('2. Jira Ticket: Bill Payment & Receipt Invoice New Route Validation', async ({ page }) => {
+    test('2. Bill Payment & Receipt Invoice New Route Validation', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -101,7 +100,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
     // -------------------------------------------------------------------------
     // TICKET 3: DTO for Payment (Bill Payment DTO)
     // -------------------------------------------------------------------------
-    test('3. Jira Ticket: Bill Payment DTO Contract (GET /bill-payment/{id})', async ({ page }) => {
+    test('3. Bill Payment DTO Contract (GET /bill-payment/{id})', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -134,7 +133,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
     // -------------------------------------------------------------------------
     // TICKET 4: Receipt Detail DTO
     // -------------------------------------------------------------------------
-    test('4. Jira Ticket: Receipt Detail DTO Contract (GET /receipt/{id})', async ({ page }) => {
+    test('4. Receipt Detail DTO Contract (GET /receipt/{id})', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -166,7 +165,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
     // -------------------------------------------------------------------------
     // TICKET 5: Sales Order Detail DTO
     // -------------------------------------------------------------------------
-    test('5. Jira Ticket: Sales Order Detail DTO Contract (GET /sales-order/{id})', async ({ page }) => {
+    test('5. Sales Order Detail DTO Contract (GET /sales-order/{id})', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -196,7 +195,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
     // -------------------------------------------------------------------------
     // TICKET 6: General Ledger Module DTO Contract Verification
     // -------------------------------------------------------------------------
-    test('6. Jira Ticket: General Ledger Module DTO Contract (GET /accounts, /journal-entries, /general-ledger)', async ({ page }) => {
+    test('6. General Ledger Module DTO Contract (GET /accounts, /journal-entries, /general-ledger)', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
@@ -244,7 +243,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
 
         // 3. Audit Document Journal Entries DTO Contract (e.g. Purchase & Sales GL Journals)
         console.log('[TICKET 6] Creating Purchase Bill to verify GL Journal Entries DTO...');
-        const billRes = await app.api.purchase.createBillAPI({ quantity: 2, unitCost: 150 });
+        const billRes = await app.api.purchase.createBillAPI({ quantity: 2, unitPrice: 150 });
         if (billRes.success && billRes.id) {
             const billJournal = await app.api.purchase.getBillJournalEntriesAPI(billRes.id);
             console.log(`[GL JOURNAL DTO] Bill ${billRes.ref} GL Entries: ${billJournal.length} entries found`);

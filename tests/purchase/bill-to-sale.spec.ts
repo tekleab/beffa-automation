@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Cross-Module - Bill to Sale Order Linkage Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Purchase bill linked to matching Sales Order reference
+ * 2. Bill approval does not affect SO status
+ * 3. GL entries from bill and SO do not overlap
+ * =============================================================================
+ */
+
+
 
 /**
  * E2E: Purchase to Sale Flow with Inventory Verification
@@ -77,7 +88,7 @@ test.describe('E2E: Purchase to Sale Flow @e2e @regression @full', () => {
 
         console.log(`\n========== E2E CYCLE AUDIT REPORT ==========`);
         console.log(`[ITEM]    ${item.itemName} (${item.itemId})`);
-        console.log(`[BILL]    ${bill.ref} — purchased ${PURCHASE_QTY} units`);
+        console.log(`[BILL]    ${bill.billNumber} — purchased ${PURCHASE_QTY} units`);
         console.log(`[SO]      ${so.ref} — sold ${SELL_QTY} units`);
         console.log(`[INVOICE] ${inv.ref}`);
         console.log(`[STOCK]   Before Purchase : ${stockBefore}`);

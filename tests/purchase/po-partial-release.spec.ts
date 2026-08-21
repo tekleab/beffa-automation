@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Partial Release & Bill Split Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Partial bill created for selected PO lines only
+ * 2. Remaining PO quantity tracked correctly post-partial-release
+ * 3. Multiple partial bills sum to full PO amount
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT PARTIAL PO RELEASE AUDIT

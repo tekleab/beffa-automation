@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Partial Release & Invoice Split Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Partial release creates invoice for selected line items only
+ * 2. Remaining SO quantity correctly tracked post-partial-release
+ * 3. Multiple partial releases sum to full SO amount
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES PARTIAL SO RELEASE AUDIT

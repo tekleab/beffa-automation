@@ -3,7 +3,8 @@ export enum LogLevel {
   WARN = 'WARN',
   ERROR = 'ERROR',
   PERF = 'PERF',
-  API = 'API'
+  API = 'API',
+  DEBUG = 'DEBUG'
 }
 
 export class StructuredLogger {
@@ -13,10 +14,11 @@ export class StructuredLogger {
     ERROR: '\x1b[31m',     // Red
     PERF: '\x1b[35m',      // Magenta
     API: '\x1b[32m',       // Green
+    DEBUG: '\x1b[90m',     // Gray
     reset: '\x1b[0m'
   };
 
-  constructor(private context: string = 'Default', private minLevel: LogLevel = LogLevel.INFO) {}
+  constructor(private context: string = 'Default', private minLevel: LogLevel = LogLevel.INFO) { }
 
   info(message: string, meta?: any) { StructuredLogger.log(LogLevel.INFO, message, { context: this.context, ...meta }); }
   warn(message: string, meta?: any) { StructuredLogger.log(LogLevel.WARN, message, { context: this.context, ...meta }); }
@@ -32,7 +34,7 @@ export class StructuredLogger {
     const ctx = meta?.context || 'Default';
     const color = this.colors[level] || this.colors.reset;
     const workerPrefix = workerIndex !== '0' ? `[Worker ${workerIndex}] ` : '';
-    
+
     let metaStr = '';
     if (meta) {
       const { context: _, ...rest } = meta;

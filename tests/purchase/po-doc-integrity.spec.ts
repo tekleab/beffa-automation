@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Document Integrity & Immutability Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Approved PO line items cannot be mutated
+ * 2. Cancelled PO cannot be re-approved
+ * 3. PO total is immutable after approval
+ * =============================================================================
+ */
+
+
 
 type AuditRow = { label: string; value: string };
 

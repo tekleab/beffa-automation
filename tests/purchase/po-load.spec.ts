@@ -2,6 +2,17 @@ import { test, expect, Browser, Page } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Load & Performance Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bulk PO list endpoint responds within latency threshold
+ * 2. PO detail page load time verified
+ * 3. Pagination handles large dataset without timeout
+ * =============================================================================
+ */
+
+
 test.describe('Load: Concurrent PO Submissions @purchase @load @full', () => {
     test.setTimeout(180000);
 

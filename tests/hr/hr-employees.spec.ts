@@ -1,6 +1,18 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: HR - Employee Management & Onboarding Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Employee creation with required fields (name, department, role, join date)
+ * 2. Duplicate employee email rejected (422)
+ * 3. Employee list pagination and search by name
+ * 4. Employee status transitions (Active → Inactive → Terminated)
+ * =============================================================================
+ */
+
+
 
 /**
  * HR: Employee Lifecycle

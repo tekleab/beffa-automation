@@ -1,5 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * =============================================================================
+ * MODULE: Receipt - Standalone API Lifecycle & Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Create receipt linked to approved invoice
+ * 2. Partial payment receipt creates correct GL journal entries
+ * 3. Overpayment rejection guardrail
+ * 4. Receipt advance approval workflow (Draft → Approved)
+ * 5. GET receipt detail DTO schema validation
+ * =============================================================================
+ */
+
+
 test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @full', () => {
     test.setTimeout(60000);
 

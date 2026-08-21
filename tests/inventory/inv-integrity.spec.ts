@@ -1,6 +1,17 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Data Integrity & Consistency Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Item stock balance matches sum of all adjustment transactions
+ * 2. Item deletion rejected if active stock exists
+ * 3. Warehouse transfer preserves total stock across locations
+ * =============================================================================
+ */
+
+
 
 /**
  * INVENTORY INTEGRITY & BOUNDARY AUDITS

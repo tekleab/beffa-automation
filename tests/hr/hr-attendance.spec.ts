@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: HR - Attendance Tracking & Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Check-in / check-out records created correctly per employee
+ * 2. Duplicate check-in on same day rejected
+ * 3. Attendance report totals match individual records
+ * =============================================================================
+ */
+
+
 
 /**
  * HR: Timesheets & Attendances

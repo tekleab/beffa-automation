@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Bill Payment - Security Attack & Edge Case Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Double-payment on same bill rejected
+ * 2. Payment exceeding bill total rejected (overpayment guard)
+ * 3. SQL injection and malformed payload attacks return safe error
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT PAYMENT ATTACK VECTORS

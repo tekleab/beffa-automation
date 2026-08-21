@@ -108,24 +108,42 @@ export class ProjectAPI extends BasePage {
         const today = _cached;
         const nextYear = new Date(new Date(_cached).getTime() + 365 * 86400000).toISOString().split('T')[0] + 'T00:00:00Z';
 
-        const payload = {
-            project_name: data.name,
-            customer_id: data.customerId,
-            project_start_date: data.startDate || today,
-            estimated_end_date: data.endDate || nextYear,
-            estimated_revenue: data.estimatedRevenue ?? 100000,
-            estimated_expense: data.estimatedExpense ?? 50000,
-            completion_method: data.completionMethod || 'manual',
-            project_status: 'pending',
-            description: data.description || ''
-        };
+        let projectName = data.name;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            const payload = {
+                project_name: projectName,
+                customer_id: data.customerId,
+                project_start_date: data.startDate || today,
+                estimated_end_date: data.endDate || nextYear,
+                estimated_revenue: data.estimatedRevenue ?? 100000,
+                estimated_expense: data.estimatedExpense ?? 50000,
+                completion_method: data.completionMethod || 'manual',
+                project_status: 'pending',
+                description: data.description || ''
+            };
 
-        const resp = await this.safePost(`${this.apiBase}/projects?${this.qs}`, {
-            data: payload, headers, label: 'Create Project'
-        });
-        if (!resp.ok()) throw new Error(`Create Project failed: ${resp.status()} - ${await resp.text()}`);
-        const json = await resp.json();
-        return this._mapProject(json);
+            const resp = await this.safePost(`${this.apiBase}/projects?${this.qs}`, {
+                data: payload, headers, label: `Create Project (Attempt ${attempt})`
+            });
+
+            if (resp.ok()) {
+                const json = await resp.json();
+                return this._mapProject(json);
+            }
+
+            const errorText = await resp.text();
+            if (errorText.includes('unique_proj_company') || errorText.includes('duplicate key value') || resp.status() === 400) {
+                if (attempt < 3) {
+                    projectName = `${data.name}-${process.hrtime.bigint().toString().slice(-6)}-${Math.floor(Math.random() * 90000 + 10000)}`;
+                    console.warn(`[WARN] Project name collision on attempt ${attempt}. Retrying with unique name: ${projectName}`);
+                    await new Promise(r => setTimeout(r, 500 * attempt));
+                    continue;
+                }
+            }
+
+            throw new Error(`Create Project failed: ${resp.status()} - ${errorText}`);
+        }
+        throw new Error('Create Project failed after retries.');
     }
 
     async getProjectAPI(projectId: string): Promise<any> {

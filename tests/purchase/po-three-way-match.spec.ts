@@ -2,6 +2,17 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 /**
+ * =============================================================================
+ * MODULE: Purchase Order - Three-Way Match (PO / GRN / Bill) Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bill cannot be approved if quantities exceed PO GRN receipt
+ * 2. Three-way match passes when PO, GRN, and Bill quantities align
+ * 3. Partial GRN receipt limits billable quantity accordingly
+ * =============================================================================
+ */
+
+
+/**
  * THREE-WAY MATCH (PO -> GRN/Receipt -> Bill) AUDIT
  *
  * Verifies core procurement controls:

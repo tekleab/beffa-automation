@@ -1,6 +1,17 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - API Security & Authorization Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Unauthenticated inventory access rejected (401)
+ * 2. Cross-tenant inventory data access rejected (403/404)
+ * 3. Read-only role cannot create adjustments or transfers
+ * =============================================================================
+ */
+
+
 
 /**
  * INVENTORY TEMPORAL & DATA ISOLATION AUDITS

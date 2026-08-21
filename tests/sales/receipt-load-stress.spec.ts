@@ -4,6 +4,17 @@ import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
 import { Logger } from '../../lib/utils/Logger';
 
 /**
+ * =============================================================================
+ * MODULE: Receipt - Load & Stress Performance Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Concurrent receipt creation against the same invoice
+ * 2. Bulk receipt pagination performance under load
+ * 3. Response time thresholds under high volume
+ * =============================================================================
+ */
+
+
+/**
  * CUSTOMER RECEIPT LOAD & STRESS SUITE
  * 
  * Verifies AR receipt performance, concurrency safety, and transaction integrity under load.

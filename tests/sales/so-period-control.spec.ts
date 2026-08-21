@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Fiscal Period Control & Date Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. SO with date outside open fiscal period rejected
+ * 2. Closed period prevents SO creation and approval
+ * 3. Period boundary edge cases (first/last day of period)
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES PERIOD CONTROL EDGE CASES

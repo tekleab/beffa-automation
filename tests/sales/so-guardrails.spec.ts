@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Input Guardrails & Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. SO with zero-quantity line rejected (422)
+ * 2. SO with negative unit price rejected or flagged
+ * 3. SO without customer_id rejected (422 "Customer is required")
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES SO GUARDRAIL AUDITS

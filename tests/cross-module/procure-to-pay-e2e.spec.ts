@@ -24,6 +24,17 @@ const isAP = (e: any) => {
 };
 
 const isCash = (e: any) => {
+
+/**
+ * =============================================================================
+ * MODULE: Procure-to-Pay (P2P) - Full End-to-End Integration Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Full cycle: Purchase Order → Bill (Receive) → Payment → GL Verification
+ * 2. AP balance decrements after bill payment applied
+ * 3. GL journal entries verified at each P2P lifecycle stage
+ * =============================================================================
+ */
+
     const n = (e.accountName || e.account?.name || '').toLowerCase();
     return n.includes('cash') || n.includes('bank');
 };

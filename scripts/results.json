@@ -1,29 +1,37 @@
 {
-  "total": 23,
-  "passed": 23,
-  "failed": 0,
+  "total": 1,
+  "passed": 0,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 31291,
-  "lastUpdated": "2026-08-19T07:03:30.583Z",
+  "passRate": 0,
+  "avgDurationMs": 6,
+  "lastUpdated": "2026-08-19T07:17:23.947Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 23,
-      "failed": 0,
+      "passed": 0,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        84.6,
         91.3,
         86.2,
         95.7,
         95.7,
         100,
-        100
+        100,
+        0
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "675",
+      "commit": "f46543e",
+      "trigger": "push (smoke)",
+      "duration": "0m 0s",
+      "passRate": 0,
+      "status": "failed"
+    },
     {
       "run": "672",
       "commit": "f22c834",
@@ -95,15 +103,16 @@
       "duration": "10m 38s",
       "passRate": 95.7,
       "status": "success"
-    },
-    {
-      "run": "661",
-      "commit": "d01e168",
-      "trigger": "push (smoke)",
-      "duration": "11m 3s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "authenticate globally once",
+      "error": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\"",
+      "firstSeen": "2026-08-19T07:17:14.758Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ]
 }

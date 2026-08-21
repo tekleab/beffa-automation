@@ -5,6 +5,18 @@ import * as path from'path';
 
 
 const addressData: Array<{ region: string; zones: Array<{ name: string; woredas: string[] }> }> = JSON.parse(
+
+/**
+ * =============================================================================
+ * MODULE: Vendor Management - CRUD & Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Create vendor with required fields (name, address, AP account)
+ * 2. Duplicate vendor name rejection guardrail
+ * 3. Vendor list pagination and search
+ * 4. Vendor balance reflects outstanding payables
+ * =============================================================================
+ */
+
     fs.readFileSync(path.join(__dirname,'../../data/address_locations.json'),'utf8')
 );
 

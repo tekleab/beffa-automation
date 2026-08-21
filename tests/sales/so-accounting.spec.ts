@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Accounting & GL Journal Entry Audit
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. SO approval triggers correct Debit AR / Credit Revenue GL entries
+ * 2. Tax line generates separate GL entry with correct tax account
+ * 3. Journal entry Dr == Cr balance verified post-approval
+ * =============================================================================
+ */
+
+
 
 /**
  * CATEGORY 3: Accounting Flow & Ledger Logic

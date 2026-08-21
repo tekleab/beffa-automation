@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Business Logic & Calculation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. WAC recalculation after new receipt batch
+ * 2. Available stock = total stock - reserved (SO) quantity
+ * 3. Adjustment reversal restores stock and GL to prior state
+ * =============================================================================
+ */
+
+
 
 /**
  * LOCATION TRANSFER (MOVE ORDER) AUDITS

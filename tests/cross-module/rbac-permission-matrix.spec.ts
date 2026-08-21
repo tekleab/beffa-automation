@@ -17,6 +17,17 @@ const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localh
 
 const QS = () => `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
+/**
+ * =============================================================================
+ * MODULE: RBAC & Multi-Tenant Permission Matrix Audit Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Cross-tenant invoice requests rejected (403/404)
+ * 2. IT Admin role has full read/write access to sales-orders
+ * 3. Role-based endpoint access matrix verified per user role
+ * =============================================================================
+ */
+
+
 function h(token: string, company?: string) {
     return {
         'Authorization': `Bearer ${token}`,

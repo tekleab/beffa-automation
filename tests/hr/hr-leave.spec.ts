@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: HR - Leave Request Workflow Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Leave request created with valid date range and type
+ * 2. Overlapping leave request for same employee rejected
+ * 3. Leave approval workflow (Pending → Approved → Rejected)
+ * =============================================================================
+ */
+
+
 
 /**
  * HR: Leave Applications

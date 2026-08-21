@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Accounting & GL Journal Audit
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. PO approval generates correct Debit Inventory / Credit AP entries
+ * 2. Tax line on PO creates separate GL tax entry
+ * 3. Journal balance Dr == Cr verified post-approval
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT LEDGER & PAYMENT AUDITS

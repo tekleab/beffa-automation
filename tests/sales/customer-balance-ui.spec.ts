@@ -2,6 +2,17 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 /**
+ * =============================================================================
+ * MODULE: Customer Balance - UI Verification Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Customer detail page loads with outstanding balance
+ * 2. Balance updates after SO/Invoice/Receipt transactions
+ * 3. Credit limit exceeded validation guard
+ * =============================================================================
+ */
+
+
+/**
  * SALES CUSTOMER BALANCE UI AUDIT
  *
  * Verifies outstanding balance via invoice detail page (not customer profile tab).

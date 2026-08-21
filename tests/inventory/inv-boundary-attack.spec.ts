@@ -6,6 +6,18 @@ const QS = () => `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.
 const TODAY = () => new Date().toISOString().slice(0, 10) + 'T00:00:00Z';
 
 const BUG = (id: string, title: string, detail: Record<string, any>) => {
+
+/**
+ * =============================================================================
+ * MODULE: Inventory - Boundary & Attack Vector Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Negative stock quantity adjustment rejected
+ * 2. Zero-cost item adjustment creates correct $0 GL entry
+ * 3. Oversell guard: SO quantity exceeding available stock rejected
+ * 4. SQL injection and malformed payloads return safe error
+ * =============================================================================
+ */
+
     console.log(`\n${'─'.repeat(60)}`);
     console.log(`[BUG REPORT] ${id}`);
     console.log(`  Title   : ${title}`);

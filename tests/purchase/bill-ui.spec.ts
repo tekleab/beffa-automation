@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Bill - UI Form & Workflow Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bill creation form renders required fields (Vendor, Date, AP Account)
+ * 2. Line item modal opens and accepts item/GL account selection
+ * 3. Submitted bill navigates to detail and shows correct status
+ * =============================================================================
+ */
+
+
 test.describe('Purchase to Bill Flow @purchase @smoke @full', () => {
     test.setTimeout(300000);
 

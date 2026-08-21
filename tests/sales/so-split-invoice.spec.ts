@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Split Invoice Workflow Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Single SO split into multiple invoices by line selection
+ * 2. Each split invoice total matches selected line sum
+ * 3. All split invoices together equal original SO total
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES SO SPLIT INVOICE AUDIT

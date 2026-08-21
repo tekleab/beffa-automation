@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - General Ledger Deep Audit Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Multi-tax line SO generates correct GL entries per tax rate
+ * 2. Foreign currency SO generates FX gain/loss entry
+ * 3. GL journal balance verified across all SO lifecycle states
+ * =============================================================================
+ */
+
+
 
 type JournalRow = { accountName: string; accountType: string; debit: string; credit: string };
 type TxBlock = { docRef: string; docId: string; label: string; entries: JournalRow[]; status?: string };

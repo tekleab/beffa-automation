@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Split Bill Workflow Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Single PO split into multiple bills by line selection
+ * 2. Each split bill total matches selected line sum
+ * 3. All split bills together equal original PO total
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT PO SPLIT BILL AUDIT

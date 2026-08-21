@@ -2,6 +2,17 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 import { Logger } from '../../lib/utils/Logger';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Stress & Resilience Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bulk PO creation under high concurrency
+ * 2. System remains stable with 50+ concurrent PO requests
+ * 3. No inventory or AP corruption under stress
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT STRESS & FINANCIAL EDGE CASES

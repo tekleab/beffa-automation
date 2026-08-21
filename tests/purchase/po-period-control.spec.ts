@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Fiscal Period Control & Date Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. PO with date outside open fiscal period rejected
+ * 2. Closed period prevents PO creation and approval
+ * 3. Period boundary edge cases (first/last day)
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT PERIOD CONTROL EDGE CASES

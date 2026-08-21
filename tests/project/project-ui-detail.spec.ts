@@ -2,6 +2,19 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 /**
+ * =============================================================================
+ * MODULE: Project Management - UI Detail Page & Guardrail Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Project detail page shows financial data (budget/revenue/balance)
+ * 2. Status indicator rendered on detail page
+ * 3. Customer name displayed correctly in detail header
+ * 4. Non-existent project URL shows error or redirects
+ * 5. Unauthenticated browser access redirects to login
+ * =============================================================================
+ */
+
+
+/**
  * PROJECT UI DETAIL & GUARDRAILS — Detail Page, Authentication, Edge Cases
  *
  * UI-only tests for project detail views and guardrails

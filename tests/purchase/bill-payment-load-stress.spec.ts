@@ -4,6 +4,17 @@ import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
 import { Logger } from '../../lib/utils/Logger';
 
 /**
+ * =============================================================================
+ * MODULE: Bill Payment - Load & Stress Performance Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Concurrent bill payment creation under high load
+ * 2. AP sub-ledger balance accuracy under concurrent payments
+ * 3. Bulk bill payment list response time thresholds
+ * =============================================================================
+ */
+
+
+/**
  * BILL PAYMENT LOAD & STRESS SUITE
  * 
  * Verifies AP payment performance, concurrency safety, and transaction integrity under load.

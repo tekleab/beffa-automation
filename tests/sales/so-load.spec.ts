@@ -2,6 +2,17 @@ import { test, expect, Browser, Page } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Load & Performance Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bulk SO list endpoint responds within threshold under load
+ * 2. SO detail page latency verified under concurrent reads
+ * 3. Pagination performance with large dataset
+ * =============================================================================
+ */
+
+
 test.describe('Load: Concurrent Sales Invoices @sales @load @full', () => {
     test.setTimeout(180000);
 

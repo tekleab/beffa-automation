@@ -1,6 +1,17 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Credit Note & Reversal Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Credit note created against approved invoice reduces AR balance
+ * 2. GL reversal entries generated with correct accounts
+ * 3. Credit note cannot exceed original invoice amount
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES RETURN & STOCK RECOVERY AUDIT

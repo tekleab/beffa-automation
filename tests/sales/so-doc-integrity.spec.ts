@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Document Integrity & Immutability Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Approved SO line items cannot be mutated (PUT/PATCH rejected)
+ * 2. Cancelled SO cannot be re-approved
+ * 3. SO total is immutable after approval
+ * =============================================================================
+ */
+
+
 
 /**
  * SALES DOCUMENT INTEGRITY GUARDRAILS

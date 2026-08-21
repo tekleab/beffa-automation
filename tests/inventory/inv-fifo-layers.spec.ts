@@ -2,6 +2,18 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - FIFO Cost Layer Depletion & Valuation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. First-in stock layer consumed before later layers
+ * 2. FIFO COGS calculated from oldest cost layer
+ * 3. Remaining layers retain correct cost after partial depletion
+ * 4. FIFO layer balance verified against GL inventory account
+ * =============================================================================
+ */
+
+
 
 /**
  * FIFO Layer Integrity Audit

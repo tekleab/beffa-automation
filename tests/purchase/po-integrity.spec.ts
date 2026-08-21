@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Purchase Order - Financial Integrity & Calculation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Multi-line PO grand total equals sum of all line totals
+ * 2. Discount and tax calculations verified per line
+ * 3. Currency conversion applied correctly on foreign vendor PO
+ * =============================================================================
+ */
+
+
 
 /**
  * PROCUREMENT INTEGRITY BOUNDARIES

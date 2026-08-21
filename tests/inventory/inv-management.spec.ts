@@ -1,6 +1,18 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Management & Configuration Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Warehouse creation with address and active status
+ * 2. Location creation linked to warehouse
+ * 3. Item category CRUD and assignment to items
+ * 4. Unit of measure configuration and validation
+ * =============================================================================
+ */
+
+
 
 /**
  * INVENTORY ITEM MANAGEMENT

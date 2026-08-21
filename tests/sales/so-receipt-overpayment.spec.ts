@@ -6,6 +6,17 @@ const QS = () => `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.
 const TODAY = () => new Date().toISOString().slice(0, 10) + 'T00:00:00Z';
 
 const BUG = (id: string, title: string, detail: Record<string, any>) => {
+
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Receipt Overpayment & Excess Payment Guard Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Receipt exceeding invoice total rejected (422 overpayment guard)
+ * 2. Partial payment creates correct open balance on invoice
+ * 3. Final payment closes invoice and updates AR balance to zero
+ * =============================================================================
+ */
+
     console.log(`\n${'─'.repeat(60)}`);
     console.log(`[BUG REPORT] ${id}`);
     console.log(`  Title   : ${title}`);

@@ -4,6 +4,17 @@ import { AppManager } from '../../pages/AppManager';
 import { Logger } from '../../lib/utils/Logger';
 
 /**
+ * =============================================================================
+ * MODULE: Sales - Customer Balance & AR Ledger UI Audit
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. AR balance reflects approved Sales Orders
+ * 2. Balance decrements correctly after Receipt applied
+ * 3. UI table displays correct balance per customer row
+ * =============================================================================
+ */
+
+
+/**
  * SALES CUSTOMER BALANCE UI AUDIT
  *
  * Objectives:

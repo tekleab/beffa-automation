@@ -1,6 +1,19 @@
 import { test, expect, Browser, Page } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: HR - Payroll Processing & Calculation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Pay components created with valid type and tax rule fields
+ * 2. Payroll run created with correct Draft initial status
+ * 3. Payroll run advance rejected if no active employees linked
+ * 4. Pay component invalid type/tax_rule guardrail (422)
+ * 5. UI: Payroll Runs and Pay Components pages render correctly
+ * =============================================================================
+ */
+
+
 test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () => {
     test.setTimeout(180000);
 

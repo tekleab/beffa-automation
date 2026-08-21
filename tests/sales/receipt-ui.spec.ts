@@ -1,6 +1,17 @@
 import { test, expect } from'@playwright/test';
 import { AppManager } from'../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Receipt - UI Form & Workflow Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Receipt creation form renders required fields (Customer, Invoice, Amount, Cash Account)
+ * 2. Submit button disabled until all required fields are populated
+ * 3. Successful receipt submission navigates to detail page
+ * =============================================================================
+ */
+
+
 test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sales @smoke @full', () => {
 
     test.beforeEach(async ({ page }) => {

@@ -1,6 +1,17 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - API Security & Authorization Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Unauthenticated SO creation rejected (401)
+ * 2. Cross-tenant SO access rejected (403/404)
+ * 3. Read-only role cannot create or approve SO
+ * =============================================================================
+ */
+
+
 
 /**
  * CATEGORY 4: Security & Temporal Isolation

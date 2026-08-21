@@ -1,6 +1,17 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 import { Logger } from '../../lib/utils/Logger';
+
+/**
+ * =============================================================================
+ * MODULE: Inventory - Stress & Resilience Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bulk item creation under high concurrency
+ * 2. System stock accuracy maintained under 50+ concurrent adjustments
+ * 3. GL entry count matches adjustment transaction count under load
+ * =============================================================================
+ */
+
 
 /**
  * INVENTORY STRESS & COSTING EDGE CASES

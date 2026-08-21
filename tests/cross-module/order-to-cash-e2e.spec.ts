@@ -24,6 +24,17 @@ const isAR = (e: any) => {
 };
 
 const isCash = (e: any) => {
+
+/**
+ * =============================================================================
+ * MODULE: Order-to-Cash (O2C) - Full End-to-End Integration Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Full cycle: Sales Order → Invoice (Release) → Receipt → GL Verification
+ * 2. AR balance decrements after receipt applied to invoice
+ * 3. GL journal entries verified at each O2C lifecycle stage
+ * =============================================================================
+ */
+
     const n = (e.accountName || e.account?.name || '').toLowerCase();
     return n.includes('cash') || n.includes('bank');
 };

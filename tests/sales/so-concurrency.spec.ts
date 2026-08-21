@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - Concurrent Write & Race Condition Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Two simultaneous SO approvals on same item do not oversell stock
+ * 2. Concurrent partial invoice creation on same SO does not corrupt totals
+ * 3. Optimistic lock / version conflict handled gracefully
+ * =============================================================================
+ */
+
+
 
 /**
  * CATEGORY 2: Concurrency & Race Conditions

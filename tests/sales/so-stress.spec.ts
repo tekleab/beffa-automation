@@ -3,6 +3,17 @@ import { AppManager } from '../../pages/AppManager';
 import { Logger } from '../../lib/utils/Logger';
 
 /**
+ * =============================================================================
+ * MODULE: Sales Order - Stress & Resilience Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Bulk SO creation under high concurrency
+ * 2. System remains responsive with 50+ concurrent SO requests
+ * 3. No data corruption under stress conditions
+ * =============================================================================
+ */
+
+
+/**
  * SALES STRESS & FINANCIAL EDGE CASES
  *
  * 1. Zero-price invoice line — silent revenue black hole

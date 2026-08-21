@@ -1,6 +1,18 @@
 import { test } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Full Item Lifecycle Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Item creation with category, cost method (WAC/FIFO), and UOM
+ * 2. Stock adjustment (quantity/cost) creates correct GL entry
+ * 3. Stock transfer between warehouses/locations
+ * 4. Item deactivation prevents future transactions
+ * =============================================================================
+ */
+
+
 
 /**
  * INVENTORY ITEM LIFECYCLE AUDITS

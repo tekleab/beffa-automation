@@ -2,6 +2,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Procurement - End-to-End Accounting Logic Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Full PO → Bill → Payment accounting cycle GL verification
+ * 2. AP sub-ledger balance decrements correctly after payment
+ * 3. Vendor balance reconciles to zero after full payment
+ * =============================================================================
+ */
+
+
 
 /**
  * Purchase: Procurement Accounting Logic

@@ -3,6 +3,18 @@ import { AppManager } from '../../pages/AppManager';
 import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
 
 /**
+ * =============================================================================
+ * MODULE: HR - Full Employee Lifecycle & Workflow Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Onboarding: Employee creation → Department assignment → Role assignment
+ * 2. Leave request creation → approval workflow
+ * 3. Payroll run linked to active employees only
+ * 4. Offboarding: Employee termination blocks future payroll inclusion
+ * =============================================================================
+ */
+
+
+/**
  * HR Full Lifecycle — Multi-Employee
  * Creates 3 employees in parallel, runs them through a shared payroll run.
  * Flow: Employees (API) → Contracts (API) → Approve (API) → Pay Structure (API)

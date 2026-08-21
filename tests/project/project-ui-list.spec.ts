@@ -2,6 +2,20 @@ import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
 /**
+ * =============================================================================
+ * MODULE: Project Management - UI List Page & Interaction Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Projects list page loads with all key table columns
+ * 2. Filter pills (Workspace, Workflow, Status, Budget) visible
+ * 3. Sort, View, Export, Add Project toolbar buttons visible
+ * 4. Search input accepts text and filters results
+ * 5. Pagination shows rows-per-page and page count
+ * 6. API-created project appears in list and navigates to detail
+ * =============================================================================
+ */
+
+
+/**
  * PROJECT UI LIST PAGE — List View Functionality
  *
  * UI-only tests for the projects list page

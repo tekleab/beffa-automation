@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Sales Order - COGS (Cost of Goods Sold) Calculation Audit
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. COGS entry generated when inventory item SO is approved
+ * 2. WAC unit cost used for COGS calculation
+ * 3. COGS Dr == Inventory Cr verified in GL journals
+ * =============================================================================
+ */
+
+
 
 /**
  * COGS Audit: Multi-Item Invoice

@@ -5,6 +5,18 @@ import * as path from'path';
 
 
 const addressData: Array<{ region: string; zones: Array<{ name: string; woredas: string[] }> }> = JSON.parse(
+
+/**
+ * =============================================================================
+ * MODULE: Customer Management - CRUD & Validation Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Create customer with required fields (name, address, AR account)
+ * 2. Duplicate customer name rejection (400/422 guardrail)
+ * 3. Customer list pagination and search by name fragment
+ * 4. Customer detail fields (balance, contacts, address)
+ * =============================================================================
+ */
+
     fs.readFileSync(path.join(__dirname,'../../data/address_locations.json'),'utf8')
 );
 

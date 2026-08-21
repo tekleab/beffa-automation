@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
+/**
+ * =============================================================================
+ * MODULE: Inventory - Costing Method Audit Suite (WAC / FIFO)
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. WAC unit cost recalculates correctly after each receipt
+ * 2. FIFO layer depletion order verified against transaction history
+ * 3. Cost variance between PO cost and WAC triggers GL difference entry
+ * =============================================================================
+ */
+
+
 
 /**
  * FIFO COSTING FORENSIC AUDIT — Write-Down & Sell-Through Stages

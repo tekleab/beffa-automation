@@ -3,6 +3,17 @@ import { AppManager } from '../../pages/AppManager';
 import { Logger } from '../../lib/utils/Logger';
 
 /**
+ * =============================================================================
+ * MODULE: Advanced Financial & Accounting Integrity - API Audit Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Fractional rounding on multi-line items maintains Dr == Cr balance
+ * 2. Concurrent partial payments on multiple bills enforce AP sub-ledger limits
+ * 3. GL journal totals verified across Sales and Purchase modules
+ * =============================================================================
+ */
+
+
+/**
  * HIGH-STANDARD FINANCIAL & ACCOUNTING INTEGRITY API SUITE
  * 
  * 1. Multi-Currency Rounding & Trial Balance Arbitrage (Dr == Cr Precision Audit)

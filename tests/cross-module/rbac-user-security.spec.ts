@@ -5,6 +5,20 @@ const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localh
 const QS = () => `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
 const BUG = (id: string, title: string, detail: Record<string, any>) => {
+
+/**
+ * =============================================================================
+ * MODULE: RBAC & User Management - Security Audit Suite
+ * ARCHITECTURAL SCOPE & COVERAGE:
+ * 1. Duplicate email registration rejected (409/422)
+ * 2. Missing x-company header returns 400 (no data leak)
+ * 3. Invalid company header returns 400 (cross-tenant isolation)
+ * 4. Tampered JWT returns 401 on all protected endpoints
+ * 5. Notifications scoped to authenticated company only
+ * 6. Auditor role cannot create financial documents (403)
+ * =============================================================================
+ */
+
     console.log(`\n${'─'.repeat(60)}`);
     console.log(`[BUG REPORT] ${id}`);
     console.log(`  Title   : ${title}`);
