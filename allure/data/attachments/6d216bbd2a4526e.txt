@@ -1,0 +1,81 @@
+[DateHelper] Resolved in-period date: 2026-08-21T00:00:00Z (day=21, ecYear=2019)
+12:28:42 [PERFORMANCE] API - Auth API Verification: 287.05ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/21/005221 (ID: 3d88fe2a-06ac-4ea6-af43-3398fd5750f9)
+12:28:49 [INFO] Advancing inventory-adjustments "3d88fe2a-06ac-4ea6-af43-3398fd5750f9"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1787315328283 (a1ade649-adeb-4540-bb66-4ecd00bd5bf6) | method=WAC | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1787315328283 (a1ade649-adeb-4540-bb66-4ecd00bd5bf6) | Stock before: 10
+[STEP 2] Creating Purchase Order...
+[PO] Created PO/2026/08/21/001507 (b4193a67-d82b-47c8-8fee-85e83075f600)
+12:28:57 [INFO] Advancing purchase-orders "b4193a67-d82b-47c8-8fee-85e83075f600"...
+[PO] Approved/Released PO/2026/08/21/001507
+[STEP 3] Billing and Receiving PO items...
+[BILL] Created from PO: BILL/2026/08/21/002465 (942a0426-181f-4576-9b42-3b8f80fe319e)
+12:29:00 [INFO] Advancing bills "942a0426-181f-4576-9b42-3b8f80fe319e"...
+[BILL] Approved BILL/2026/08/21/002465
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[STOCK] Expected: 15, Got: 15
+[BILL] Outstanding balance after Approval: 2500
+[BILL GL] Entries found: 4
+[BILL GL DETAILS] [
+  {
+    "accountCode": "2003",
+    "accountName": "Accounts Payable",
+    "debit": 2500,
+    "credit": 0
+  },
+  {
+    "accountCode": "5103",
+    "accountName": "Cost of Others",
+    "debit": 0,
+    "credit": 2500
+  },
+  {
+    "accountCode": "1301",
+    "accountName": "Inventory",
+    "debit": 2500,
+    "credit": 0
+  },
+  {
+    "accountCode": "2003",
+    "accountName": "Accounts Payable",
+    "debit": 0,
+    "credit": 2500
+  }
+]
+[STEP 4] Creating Payment for Bill...
+[ACTION] Creating Bill Payment for 942a0426-181f-4576-9b42-3b8f80fe319e via API (CashAcct: b2fd8a4b-199a-417b-92d8-a8e4ec7151ba)...
+[SUCCESS] Payment created: PAY/2026/08/21/000693 (ID: d3ed9a02-a7b4-4fc6-89e9-f91f88206ded)
+[PAYMENT] Created PAY/2026/08/21/000693 (d3ed9a02-a7b4-4fc6-89e9-f91f88206ded)
+12:29:05 [INFO] Advancing payments "d3ed9a02-a7b4-4fc6-89e9-f91f88206ded"...
+[PAYMENT] Approved PAY/2026/08/21/000693
+[BILL] Outstanding balance after Payment: 0
+[PAYMENT GL] Entries found: 2
+[PAYMENT GL DETAILS] [
+  {
+    "account": {
+      "account_id": "2003",
+      "id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+      "name": "Accounts Payable"
+    },
+    "credit": 0,
+    "debit": 2500,
+    "description": "BILL/2026/08/21/002465 bill payment"
+  },
+  {
+    "account": {
+      "account_id": "1002",
+      "id": "b2fd8a4b-199a-417b-92d8-a8e4ec7151ba",
+      "name": "Cash - Branch Office"
+    },
+    "credit": 2500,
+    "debit": 0,
+    "description": "Payment - PAY/2026/08/21/000693"
+  }
+]
+[PASS] Full Procure-to-Pay integration cycle completed successfully!

@@ -1,0 +1,24 @@
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-21
+[DateHelper] Resolved in-period date: 2026-08-21T00:00:00Z (day=21, ecYear=2019)
+11:58:41 [PERFORMANCE] API - Auth API Verification: 259.87ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/21/005096 (ID: 44c3408b-223c-49a2-b190-abd77771db79)
+11:58:46 [INFO] Advancing inventory-adjustments "44c3408b-223c-49a2-b190-abd77771db79"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787313525528 (c9db356e-fdf7-4dea-931c-7f4b27d99652) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:58:50 [PERFORMANCE] API - Auth API Verification: 250.49ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+11:58:53 [INFO] Advancing invoices "145733bb-a170-4373-a847-66472ba538fe"...
+[RECEIPT] amount=100 | invoice=145733bb... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/21/000646
+11:58:59 [INFO] Advancing receipts "0553159e-e8f0-4b48-8f0a-337410693739"...
+[ATTACK] Attempting second receipt on fully paid invoice...
+[RECEIPT] amount=100 | invoice=145733bb... | year=2019
+[PASS] Second receipt correctly rejected: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/08/21/002935 has no outstanding balance"
+}
+
