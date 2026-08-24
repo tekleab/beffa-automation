@@ -243,7 +243,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
                 if (!clickedOpt) {
                     const options = menuList.locator(
-                        '[role="menuitem"], [role="option"], .chakra-menu__menuitem, p.chakra-text, label, .chakra-checkbox, div.chakra-stack'
+                        '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem, p.chakra-text, label, div.chakra-stack'
                     )
                         .filter({ hasNotText: /^(Clear|No more items)$/i })
                         .filter({ visible: true });
@@ -257,40 +257,29 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 if (clickedOpt) {
                     const optText = await clickedOpt.textContent().catch(() => '');
                     const selectedName = optText?.trim().replace(/\s+/g, ' ') || '';
-                    await clickedOpt.click({ force: true }).catch(() => clickedOpt.evaluate((node: HTMLElement) => (node as HTMLElement).click()));
+                    await clickedOpt.evaluate((node: HTMLElement) => node.click()).catch(() => clickedOpt.click({ force: true }));
                     console.log(`[ITEM MODAL] Selected item option: "${selectedName}"`);
-                    // Wait for dropdown to fully close before interacting with next selectors
-                    await menuList.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
-                    await page.waitForTimeout(800);
+                    await page.keyboard.press('Escape').catch(() => { });
+                    await menuList.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => { });
+                    await page.waitForTimeout(500);
 
-                    // ── Stock guard: verify selected item has stock > 0 via locations sub-endpoint ──
+                    const btnTxt = (await itemBtn.textContent().catch(() => '')) || '';
+                    if (!btnTxt.includes('Select') && !btnTxt.includes('Choose')) {
+                        itemSelected = true;
+                    }
+
+                    let matchedItem: any = null;
+                    // ── Stock guard: verify selected item has stock > 0 and auto top-up via API if needed ──
                     try {
                         const { apiBase, headers, qs } = await app.buildApiContext();
                         const itemsResp = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=200&${qs}`, { headers });
                         if (itemsResp.ok()) {
                             const itemsData = await itemsResp.json();
                             const itemsList: any[] = Array.isArray(itemsData) ? itemsData : (itemsData.items || itemsData.data || []);
-                            const matched = itemsList.find((i: any) => selectedName.includes(i.name) || (i.name && selectedName.includes(i.name)));
-                            if (matched) {
-                                // List endpoint quantity is creation-time only — check live stock via locations sub-endpoint
-                                const locResp = await page.request.get(`${apiBase}/inventory-item/${matched.id}/locations?${qs}`, { headers });
-                                let liveStock = 0;
-                                if (locResp.ok()) {
-                                    const locData = await locResp.json();
-                                    const locs: any[] = locData.data || locData.items || [];
-                                    liveStock = locs.reduce((s: number, l: any) => s + parseFloat(l.quantity || '0'), 0);
-                                }
-                                if (liveStock <= 0 && attempt < 2) {
-                                    console.log(`[ITEM MODAL] Stock guard: "${matched.name}" has 0 live stock — retrying with itemA`);
-                                    (opts as any).itemName = (itemA as any)?.name || itemA?.itemName;
-                                    itemSelected = false;
-                                    continue;
-                                }
-                                console.log(`[ITEM MODAL] Stock guard OK: "${matched.name}" has ${liveStock} live units`);
-                            }
+                            matchedItem = itemsList.find((i: any) => selectedName.includes(i.name) || (i.name && selectedName.includes(i.name)));
                         }
                     } catch (e) {
-                        console.log(`[ITEM MODAL] Stock guard skipped: ${e}`);
+                        console.log(`[ITEM MODAL] Stock guard item lookup skipped: ${e}`);
                     }
 
                     // Inspect Selling Price / Unit Price field state and fill price
@@ -334,6 +323,19 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                 await app.selectRandomOption(locBtn, 'Location');
             } else {
                 console.log(`[ITEM MODAL] Preserved auto-filled Location: "${locText}"`);
+            }
+
+            // ── Auto top-up stock for this item so insufficient stock error never occurs in UI ──
+            if (targetItemName || (itemA && (itemA as any).id)) {
+                try {
+                    const { apiBase, headers, qs } = await app.buildApiContext();
+                    const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
+                    if (itemIdToTopUp) {
+                        await app.topUpItemStockAPI(itemIdToTopUp, 50).catch(() => {});
+                    }
+                } catch (e) {
+                    console.log(`[ITEM MODAL] Pre-emptive stock topup skipped: ${e}`);
+                }
             }
         } else {
             // Miscellaneous modal field order varies by document type:
@@ -539,31 +541,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const addNowDisabled = await addNowBtn.isDisabled().catch(() => true);
 
         if (await insufficientRow.isVisible({ timeout: 1500 }).catch(() => false) || addNowDisabled) {
-            console.log('[SO-UI-01] ⚠️ Stock error / disabled Add Now detected — provisioning fresh item via API and retrying');
-
-            // Remove the bad line by clicking the last icon/button in the row
-            const badRow = page.locator('table tbody tr').first();
-            const deleteBtn = badRow.locator('button').last();
-            await deleteBtn.click().catch(() => {});
-            await page.waitForTimeout(800);
-
-            // Provision a brand-new item with guaranteed stock via API
-            const freshItem = await app.api.inventory.createFreshItemWithStockAPI({
-                cost_method_code: 'WAC',
-                quantity: 20,
-                unit_cost: 100,
-            });
-            console.log(`[SO-UI-01] Fresh item provisioned: ${freshItem.itemName} stock=20 loc=${freshItem.locationId}`);
-
-            // Re-add line using the fresh item (location/warehouse auto-filled from item selection)
-            await lineItemBtn.click();
-            await addLineItemViaModal(page, app, 'Item', {
-                qty: '3',
-                unitPrice: String(freshItem.unitCost || 100),
-                itemName: freshItem.itemName,
-            });
-            console.log('[SO-UI-01] Re-added line with fresh stocked item');
-            await page.waitForTimeout(800);
+            console.log('[SO-UI-01] ⚠️ Stock error / disabled Add Now detected — auto topping up item stock via API');
+            const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
+            if (itemIdToTopUp) {
+                await app.topUpItemStockAPI(itemIdToTopUp, 50);
+            }
+            await page.waitForTimeout(2000);
         }
 
         // Ensure Add Now is enabled before clicking — throw with clear message if still disabled
@@ -644,7 +627,22 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const rowCount = await page.locator('table tbody tr').count();
         console.log(`[AUDIT] ${rowCount} line items visible in SO form table`);
 
-        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        // ── Stock-error guard: if table shows "Insufficient stock", reprovision via API ─
+        await page.waitForTimeout(800);
+        const insufficientRowSO = page.locator('table tbody tr, [role="row"]')
+            .filter({ hasText: /insufficient stock|available:\s*0/i }).first();
+        if (await insufficientRowSO.isVisible({ timeout: 1500 }).catch(() => false)) {
+            console.log('[SO-UI-03] ⚠️ Stock error detected — auto topping up item stock via API');
+            const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
+            if (itemIdToTopUp) {
+                await app.topUpItemStockAPI(itemIdToTopUp, 50);
+            }
+            await page.waitForTimeout(2000);
+        }
+
+        const addNowBtn = page.getByRole('button', { name: 'Add Now' }).first();
+        await expect(addNowBtn).toBeEnabled({ timeout: 10000 });
+        await addNowBtn.click();
         await page.waitForURL(/sale-orders\/.*\/detail/, { timeout: 60000 });
 
         const soId = await app.extractIdFromUrl();
@@ -771,15 +769,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const insufficientRowInv = page.locator('table tbody tr, [role="row"]')
             .filter({ hasText: /insufficient stock|available:\s*0/i }).first();
         if (await insufficientRowInv.isVisible({ timeout: 2000 }).catch(() => false)) {
-            console.log('[INV-UI-01] ⚠️ Stock error detected — provisioning fresh item via API and retrying');
-            const deleteBtn = insufficientRowInv.locator('button[aria-label*="delete" i], button[aria-label*="remove" i], button:has(svg)').last();
-            await deleteBtn.click().catch(() => insufficientRowInv.locator('button').last().click().catch(() => {}));
-            await page.waitForTimeout(500);
-
-            const freshItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
-            console.log(`[INV-UI-01] Fresh item: ${freshItem.itemName} stock=20`);
-            await lineItemBtn.click();
-            await addLineItemViaModal(page, app, 'Item', { qty: '2', unitPrice: String(freshItem.unitCost || 100), itemName: freshItem.itemName });
+            console.log('[INV-UI-01] ⚠️ Stock error detected — auto topping up item stock via API');
+            const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
+            if (itemIdToTopUp) {
+                await app.topUpItemStockAPI(itemIdToTopUp, 50);
+            }
+            await page.waitForTimeout(2000);
         }
 
         await page.getByRole('button', { name: 'Add Now' }).first().click();
@@ -858,7 +853,22 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         const effectiveRowCount = rowCount > 0 ? rowCount : altRowCount;
         console.log(`[AUDIT] ${effectiveRowCount} lines visible in Invoice form`);
 
-        await page.getByRole('button', { name: 'Add Now' }).first().click();
+        // ── Stock-error guard: if table shows "Insufficient stock", reprovision via API ─
+        await page.waitForTimeout(800);
+        const insufficientRowInv = page.locator('table tbody tr, [role="row"]')
+            .filter({ hasText: /insufficient stock|available:\s*0/i }).first();
+        if (await insufficientRowInv.isVisible({ timeout: 1500 }).catch(() => false)) {
+            console.log('[INV-UI-03] ⚠️ Stock error detected — auto topping up item stock via API');
+            const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
+            if (itemIdToTopUp) {
+                await app.topUpItemStockAPI(itemIdToTopUp, 50);
+            }
+            await page.waitForTimeout(2000);
+        }
+
+        const addNowBtn = page.getByRole('button', { name: 'Add Now' }).first();
+        await expect(addNowBtn).toBeEnabled({ timeout: 10000 });
+        await addNowBtn.click();
         await page.waitForURL(/invoices\/.*\/detail/, { timeout: 60000 });
 
         const invId = await app.extractIdFromUrl();

@@ -135,8 +135,8 @@ test.describe('Concurrency & Race Condition Audits @sales @concurrency @security
             const body1 = await resp1.json();
             const body2 = await resp2.json();
             try {
-                await app.advanceDocumentAPI(body1.id, 'invoices');
-                await app.advanceDocumentAPI(body2.id, 'invoices');
+                await app.advanceDocumentAPI(body1.id, 'invoices', { skipStockTopUp: true });
+                await app.advanceDocumentAPI(body2.id, 'invoices', { skipStockTopUp: true });
                 throw new Error(`[CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.`);
             } catch (err: any) {
                 if (err.message.includes('CRITICAL_LOGIC_BUG')) throw err;

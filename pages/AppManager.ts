@@ -185,6 +185,10 @@ export class AppManager {
   async getAccountBalanceAPI(...args: Parameters<BasePage['getAccountBalanceAPI']>) { return await this.base.getAccountBalanceAPI(...args); }
   async getBillJournalEntriesAPI(...args: Parameters<PurchaseAPI['getBillJournalEntriesAPI']>) { return await this.api.purchase.getBillJournalEntriesAPI(...args); }
   async buildApiContext(...args: Parameters<BasePage['buildApiContext']>) { return await this.base.buildApiContext(...args); }
+  async topUpItemStockAPI(...args: Parameters<BasePage['topUpItemStockAPI']>) { return await this.base.topUpItemStockAPI(...args); }
+  async seedCashBalanceAPI(...args: Parameters<BasePage['seedCashBalanceAPI']>) { return await this.base.seedCashBalanceAPI(...args); }
+  parseInsufficientStock(...args: Parameters<BasePage['parseInsufficientStock']>) { return this.base.parseInsufficientStock(...args); }
+  parseInsufficientCashTopUp(...args: Parameters<BasePage['parseInsufficientCashTopUp']>) { return this.base.parseInsufficientCashTopUp(...args); }
 
   async createSalesReceiptFromSoAPI(soId: string): Promise<{ receiptNumber: string; receiptId: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')

@@ -191,15 +191,47 @@ export class SalesAPI extends BasePage {
       status: 'draft'
     };
 
-    const response = await this.safePost(`${apiBase}/sales-orders?${params}`, {
+    const maxStockRetries = 3;
+    let response = await this.safePost(`${apiBase}/sales-orders?${params}`, {
       data: payload,
       headers,
       label: 'Create Sales Order'
     });
 
+    // ── Auto-recovery: if SO fails with "insufficient stock", top up via adjustment and retry ──
+    for (let attempt = 0; !response.ok() && attempt < maxStockRetries; attempt++) {
+      const errText = await response.text();
+      const stockInfo = this.parseInsufficientStock(errText);
+      if (response.status() !== 422 || !stockInfo) {
+        // Not a stock error — return the failure as-is
+        console.warn(`[WARN] SO API Creation Failed: ${response.status()} - ${errText}`);
+        return { success: false, ref: '', id: '', customerId: payload.customer_id, soItemId: null, status: response.status(), error: errText };
+      }
+
+      const itemId = payload.so_items?.[0]?.item_id;
+      if (!itemId) {
+        console.warn(`[WARN] SO insufficient stock but no item_id in payload — cannot auto top-up`);
+        return { success: false, ref: '', id: '', customerId: payload.customer_id, soItemId: null, status: 422, error: errText };
+      }
+
+      console.log(`[STOCK_TOPUP] SO creation: insufficient stock (attempt ${attempt + 1}/${maxStockRetries}) — available=${stockInfo.available}, required=${stockInfo.required}, injecting ${stockInfo.deficit}...`);
+      await this.topUpItemStockAPI(
+        itemId,
+        stockInfo.deficit,
+        payload.so_items[0].location_id,
+        payload.so_items[0].warehouse_id
+      );
+
+      response = await this.safePost(`${apiBase}/sales-orders?${params}`, {
+        data: payload,
+        headers,
+        label: 'Create Sales Order (retry)'
+      });
+    }
+
     if (!response.ok()) {
       const errText = await response.text();
-      console.warn(`[WARN] SO API Creation Failed: ${response.status()} - ${errText}`);
+      console.warn(`[WARN] SO API Creation Failed after ${maxStockRetries} stock top-up attempts: ${response.status()} - ${errText}`);
       return { success: false, ref: '', id: '', customerId: payload.customer_id, soItemId: null, status: response.status(), error: errText };
     }
     const json = await response.json();
@@ -312,11 +344,35 @@ export class SalesAPI extends BasePage {
     };
 
     const token = await this._getAuthToken();
-    const response = await this.safePost(`${apiBase}/invoices?${params}`, {
+    const invoiceHeaders = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' };
+
+    const maxStockRetries = 3;
+    let response = await this.safePost(`${apiBase}/invoices?${params}`, {
       data: payload,
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      headers: invoiceHeaders,
       label: 'Standalone Invoice'
     });
+
+    // ── Auto-recovery: if invoice fails with "insufficient stock", top up via adjustment and retry ──
+    for (let attempt = 0; !response.ok() && attempt < maxStockRetries; attempt++) {
+      const errText = await response.text();
+      const stockInfo = this.parseInsufficientStock(errText);
+      if (response.status() !== 422 || !stockInfo) break;
+
+      console.log(`[STOCK_TOPUP] Invoice creation: insufficient stock (attempt ${attempt + 1}/${maxStockRetries}) — available=${stockInfo.available}, required=${stockInfo.required}, injecting ${stockInfo.deficit}...`);
+      await this.topUpItemStockAPI(
+        payload.items[0].item_id,
+        stockInfo.deficit,
+        payload.items[0].location_id,
+        payload.items[0].warehouse_id
+      );
+
+      response = await this.safePost(`${apiBase}/invoices?${params}`, {
+        data: payload,
+        headers: invoiceHeaders,
+        label: 'Standalone Invoice (retry)'
+      });
+    }
 
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();

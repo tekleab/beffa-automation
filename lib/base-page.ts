@@ -116,7 +116,7 @@ export class BasePage {
    * Universal API-driven Document Approval / Advancement
    * Handles the 'Draft -> Verifier -> Approver -> Approved' transition in seconds.
    */
-  async advanceDocumentAPI(docId: string, docType: string): Promise<void> {
+  async advanceDocumentAPI(docId: string, docType: string, options: { skipStockTopUp?: boolean } = {}): Promise<void> {
     const token = await this._getAuthToken();
     if (!token) throw new Error("[ERROR] No Auth Token found. API Advance cannot proceed.");
 
@@ -203,6 +203,33 @@ export class BasePage {
         } else if (status === 422) {
           if (success) break;
           const text = await resp.text().catch(() => '');
+          // ── Auto-recovery: insufficient stock during SO/Invoice advance ──
+          const stockTypes = ['sales-orders', 'invoices'];
+          const stockInfo = this.parseInsufficientStock(text);
+          if (!options?.skipStockTopUp && stockInfo && stockTypes.includes(docType)) {
+            Logger.warn(`[STOCK_TOPUP] Advance ${docType}: insufficient stock (available=${stockInfo.available}, required=${stockInfo.required}). Auto-provisioning...`);
+            try {
+              // Fetch the document to find the item_id and location
+              const docResp = await this.page.request.get(`${this.apiBase}/${docType}/${docId}?year=${year}&period=${period}&calendar=${calendar}`, { headers });
+              if (docResp.ok()) {
+                const docData = await docResp.json();
+                const items = docData.so_items || docData.items || docData.invoice_items || [];
+                const firstItem = items[0];
+                const itemId = firstItem?.item_id || firstItem?.inventory_item_id;
+                if (itemId) {
+                  await this.topUpItemStockAPI(
+                    itemId,
+                    stockInfo.deficit,
+                    firstItem?.location_id,
+                    firstItem?.warehouse_id
+                  );
+                  continue; // retry the advance
+                }
+              }
+            } catch (e: any) {
+              Logger.warn(`[STOCK_TOPUP] Auto-recovery failed: ${e.message}`);
+            }
+          }
           throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
         } else {
           const errBody = await resp.text().catch(() => '(unreadable)');
@@ -1232,6 +1259,60 @@ ${curlCmd}
   }
 
   /**
+   * Parse 422 insufficient-stock errors from SO / Invoice creation or advance.
+   * Returns the deficit quantity needed, or null if the error is unrelated.
+   *
+   * Known ERP error formats:
+   *   "Insufficient stock. Available: 0, required: 300"
+   *   "insufficient balance in account …" ← NOT stock, handled separately
+   */
+  parseInsufficientStock(errorText: string): { deficit: number; available: number; required: number } | null {
+    if (!/insufficient stock/i.test(errorText)) return null;
+    const match = errorText.match(/available[:\s]+(-?[\d.]+)[,\s]+required[:\s]+([\d.]+)/i);
+    if (!match) {
+      // Fallback: stock error detected but numbers couldn't be parsed precisely
+      return { deficit: 50, available: 0, required: 50 };
+    }
+    const available = parseFloat(match[1]);
+    const required = parseFloat(match[2]);
+    const deficit = Math.max(1, Math.ceil(required - available));
+    return { deficit, available, required };
+  }
+
+  /**
+   * Top up stock for a specific item via an approved inventory adjustment.
+   * Used as auto-recovery when SO/Invoice creation hits "insufficient stock" 422.
+   */
+  async topUpItemStockAPI(itemId: string, quantity: number, locationId?: string, warehouseId?: string): Promise<void> {
+    const { InventoryAPI } = require('./api/InventoryAPI');
+    const invApi = new InventoryAPI(this.page);
+
+    // Add a 20-unit buffer so slight timing discrepancies don't cause a second failure
+    const topUpQty = quantity + 20;
+
+    Logger.info(`[STOCK_TOPUP] Injecting ${topUpQty} units for item ${Logger.sanitize(itemId)}...`);
+    const adj = await invApi.createInventoryAdjustmentAPI({
+      itemId,
+      quantity: topUpQty,
+      cost: 100,
+      locationId,
+      warehouseId,
+      adjusted_by: 'quantity',
+      reason: 'E2E Auto Stock Top-Up (insufficient stock recovery)',
+    });
+
+    if (!adj.success || !adj.id) {
+      Logger.warn(`[STOCK_TOPUP] Adjustment creation failed: ${adj.error}`);
+      return;
+    }
+
+    await this.advanceDocumentAPI(adj.id, 'inventory-adjustments').catch(() => {});
+    // Wait for stock to settle in the ERP
+    await this.page.waitForTimeout(3000);
+    Logger.info(`[STOCK_TOPUP] Injected ${topUpQty} units for item ${Logger.sanitize(itemId)} (adj ${Logger.sanitize(adj.ref ?? adj.id)})`);
+  }
+
+  /**
    * Inject cash into a specific cash/bank account via an approved miscellaneous receipt.
    *
    * Accounting logic (double-entry):
@@ -1254,13 +1335,16 @@ ${curlCmd}
     const acctData = await acctResp.json();
     const allAccounts: any[] = acctData.items || acctData.data || [];
 
-    // Target: a valid cash account for receipt top-up (ERP requires Branch/1002/Petty for receipts)
+    // Target: a valid cash account for receipt top-up.
+    // When cashAccountId is explicitly provided (e.g. resolved from a 422 error),
+    // deposit into THAT account — otherwise the top-up lands in the wrong account
+    // and the payment keeps failing with insufficient balance.
     const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
     const cashAccount =
+      (cashAccountId ? allAccounts.find((a: any) => a.id === cashAccountId) : null) ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
       allAccounts.find((a: any) => (a.account_id || a.code || a.account_code) === '1002') ||
       allAccounts.find((a: any) => a.name?.toLowerCase().includes('petty')) ||
-      (cashAccountId ? allAccounts.find((a: any) => a.id === cashAccountId) : null) ||
       allAccounts.find((a: any) => typeOf(a).includes('cash') || a.name?.toLowerCase().includes('cash')) ||
       allAccounts[0];
 
