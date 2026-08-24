@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-24T00:00:00Z (day=24, ecYear=2019)
+06:26:02 [PERFORMANCE] API - Auth API Verification: 215.76ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/24/005342 (ID: 57088034-3f0c-4983-a9e9-445d35c74a20)
+06:26:05 [INFO] Advancing inventory-adjustments "57088034-3f0c-4983-a9e9-445d35c74a20"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787552763785 (4403f686-3a0c-48ef-829f-b5369053d861) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Triggering 2 CONCURRENT adjustments (+10 each) for WAC-Item-1787552763785...
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/24/005343 (ID: 7da99089-9e2e-4a9f-90d9-6f0b592ebc19)
+[INFO] Adjustment 1 ID: 7da99089-9e2e-4a9f-90d9-6f0b592ebc19 | Adjustment 2 ID: FAILED
+06:26:09 [INFO] Advancing inventory-adjustments "7da99089-9e2e-4a9f-90d9-6f0b592ebc19"...
+[SUCCESS] Advanced Adjustment 1 to approved: 7da99089-9e2e-4a9f-90d9-6f0b592ebc19
+[ACTION] Verifying Final Stock Integrity...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 40...
+[WARN] pollStockAPI timed out. Expected 40, actual 30.
+[SNAPSHOT] Start: 20 | Final: 30 | Expected: 40

@@ -1,0 +1,29 @@
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-24
+[DateHelper] Resolved in-period date: 2026-08-24T00:00:00Z (day=24, ecYear=2019)
+06:30:36 [PERFORMANCE] API - Auth API Verification: 335.90ms
+[AUTH] Session token and local storage injected successfully.
+06:30:37 [PERFORMANCE] API - Auth API Verification: 412.83ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/24/005369 (ID: ef76e494-bbe4-4525-8592-dd2ba1293590)
+06:30:54 [INFO] Advancing inventory-adjustments "ef76e494-bbe4-4525-8592-dd2ba1293590"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787553053855 (b37e1823-c9d9-417c-b62b-bcfaaf136366) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:30:57 [INFO] Advancing bills "c16f7a57-a303-42bb-a375-c8466f3fefd3"...
+[AP] Bill BILL/2026/08/24/002532 approved | amount=2000
+06:31:03 [INFO] Advancing invoices "d79279af-9c96-4503-a0f0-f61a8ede0af6"...
+
+══════════════════════════════════════════════════════════════════════
+[ERP_BUG #INV-BAL-01] STALE/INCORRECT INVOICE BALANCE FIELD
+  Invoice    : INV/2026/08/24/003051 (ID: d79279af-9c96-4503-a0f0-f61a8ede0af6)
+  Created for: $3000
+  API reports: unreceived_amount=100 | total_amount=undefined | amount=undefined | net_due=100
+  Resolved to: $100  ← does NOT match created unit price $3000
+══════════════════════════════════════════════════════════════════════
+
+06:31:06 [WARN] GET http://168.119.175.142:8001/api/bill/c16f7a57-a303-42bb-a375-c8466f3fefd3?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+06:31:07 [WARN] GET http://168.119.175.142:8001/api/bill/c16f7a57-a303-42bb-a375-c8466f3fefd3?year=2019&period=yearly&calendar=ec → 500. Retry 2/4 in 6000ms...
+06:31:14 [WARN] GET http://168.119.175.142:8001/api/bill/c16f7a57-a303-42bb-a375-c8466f3fefd3?year=2019&period=yearly&calendar=ec → 500. Retry 3/4 in 13500ms...
+06:31:27 [WARN] GET http://168.119.175.142:8001/api/bill/c16f7a57-a303-42bb-a375-c8466f3fefd3?year=2019&period=yearly&calendar=ec → 500. Retry 4/4 in 24000ms...

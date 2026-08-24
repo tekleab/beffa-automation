@@ -1,0 +1,585 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/line-item-miscellaneous-audit.spec.ts >> Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full >> RCT-UI-01: Receipt UI — create standalone receipt with line item and verify
+- Location: tests/cross-module/line-item-miscellaneous-audit.spec.ts:942:9
+
+# Error details
+
+```
+TimeoutError: page.waitForURL: Timeout 60000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+  navigated to "http://168.119.175.142:4173/receivables/receipts/new"
+============================================================
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e11]: Enterprise
+      - generic [ref=e13]:
+        - generic:
+          - img
+        - textbox "Search tasks" [ref=e14]
+      - generic [ref=e15]:
+        - navigation [ref=e17]:
+          - link "Dashboard" [ref=e18] [cursor=pointer]:
+            - /url: /dashboard
+            - paragraph [ref=e21]: Dashboard
+        - generic [ref=e23] [cursor=pointer]:
+          - paragraph [ref=e26]: Accounting
+          - paragraph [ref=e27]:
+            - button "Toggle section" [ref=e28]:
+              - img [ref=e29]
+        - generic [ref=e32] [cursor=pointer]:
+          - paragraph [ref=e35]: Account Reconciliation
+          - paragraph [ref=e36]:
+            - button "Toggle section" [ref=e37]:
+              - img [ref=e38]
+        - generic [ref=e41] [cursor=pointer]:
+          - paragraph [ref=e44]: CRM
+          - paragraph [ref=e45]:
+            - button "Toggle section" [ref=e46]:
+              - img [ref=e47]
+        - generic [ref=e50] [cursor=pointer]:
+          - paragraph [ref=e53]: HRM
+          - paragraph [ref=e54]:
+            - button "Toggle section" [ref=e55]:
+              - img [ref=e56]
+        - generic [ref=e59] [cursor=pointer]:
+          - paragraph [ref=e62]: Project Management
+          - paragraph [ref=e63]:
+            - button "Toggle section" [ref=e64]:
+              - img [ref=e65]
+        - generic [ref=e68] [cursor=pointer]:
+          - paragraph [ref=e71]: SCM
+          - paragraph [ref=e72]:
+            - button "Toggle section" [ref=e73]:
+              - img [ref=e74]
+        - generic [ref=e77] [cursor=pointer]:
+          - paragraph [ref=e80]: Lease Management
+          - paragraph [ref=e81]:
+            - button "Toggle section" [ref=e82]:
+              - img [ref=e83]
+        - generic [ref=e86] [cursor=pointer]:
+          - paragraph [ref=e89]: Service Management
+          - paragraph [ref=e90]:
+            - button "Toggle section" [ref=e91]:
+              - img [ref=e92]
+        - generic [ref=e95] [cursor=pointer]:
+          - paragraph [ref=e98]: Report
+          - paragraph [ref=e99]:
+            - button "Toggle section" [ref=e100]:
+              - img [ref=e101]
+      - generic [ref=e103]:
+        - button "Settings" [ref=e105] [cursor=pointer]:
+          - generic:
+            - generic:
+              - img
+              - paragraph: Settings
+        - navigation [ref=e107]:
+          - link "User Management" [ref=e109] [cursor=pointer]:
+            - /url: /settings/general/users
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - paragraph [ref=e114]: User Management
+              - button [ref=e115]:
+                - img [ref=e116]
+        - button "Logout" [ref=e118] [cursor=pointer]:
+          - img [ref=e120]
+          - text: Logout
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img "BM Tech" [ref=e126]: BT
+          - generic [ref=e127]:
+            - button "BM Tech" [ref=e128] [cursor=pointer]:
+              - generic: BM Tech
+              - img [ref=e130]
+            - generic [ref=e132] [cursor=pointer]:
+              - button "Company Detail" [ref=e133]:
+                - img [ref=e134]
+              - button "Edit Company" [ref=e137]:
+                - img [ref=e138]
+              - button "Company Detail" [ref=e141]:
+                - img [ref=e142]
+        - generic [ref=e145]:
+          - button "New" [ref=e146] [cursor=pointer]:
+            - text: New
+            - img [ref=e148]
+          - generic [ref=e152] [cursor=pointer]:
+            - generic [ref=e153]: "5"
+            - img "Notifications" [ref=e154]
+          - button "EC" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: EC
+          - button [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+          - generic [ref=e165] [cursor=pointer]:
+            - img "System" [ref=e167]: S
+            - generic [ref=e168]:
+              - generic [ref=e169]: System
+              - paragraph [ref=e170]: IT Administrator / User Manager
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - navigation "breadcrumb" [ref=e176]:
+                  - list [ref=e177]:
+                    - listitem [ref=e178]:
+                      - link "Home" [ref=e179] [cursor=pointer]:
+                        - /url: /
+                      - text: /
+                    - listitem [ref=e180]:
+                      - link "Receivables" [ref=e181] [cursor=pointer]:
+                        - /url: /receivables/overview/
+                      - text: /
+                    - listitem [ref=e182]:
+                      - link "Receipt" [ref=e183] [cursor=pointer]:
+                        - /url: /receivables/receipts/?page=1&pageSize=15
+                      - text: /
+                    - listitem [ref=e184]:
+                      - link "New" [ref=e185] [cursor=pointer]:
+                        - /url: /receivables/receipts/new
+            - button "2019" [ref=e187] [cursor=pointer]:
+              - generic [ref=e188]: "2019"
+              - img [ref=e189]
+          - generic [ref=e192]:
+            - button "Toggle Visibility" [ref=e195] [cursor=pointer]:
+              - img [ref=e196]
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - heading "New Receipt" [level=5] [ref=e201]
+                - generic [ref=e202]:
+                  - generic [ref=e203]: "Total Amount :"
+                  - generic [ref=e204]: 0.00 ETB
+              - generic [ref=e205]:
+                - generic [ref=e208]:
+                  - generic [ref=e209]:
+                    - group [ref=e210]:
+                      - generic [ref=e211]: Customer *
+                      - button "Customer selector" [ref=e212]
+                    - generic [ref=e213]:
+                      - group [ref=e214]:
+                        - generic [ref=e215]: Ref
+                        - textbox "Ref" [disabled] [ref=e217]: RCPT/2026/08/24/000681
+                      - paragraph [ref=e218]: Ref is auto-generated
+                    - group [ref=e219]:
+                      - generic [ref=e220]: Check No
+                      - textbox "Check No" [ref=e222]
+                    - group [ref=e223]:
+                      - generic [ref=e224]: Cash Account *
+                      - button "Cash Account selector" [ref=e225]
+                  - generic [ref=e226]:
+                    - group [ref=e227]:
+                      - generic [ref=e228]: Budget
+                      - button "Budget selector" [ref=e229]: Select a budget
+                    - generic [ref=e230]:
+                      - generic [ref=e231]: Date
+                      - button "ነሀሴ 18, 2018" [ref=e233] [cursor=pointer]:
+                        - img [ref=e234]
+                        - generic [ref=e236]: ነሀሴ 18, 2018
+                    - group [ref=e237]:
+                      - generic [ref=e238]: Currency *
+                      - button "Currency selector" [ref=e239]: Birr
+                    - group [ref=e240]:
+                      - generic [ref=e241]: Payment Method *
+                      - generic [ref=e242]:
+                        - combobox "Payment Method *" [ref=e243]:
+                          - option "Cash" [selected]
+                          - option "Check"
+                          - option "Credit Card"
+                          - option "Debit Card"
+                          - option "Bank Transfer"
+                          - option "Other"
+                        - generic:
+                          - img
+                - generic [ref=e245]:
+                  - generic [ref=e246]:
+                    - tablist [ref=e247]:
+                      - tab "Sales * ETB" [selected] [ref=e248] [cursor=pointer]:
+                        - text: Sales *
+                        - generic [ref=e249]: ETB
+                      - tab "Sales Invoices 0.00 ETB" [ref=e250] [cursor=pointer]:
+                        - text: Sales Invoices
+                        - generic [ref=e251]: 0.00 ETB
+                      - tab "CRJ" [ref=e252] [cursor=pointer]
+                      - tab "Miscellenous" [ref=e253] [cursor=pointer]
+                      - tab "Upload Related Documents" [ref=e254] [cursor=pointer]
+                    - button "Line Item" [ref=e256] [cursor=pointer]:
+                      - img [ref=e258]
+                      - text: Line Item
+                  - tabpanel "Sales * ETB" [ref=e261]:
+                    - table [ref=e265]:
+                      - rowgroup [ref=e266]:
+                        - row "Item Quantity Unit Price Description G/L Account * Project Before Tax * Tax Total" [ref=e267]:
+                          - columnheader [ref=e268]
+                          - columnheader "Item" [ref=e270]: Item
+                          - columnheader "Quantity" [ref=e272]: Quantity
+                          - columnheader "Unit Price" [ref=e274]: Unit Price
+                          - columnheader "Description" [ref=e276]: Description
+                          - columnheader "G/L Account *" [ref=e278]: G/L Account *
+                          - columnheader "Project" [ref=e280]: Project
+                          - columnheader "Before Tax *" [ref=e282]: Before Tax *
+                          - columnheader "Tax" [ref=e284]: Tax
+                          - columnheader "Total" [ref=e286]: Total
+                          - columnheader [ref=e288]
+                      - rowgroup [ref=e290]:
+                        - row "No record found" [ref=e291]:
+                          - cell "No record found" [ref=e292]:
+                            - paragraph [ref=e294]: No record found
+                      - rowgroup [ref=e295]:
+                        - row "0.00 0.00 0.00" [ref=e296]:
+                          - columnheader [ref=e297]
+                          - columnheader [ref=e298]
+                          - columnheader [ref=e299]
+                          - columnheader [ref=e300]
+                          - columnheader [ref=e301]
+                          - columnheader [ref=e302]
+                          - columnheader [ref=e303]
+                          - columnheader "0.00" [ref=e304]
+                          - columnheader "0.00" [ref=e305]
+                          - columnheader "0.00" [ref=e306]
+                          - columnheader [ref=e307]
+              - group [ref=e309]:
+                - button "Add Now" [disabled] [ref=e310]
+                - button [disabled] [ref=e311]:
+                  - generic:
+                    - img
+        - generic [ref=e312]: BM Technology © 2026
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - option "1950"
+    - option "1951"
+    - option "1952"
+    - option "1953"
+    - option "1954"
+    - option "1955"
+    - option "1956"
+    - option "1957"
+    - option "1958"
+    - option "1959"
+    - option "1960"
+    - option "1961"
+    - option "1962"
+    - option "1963"
+    - option "1964"
+    - option "1965"
+    - option "1966"
+    - option "1967"
+    - option "1968"
+    - option "1969"
+    - option "1970"
+    - option "1971"
+    - option "1972"
+    - option "1973"
+    - option "1974"
+    - option "1975"
+    - option "1976"
+    - option "1977"
+    - option "1978"
+    - option "1979"
+    - option "1980"
+    - option "1981"
+    - option "1982"
+    - option "1983"
+    - option "1984"
+    - option "1985"
+    - option "1986"
+    - option "1987"
+    - option "1988"
+    - option "1989"
+    - option "1990"
+    - option "1991"
+    - option "1992"
+    - option "1993"
+    - option "1994"
+    - option "1995"
+    - option "1996"
+    - option "1997"
+    - option "1998"
+    - option "1999"
+    - option "2000"
+    - option "2001"
+    - option "2002"
+    - option "2003"
+    - option "2004"
+    - option "2005"
+    - option "2006"
+    - option "2007"
+    - option "2008"
+    - option "2009"
+    - option "2010"
+    - option "2011"
+    - option "2012"
+    - option "2013"
+    - option "2014"
+    - option "2015"
+    - option "2016"
+    - option "2017"
+    - option "2018"
+    - option "2019 (open)" [selected]
+    - option "2020"
+    - option "2021"
+    - option "2022"
+    - option "2023"
+    - option "2024"
+    - option "2025"
+    - option "2026"
+    - option "2027"
+    - option "2028"
+    - option "2029"
+    - option "2030"
+    - option "2031"
+    - option "2032"
+    - option "2033"
+    - option "2034"
+    - option "2035"
+    - option "2036"
+    - option "2037"
+    - option "2038"
+    - option "2039"
+    - option "2040"
+    - option "2041"
+    - option "2042"
+    - option "2043"
+    - option "2044"
+    - option "2045"
+    - option "2046"
+    - option "2047"
+    - option "2048"
+    - option "2049"
+```
+
+# Test source
+
+```ts
+  880  |         const { DateHelper } = require('../../lib/utils/DateHelper');
+  881  |         const dateIso = (await DateHelper.resolve(page)).iso;
+  882  | 
+  883  |         const resp = await page.request.post(`${apiBase}/invoices?${qs}`, {
+  884  |             headers,
+  885  |             data: {
+  886  |                 accounts_receivable_id: salesMeta.arAccountId,
+  887  |                 customer_id: salesMeta.customerId,
+  888  |                 invoice_date: dateIso,
+  889  |                 due_date: dateIso,
+  890  |                 currency_id: salesMeta.currencyId,
+  891  |                 released_sales_order_items: [],
+  892  |                 items: [
+  893  |                     { item_id: itemA.itemId, quantity: 3, unit_price: u1, amount: L1, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId },
+  894  |                     { item_id: itemB.itemId, quantity: 2, unit_price: u2, amount: L2, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemB.locationId, warehouse_id: itemB.warehouseId },
+  895  |                 ],
+  896  |             },
+  897  |         });
+  898  | 
+  899  |         expect(resp.ok(), `Multi-line Invoice failed: HTTP ${resp.status()}`).toBe(true);
+  900  |         const data = await resp.json();
+  901  |         const lines: any[] = data.items || [];
+  902  |         const linesSum = lines.reduce((s: number, l: any) => s + parseFloat(l.amount ?? '0'), 0);
+  903  |         const invTotal = parseFloat(data.total_amount ?? data.grand_total ?? data.amount ?? '0');
+  904  |         console.log(`[AUDIT] Lines sum: $${linesSum} | Invoice total: $${invTotal} | Expected: $${L1 + L2}`);
+  905  |         expect(linesSum).toBeCloseTo(L1 + L2, 1);
+  906  |         if (invTotal > 0) expect(invTotal).toBeCloseTo(L1 + L2, 1);
+  907  |         console.log('[PASS] Multi-line Invoice totals correct');
+  908  |     });
+  909  | 
+  910  |     test('INV-API-05: Miscellaneous line on invoice (no item_id) → accepted or inventory-only enforced', async ({ page }) => {
+  911  |         const app = new AppManager(page);
+  912  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  913  |         const { apiBase, headers, qs } = await app.buildApiContext();
+  914  | 
+  915  |         const resp = await page.request.post(`${apiBase}/invoices?${qs}`, {
+  916  |             headers,
+  917  |             data: {
+  918  |                 accounts_receivable_id: salesMeta.arAccountId,
+  919  |                 customer_id: salesMeta.customerId,
+  920  |                 invoice_date: periodDateIso,
+  921  |                 due_date: periodDateIso,
+  922  |                 currency_id: salesMeta.currencyId,
+  923  |                 released_sales_order_items: [],
+  924  |                 items: [{ description: 'Shipping & handling', quantity: 1, unit_price: 500, amount: 500, general_ledger_account_id: salesMeta.salesAccountId }],
+  925  |             },
+  926  |         });
+  927  | 
+  928  |         if (resp.ok()) {
+  929  |             const amt = parseFloat(((await resp.json()).items || [])[0]?.amount ?? '0');
+  930  |             expect(amt).toBeCloseTo(500, 1);
+  931  |             console.log(`[PASS] Invoice miscellaneous line accepted: $${amt}`);
+  932  |         } else {
+  933  |             console.log(`[INFO] Invoice enforces item_id: HTTP ${resp.status()}`);
+  934  |             expect([400, 422]).toContain(resp.status());
+  935  |         }
+  936  |     });
+  937  | 
+  938  |     // =========================================================================
+  939  |     // RECEIPT
+  940  |     // =========================================================================
+  941  | 
+  942  |     test('RCT-UI-01: Receipt UI — create standalone receipt with line item and verify', async ({ page }) => {
+  943  |         const app = new AppManager(page);
+  944  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  945  | 
+  946  |         // Create and approve invoice first via API
+  947  |         const inv = await app.api.sales.createStandaloneInvoiceAPI({
+  948  |             customerId: salesMeta.customerId, itemId: itemA.itemId,
+  949  |             quantity: 1, unitPrice: 2000,
+  950  |             locationId: itemA.locationId, warehouseId: itemA.warehouseId,
+  951  |         });
+  952  |         await app.advanceDocumentAPI(inv.id, 'invoices');
+  953  | 
+  954  |         await page.goto('/receivables/receipts/new', { waitUntil: 'commit' });
+  955  | 
+  956  |         await app.pickDate('Date');
+  957  |         await app.selectRandomOption(page.getByRole('button', { name: 'Customer selector' }), 'Customer');
+  958  |         await app.selectRandomOption(page.getByRole('button', { name: 'Cash Account selector' }), 'Cash Account');
+  959  |         await fillCurrencyField(page, app);
+  960  | 
+  961  |         // Add line item via modal
+  962  |         const lineItemBtn = page.getByRole('button', { name: 'Line Item' });
+  963  |         if (await lineItemBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+  964  |             await lineItemBtn.click();
+  965  |             const modal = page.getByRole('dialog').last();
+  966  |             await modal.waitFor({ state: 'visible', timeout: 15000 });
+  967  |             const itemBtn = modal.getByRole('button', { name: 'Item', exact: true });
+  968  |             if (await itemBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+  969  |                 await addLineItemViaModal(page, app, 'Item', { qty: '1', unitPrice: '2000' });
+  970  |                 console.log('[OK] Receipt line item added via modal');
+  971  |             } else {
+  972  |                 await page.keyboard.press('Escape');
+  973  |                 console.log('[INFO] Receipt modal has no Item button — using amount field directly');
+  974  |             }
+  975  |         }
+  976  | 
+  977  |         const submitBtn = page.getByRole('button', { name: /Add Now|Save|Submit/i }).first();
+  978  |         if (await submitBtn.isEnabled({ timeout: 5000 }).catch(() => false)) {
+  979  |             await submitBtn.click();
+> 980  |             await page.waitForURL(/receipts\/.*\/detail/, { timeout: 60000 });
+       |                        ^ TimeoutError: page.waitForURL: Timeout 60000ms exceeded.
+  981  |             const rctId = await app.extractIdFromUrl();
+  982  |             await app.advanceDocumentAPI(rctId, 'receipts');
+  983  |             console.log('[PASS] Receipt created and approved via UI');
+  984  |         } else {
+  985  |             console.log('[INFO] Receipt submit not available — partial UI coverage captured');
+  986  |         }
+  987  |     });
+  988  | 
+  989  |     test('RCT-API-02: Receipt partial payment → invoice Amount Due reduces by exact amount', async ({ page }) => {
+  990  |         const app = new AppManager(page);
+  991  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  992  | 
+  993  |         const inv = await app.api.sales.createStandaloneInvoiceAPI({
+  994  |             customerId: salesMeta.customerId, itemId: itemA.itemId,
+  995  |             quantity: 3, unitPrice: itemA.unitCost,
+  996  |             locationId: itemA.locationId, warehouseId: itemA.warehouseId,
+  997  |         });
+  998  |         await app.advanceDocumentAPI(inv.id, 'invoices');
+  999  | 
+  1000 |         // Use actual invoice amount from API as ground truth
+  1001 |         const invDataBefore = await app.api.sales.getInvoiceAPI(inv.id);
+  1002 |         const TOTAL = parseFloat(invDataBefore.total_amount ?? invDataBefore.grand_total ?? invDataBefore.amount ?? String(inv.amountDue));
+  1003 |         const PARTIAL = Math.floor(TOTAL / 3);
+  1004 | 
+  1005 |         const rct = await app.api.sales.createInvoiceReceiptAPI({
+  1006 |             invoiceId: inv.id, customerId: salesMeta.customerId,
+  1007 |             amount: PARTIAL, currencyId: salesMeta.currencyId
+  1008 |         });
+  1009 |         await app.advanceDocumentAPI(rct.id, 'receipts');
+  1010 | 
+  1011 |         await expect.poll(async () => {
+  1012 |             const data = await app.api.sales.getInvoiceAPI(inv.id);
+  1013 |             const received = parseFloat(data.received_amount ?? '0');
+  1014 |             const unreceived = parseFloat(data.unreceived_amount ?? data.net_due ?? data.due ?? String(TOTAL - PARTIAL));
+  1015 |             return unreceived <= (TOTAL - PARTIAL) || received >= PARTIAL;
+  1016 |         }, { timeout: 15000, intervals: [1000, 2000, 3000] }).toBe(true);
+  1017 | 
+  1018 |         const invData = await app.api.sales.getInvoiceAPI(inv.id);
+  1019 |         console.log(`[AUDIT] Invoice $${TOTAL} | Received $${invData.received_amount} | Unreceived $${invData.unreceived_amount ?? invData.net_due}`);
+  1020 |         console.log('[PASS] Partial receipt reduces invoice Amount Due correctly');
+  1021 |     });
+  1022 | 
+  1023 |     test('RCT-API-03: Receipt full payment → invoice Amount Due = 0', async ({ page }) => {
+  1024 |         const app = new AppManager(page);
+  1025 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  1026 | 
+  1027 |         const inv = await app.api.sales.createStandaloneInvoiceAPI({
+  1028 |             customerId: salesMeta.customerId, itemId: itemA.itemId,
+  1029 |             quantity: 2, unitPrice: itemA.unitCost,
+  1030 |             locationId: itemA.locationId, warehouseId: itemA.warehouseId,
+  1031 |         });
+  1032 |         await app.advanceDocumentAPI(inv.id, 'invoices');
+  1033 | 
+  1034 |         // Use actual invoice amount from API as ground truth
+  1035 |         const invDataBefore = await app.api.sales.getInvoiceAPI(inv.id);
+  1036 |         const AMOUNT = parseFloat(invDataBefore.total_amount ?? invDataBefore.grand_total ?? invDataBefore.amount ?? String(inv.amountDue));
+  1037 | 
+  1038 |         const rct = await app.api.sales.createInvoiceReceiptAPI({
+  1039 |             invoiceId: inv.id, customerId: salesMeta.customerId,
+  1040 |             amount: AMOUNT, currencyId: salesMeta.currencyId
+  1041 |         });
+  1042 |         await app.advanceDocumentAPI(rct.id, 'receipts');
+  1043 | 
+  1044 |         await expect.poll(async () => {
+  1045 |             const data = await app.api.sales.getInvoiceAPI(inv.id);
+  1046 |             const unreceived = parseFloat(data.unreceived_amount ?? data.net_due ?? data.due ?? '999');
+  1047 |             const received = parseFloat(data.received_amount ?? '0');
+  1048 |             return unreceived < 1 || received >= AMOUNT;
+  1049 |         }, { timeout: 15000, intervals: [1000, 2000, 3000] }).toBe(true);
+  1050 | 
+  1051 |         const invData = await app.api.sales.getInvoiceAPI(inv.id);
+  1052 |         console.log(`[AUDIT] Full receipt $${AMOUNT} → Received: $${invData.received_amount} | Remaining: $${invData.unreceived_amount ?? invData.net_due}`);
+  1053 |         console.log('[PASS] Full receipt settles invoice to zero');
+  1054 |     });
+  1055 | 
+  1056 |     // =========================================================================
+  1057 |     // PURCHASE ORDER
+  1058 |     // =========================================================================
+  1059 | 
+  1060 |     test('PO-UI-01: Add inventory Line Item via modal → PO created and approved', async ({ page }) => {
+  1061 |         const app = new AppManager(page);
+  1062 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  1063 |         await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
+  1064 |         await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
+  1065 |         await page.getByRole('tab', { name: /Purchase Order Items/i }).waitFor({ state: 'visible', timeout: 60000 });
+  1066 | 
+  1067 |         await app.pickDate('Purchase Order Date');
+  1068 |         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
+  1069 |         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable');
+  1070 |         await app.selectRandomOption(page.getByRole('button', { name: 'Purchase Type selector' }), 'Purchase Type');
+  1071 | 
+  1072 |         const capturedItem = await captureItemWithPriceAPI(page, app);
+  1073 | 
+  1074 |         await page.getByRole('tab', { name: /Purchase Order Items/i }).click();
+  1075 |         await page.getByRole('button', { name: 'Line Item' }).click();
+  1076 |         await addLineItemViaModal(page, app, 'Item', { qty: '5', unitPrice: capturedItem?.price || '2000', itemName: capturedItem?.name });
+  1077 |         console.log('[OK] Inventory line item added to PO');
+  1078 | 
+  1079 |         await page.getByRole('button', { name: 'Add Now' }).first().click();
+  1080 |         await page.waitForURL(/purchase-orders\/.*\/detail/, { timeout: 60000 });
+```

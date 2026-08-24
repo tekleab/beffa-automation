@@ -1,0 +1,51 @@
+06:26:44 [PERFORMANCE] API - Auth API Verification: 208.82ms
+[AUTH] Session token and local storage injected successfully.
+06:26:48 [PERFORMANCE] API - Auth API Verification: 361.95ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating item with exactly 1 unit of stock...
+[OK] Item created: ZERO-STOCK-1787552808259 (ID: 7194545b-14bb-48ea-8bd6-d0f18fb25385)
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 1...
+[SUCCESS] API Confirmed: Stock correctly reached 1.
+[STEP 2] Selling the only 1 unit to drain stock to zero...
+06:26:51 [INFO] Advancing invoices "bfc41e2c-087f-4b2a-8497-865656fc26b7"...
+06:26:52 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+06:26:52 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 0...
+[SUCCESS] API Confirmed: Stock correctly reached 0.
+[OK] Stock is now 0.
+[ATTACK] Attempting to sell 1 more unit from zero stock...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║        ZERO-STOCK GUARDRAIL — TEST SUMMARY               ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : ZERO-STOCK-1787552808259               ║
+  ║  Item ID      : 7194545b-14bb-48ea-8bd6-d0f18fb25385   ║
+  ║  Step 1       : Created with qty=1, sold 1 → stock=0       ║
+  ║  Attack       : POST /invoices qty=1 against stock=0       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : BLOCKED ✓                             ║
+  ║  Oversell invoice was correctly rejected by the API.     ║
+  ║  Final stock  : N/A (blocked)                          ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : None — zero-stock guard enforced correctly      ║
+  ║                                                           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Zero-Stock Oversell Guardrail                                           │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ ZERO-STOCK-1787552808259             │
+  │ Item ID                          │ 7194545b-14bb-48ea-8bd6-d0f18fb2538… │
+  │ Initial Stock                    │ 1 unit                               │
+  │ Step 2: Sold                     │ 1 unit → stock drained to 0          │
+  │ Attack: Invoice Qty              │ 1 unit (against stock=0)             │
+  │ Oversell Invoice Ref             │ N/A                                  │
+  │ Final Stock                      │ N/A (blocked)                        │
+  │ Block Reason                     │ Standalone Invoice API Creation Fai… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Zero-stock sale correctly … │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Zero-stock sale correctly rejected.

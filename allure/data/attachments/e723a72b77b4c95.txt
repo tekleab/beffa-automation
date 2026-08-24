@@ -1,0 +1,33 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/invoices/f2a43f2d-c8bd-432a-99b7-0f3a9fb3acc0?year=2019&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `404`
+- **Latency**: `105.68ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "Content-Type": "application/json"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+404 page not found
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "Content-Type: application/json" \
+  "http://168.119.175.142:8001/api/invoices/f2a43f2d-c8bd-432a-99b7-0f3a9fb3acc0?year=2019&period=yearly&calendar=ec"
+```
