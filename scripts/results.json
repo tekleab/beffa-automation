@@ -1,29 +1,37 @@
 {
   "total": 23,
-  "passed": 19,
-  "failed": 4,
+  "passed": 22,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 82.6,
-  "avgDurationMs": 33346,
-  "lastUpdated": "2026-08-24T07:24:36.853Z",
+  "passRate": 95.7,
+  "avgDurationMs": 28453,
+  "lastUpdated": "2026-08-24T08:03:25.632Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 19,
-      "failed": 4,
+      "passed": 22,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        100,
         100,
         0,
         100,
         83.9,
         76.8,
-        82.6
+        82.6,
+        95.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "691",
+      "commit": "1df098e",
+      "trigger": "push (smoke)",
+      "duration": "10m 54s",
+      "passRate": 95.7,
+      "status": "success"
+    },
     {
       "run": "690",
       "commit": "3769bbc",
@@ -95,14 +103,6 @@
       "duration": "11m 18s",
       "passRate": 95.7,
       "status": "success"
-    },
-    {
-      "run": "668",
-      "commit": "e607a64",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "81m 9s",
-      "passRate": 86.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
@@ -110,31 +110,7 @@
       "severity": "critical",
       "title": "Validate TIN, create customer, edit, remove",
       "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('section[role=\"dialog\"] button:has-text(\"Yes\"), [role=\"dialog\"] button:has-text(\"Confirm\")').first() to b",
-      "firstSeen": "2026-08-24T07:20:54.237Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: Failed to fetch Bill 58e4b285-7273-40c1-8ccd-f662070b63e7: 500\n\n   at ../lib/api/PurchaseAPI.ts:884\n\n  882 |       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': ",
-      "firstSeen": "2026-08-24T07:22:07.938Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: Failed to fetch Bill 7f6f7490-8b81-49df-9f42-4e2ee921ef76: 500\n\n   at ../lib/api/PurchaseAPI.ts:884\n\n  882 |       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': ",
-      "firstSeen": "2026-08-24T07:22:20.330Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
-      "error": "Error: Bill BILL/2026/08/24/002562 should be linked to vendor \"Gentium Concrite Industry\" via API\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equal",
-      "firstSeen": "2026-08-24T07:23:34.274Z",
+      "firstSeen": "2026-08-24T08:00:23.102Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
