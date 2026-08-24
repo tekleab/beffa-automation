@@ -1,0 +1,41 @@
+[DateHelper] Resolved in-period date: 2026-08-24T00:00:00Z (day=24, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/24/005536 (ID: dd3dc3aa-947c-400d-a082-c5067e7b2937)
+10:57:13 [INFO] Advancing inventory-adjustments "dd3dc3aa-947c-400d-a082-c5067e7b2937"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787569031941 (b91cee5b-6c21-4362-a4e3-528af2658e82) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Injecting Bill with future date: 2028-08-24T00:00:00Z...
+10:57:19 [INFO] Advancing bills "bffa0837-4ce1-4e49-9d8e-9e67bfa4de0a"...
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Future-Dated Bill Approved                                   │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/08/24/002607                   │
+  │ Bill ID                          │ bffa0837-4ce1-4e49-9d8e-9e67bfa4de0a     │
+  │ Invoice Date                     │ 2028-08-24T00:00:00Z                     │
+  │ Today                            │ 2026-08-24                               │
+  │ Status                           │ approved                                 │
+  │ Amount                           │ $10000.00                                │
+  │ Vendor                           │ 8c8b8d32-3171-4290-ae83-17e58ccaf323     │
+  │ Impact                           │ Future-period AP liability injected      │
+  │ Fix Required                     │ Reject if invoice_date > today           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+
+=================== [CRITICAL VULNERABILITY DETECTED] ===================
+Attack Type    : Future-Dated Bill Injection
+Submitted Date : 2028-08-24T00:00:00Z
+Current Date   : 2026-08-24
+Resulting State: approved (HTTP 200)
+Server Payload : {
+  "id": "d4b3ebae-f160-4fed-9f6e-44b45262de33",
+  "reference_number": "BILL/2026/08/24/002607",
+  "invoice_date": "2027-02-12T00:00:00Z",
+  "vendor_id": "8c8b8d32-3171-4290-ae83-17e58ccaf323",
+  "total_amount": 10000
+}
+=========================================================================
+
