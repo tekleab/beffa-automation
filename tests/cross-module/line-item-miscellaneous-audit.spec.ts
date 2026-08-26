@@ -52,6 +52,22 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         purchaseMeta = await app.api.purchase.discoverMetadataAPI();
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 80 });
+
+        // Pre-provision stock for itemA across all active locations so modal location picker always finds stock
+        try {
+            const { apiBase, headers, qs } = await app.buildApiContext();
+            const locResp = await setupPage.request.get(`${apiBase}/locations?page=1&pageSize=20&${qs}`, { headers }).catch(() => null);
+            if (locResp && locResp.ok()) {
+                const locData = await locResp.json();
+                const locs: any[] = locData.items || locData.data || [];
+                for (const loc of locs) {
+                    if (loc.id && loc.id !== itemA.locationId) {
+                        await app.topUpItemStockAPI(itemA.itemId, 50, loc.id, loc.warehouse_id).catch(() => { });
+                    }
+                }
+            }
+        } catch { }
+
         const { DateHelper } = require('../../lib/utils/DateHelper');
         periodDateIso = (await DateHelper.resolve(setupPage)).iso;
         await setupPage.close().catch(() => { });
@@ -175,6 +191,39 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             .filter({ hasText: /Warehouse \*|G\/L Account \*|Description/i })
             .first();
 
+        // ── Helper: select dropdown inside modal without pressing Escape ──────
+        const selectDropdownInModal = async (btn: any, label: string) => {
+            if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    const txt = (await btn.textContent().catch(() => ''))?.trim() || '';
+                    if (!txt || txt.toLowerCase().includes('select') || txt.toLowerCase().includes('choose')) {
+                        await btn.scrollIntoViewIfNeeded().catch(() => { });
+                        await btn.click({ force: true }).catch(() => { });
+                        await page.waitForTimeout(1000);
+                        const overlay = page.locator('.chakra-menu__menu-list, [role="listbox"], .chakra-popover__content, [role="menu"]')
+                            .filter({ visible: true }).last();
+                        if (await overlay.isVisible({ timeout: 3000 }).catch(() => false)) {
+                            const options = overlay.locator('[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem')
+                                .filter({ hasNotText: /^(Clear|No more items)$/i })
+                                .filter({ visible: true });
+                            await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
+                            const c = await options.count();
+                            if (c > 0) {
+                                await options.first().evaluate((node: HTMLElement) => node.click());
+                                await overlay.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => { });
+                                await page.waitForTimeout(500);
+                                console.log(`[MODAL] Selected first ${label} option`);
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                    await page.waitForTimeout(500);
+                }
+            }
+        };
+
         // ── Open the modal ────────────────────────────────────────────────────
         await Promise.race([
             popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { }),
@@ -223,10 +272,10 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     let prevCount = -1;
                     for (let p = 0; p < 8; p++) {
                         await page.waitForTimeout(400);
-                        const opts = menuList.locator(
+                        const optsEl = menuList.locator(
                             '[role="menuitem"], [role="option"], .chakra-menu__menuitem, p.chakra-text, label, .chakra-checkbox, div.chakra-stack'
                         ).filter({ hasNotText: /^(Clear|No more items)$/i }).filter({ visible: true });
-                        const c = await opts.count();
+                        const c = await optsEl.count();
                         if (c === prevCount) break;
                         prevCount = c;
                     }
@@ -234,9 +283,10 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
                 let clickedOpt: any = null;
                 if (targetItemName) {
-                    // Try exact text match first — scoped to the filtered menu list
-                    const textMatch = menuList.getByText(targetItemName, { exact: false }).first();
-                    if (await textMatch.isVisible({ timeout: 1500 }).catch(() => false)) {
+                    const textMatch = menuList.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, label, .chakra-checkbox, div.chakra-stack, p')
+                        .filter({ hasText: targetItemName })
+                        .first();
+                    if (await textMatch.isVisible({ timeout: 2000 }).catch(() => false)) {
                         clickedOpt = textMatch;
                     }
                 }
@@ -259,27 +309,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     const selectedName = optText?.trim().replace(/\s+/g, ' ') || '';
                     await clickedOpt.evaluate((node: HTMLElement) => node.click()).catch(() => clickedOpt.click({ force: true }));
                     console.log(`[ITEM MODAL] Selected item option: "${selectedName}"`);
-                    await page.keyboard.press('Escape').catch(() => { });
                     await menuList.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => { });
                     await page.waitForTimeout(500);
 
                     const btnTxt = (await itemBtn.textContent().catch(() => '')) || '';
                     if (!btnTxt.includes('Select') && !btnTxt.includes('Choose')) {
                         itemSelected = true;
-                    }
-
-                    let matchedItem: any = null;
-                    // ── Stock guard: verify selected item has stock > 0 and auto top-up via API if needed ──
-                    try {
-                        const { apiBase, headers, qs } = await app.buildApiContext();
-                        const itemsResp = await page.request.get(`${apiBase}/inventory-items?page=1&pageSize=200&${qs}`, { headers });
-                        if (itemsResp.ok()) {
-                            const itemsData = await itemsResp.json();
-                            const itemsList: any[] = Array.isArray(itemsData) ? itemsData : (itemsData.items || itemsData.data || []);
-                            matchedItem = itemsList.find((i: any) => selectedName.includes(i.name) || (i.name && selectedName.includes(i.name)));
-                        }
-                    } catch (e) {
-                        console.log(`[ITEM MODAL] Stock guard item lookup skipped: ${e}`);
                     }
 
                     // Inspect Selling Price / Unit Price field state and fill price
@@ -302,55 +337,20 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     }
                     itemSelected = true;
                 } else {
-                    await page.keyboard.press('Escape').catch(() => { });
+                    await menuList.waitFor({ state: 'hidden', timeout: 1000 }).catch(() => { });
                     await page.waitForTimeout(300);
                 }
             }
 
-            // Preserve auto-filled Warehouse & Location if already set by Item selection to avoid selecting zero-stock locations
+            // Select Warehouse & Location using modal-safe selector if not auto-filled
             const whBtn = modal.getByRole('button', { name: 'Warehouse selector' });
             const locBtn = modal.getByRole('button', { name: 'Location selector' });
-
-            const whText = (await whBtn.textContent().catch(() => ''))?.trim() || '';
-            if (!whText || whText.includes('Select') || whText.includes('Choose')) {
-                await app.selectRandomOption(whBtn, 'Warehouse');
-            } else {
-                console.log(`[ITEM MODAL] Preserved auto-filled Warehouse: "${whText}"`);
-            }
-
-            const locText = (await locBtn.textContent().catch(() => ''))?.trim() || '';
-            if (!locText || locText.includes('Select') || locText.includes('Choose')) {
-                await app.selectRandomOption(locBtn, 'Location');
-            } else {
-                console.log(`[ITEM MODAL] Preserved auto-filled Location: "${locText}"`);
-            }
-
-            // ── Auto top-up stock for this item so insufficient stock error never occurs in UI ──
-            if (targetItemName || (itemA && (itemA as any).id)) {
-                try {
-                    const { apiBase, headers, qs } = await app.buildApiContext();
-                    const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
-                    if (itemIdToTopUp) {
-                        await app.topUpItemStockAPI(itemIdToTopUp, 50).catch(() => {});
-                    }
-                } catch (e) {
-                    console.log(`[ITEM MODAL] Pre-emptive stock topup skipped: ${e}`);
-                }
-            }
+            await selectDropdownInModal(whBtn, 'Warehouse');
+            await page.waitForTimeout(800);
+            await selectDropdownInModal(locBtn, 'Location');
+            await page.waitForTimeout(300);
         } else {
             // Miscellaneous modal field order varies by document type:
-            // SO/Invoice: Description → Selling Price/Unit Price (label-based)
-            // Bill/PO:    G/L Account → Description → price (placeholder, disabled until G/L selected)
-            // Debug: log form control labels and disabled states in modal
-            const formControls = modal.locator('.chakra-form-control');
-            const fcCount = await formControls.count();
-            for (let k = 0; k < fcCount; k++) {
-                const txt = await formControls.nth(k).textContent().catch(() => '');
-                const inp = formControls.nth(k).locator('input').first();
-                const dis = await inp.isDisabled().catch(() => 'no-input');
-                console.log(`[MODAL FC ${k}] text: "${txt?.replace(/\s+/g, ' ').trim()}", input disabled: ${dis}`);
-            }
-
             const glFormControl = modal.locator('.chakra-form-control').filter({ hasText: /G\/L Account/i });
             const glBtnMisc = glFormControl.locator('button').or(modal.getByRole('button', { name: /G\/L Account/i })).first();
             const glInputMisc = glFormControl.locator('input').first();
@@ -358,7 +358,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             const priceByPlaceholder = modal.locator('input[placeholder="price" i], input[placeholder*="price" i]').first();
 
             const getPriceInput = async () => {
-                // 1. Check for editable price input (Before Tax / Unit Price / Unit Rate / Price)
                 const editablePriceControl = modal.locator('.chakra-form-control').filter({
                     hasText: /Before Tax|Unit Price|Unit Rate|^Price/i
                 }).locator('input:not([disabled]):not([readonly])').first();
@@ -367,7 +366,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     return editablePriceControl;
                 }
 
-                // 2. Check for any enabled input in the modal (excluding description/textarea)
                 const generalInput = modal.locator('input:not([disabled]):not([readonly])').filter({
                     hasNot: modal.locator('input[placeholder*="description" i]')
                 }).last();
@@ -376,13 +374,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     return generalInput;
                 }
 
-                // 3. Fallback to placeholder-based price input
                 return priceByPlaceholder;
             };
 
             const selectValidGLAccount = async () => {
                 if (await glBtnMisc.isVisible({ timeout: 2000 }).catch(() => false)) {
-                    await app.selectRandomOption(glBtnMisc, 'G/L Account', false);
+                    await selectDropdownInModal(glBtnMisc, 'G/L Account');
                     return true;
                 } else if (await glInputMisc.isVisible({ timeout: 2000 }).catch(() => false)) {
                     await glInputMisc.click();
@@ -395,8 +392,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                     if (await glOption.isVisible({ timeout: 3000 }).catch(() => false)) {
                         await glOption.click();
                         console.log('[MODAL] G/L Account selected via autocomplete input');
-                    } else {
-                        await page.keyboard.press('Escape').catch(() => { });
                     }
                 }
             };
@@ -422,25 +417,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         // ── G/L Account (Item path only — Miscellaneous already filled it above) ──
         if (type === 'Item') {
             const glBtn = modal.getByRole('button', { name: 'G/L Account selector' });
-            await glBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
-            await glBtn.click();
-            await page.waitForTimeout(1000);
-            const glOverlay = page.locator('.chakra-menu__menu-list, [role="listbox"], .chakra-popover__content, [role="menu"]')
-                .filter({ visible: true }).last();
-            const glOptions = glOverlay.locator('[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem')
-                .filter({ visible: true });
-            await glOptions.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
-            const glCount = await glOptions.count();
-            if (glCount > 0) {
-                const glTarget = glOptions.nth(Math.floor(Math.random() * glCount));
-                await glTarget.evaluate((node: HTMLElement) => node.click());
-                // Wait for overlay to close naturally — do NOT press Escape (would close the modal)
-                await glOverlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
-                await page.waitForTimeout(300);
-                console.log('[MODAL] G/L Account selected for Item line');
-            } else {
-                await page.keyboard.press('Escape').catch(() => { });
-            }
+            await selectDropdownInModal(glBtn, 'G/L Account');
         }
 
         // ── Quantity ──────────────────────────────────────────────────────────
@@ -455,12 +432,13 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         }
 
         // ── Tax (optional) ────────────────────────────────────────────────────
-        await app.selectRandomOption(modal.getByRole('button', { name: 'Tax selector' }), 'Tax', true);
+        const taxBtn = modal.getByRole('button', { name: 'Tax selector' });
+        await selectDropdownInModal(taxBtn, 'Tax');
 
         // ── Click Add / Save and verify modal closes ──────────────────────────
         const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
         await addBtn.scrollIntoViewIfNeeded();
-        await addBtn.click();
+        await addBtn.click({ force: true }).catch(() => addBtn.evaluate((b: HTMLElement) => b.click()));
 
         const closed = await modal.waitFor({ state: 'hidden', timeout: 15000 }).then(() => true).catch(() => false);
         if (!closed) {
@@ -808,16 +786,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
         // Miscellaneous line
         await page.locator('button:has-text("Line Item")').first().click();
-        const modal2 = page.getByRole('dialog').last();
-        await modal2.waitFor({ state: 'visible', timeout: 15000 });
-        const miscBtn = modal2.getByRole('button', { name: 'Miscellaneous', exact: true });
-        if (await miscBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await addLineItemViaModal(page, app, 'Miscellaneous', { qty: '1', unitPrice: '200', description: 'Handling' });
-        } else {
-            await page.keyboard.press('Escape');
-            await page.locator('button:has-text("Line Item")').first().click();
-            await addLineItemViaModal(page, app, 'Item', { qty: '1', unitPrice: capturedItem?.price || '200', itemName: capturedItem?.name });
-        }
+        await addLineItemViaModal(page, app, 'Miscellaneous', { qty: '1', unitPrice: '200', description: 'Handling' });
 
         const rowCount = await page.locator('table tbody tr, [role="row"], [data-testid*="line"], .line-item-row').count();
         const altRowCount = await page.locator('.chakra-stack > div, .flex-row').filter({ hasText: /\d+/ }).count();

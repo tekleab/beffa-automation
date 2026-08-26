@@ -13,7 +13,6 @@ setup('authenticate globally once', async ({ page }) => {
     const app = new AppManager(page);
     await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-    // Warm up the dashboard so React/Vite hydrates the session and caches all bundles
-    console.log(`[AUTH SETUP] Saved authenticated state to ${authFile}`);
+    await page.context().storageState({ path: authFile });
     await page.goto('about:blank').catch(() => {});
 });
