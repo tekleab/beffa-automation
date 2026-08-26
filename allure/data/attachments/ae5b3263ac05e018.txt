@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-26T00:00:00Z (day=26, ecYear=2019)
+11:50:09 [PERFORMANCE] API - Auth API Verification: 269.52ms
+[AUTH] Session token and local storage injected successfully.
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/005897 (ID: 3b1cb3f4-0c2f-43f1-b6f3-cccbf2ec20e6)
+11:50:15 [INFO] Advancing inventory-adjustments "3b1cb3f4-0c2f-43f1-b6f3-cccbf2ec20e6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787745014496 (90e8c326-35ff-4672-8d90-9cdd2704d007) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/26/001628 for Vendor Zelalem H/Giorgis (c43f3dfb-c8af-466e-b372-89a0767574a3)
+11:50:20 [INFO] Advancing purchase-orders "cac4b1de-e993-40dc-a452-0dd844e6c29d"...
+[OK] PO PO/2026/08/26/001628 approved
+[STEP] Phase 2: Create linked Bill via API
+11:50:22 [INFO] Advancing bills "adfab0ca-2a38-4b3a-a106-0bc783c041d0"...
+[OK] Bill BILL/2026/08/26/002755 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/08/26/002755 is physically present in Zelalem H/Giorgis's ledger.
+[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection
+[WARN] Bill BILL/2026/08/26/002755 confirmed via API ledger. UI table did not show row within 1 pages.
