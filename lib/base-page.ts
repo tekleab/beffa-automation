@@ -554,14 +554,14 @@ ${curlCmd}
     addCandidate(await this.page.evaluate(() => localStorage.getItem('currentCompany')).catch(() => null));
 
     const isValidCompany = async (company: string): Promise<boolean> => {
-      const resp = await this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=1&${params}`, {
+      const resp = await this.safeGet(`${this.apiBase}/accounts?page=1&pageSize=1&${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'x-company': company,
           'x-role': 'IT Administrator / User Manager'
         }
-      });
-      return resp.ok();
+      }).catch(() => null);
+      return resp ? resp.ok() : false;
     };
 
     for (const company of candidates) {
@@ -1362,19 +1362,17 @@ ${curlCmd}
         !typeOf(a).includes('receivable')
       ) ?? allAccounts[1] ?? allAccounts[0];
 
-    const custResp = await this.page.request.get(`${this.apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
-    const custData = await custResp.json();
+    const custResp = await this.safeGet(`${this.apiBase}/customers?page=1&pageSize=10&${params}`, { headers });
+    const custData = await custResp.json().catch(() => ({}));
     const customer = custData.items?.[0] || custData.data?.[0];
 
-    const currResp = await this.page.request.get(`${this.apiBase}/currency?${params}`, { headers });
-    const currData = await currResp.json();
+    const currResp = await this.safeGet(`${this.apiBase}/currency?${params}`, { headers });
+    const currData = await currResp.json().catch(() => ({}));
     const currency = currData.items?.[0] || currData.data?.[0];
 
     if (!cashAccount || !revenueAccount || !customer || !currency) {
       throw new Error(`[CASH_TOPUP] Discovery failed — cashAccount:${!!cashAccount} revenueAccount:${!!revenueAccount} customer:${!!customer} currency:${!!currency}`);
     }
-
-    // 10x buffer for small amounts, or a flat safe buffer for large amounts to prevent decimal overflow (e.g. >100M)
     const seedAmount = amount > 100000 ? Math.ceil(amount + 50000) : Math.ceil(amount) * 10;
     const { DateHelper: _SeedDH } = require('./utils/DateHelper');
     const _seedDateIso = (await _SeedDH.resolve(this.page)).iso;

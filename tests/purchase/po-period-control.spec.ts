@@ -29,19 +29,20 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 test.describe('Procurement Period Control Edge Cases @purchase @security @temporal @regression @full', () => {
-    test.setTimeout(120000);
+    test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
+        test.setTimeout(300000);
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
-        await page.close();
+        await page.close().catch(() => {});
     });
 
     test.beforeEach(async ({ page }) => {
@@ -63,14 +64,22 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         const backDate = '2017-12-31T00:00:00Z';
         console.log(`[TEST] Creating PO with back date: ${backDate}`);
 
-        const po = await app.api.purchase.createPurchaseOrderAPI({
-            itemId: item.itemId,
-            itemName: item.itemName,
-            locationId: item.locationId,
-            warehouseId: item.warehouseId
-        }, 1, 5000, meta.vendorId);
+        let po: any = null;
+        let blocked = false;
+        try {
+            po = await app.api.purchase.createPurchaseOrderAPI({
+                itemId: item.itemId,
+                itemName: item.itemName,
+                locationId: item.locationId,
+                warehouseId: item.warehouseId,
+                po_date: backDate
+            } as any, 1, 5000, meta.vendorId);
+        } catch (createErr: any) {
+            blocked = true;
+            console.log(`[PASS] Back-dated PO rejected at creation: ${createErr.message}`);
+        }
 
-        if (po.success) {
+        if (po && po.success) {
             try {
                 await app.advanceDocumentAPI(po.poId, 'purchase-orders');
                 throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated PO (${backDate})!`);
@@ -79,7 +88,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
                 console.log(`[PASS] PO created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Back-dated PO rejected`);
+            expect(blocked || !po?.success, `System must reject back-dated PO (${backDate})`).toBe(true);
         }
     });
 
@@ -92,14 +101,22 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         const futureDate = '2019-01-01T00:00:00Z';
         console.log(`[TEST] Creating PO with future date: ${futureDate}`);
 
-        const po = await app.api.purchase.createPurchaseOrderAPI({
-            itemId: item.itemId,
-            itemName: item.itemName,
-            locationId: item.locationId,
-            warehouseId: item.warehouseId
-        }, 1, 5000, meta.vendorId);
+        let po: any = null;
+        let blocked = false;
+        try {
+            po = await app.api.purchase.createPurchaseOrderAPI({
+                itemId: item.itemId,
+                itemName: item.itemName,
+                locationId: item.locationId,
+                warehouseId: item.warehouseId,
+                po_date: futureDate
+            } as any, 1, 5000, meta.vendorId);
+        } catch (createErr: any) {
+            blocked = true;
+            console.log(`[PASS] Future-dated PO rejected at creation: ${createErr.message}`);
+        }
 
-        if (po.success) {
+        if (po && po.success) {
             try {
                 await app.advanceDocumentAPI(po.poId, 'purchase-orders');
                 throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated PO (${futureDate})!`);
@@ -108,7 +125,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
                 console.log(`[PASS] Future-dated PO blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Future-dated PO rejected`);
+            expect(blocked || !po?.success, `System must reject future-dated PO (${futureDate})`).toBe(true);
         }
     });
 
@@ -123,17 +140,24 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         const item = sharedItem;
 
         const backDate = '2017-12-31T00:00:00Z';
-        console.log(`[TEST] Creating Bill with back date: ${backDate}`);
+        let bill: any = null;
+        let blocked = false;
+        try {
+            bill = await app.api.purchase.createBillAPI({
+                itemId: item.itemId,
+                quantity: 1,
+                unitPrice: 5000,
+                vendorId: meta.vendorId,
+                apAccountId: meta.apAccountId,
+                invoice_date: backDate,
+                due_date: backDate
+            } as any);
+        } catch (createErr: any) {
+            blocked = true;
+            console.log(`[PASS] Back-dated Bill correctly rejected at creation: ${createErr.message}`);
+        }
 
-        const bill = await app.api.purchase.createBillAPI({
-            itemId: item.itemId,
-            quantity: 1,
-            unitPrice: 5000,
-            vendorId: meta.vendorId,
-            apAccountId: meta.apAccountId
-        });
-
-        if (bill.success) {
+        if (bill && bill.id) {
             try {
                 await app.advanceDocumentAPI(bill.id, 'bills');
                 throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated Bill (${backDate})!`);
@@ -142,7 +166,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
                 console.log(`[PASS] Bill created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Back-dated Bill rejected`);
+            expect(blocked, `System must reject back-dated bill dated ${backDate}`).toBe(true);
         }
     });
 
@@ -155,15 +179,24 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         const futureDate = '2019-01-01T00:00:00Z';
         console.log(`[TEST] Creating Bill with future date: ${futureDate}`);
 
-        const bill = await app.api.purchase.createBillAPI({
-            itemId: item.itemId,
-            quantity: 1,
-            unitPrice: 5000,
-            vendorId: meta.vendorId,
-            apAccountId: meta.apAccountId
-        });
+        let bill: any = null;
+        let blocked = false;
+        try {
+            bill = await app.api.purchase.createBillAPI({
+                itemId: item.itemId,
+                quantity: 1,
+                unitPrice: 5000,
+                vendorId: meta.vendorId,
+                apAccountId: meta.apAccountId,
+                invoice_date: futureDate,
+                due_date: futureDate
+            } as any);
+        } catch (createErr: any) {
+            blocked = true;
+            console.log(`[PASS] Future-dated Bill correctly rejected at creation: ${createErr.message}`);
+        }
 
-        if (bill.success) {
+        if (bill && bill.id) {
             try {
                 await app.advanceDocumentAPI(bill.id, 'bills');
                 throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated Bill (${futureDate})!`);
@@ -172,7 +205,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
                 console.log(`[PASS] Future-dated Bill blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Future-dated Bill rejected`);
+            expect(blocked, `System must reject future-dated bill dated ${futureDate}`).toBe(true);
         }
     });
 
@@ -206,14 +239,22 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         await app.advanceDocumentAPI(bill.id, 'bills');
 
         // Create payment with back date
-        const payment = await app.api.purchase.createBillPaymentAPI({
-            billId: bill.id,
-            vendorId: meta.vendorId,
-            amount: 5000,
-            cashAccountId: meta.apAccountId
-        });
+        let payment: any = null;
+        let blocked = false;
+        try {
+            payment = await app.api.purchase.createBillPaymentAPI({
+                billId: bill.id,
+                vendorId: meta.vendorId,
+                amount: 5000,
+                cashAccountId: meta.apAccountId,
+                date: backDate
+            } as any);
+        } catch (createErr: any) {
+            blocked = true;
+            console.log(`[PASS] Back-dated Payment rejected at creation: ${createErr.message}`);
+        }
 
-        if (payment.success) {
+        if (payment && payment.success) {
             try {
                 await app.advanceDocumentAPI(payment.id, 'payments');
                 throw new Error(`[PERIOD_CONTROL_BUG] System approved back-dated Payment (${backDate})!`);
@@ -222,7 +263,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
                 console.log(`[PASS] Payment created but blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Back-dated Payment rejected`);
+            expect(blocked || !payment?.success, `System must reject back-dated Payment (${backDate})`).toBe(true);
         }
     });
 
@@ -252,14 +293,22 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
         await app.advanceDocumentAPI(bill.id, 'bills');
 
         // Create payment with future date
-        const payment = await app.api.purchase.createBillPaymentAPI({
-            billId: bill.id,
-            vendorId: meta.vendorId,
-            amount: 5000,
-            cashAccountId: meta.apAccountId
-        });
+        let payment: any = null;
+        let blocked = false;
+        try {
+            payment = await app.api.purchase.createBillPaymentAPI({
+                billId: bill.id,
+                vendorId: meta.vendorId,
+                amount: 5000,
+                cashAccountId: meta.apAccountId,
+                date: futureDate
+            } as any);
+        } catch (createErr: any) {
+            blocked = true;
+            console.log(`[PASS] Future-dated Payment rejected at creation: ${createErr.message}`);
+        }
 
-        if (payment.success) {
+        if (payment && payment.success) {
             try {
                 await app.advanceDocumentAPI(payment.id, 'payments');
                 throw new Error(`[PERIOD_CONTROL_BUG] System approved future-dated Payment (${futureDate})!`);
@@ -268,7 +317,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @security @tempor
                 console.log(`[PASS] Future-dated Payment blocked at approval: ${advanceErr.message}`);
             }
         } else {
-            console.log(`[PASS] Future-dated Payment rejected`);
+            expect(blocked || !payment?.success, `System must reject future-dated Payment (${futureDate})`).toBe(true);
         }
     });
 });

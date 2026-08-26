@@ -306,7 +306,7 @@ export class PurchaseAPI extends BasePage {
     const payload = {
       accounts_payable_id: apAccountId,
       currency_id: currencyId,
-      po_date: _dateIso,
+      po_date: (itemData as any).orderDate || (itemData as any).po_date || _dateIso,
       po_items: [{
         item_id: itemData.itemId,
         general_ledger_account_id: glAccountId || apAccountId,
@@ -408,8 +408,8 @@ export class PurchaseAPI extends BasePage {
     const payload = {
       accounts_payable_id: apAccountId || discoveredAp?.id,
       currency_id: currency?.id,
-      invoice_date: _dateIso,
-      due_date: _dateIso,
+      invoice_date: (params as any).invoice_date || _dateIso,
+      due_date: (params as any).due_date || _dateIso,
       items: [{
         item_id: itemData.itemId || itemData.id,
         general_ledger_account_id: resolvedGlAccount?.id || null,
@@ -809,9 +809,8 @@ export class PurchaseAPI extends BasePage {
       amount: data.amount,
       cash_account_id: resolvedCashAccountId,
       vendor_id: data.vendorId, // Tests usually supply this
-      date: _dateIso,
+      date: (data as any).date || _dateIso,
       payment_method: 'cash',
-      currency_id: currency?.id,
       bill_payments: [{
         amount: data.amount,
         bill_id: data.billId
@@ -869,7 +868,7 @@ export class PurchaseAPI extends BasePage {
     return { success: true, ref: json.ref, id: json.id };
   }
 
-  async getBillAPI(billId: string): Promise<any> {
+  async getBillAPI(billId: string, billNumber?: string): Promise<any> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -879,39 +878,27 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
-    // 1. Query /bills?id=${billId} first (stable and returns full bill data without 500)
-    const listResp = await this.page.request.get(`${apiBase}/bills?id=${billId}&${params}`, { headers }).catch(() => null);
+    // 1. Query /bills?sortBy=created_at&sortOrder=desc&pageSize=100
+    const listResp = await this.safeGet(`${apiBase}/bills?sortBy=created_at&sortOrder=desc&pageSize=100&${params}`, { headers }).catch(() => null);
     if (listResp && listResp.ok()) {
       const listData = await listResp.json().catch(() => ({}));
       const items = listData.data || listData.items || (Array.isArray(listData) ? listData : []);
-      const matched = items.find((b: any) => b.id === billId) || items[0];
+      const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
       if (matched) return matched;
     }
 
-    // 2. Fallback: Try singular /bill/${billId}
-    const response = await this.page.request.get(`${apiBase}/bill/${billId}?${params}`, { headers }).catch(() => null);
-    if (response && response.ok()) {
-      return await response.json().catch(() => ({}));
+    // 2. Query /bills?search=${searchTarget}
+    const searchTarget = billNumber || billId;
+    if (searchTarget) {
+        const searchData = await searchResp.json().catch(() => ({}));
+        const items = searchData.data || searchData.items || (Array.isArray(searchData) ? searchData : []);
+        const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
+        if (matched) return matched;
+      }
     }
 
-    // 3. Fallback: Query /bills?pageSize=100
-    const listAllResp = await this.page.request.get(`${apiBase}/bills?pageSize=100&${params}`, { headers }).catch(() => null);
-    if (listAllResp && listAllResp.ok()) {
-      const listData = await listAllResp.json().catch(() => ({}));
-      const items = listData.data || listData.items || (Array.isArray(listData) ? listData : []);
-      const matched = items.find((b: any) => b.id === billId);
-      if (matched) return matched;
-    }
-
-    throw new Error(`Failed to fetch Bill ${billId}: 500`);
-  }
-
-  async getPaymentAPI(paymentId: string): Promise<any> {
-    const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
     const params = `year=${year}&period=yearly&calendar=ec`;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
-    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const response = await this.safeGet(`${apiBase}/payment/${paymentId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY || 'sample', 'Authorization': `Bearer ${token}` }
     });

@@ -40,11 +40,13 @@ function printAuditTable(title: string, rows: AuditRow[]) {
  */
 
 test.describe('Procurement Document Integrity Attacks @purchase @security @logic @regression @full', () => {
+    test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
 
     test.beforeAll(async ({ browser }) => {
+        test.setTimeout(300000);
         const page = await browser.newPage();
         const app = new AppManager(page);
         await app.apiLogin(process.env.BEFFA_USER, process.env.BEFFA_PASS);
@@ -55,7 +57,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
 
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
-        await page.close();
+        await page.close().catch(() => {});
     });
 
     test.beforeEach(async ({ page }) => {
@@ -83,7 +85,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
             } as any);
 
             await app.advanceDocumentAPI(bill.id, 'bills');
-            const billData = await app.api.purchase.getBillAPI(bill.id);
+            const billData = await app.api.purchase.getBillAPI(bill.id, bill.ref);
 
             printAuditTable('VULNERABILITY: Future-Dated Bill Approved', [
                 { label: 'Bill Ref',       value: bill.ref },

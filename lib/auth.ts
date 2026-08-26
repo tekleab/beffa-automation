@@ -59,7 +59,11 @@ export class AuthManager extends BasePage {
     const hasExistingSession = await this.page.evaluate(() => {
       try {
         const token = localStorage.getItem('auth-token') || localStorage.getItem('token');
-        return !!token;
+        if (token) {
+          localStorage.setItem('lastUserActivity', new Date().toISOString());
+          return true;
+        }
+        return false;
       } catch {
         return false;
       }
