@@ -1,0 +1,16 @@
+13:48:22 [PERFORMANCE] API - Auth API Verification: 262.66ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006107 (ID: 9a4ede9b-13a5-44ba-a3d4-ec7b7230904b)
+13:48:28 [INFO] Advancing inventory-adjustments "9a4ede9b-13a5-44ba-a3d4-ec7b7230904b"...
+13:48:28 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:48:28 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787752106739 (03b9d808-bfec-4f89-9540-ee2e7c966c18) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:48:33 [PERFORMANCE] API - Auth API Verification: 236.26ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+13:48:36 [INFO] Advancing invoices "6cbb4301-fe33-4f79-ba91-cace8f16b5d2"...
+[ATTACK] Firing 2 concurrent receipt API calls for 1000 each...
+[PASS] Concurrent receipt duplication handled at API layer.

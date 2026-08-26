@@ -1,0 +1,19 @@
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006210 (ID: 917f53bd-38f6-410c-b6cf-2a2f2f48fc11)
+13:56:40 [INFO] Advancing inventory-adjustments "917f53bd-38f6-410c-b6cf-2a2f2f48fc11"...
+13:56:41 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:56:41 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: WAC-Item-1787752599145 (1617fb20-7898-4bf5-b179-86ee9c76a8f0) | method=WAC | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DEST] Using system location: 87d66495-1719-4402-9b0d-147859d3bc6c | Warehouse: ae638681-f2ae-492a-898e-edab3be6186b
+[SETUP] Item: "WAC-Item-1787752599145" | Src stock: 30 | Dest stock: 0
+[SETUP] Src loc: 539ab667-5559-4db7-8cd4-24f797d57ebb | Dest loc: 87d66495-1719-4402-9b0d-147859d3bc6c
+[TC-05] Excess qty (10029) response: 422 | {
+	"code": 422,
+	"details": {
+		"quantity": [
+			"Insufficient quantity available at the starting location"
+		]
+	},
+	"me

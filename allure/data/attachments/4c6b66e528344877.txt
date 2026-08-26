@@ -1,0 +1,38 @@
+[DateHelper] Resolved in-period date: 2026-08-26T00:00:00Z (day=26, ecYear=2019)
+13:50:55 [PERFORMANCE] API - Auth API Verification: 234.43ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006135 (ID: ed504ac4-b6ba-4625-96cc-20ac424197c5)
+13:51:01 [INFO] Advancing inventory-adjustments "ed504ac4-b6ba-4625-96cc-20ac424197c5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: WAC-Item-1787752259997 (93fe4d37-c507-40f3-a115-3e771a3be053) | method=WAC | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:51:05 [INFO] Advancing purchase-orders "5ae3ca44-f964-4a55-b6aa-60f5be7937d1"...
+13:51:08 [INFO] Advancing bills "f529a9b0-ef97-40ec-8ee2-433ee092c31b"...
+[SETUP] Bill created and approved: BILL/2026/08/26/002836 (f529a9b0-ef97-40ec-8ee2-433ee092c31b)
+13:51:12 [PERFORMANCE] API - Auth API Verification: 257.66ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=f529a9b0-ef97-40ec-8ee2-433ee092c31b...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/08/26/002836
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 0

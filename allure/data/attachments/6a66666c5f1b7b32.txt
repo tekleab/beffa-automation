@@ -1,0 +1,29 @@
+[DateHelper] _fromEnv: EC year 2019 → using 2026-08-26
+[DateHelper] Resolved in-period date: 2026-08-26T00:00:00Z (day=26, ecYear=2019)
+13:55:44 [PERFORMANCE] API - Auth API Verification: 228.91ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=10 @ $15 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006185 (ID: 133e4206-c5da-4b8a-87e7-8fa5e5abce2f)
+13:55:48 [INFO] Advancing inventory-adjustments "133e4206-c5da-4b8a-87e7-8fa5e5abce2f"...
+13:55:49 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:55:49 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: Pencil-B-1787752544668 (ed03c3cd-154a-4967-9ee4-c08a71d6f51c) | method=FIFO | stock=10@$15 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Item: Pencil-B-1787752544668 (ed03c3cd-154a-4967-9ee4-c08a71d6f51c)
+13:55:54 [INFO] Advancing purchase-orders "16cf8b59-3a5f-4b8a-83fc-9efa3455c434"...
+13:55:56 [INFO] Advancing bills "4f991a5e-be7d-41c8-a7bf-c52817050069"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15
+[STEP 1] SO: 10 units @ $15
+[PASS] SO: SO/2026/08/26/000912 | item:e092a6cd
+13:56:00 [INFO] Advancing sales-orders "6d606b0b-d6a9-4c28-8fe8-432dcab868b7"...
+[STEP 2] Invoice: 4 direct + 9 released SO items
+[PASS] Invoice: INV/2026/08/26/003428 (715ec612)
+13:56:02 [INFO] Advancing invoices "715ec612-ae7c-48cb-a547-c98389c12ac6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 2...
+[SUCCESS] API Confirmed: Stock correctly reached 2.
+[AUDIT-B] qty=2 (exp:2)
+[AUDIT-B] Layers: 
+[PASS] FIFO-B ✓ import(10→0) | bill@$40(2→0) | received-PO@$25(3→2) | remaining:2@$25

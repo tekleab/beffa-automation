@@ -1,0 +1,19 @@
+13:49:07 [PERFORMANCE] API - Auth API Verification: 274.29ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006115 (ID: 7d0556c1-5b20-4229-9bdc-508f46df5d62)
+13:49:12 [INFO] Advancing inventory-adjustments "7d0556c1-5b20-4229-9bdc-508f46df5d62"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787752151388 (75b7198f-6593-4c9e-be12-8323627a6d2f) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:49:15 [PERFORMANCE] API - Auth API Verification: 261.92ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating SO for 10 units...
+13:49:18 [INFO] Advancing sales-orders "cbeb212d-42cc-404c-8d91-7c070f349269"...
+[ATTACK] Attempting to Invoice 50 units against the 10-unit SO...
+[PASS] Over-Invoicing attempt blocked by API: {
+	"code": 400,
+	"message": "sales order balance already exhausted: sales order item 36410b67-0888-4031-aade-305eb2109b3e ordered 10, already released 0, requested 50"
+}
+

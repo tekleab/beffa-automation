@@ -1,0 +1,13 @@
+[DateHelper] Resolved in-period date: 2026-08-26T00:00:00Z (day=26, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006149 (ID: d0636073-e443-420b-a2e7-671210bf7b0d)
+13:52:53 [INFO] Advancing inventory-adjustments "d0636073-e443-420b-a2e7-671210bf7b0d"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787752371888 (41316b9d-6daf-4e05-9548-ee646a75605a) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Injecting Bill with future date: 2028-08-26T00:00:00Z...
+[PASS] Future-dated bill correctly blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"The invoice da

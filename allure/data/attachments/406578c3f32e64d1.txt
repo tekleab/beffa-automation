@@ -1,0 +1,19 @@
+13:50:31 [PERFORMANCE] API - Auth API Verification: 237.05ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/006131 (ID: 55997fe0-3a74-4a4d-878a-e3c595094f5c)
+13:50:36 [INFO] Advancing inventory-adjustments "55997fe0-3a74-4a4d-878a-e3c595094f5c"...
+13:50:37 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:50:37 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787752235515 (d1aff8a0-e511-451f-9469-5166cd127073) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:50:42 [PERFORMANCE] API - Auth API Verification: 237.70ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ATTACK] Submitting Invoice forged for: 2021-04-29T00:00:00Z
+[VULNERABILITY] Backend API accepted back-dated payload! ID: INV/2026/08/26/003420
+13:50:45 [INFO] Advancing invoices "019ceb6d-02e7-489b-a608-ab15a57726b4"...
+[PASS] Backend safely intercepted rogue date during advancement: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2021-04-29 falls in a closed or missin
