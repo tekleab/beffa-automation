@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { DateHelper } from '../../lib/utils/DateHelper';
 
 const API = () => (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
     .replace(/['"]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001').replace(/(?<!\/)$/, '') + '/api';
 const QS = () => `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-const TODAY = () => new Date().toISOString().slice(0, 10) + 'T00:00:00Z';
+let _resolvedToday = new Date().toISOString().slice(0, 10) + 'T00:00:00Z';
+const TODAY = () => _resolvedToday;
 
 const BUG = (id: string, title: string, detail: Record<string, any>) => {
 
@@ -51,6 +53,10 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
 
     test.beforeAll(async ({ request }) => {
         token = await apiLogin(request);
+        try {
+            const resolved = await DateHelper.resolve(request as any);
+            if (resolved?.iso) _resolvedToday = resolved.iso;
+        } catch { }
         // Discover metadata in parallel
         const [custR, currR, acctR, locR, whR] = await Promise.all([
             request.get(`${API()}/customers?page=1&pageSize=10&${QS()}`, { headers: h(token) }),
@@ -202,10 +208,15 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
         const AMOUNT = 1800;
         const inv = await createApprovedInvoice(request, AMOUNT);
 
-        const rct1R = await request.post(`${API()}/receipts?${QS()}`, {
-            headers: h(token),
-            data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }], receipt_items: [{ amount: AMOUNT, general_ledger_account_id: meta.arAccountId, unit_price: AMOUNT, quantity: 1, description: 'Invoice Receipt' }] }
-        });
+        let rct1R: any;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            rct1R = await request.post(`${API()}/receipts?${QS()}`, {
+                headers: h(token),
+                data: { customer_id: meta.customerId, currency_id: meta.currencyId, date: TODAY(), payment_method: 'cash', cash_account_id: meta.cashAccountId, amount: AMOUNT, invoice_receipts: [{ invoice_id: inv.id, amount: AMOUNT }], receipt_items: [{ amount: AMOUNT, general_ledger_account_id: meta.arAccountId, unit_price: AMOUNT, quantity: 1, description: 'Invoice Receipt' }] }
+            });
+            if (rct1R.ok()) break;
+            await new Promise(r => setTimeout(r, 1500));
+        }
         if (!rct1R.ok()) throw new Error(`First receipt failed: ${rct1R.status()} ${await rct1R.text()}`);
         const rct1 = await rct1R.json();
         for (let i = 0; i < 3; i++) {
