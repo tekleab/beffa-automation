@@ -890,6 +890,8 @@ export class PurchaseAPI extends BasePage {
     // 2. Query /bills?search=${searchTarget}
     const searchTarget = billNumber || billId;
     if (searchTarget) {
+      const searchResp = await this.safeGet(`${apiBase}/bills?search=${encodeURIComponent(searchTarget)}&pageSize=50&${params}`, { headers }).catch(() => null);
+      if (searchResp && searchResp.ok()) {
         const searchData = await searchResp.json().catch(() => ({}));
         const items = searchData.data || searchData.items || (Array.isArray(searchData) ? searchData : []);
         const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
@@ -897,8 +899,21 @@ export class PurchaseAPI extends BasePage {
       }
     }
 
+    // 3. Fallback: Try singular /bill/${billId}
+    const response = await this.safeGet(`${apiBase}/bill/${billId}?${params}`, { headers }).catch(() => null);
+    if (response && response.ok()) {
+      return await response.json().catch(() => ({}));
+    }
+
+    throw new Error(`Failed to fetch Bill ${billId}: 500`);
+  }
+
+  async getPaymentAPI(paymentId: string): Promise<any> {
+    const token = await this._getAuthToken();
+    const year = process.env.BEFFA_YEAR || '2019';
     const params = `year=${year}&period=yearly&calendar=ec`;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
     const response = await this.safeGet(`${apiBase}/payment/${paymentId}?${params}`, {
       headers: { 'x-company': process.env.BEFFA_COMPANY || 'sample', 'Authorization': `Bearer ${token}` }
     });
