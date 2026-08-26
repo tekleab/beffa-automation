@@ -234,11 +234,26 @@ export class BasePage {
         } else {
           const errBody = await resp.text().catch(() => '(unreadable)');
           Logger.error(`Advance failed. Status: ${status} | Body: ${Logger.sanitize(errBody)}`);
-          // For employee-contracts, a 500/E1481 may mean already at final state — check current status
+          // For employee-contracts or payroll-runs, a 500/E1481 may mean already at final state — check current status
           if (docType === 'employee-contracts' && status === 500) {
             Logger.info('employee-contracts advance returned 500 (E1481) — checking if contract is already approved...');
             success = true;
             break;
+          }
+          if (docType === 'payroll-runs' && status === 500) {
+            Logger.info('payroll-runs advance returned 500 — checking if payroll run is already processed/approved...');
+            try {
+              const runResp = await this.page.request.get(`${this.apiBase}/payroll-runs/${docId}?year=${year}&period=${period}&calendar=${calendar}`, { headers });
+              if (runResp.ok()) {
+                const runData = await runResp.json();
+                const runStatus = (runData.status || '').toLowerCase();
+                if (runStatus === 'approved' || runStatus === 'processed' || (runData.payrolls && runData.payrolls.length > 0)) {
+                  Logger.info(`payroll-runs is in valid state (${runStatus}, ${runData.payrolls?.length ?? 0} payrolls) — treating advance as successful`);
+                  success = true;
+                  break;
+                }
+              }
+            } catch {}
           }
           if (status === 500) {
             const backoff = (i + 1) * 2000;

@@ -114,16 +114,20 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             request.get(`${apiBase}/inventory-items?page=1&pageSize=50&${params}`, { headers }),
         ]);
 
-        const customer = (await custResp.json()).data?.[0] || (await custResp.json()).items?.[0];
-        const cashAccounts = (await cashResp.json()).data || (await cashResp.json()).items || [];
-        const currencyData = await currResp.json();
+        const custData = await custResp.json().catch(() => ({}));
+        const customer = (custData.data || custData.items || (Array.isArray(custData) ? custData : []))[0];
+        const cashData = await cashResp.json().catch(() => ({}));
+        const cashAccounts = cashData.data || cashData.items || (Array.isArray(cashData) ? cashData : []);
+        const currencyData = await currResp.json().catch(() => ({}));
         const currencyList = Array.isArray(currencyData) ? currencyData : (currencyData.data || currencyData.items || currencyData.currencies || []);
-        const currency = currencyList[0] || (currencyData.id ? currencyData : { id: 'ETB' });
+        const currency = currencyList[0] || (currencyData.id ? currencyData : { id: 'ETB', code: 'ETB', name: 'Birr' });
         expect(currency?.id, 'Valid Currency is required').toBeTruthy();
         const cashAccount = cashAccounts.find((a: any) => /cash|bank/i.test(a.name || a.type)) || cashAccounts[0];
         
-        const warehouses = (await whResp.json()).data || (await whResp.json()).items || [];
-        const locs = (await locResp.json()).data || (await locResp.json()).items || [];
+        const whData = await whResp.json().catch(() => ({}));
+        const warehouses = whData.data || whData.items || (Array.isArray(whData) ? whData : []);
+        const locData = await locResp.json().catch(() => ({}));
+        const locs = locData.data || locData.items || (Array.isArray(locData) ? locData : []);
         const location = locs[0];
 
         let warehouseId = location?.warehouse_id || location?.warehouse?.id;
@@ -149,7 +153,8 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             arAccount;
 
         // 2. Discover / Seed Active Item with Sufficient Stock (minStock >= 1)
-        const items = (await itemResp.json()).data || (await itemResp.json()).items || [];
+        const itemData = await itemResp.json().catch(() => ({}));
+        const items = itemData.data || itemData.items || (Array.isArray(itemData) ? itemData : []);
         const activeItems = items.filter((i: any) => (i.status || '').toLowerCase() !== 'inactive');
         let activeItem: any = null;
         let verifiedStock = 0;
