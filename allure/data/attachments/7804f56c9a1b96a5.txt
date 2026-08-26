@@ -1,0 +1,26 @@
+[DateHelper] Resolved in-period date: 2026-08-26T00:00:00Z (day=26, ecYear=2019)
+12:06:11 [PERFORMANCE] API - Auth API Verification: 220.56ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=10 @ $15 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/005996 (ID: 9c2952b8-b89d-482f-a3cc-34f19921437e)
+12:06:15 [INFO] Advancing inventory-adjustments "9c2952b8-b89d-482f-a3cc-34f19921437e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: Pencil-B-1787745972152 (a4a6a0bd-0d81-4a72-9936-17ac90b0e85a) | method=FIFO | stock=10@$15 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Item: Pencil-B-1787745972152 (a4a6a0bd-0d81-4a72-9936-17ac90b0e85a)
+12:06:19 [INFO] Advancing purchase-orders "218ad6c4-b5ae-40a4-860d-9f0ee4ae74ae"...
+12:06:21 [INFO] Advancing bills "be9b7463-dfeb-46f3-b2b2-976087f36cee"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15
+[STEP 1] SO: 10 units @ $15
+[PASS] SO: SO/2026/08/26/000881 | item:1740db60
+12:06:25 [INFO] Advancing sales-orders "056a3492-e5d3-4214-bc5f-41247eaf5735"...
+[STEP 2] Invoice: 4 direct + 9 released SO items
+[PASS] Invoice: INV/2026/08/26/003332 (3753fba0)
+12:06:27 [INFO] Advancing invoices "3753fba0-bc07-4641-8dff-8c5098ce1024"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 2...
+[SUCCESS] API Confirmed: Stock correctly reached 2.
+[AUDIT-B] qty=2 (exp:2)
+[AUDIT-B] Layers: 
+[PASS] FIFO-B ✓ import(10→0) | bill@$40(2→0) | received-PO@$25(3→2) | remaining:2@$25

@@ -1,0 +1,22 @@
+12:03:27 [PERFORMANCE] API - Auth API Verification: 218.31ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/26/005962 (ID: 2e61f580-9dfc-43b0-90e9-62807d6f8478)
+12:03:32 [INFO] Advancing inventory-adjustments "2e61f580-9dfc-43b0-90e9-62807d6f8478"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787745811251 (57240943-2c6a-4347-ba4f-b4c5d702ff08) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:03:35 [PERFORMANCE] API - Auth API Verification: 246.74ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ATTACK] Attempting to create Bill with negative quantity (-10)...
+[PASS] Negative quantity blocked. Error: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"quantity should be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
