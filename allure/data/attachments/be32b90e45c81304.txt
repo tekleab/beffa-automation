@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-27T00:00:00Z (day=27, ecYear=2019)
+05:35:51 [PERFORMANCE] API - Auth API Verification: 278.61ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006288 (ID: b952209a-9274-4deb-b669-d9faa2678cdd)
+05:35:57 [INFO] Advancing inventory-adjustments "b952209a-9274-4deb-b669-d9faa2678cdd"...
+05:35:58 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+05:35:58 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787808955874 (0951fa2b-3989-4988-81c9-bd63c84becfe) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:36:03 [PERFORMANCE] API - Auth API Verification: 254.57ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating SO with valid date, Invoice with back date
+05:36:06 [INFO] Advancing sales-orders "a931aba1-15cf-444f-84ac-ec3f4a473657"...
+05:36:10 [INFO] Advancing invoices "6aa44eb8-02da-491d-838a-7e94809c06a9"...
+[PASS] Back-dated Invoice in chain blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2017-12-31 falls in a closed or missin

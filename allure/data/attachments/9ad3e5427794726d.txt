@@ -1,0 +1,22 @@
+05:36:06 [PERFORMANCE] API - Auth API Verification: 242.52ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006292 (ID: 390833dc-2c92-4ee6-8c17-5512c5fda468)
+05:36:11 [INFO] Advancing inventory-adjustments "390833dc-2c92-4ee6-8c17-5512c5fda468"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787808970267 (8f8f6b84-81f4-4d86-bf12-829be9c35aeb) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:36:14 [PERFORMANCE] API - Auth API Verification: 257.72ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+05:36:16 [INFO] Advancing sales-orders "883e6ed1-146a-4716-b4e0-eaa0082d26a4"...
+[SO] SO/2026/08/27/000930 (883e6ed1-146a-4716-b4e0-eaa0082d26a4) | Qty: 3
+05:36:21 [INFO] Advancing invoices "3d545c94-c921-43b0-a513-6a0c32116238"...
+[INVOICE 1] INV/2026/08/27/003497 — released 2 units
+[ATTACK] Attempting to release 3 more units from SO with only 1 remaining...
+05:36:25 [INFO] Advancing invoices ""...
+[PASS] Oversell correctly blocked: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Invoice is not associated with any approval flow."
+}
+

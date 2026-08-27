@@ -1,29 +1,37 @@
 {
   "total": 267,
-  "passed": 222,
-  "failed": 44,
+  "passed": 230,
+  "failed": 36,
   "skipped": 1,
-  "passRate": 83.1,
-  "avgDurationMs": 14927,
-  "lastUpdated": "2026-08-26T14:08:39.925Z",
+  "passRate": 86.1,
+  "avgDurationMs": 14899,
+  "lastUpdated": "2026-08-27T05:53:47.787Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 222,
-      "failed": 44,
+      "passed": 230,
+      "failed": 36,
       "skipped": 1,
       "trend": [
-        91.3,
         95.7,
         85,
         95.7,
         91.3,
         100,
-        83.5
+        83.5,
+        86.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "704",
+      "commit": "0f55fbc",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "66m 18s",
+      "passRate": 86.1,
+      "status": "success"
+    },
     {
       "run": "703",
       "commit": "522cc43",
@@ -95,46 +103,22 @@
       "duration": "9m 30s",
       "passRate": 95.7,
       "status": "success"
-    },
-    {
-      "run": "694",
-      "commit": "fb6b23f",
-      "trigger": "push (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "LOAD: Concurrently approving 5 receipts must succeed without database deadlocks",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/26/003373 ou",
-      "firstSeen": "2026-08-26T13:46:42.407Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/27/003445 ou",
+      "firstSeen": "2026-08-27T05:32:05.932Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "STRESS: Receipt against an invoice reversed mid-flight must be rejected",
-      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/26/003379 ou",
-      "firstSeen": "2026-08-26T13:47:12.555Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
-      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  138 |                 await app.advanceDocumentAPI(body1.id, 'invoices', { skipStockTopUp: tr",
-      "firstSeen": "2026-08-26T13:48:30.403Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "LOAD: 10 concurrent invoices for same customer must all be created with distinct IDs",
-      "error": "Error: More than 1 invoice failed — possible backend overload\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m1\u001b[39m\nReceived",
-      "firstSeen": "2026-08-26T13:49:26.485Z",
+      "error": "Error: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {\n\t\"code\": 422,\n\t\"message\": \"invoice is already fully paid: invoice INV/2026/08/27/003451 ou",
+      "firstSeen": "2026-08-27T05:32:36.116Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +126,7 @@
       "severity": "critical",
       "title": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
       "error": "Error: AR mismatch: expected 5000, got 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m5000\u001b[39m\nReceived: \u001b[31m",
-      "firstSeen": "2026-08-26T13:49:40.115Z",
+      "firstSeen": "2026-08-27T05:35:05.079Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -150,7 +134,7 @@
       "severity": "medium",
       "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
       "error": "Error: [PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (2017-12-31T00:00:00Z)!\n\n  77 |             try {\n  78 |                 await app.advanceDocumentAPI(so.id, 'sales-",
-      "firstSeen": "2026-08-26T13:49:46.591Z",
+      "firstSeen": "2026-08-27T05:35:10.561Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -158,7 +142,7 @@
       "severity": "medium",
       "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
       "error": "Error: [PERIOD_CONTROL_BUG] System approved future-dated SO (2019-01-01T00:00:00Z)!\n\n  109 |             try {\n  110 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 111 |     ",
-      "firstSeen": "2026-08-26T13:50:01.983Z",
+      "firstSeen": "2026-08-27T05:35:26.632Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -166,15 +150,15 @@
       "severity": "medium",
       "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
       "error": "Error: [PERIOD_CONTROL_BUG] System accepted pre-epoch date (1969-12-31T00:00:00Z)!\n\n  345 |\n  346 |         if (inv.success) {\n> 347 |             throw new Error(`[PERIOD_CONTROL_BUG] System accepted",
-      "firstSeen": "2026-08-26T13:50:12.586Z",
+      "firstSeen": "2026-08-27T05:35:44.282Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
       "title": "Audit: Approved bill must debit Expense/Inventory and credit AP",
-      "error": "Error: Bill BILL/2026/08/26/002835 must post journal entries on approval\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nRe",
-      "firstSeen": "2026-08-26T13:50:59.193Z",
+      "error": "Error: Bill BILL/2026/08/27/002901 must post journal entries on approval\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nRe",
+      "firstSeen": "2026-08-27T05:36:27.894Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -182,7 +166,23 @@
       "severity": "medium",
       "title": "Audit: Bill reversal must post mirror journal entries (clear AP)",
       "error": "Error: AP must be credited before reversal\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  213 |",
-      "firstSeen": "2026-08-26T13:51:15.801Z",
+      "firstSeen": "2026-08-27T05:36:47.615Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: [VULNERABILITY] Bill BILL/2026/08/27/002906: partial payment balance drift. Expected 4000, got -1\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[",
+      "firstSeen": "2026-08-27T05:36:52.192Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "STRESS: Payment against a bill reversed mid-flight must be rejected",
+      "error": "Error: [REVERSED_BILL_BUG] Payment PAY/2026/08/27/000843 approved against reversed bill BILL/2026/08/27/002913!\n\n  215 |\n  216 |         if (approved) {\n> 217 |             throw new Error(`[REVERSED_",
+      "firstSeen": "2026-08-27T05:37:28.913Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }

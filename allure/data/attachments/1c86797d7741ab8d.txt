@@ -1,0 +1,13 @@
+05:42:26 [PERFORMANCE] API - Auth API Verification: 257.87ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006364 (ID: e8bb3a41-1933-44d1-9206-271a00c96e07)
+05:42:29 [INFO] Advancing inventory-adjustments "e8bb3a41-1933-44d1-9206-271a00c96e07"...
+05:42:30 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+05:42:30 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787809347895 (892977a8-eeb1-436a-b8e2-fa33b18c250a) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Attempting to inject stock adjustment from 2022-01-01T00:00:00Z (Historical Manipulation)...
+[ADJ] quantity | qty=100 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006365 (ID: 0ff956d3-72fd-486b-a812-1ffa67562338)

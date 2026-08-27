@@ -1,0 +1,44 @@
+05:46:39 [PERFORMANCE] API - Auth API Verification: 229.40ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006380 (ID: 8e410338-4364-4bf6-83b6-44bf2b1e378e)
+05:46:46 [INFO] Advancing inventory-adjustments "8e410338-4364-4bf6-83b6-44bf2b1e378e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787809604849 (f2d8ade9-5317-431d-bdab-0a36156c7518) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006381 (ID: b2431447-c00b-4ea4-ad7c-7e139ca08329)
+05:46:52 [INFO] Advancing inventory-adjustments "b2431447-c00b-4ea4-ad7c-7e139ca08329"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787809611012 (23b2aad0-c222-4f24-ba10-13d00f804f6e) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:46:55 [INFO] [STOCK_TOPUP] Injecting 70 units for item f2d8ade9-5317-431d-bdab-0a36156c7518...
+05:46:55 [INFO] [STOCK_TOPUP] Injecting 70 units for item f2d8ade9-5317-431d-bdab-0a36156c7518...
+05:46:55 [INFO] [STOCK_TOPUP] Injecting 70 units for item f2d8ade9-5317-431d-bdab-0a36156c7518...
+[DateHelper] Resolved in-period date: 2026-08-27T00:00:00Z (day=27, ecYear=2019)
+05:46:57 [PERFORMANCE] API - Auth API Verification: 238.69ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+05:47:06 [INFO] Picking date: "Invoice Date" → target 2026-8-27
+05:47:07 [PASS] "Invoice Date" set to day 27.
+05:47:08 [PERFORMANCE] UI - Pick Date: Invoice Date: 2176.17ms
+05:47:10 [PERFORMANCE] UI - Random Selection: Vendor: 2188.60ms
+05:47:13 [PERFORMANCE] UI - Random Selection: Accounts Payable: 2303.73ms
+[CURRENCY] Selected via button: Birr
+[API PRE-CAPTURE] Using guaranteed-stock item "WAC-Item-1787809604849" @ $100
+[ITEM MODAL] Selected item option: "WAC-Item-1787809323551"
+[ITEM MODAL] Price check: val=$100, disabled=false
+[MODAL] Selected first Warehouse option
+[MODAL] Selected first Location option
+[MODAL] Selected first G/L Account option
+[MODAL] Filled Quantity: 2
+[MODAL] Selected first Tax option
+[MODAL] Item line item added successfully
+[MODAL] Selected first G/L Account option
+[MODAL] Filled Miscellaneous Price: 500
+[MODAL] Selected first Tax option
+[MODAL] Miscellaneous line item added successfully
+[AUDIT] 45 lines in Bill form (table rows: 45, alt: 4)
+05:47:59 [INFO] Advancing bills "4468c1b6-1841-4969-b7f7-b4deaef9b5a4"...
+[AUDIT] Journal entries: 0 | Unpaid amount: $0
+[DEBUG] Bill data keys: current_approval_step, id, invoice_date, invoice_number, net_due, paid_amount, vendor
