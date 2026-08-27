@@ -1,29 +1,37 @@
 {
   "total": 23,
-  "passed": 21,
-  "failed": 2,
+  "passed": 22,
+  "failed": 1,
   "skipped": 0,
-  "passRate": 91.3,
-  "avgDurationMs": 22758,
-  "lastUpdated": "2026-08-26T13:10:42.921Z",
+  "passRate": 95.7,
+  "avgDurationMs": 27852,
+  "lastUpdated": "2026-08-27T13:06:44.735Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 21,
-      "failed": 2,
+      "passed": 22,
+      "failed": 1,
       "skipped": 0,
       "trend": [
-        95.7,
         80.1,
         91.3,
         95.7,
         85,
         95.7,
-        91.3
+        91.3,
+        95.7
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "707",
+      "commit": "a181d34",
+      "trigger": "push (smoke)",
+      "duration": "10m 40s",
+      "passRate": 95.7,
+      "status": "success"
+    },
     {
       "run": "701",
       "commit": "d19b6e7",
@@ -95,30 +103,14 @@
       "duration": "113m 19s",
       "passRate": 81.6,
       "status": "success"
-    },
-    {
-      "run": "692",
-      "commit": "e8daac0",
-      "trigger": "push (smoke)",
-      "duration": "12m 7s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
-      "error": "Error: SO Creation failed: {\n\t\"code\": 400,\n\t\"message\": \"invalid UUID length: 3\"\n}\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpec",
-      "firstSeen": "2026-08-26T13:08:14.826Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Validate TIN, create vendor, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Vendor Name *' }) to be visible\u001b[22m\n\n\n  74 |         await page.waitForLoadState('",
-      "firstSeen": "2026-08-26T13:09:25.270Z",
+      "error": "TypeError: Cannot read properties of undefined (reading 'id')\n\n  197 |                     selling_price: 200,\n  198 |                     unit_cost: 100,\n> 199 |                     gl_sales_account_",
+      "firstSeen": "2026-08-27T13:03:19.748Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
