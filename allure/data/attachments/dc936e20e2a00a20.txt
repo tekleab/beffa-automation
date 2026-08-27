@@ -1,0 +1,42 @@
+[DateHelper] Resolved in-period date: 2026-08-27T00:00:00Z (day=27, ecYear=2019)
+10:54:59 [PERFORMANCE] API - Auth API Verification: 257.21ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006523 (ID: 7ea90062-7dc9-4c67-b6d4-6a0a5548ba4a)
+10:55:05 [INFO] Advancing inventory-adjustments "7ea90062-7dc9-4c67-b6d4-6a0a5548ba4a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: WAC-Item-1787828104161 (c1ff1f40-c168-4fcd-ae38-6c3bd0f6e0e1) | method=WAC | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+10:55:11 [INFO] Advancing purchase-orders "5efaabe3-cbe9-4430-bd8f-d0219395a355"...
+10:55:15 [INFO] Advancing bills "b64e0ec8-e009-4020-b543-fccbc323c301"...
+[SETUP] Bill created and approved: BILL/2026/08/27/002978 (b64e0ec8-e009-4020-b543-fccbc323c301)
+10:55:19 [PERFORMANCE] API - Auth API Verification: 272.82ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=b64e0ec8-e009-4020-b543-fccbc323c301...
+10:55:20 [WARN] GET http://168.119.175.142:8001/api/bill/b64e0ec8-e009-4020-b543-fccbc323c301?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+10:55:22 [WARN] GET http://168.119.175.142:8001/api/bill/b64e0ec8-e009-4020-b543-fccbc323c301?year=2019&period=yearly&calendar=ec → 500. Retry 2/4 in 6000ms...
+10:55:28 [WARN] GET http://168.119.175.142:8001/api/bill/b64e0ec8-e009-4020-b543-fccbc323c301?year=2019&period=yearly&calendar=ec → 500. Retry 3/4 in 13500ms...
+10:55:42 [WARN] GET http://168.119.175.142:8001/api/bill/b64e0ec8-e009-4020-b543-fccbc323c301?year=2019&period=yearly&calendar=ec → 500. Retry 4/4 in 24000ms...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/08/27/002978
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 1800
