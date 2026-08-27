@@ -1,5 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 import { Logger } from './utils/Logger';
+import { apiErrorCollector } from './utils/ApiErrorCollector';
 
 export class BasePage {
   page: Page;
@@ -392,6 +393,24 @@ ${text || '(No response text or timeout reached)'}
 ${curlCmd}
 \`\`\`
 `;
+          let parsedBody: any = text;
+          try {
+            parsedBody = JSON.parse(text);
+          } catch {
+            // keep raw text
+          }
+
+          // Record in centralized developer defect catalog
+          apiErrorCollector.record({
+            method,
+            url,
+            status,
+            requestHeaders: safeHeaders,
+            requestBody: data,
+            responseBody: parsedBody,
+            label: `API Failure (${method} ${status})`,
+          });
+
           const parsedUrl = new URL(url);
           const endpointName = parsedUrl.pathname.split('/').pop() || 'request';
           info.attach(`api-failure-${method.toLowerCase()}-${endpointName}`, {
@@ -404,6 +423,7 @@ ${curlCmd}
       Logger.warn(`Could not attach API failure to Allure report: ${Logger.sanitize(String(e))}`);
     }
   }
+
 
   /**
    * Resilient GET with exponential backoff for 500/503/socket-hang-up.

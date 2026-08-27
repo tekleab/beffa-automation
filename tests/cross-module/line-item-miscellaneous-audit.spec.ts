@@ -1,5 +1,7 @@
 import { test, expect, type Locator } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
+import { apiErrorCollector } from '../../lib/utils/ApiErrorCollector';
+import { assertValidationRejection } from '../../lib/utils/ValidationHelper';
 
 /**
  * =============================================================================
@@ -610,16 +612,18 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
+        const payload = {
+            accounts_receivable_id: salesMeta.arAccountId,
+            currency_id: salesMeta.currencyId,
+            customer_id: salesMeta.customerId,
+            so_date: periodDateIso,
+            so_items: [{ item_id: itemA.itemId, quantity: 0, unit_price: 500, amount: 0, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
+            status: 'draft',
+        };
+
         const resp = await page.request.post(`${apiBase}/sales-orders?${qs}`, {
             headers,
-            data: {
-                accounts_receivable_id: salesMeta.arAccountId,
-                currency_id: salesMeta.currencyId,
-                customer_id: salesMeta.customerId,
-                so_date: periodDateIso,
-                so_items: [{ item_id: itemA.itemId, quantity: 0, unit_price: 500, amount: 0, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
-                status: 'draft',
-            },
+            data: payload,
         });
 
         if (resp.ok()) {
@@ -627,8 +631,12 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
             expect(amt).toBe(0);
             console.log('[INFO] Zero-qty SO line accepted — $0 amount, no financial impact');
         } else {
-            console.log(`[PASS] Zero-qty SO line rejected: HTTP ${resp.status()}`);
-            expect([400, 422]).toContain(resp.status());
+            await assertValidationRejection(resp, {
+                label: 'SO-API-05: Zero Quantity Line Item',
+                requestData: payload,
+                url: `${apiBase}/sales-orders`,
+                method: 'POST',
+            });
         }
     });
 
@@ -637,27 +645,43 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const { apiBase, headers, qs } = await app.buildApiContext();
 
+        const payload = {
+            accounts_receivable_id: salesMeta.arAccountId,
+            currency_id: salesMeta.currencyId,
+            customer_id: salesMeta.customerId,
+            so_date: periodDateIso,
+            so_items: [{ item_id: itemA.itemId, quantity: 1, unit_price: -500, amount: -500, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
+            status: 'draft',
+        };
+
         const resp = await page.request.post(`${apiBase}/sales-orders?${qs}`, {
             headers,
-            data: {
-                accounts_receivable_id: salesMeta.arAccountId,
-                currency_id: salesMeta.currencyId,
-                customer_id: salesMeta.customerId,
-                so_date: periodDateIso,
-                so_items: [{ item_id: itemA.itemId, quantity: 1, unit_price: -500, amount: -500, general_ledger_account_id: salesMeta.salesAccountId, location_id: itemA.locationId, warehouse_id: itemA.warehouseId }],
-                status: 'draft',
-            },
+            data: payload,
         });
 
         if (resp.ok()) {
             console.log(`[⚠️ BACKEND DEFECT / KNOWN BEHAVIOR] Server accepted SO with negative unit price (draft status)`);
             const body = await resp.json().catch(() => ({}));
+            apiErrorCollector.record({
+                method: 'POST',
+                url: `${apiBase}/sales-orders`,
+                status: 200,
+                requestHeaders: headers,
+                requestBody: payload,
+                responseBody: body,
+                label: 'SO-API-06: Defect - Server accepted negative unit price (-500)',
+            });
             expect(body).toHaveProperty('id');
         } else {
-            console.log(`[PASS] Negative price SO line rejected: HTTP ${resp.status()}`);
-            expect([400, 422]).toContain(resp.status());
+            await assertValidationRejection(resp, {
+                label: 'SO-API-06: Negative Unit Price Validation',
+                requestData: payload,
+                url: `${apiBase}/sales-orders`,
+                method: 'POST',
+            });
         }
     });
+
 
     // =========================================================================
     // INVOICE

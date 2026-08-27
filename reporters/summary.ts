@@ -82,9 +82,24 @@ class SummaryReporter implements Reporter {
           console.log(`[RESULT] ${module.padEnd(12)} │ ${stats.total.toString().padStart(3)} tests │ ${passRate.toString().padStart(3)}% pass`);
         });
     }
-    
+
+    // Save API defect catalog and report
+    try {
+      const { apiErrorCollector } = require('../lib/utils/ApiErrorCollector');
+      apiErrorCollector.saveReports();
+      const defectCount = apiErrorCollector.getDefects().length;
+      if (defectCount > 0) {
+        console.log(`[API DEFECTS] Captured ${defectCount} unique API validation defect(s).`);
+        console.log(`[API DEFECTS] Full developer catalog written to: test-results/API_VALIDATION_DEFECTS.md`);
+      }
+    } catch {
+      // ignore
+    }
+
     console.log('===========================================\n');
   }
+
 }
+
 
 export default SummaryReporter;
