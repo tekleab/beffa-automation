@@ -1,29 +1,37 @@
 {
-  "total": 23,
-  "passed": 22,
-  "failed": 1,
-  "skipped": 0,
-  "passRate": 95.7,
-  "avgDurationMs": 27852,
-  "lastUpdated": "2026-08-27T13:06:44.735Z",
+  "total": 267,
+  "passed": 229,
+  "failed": 37,
+  "skipped": 1,
+  "passRate": 85.8,
+  "avgDurationMs": 28894,
+  "lastUpdated": "2026-08-27T13:54:21.611Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 22,
-      "failed": 1,
-      "skipped": 0,
+      "passed": 229,
+      "failed": 37,
+      "skipped": 1,
       "trend": [
-        80.1,
         91.3,
         95.7,
         85,
         95.7,
         91.3,
-        95.7
+        95.7,
+        86.1
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "708",
+      "commit": "d73c290",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "128m 34s",
+      "passRate": 85.8,
+      "status": "success"
+    },
     {
       "run": "707",
       "commit": "a181d34",
@@ -95,22 +103,86 @@
       "duration": "0m 0s",
       "passRate": 0,
       "status": "unknown"
-    },
-    {
-      "run": "693",
-      "commit": "7dfe5a9",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "113m 19s",
-      "passRate": 81.6,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
       "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
-      "error": "TypeError: Cannot read properties of undefined (reading 'id')\n\n  197 |                     selling_price: 200,\n  198 |                     unit_cost: 100,\n> 199 |                     gl_sales_account_",
-      "firstSeen": "2026-08-27T13:03:19.748Z",
+      "error": "Error: SO Creation failed: {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"so_items.0.quantity\": [\n\t\t\t\"Insufficient stock. Available: 0, required: 1.00\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating sales orde",
+      "firstSeen": "2026-08-27T13:11:33.371Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: 100, Expected: 500\n\n  192 |\n  193 |             if (Number(finalInv.unreceived_amount) !== IN",
+      "firstSeen": "2026-08-27T13:13:21.923Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
+      "error": "Error: AR mismatch: expected 5000, got 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m5000\u001b[39m\nReceived: \u001b[31m",
+      "firstSeen": "2026-08-27T13:15:13.697Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (2017-12-31T00:00:00Z)!\n\n  77 |             try {\n  78 |                 await app.advanceDocumentAPI(so.id, 'sales-",
+      "firstSeen": "2026-08-27T13:15:20.489Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved future-dated SO (2019-01-01T00:00:00Z)!\n\n  109 |             try {\n  110 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 111 |     ",
+      "firstSeen": "2026-08-27T13:15:42.327Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System accepted pre-epoch date (1969-12-31T00:00:00Z)!\n\n  345 |\n  346 |         if (inv.success) {\n> 347 |             throw new Error(`[PERIOD_CONTROL_BUG] System accepted",
+      "firstSeen": "2026-08-27T13:15:59.802Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Approved bill must debit Expense/Inventory and credit AP",
+      "error": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m Error: Failed to fetch Bill eaf2f844-34ef-439d-967f-8c2734699723: 500\n\n   at ../lib/api/PurchaseAPI.ts:936\n\n  934 |     }\n  935 |\n> 936 |     throw new Err",
+      "firstSeen": "2026-08-27T13:16:46.397Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m Error: Failed to fetch Bill fc82e29f-2b06-4d25-8361-e414bc0a4e7b: 500\n\n   at ../lib/api/PurchaseAPI.ts:936\n\n  934 |     }\n  935 |\n> 936 |     throw new Err",
+      "firstSeen": "2026-08-27T13:16:48.570Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill reversal must post mirror journal entries (clear AP)",
+      "error": "\u001b[31mTest timeout of 300000ms exceeded.\u001b[39m Error: Failed to fetch Bill 80cb470b-539e-42b3-a8c9-5441f1402057: 500\n\n   at ../lib/api/PurchaseAPI.ts:936\n\n  934 |     }\n  935 |\n> 936 |     throw new Err",
+      "firstSeen": "2026-08-27T13:17:13.659Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "LOAD: Concurrently approving 5 bill payments must succeed without database deadlocks",
+      "error": "\u001b[31mTest timeout of 240000ms exceeded.\u001b[39m Error: Failed to fetch Bill 9a0f326d-405d-4085-8b4d-8e2d9c6bfc01: 500\n\n   at ../lib/api/PurchaseAPI.ts:936\n\n  934 |     }\n  935 |\n> 936 |     throw new Err",
+      "firstSeen": "2026-08-27T13:19:51.944Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
