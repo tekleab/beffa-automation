@@ -1,0 +1,32 @@
+[DateHelper] Resolved in-period date: 2026-08-27T00:00:00Z (day=27, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006763 (ID: 85ae50d2-54f3-486b-903d-a95c3d18923b)
+13:31:51 [INFO] Advancing inventory-adjustments "85ae50d2-54f3-486b-903d-a95c3d18923b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787837509062 (912a03d7-dff1-4e4b-b09a-d9502502e3c3) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] "WAC-Item-1787837509062" | initial=20
+[LOAD] Firing 10 concurrent -2 adjustments (total drain: 20)...
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=2 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006765 (ID: c879c114-da96-4620-836a-e4e87768d3be)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006766 (ID: 26ec4d24-9e9e-44d7-9e68-9a47a4ba2f3b)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006767 (ID: 845dd4e1-4ec6-43da-8699-7cf7cf08fc7c)
+[LOAD] Created: 10
+13:31:56 [INFO] Advancing inventory-adjustments "c879c114-da96-4620-836a-e4e87768d3be"...
+13:31:56 [INFO] Advancing inventory-adjustments "845dd4e1-4ec6-43da-8699-7cf7cf08fc7c"...
+13:31:56 [INFO] Advancing inventory-adjustments "26ec4d24-9e9e-44d7-9e68-9a47a4ba2f3b"...
+13:31:58 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+13:31:58 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 0...
+[WARN] pollStockAPI timed out. Expected 0, actual 26.
+[LOAD] Final stock: 26 (must be >= 0)
+[PASS] Stock floor maintained — final: 26

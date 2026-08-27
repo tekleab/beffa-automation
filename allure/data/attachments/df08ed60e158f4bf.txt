@@ -1,0 +1,36 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/bill/88ca3647-4483-4453-b1dd-b6aa29ba04ba?year=2019&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `500`
+- **Latency**: `46153.49ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "Content-Type": "application/json"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 500,
+	"message": "Something went wrong"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "Content-Type: application/json" \
+  "http://168.119.175.142:8001/api/bill/88ca3647-4483-4453-b1dd-b6aa29ba04ba?year=2019&period=yearly&calendar=ec"
+```

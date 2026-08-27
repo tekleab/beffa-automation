@@ -1,0 +1,22 @@
+13:26:32 [PERFORMANCE] API - Auth API Verification: 290.08ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/27/006723 (ID: 2bd9de43-72df-4ae7-b579-8e5d5239368b)
+13:26:40 [INFO] Advancing inventory-adjustments "2bd9de43-72df-4ae7-b579-8e5d5239368b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787837198390 (e5534c3c-a650-4ede-99ee-bc4deb462b2c) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:26:43 [PERFORMANCE] API - Auth API Verification: 273.65ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating PO with back date: 2017-12-31T00:00:00Z
+[PASS] Back-dated PO rejected at creation: PO API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"po_date": [
+			"Purchase order date is not within the current period: between 07/08/2026 and 07/07/2027"
+		]
+	},
+	"message": "Validation error when creating Purchase Order"
+}
+
