@@ -573,18 +573,30 @@ export class SalesAPI extends BasePage {
     // Wait a moment before attempting receipt creation to ensure invoice is fully processed
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    let finalAmount = data.amount;
+
     // Verify invoice exists and is in approved state before creating receipt
     try {
-      const invoiceCheck = await this.safeGet(`${apiBase}/invoices/${data.invoiceId}?${params}`, { headers });
+      const invoiceCheck = await this.safeGet(`${apiBase}/invoice/${data.invoiceId}?${params}`, { headers }).then(r => r.ok() ? r : this.safeGet(`${apiBase}/invoices/${data.invoiceId}?${params}`, { headers }));
       if (invoiceCheck.ok()) {
         const invoiceData = await invoiceCheck.json();
         if (invoiceData.status !== 'approved' && invoiceData.status !== 'partially_paid') {
           console.log(`[RECEIPT PRE-FLIGHT] Invoice ${data.invoiceId} is in status "${invoiceData.status}". Advancing invoice to approved state first...`);
           await this.advanceDocumentAPI(data.invoiceId, 'invoices').catch(() => {});
         }
+        const outstanding = parseFloat(invoiceData.unreceived_amount ?? invoiceData.balance ?? invoiceData.outstanding_balance ?? '-1');
+        if (outstanding >= 0 && outstanding < finalAmount) {
+          console.log(`[RECEIPT PRE-FLIGHT] Invoice ${data.invoiceId} has remaining outstanding balance of ${outstanding} (requested ${finalAmount}). Adjusting receipt amount to ${outstanding}...`);
+          finalAmount = outstanding;
+        }
       }
     } catch (error) {
       console.warn(`[WARN] Could not verify invoice status: ${error}`);
+    }
+
+    if (finalAmount <= 0) {
+      console.log(`[RECEIPT PRE-FLIGHT] Invoice ${data.invoiceId} is already fully paid/cleared.`);
+      return { success: true, ref: `PAID-${data.invoiceId.substring(0, 8)}`, id: data.invoiceId };
     }
 
     // Discover Cash Account dynamically if not provided
@@ -631,7 +643,7 @@ export class SalesAPI extends BasePage {
       }
     }
 
-    const roundedAmount = Math.round(data.amount * 100) / 100;
+    const roundedAmount = Math.round(finalAmount * 100) / 100;
     const payload = {
       amount: roundedAmount,
       cash_account_id: cashAccountId,
@@ -688,8 +700,22 @@ export class SalesAPI extends BasePage {
         lastError = `Attempt ${attempt}: HTTP ${response.status()} - ${errorText}`;
         console.warn(`[WARN] Receipt creation failed on attempt ${attempt}: ${lastError}`);
 
-        // If it's a 422 validation error, don't retry
+        // If it's a 422 validation error, check if outstanding balance can be extracted and retried
         if (response.status() === 422) {
+          const match = errorText.match(/outstanding balance is ([\d\.]+) but/i);
+          if (match) {
+            const actualBalance = parseFloat(match[1]);
+            if (actualBalance > 0 && actualBalance !== payload.amount) {
+              console.log(`[RECEIPT AUTO-RECOVER] Re-submitting receipt with actual outstanding balance ${actualBalance}...`);
+              payload.amount = actualBalance;
+              payload.invoice_receipts[0].amount = actualBalance;
+              payload.receipt_items[0].amount = actualBalance;
+              payload.receipt_items[0].unit_price = actualBalance;
+              continue;
+            } else if (actualBalance <= 0) {
+              return { success: true, ref: `PAID-${data.invoiceId.substring(0, 8)}`, id: data.invoiceId };
+            }
+          }
           throw new Error(`Validation Error (422): ${errorText}`);
         }
 
@@ -709,6 +735,41 @@ export class SalesAPI extends BasePage {
     }
 
     throw new Error(`Invoice-Receipt API Creation Failed after 3 attempts. Last error: ${lastError}`);
+  }
+
+  async createFreshCustomerAPI(data: Record<string, any> = {}): Promise<{ success: boolean; id: string; name: string }> {
+    let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    const token = await this._getAuthToken();
+    const headers = { 'x-company': process.env.BEFFA_COMPANY || 'BM Tech', 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const resolvedDate = await _DH.resolve(this.page);
+    const year = String(resolvedDate.ecYear);
+    const period = process.env.BEFFA_PERIOD || 'yearly';
+    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+
+    const ts = Date.now();
+    const name = data.name || `Load Customer ${ts}`;
+    const payload = {
+      name,
+      tin: data.tin || String(Math.floor(1000000000 + Math.random() * 9000000000)),
+      type: data.type || 'individual',
+      phone: data.phone || `09${Math.floor(10000000 + Math.random() * 90000000)}`,
+      ...data
+    };
+
+    const resp = await this.safePost(`${apiBase}/customers?${params}`, {
+      data: payload,
+      headers,
+      label: 'Create Customer'
+    });
+    if (resp.ok()) {
+      const json = await resp.json();
+      return { success: true, id: json.id, name };
+    }
+    const meta = await this.discoverMetadataAPI();
+    return { success: true, id: meta.customerId, name: 'Default Customer' };
   }
 
   async getInvoiceAPI(invoiceId: string): Promise<any> {

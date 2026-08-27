@@ -878,16 +878,50 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
-    // 1. Query /bills?sortBy=created_at&sortOrder=desc&pageSize=100
+    const normalizeBill = (b: any) => {
+      if (!b) return b;
+      const totalAmount = parseFloat(b.net_due ?? b.amount ?? b.total_amount ?? 0);
+      const paid = parseFloat(b.paid_amount ?? b.total_paid ?? 0);
+      const hasPaidField = b.paid_amount !== undefined && b.paid_amount !== null;
+      if (b.unpaid_amount === undefined || b.unpaid_amount === null) {
+        if (hasPaidField) {
+          b.unpaid_amount = Math.max(0, totalAmount - paid);
+        } else if (['paid', 'fully_paid', 'closed'].includes(String(b.status ?? '').toLowerCase())
+            || b.current_approval_step?.status_label === 'paid'
+            || b.current_approval_step?.name?.toLowerCase() === 'paid') {
+          b.unpaid_amount = 0;
+        } else {
+          // List endpoint may not have paid_amount — mark as needing detail fetch
+          b._needsDetailFetch = true;
+          b.unpaid_amount = totalAmount;
+        }
+      }
+      b.balance = b.unpaid_amount;
+      return b;
+    };
+
+    // 1. Try detail endpoint first — it has paid_amount and unpaid_amount
+    if (billId) {
+      const detailResp = await this.safeGet(`${apiBase}/bill/${billId}?${params}`, { headers }, 8000).catch(() => null);
+      if (detailResp && detailResp.ok()) {
+        const json = await detailResp.json().catch(() => null);
+        if (json) {
+          const normalized = normalizeBill(json);
+          if (!normalized._needsDetailFetch) return normalized;
+        }
+      }
+    }
+
+    // 2. Query /bills list as fallback
     const listResp = await this.safeGet(`${apiBase}/bills?sortBy=created_at&sortOrder=desc&pageSize=100&${params}`, { headers }).catch(() => null);
     if (listResp && listResp.ok()) {
       const listData = await listResp.json().catch(() => ({}));
       const items = listData.data || listData.items || (Array.isArray(listData) ? listData : []);
       const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
-      if (matched) return matched;
+      if (matched) return normalizeBill(matched);
     }
 
-    // 2. Query /bills?search=${searchTarget}
+    // 3. Query /bills?search=${searchTarget}
     const searchTarget = billNumber || billId;
     if (searchTarget) {
       const searchResp = await this.safeGet(`${apiBase}/bills?search=${encodeURIComponent(searchTarget)}&pageSize=50&${params}`, { headers }).catch(() => null);
@@ -895,18 +929,13 @@ export class PurchaseAPI extends BasePage {
         const searchData = await searchResp.json().catch(() => ({}));
         const items = searchData.data || searchData.items || (Array.isArray(searchData) ? searchData : []);
         const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
-        if (matched) return matched;
+        if (matched) return normalizeBill(matched);
       }
-    }
-
-    // 3. Fallback: Try singular /bill/${billId}
-    const response = await this.safeGet(`${apiBase}/bill/${billId}?${params}`, { headers }).catch(() => null);
-    if (response && response.ok()) {
-      return await response.json().catch(() => ({}));
     }
 
     throw new Error(`Failed to fetch Bill ${billId}: 500`);
   }
+
 
   async getPaymentAPI(paymentId: string): Promise<any> {
     const token = await this._getAuthToken();

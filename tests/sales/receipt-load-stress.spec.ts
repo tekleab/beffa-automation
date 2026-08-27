@@ -46,6 +46,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
     // ── 1. LOAD: CONCURRENT RECEIPT APPROVALS ─────────────────────────────────
     test('LOAD: Concurrently approving 5 receipts must succeed without database deadlocks', async () => {
         const meta = await app.api.sales.discoverMetadataAPI();
+        const customer = await app.api.sales.createFreshCustomerAPI({ name: `Load-Cust-${Date.now()}` });
         const item = await app.api.inventory.createFreshItemWithStockAPI({
             cost_method_code: 'WAC', quantity: 100, unit_cost: 100
         });
@@ -57,7 +58,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
         const invoices: any[] = [];
         for (let i = 0; i < CONCURRENCY; i++) {
             const inv = await app.api.sales.createStandaloneInvoiceAPI({
-                customerId: meta.customerId,
+                customerId: customer.id,
                 itemId: item.itemId,
                 quantity: 1,
                 unitPrice: UNIT_PRICE,
@@ -76,7 +77,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
             const receipt = await app.api.sales.createInvoiceReceiptAPI({
                 amount: UNIT_PRICE,
                 invoiceId: inv.id,
-                customerId: meta.customerId
+                customerId: customer.id
             });
             receipts.push(receipt);
         }
@@ -111,13 +112,14 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
     // ── 2. STRESS: CONCURRENT DUPLICATE RECEIPTS (RACE CONDITION) ─────────────
     test('STRESS: Concurrent duplicate receipt submittals against same invoice must be blocked', async () => {
         const meta = await app.api.sales.discoverMetadataAPI();
+        const customer = await app.api.sales.createFreshCustomerAPI({ name: `Stress-Cust1-${Date.now()}` });
         const item = await app.api.inventory.createFreshItemWithStockAPI({
             cost_method_code: 'WAC', quantity: 20, unit_cost: 100
         });
 
         const INVOICE_AMOUNT = 2000;
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
-            customerId: meta.customerId,
+            customerId: customer.id,
             itemId: item.itemId,
             quantity: 1,
             unitPrice: INVOICE_AMOUNT,
@@ -129,8 +131,8 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
 
         // Fire 2 concurrent receipts for the full invoice amount
         console.log(`[STRESS] Creating 2 concurrent receipts for full amount...`);
-        const r1Promise = app.api.sales.createInvoiceReceiptAPI({ amount: INVOICE_AMOUNT, invoiceId: inv.id, customerId: meta.customerId });
-        const r2Promise = app.api.sales.createInvoiceReceiptAPI({ amount: INVOICE_AMOUNT, invoiceId: inv.id, customerId: meta.customerId });
+        const r1Promise = app.api.sales.createInvoiceReceiptAPI({ amount: INVOICE_AMOUNT, invoiceId: inv.id, customerId: customer.id });
+        const r2Promise = app.api.sales.createInvoiceReceiptAPI({ amount: INVOICE_AMOUNT, invoiceId: inv.id, customerId: customer.id });
 
         const [r1Res, r2Res] = await Promise.allSettled([r1Promise, r2Promise]);
         
@@ -167,13 +169,14 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
     // ── 3. STRESS: RECEIPT AGAINST MID-FLIGHT REVERSED INVOICE ────────────────
     test('STRESS: Receipt against an invoice reversed mid-flight must be rejected', async () => {
         const meta = await app.api.sales.discoverMetadataAPI();
+        const customer = await app.api.sales.createFreshCustomerAPI({ name: `Stress-Cust2-${Date.now()}` });
         const item = await app.api.inventory.createFreshItemWithStockAPI({
             cost_method_code: 'WAC', quantity: 20, unit_cost: 100
         });
 
         const INVOICE_AMOUNT = 1500;
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
-            customerId: meta.customerId,
+            customerId: customer.id,
             itemId: item.itemId,
             quantity: 1,
             unitPrice: INVOICE_AMOUNT,
@@ -187,7 +190,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
         const receipt = await app.api.sales.createInvoiceReceiptAPI({
             amount: INVOICE_AMOUNT,
             invoiceId: inv.id,
-            customerId: meta.customerId
+            customerId: customer.id
         });
         console.log(`[STRESS] Draft receipt ${receipt.ref} created.`);
 

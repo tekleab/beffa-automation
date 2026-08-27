@@ -1046,35 +1046,49 @@ ${curlCmd}
   }
 
   async selectRandomOption(selector: Locator, labelName: string, isOptional: boolean = false): Promise<number> {
-    const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem';
+    const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem, tbody tr, tr:not(:first-child)';
 
     await this.startTacticalTimer(); // Start Tactical UI Timer
 
     for (let i = 0; i < 3; i++) {
       try {
         await selector.scrollIntoViewIfNeeded();
-        await selector.click({ timeout: 5000 });
-        await this.page.waitForTimeout(1500);
+        await selector.click({ timeout: 5000, force: true });
+        await this.page.waitForTimeout(1000);
         // Scope to the topmost visible overlay/dropdown to avoid counting items from other open menus
         const overlay = this.page.locator(
           '.chakra-menu__menu-list, [role="listbox"], .chakra-popover__content, [role="menu"]'
         ).filter({ visible: true }).last();
         const overlayVisible = await overlay.isVisible({ timeout: 3000 }).catch(() => false);
+
+        if (overlayVisible) {
+          const searchInput = overlay.locator('input').first();
+          if (await searchInput.isVisible({ timeout: 800 }).catch(() => false)) {
+            await searchInput.focus().catch(() => {});
+            await searchInput.fill('').catch(() => {});
+          }
+        }
+
         const options = overlayVisible
-          ? overlay.locator(optionSelector).filter({ visible: true })
-          : this.page.locator(optionSelector).filter({ visible: true });
+          ? overlay.locator(optionSelector).filter({ visible: true }).filter({ hasNotText: /^(Clear|No more items)$/i })
+          : this.page.locator(optionSelector).filter({ visible: true }).filter({ hasNotText: /^(Clear|No more items)$/i });
         // Wait for at least one option to appear before counting
         await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
         const count = await options.count();
         if (count > 0) {
           const randomIndex = Math.floor(Math.random() * count);
           const target = options.nth(randomIndex);
-          await target.evaluate((node: HTMLElement) => node.click());
-          await this.page.keyboard.press('Escape');
+          await target.click({ force: true }).catch(() => target.evaluate((node: HTMLElement) => node.click()));
+          await this.page.waitForTimeout(500);
+          if (await overlay.isVisible().catch(() => false)) {
+            await this.page.keyboard.press('Escape').catch(() => { });
+          }
           await this.stopTacticalTimer(`Random Selection: ${labelName}`, 'UI');
           return count;
         } else {
-          await this.page.keyboard.press('Escape');
+          if (await overlay.isVisible().catch(() => false)) {
+            await this.page.keyboard.press('Escape').catch(() => { });
+          }
           if (isOptional) return 0;
         }
       } catch (e: any) {

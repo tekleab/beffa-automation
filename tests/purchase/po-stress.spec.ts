@@ -52,9 +52,6 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @logic @secur
 
     // ── 1. OVERPAYMENT ATTACK ─────────────────────────────────────────────────
     test('Guardrail: System must reject payment exceeding bill total', async ({ page }) => {
-        // CONFIRMED BUG: system accepts overpayment and creates negative balance (vendor credit injection)
-        test.fail(true, '[CONFIRMED BUG] Overpayment accepted — balance goes negative. Vendor credit injection possible.');
-
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
