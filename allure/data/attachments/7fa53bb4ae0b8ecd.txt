@@ -1,0 +1,19 @@
+08:05:28 [PERFORMANCE] API - Auth API Verification: 355.07ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007011 (ID: 74c0fd37-9584-449e-ac72-7168a6030b4b)
+08:05:34 [INFO] Advancing inventory-adjustments "74c0fd37-9584-449e-ac72-7168a6030b4b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787904333185 (ddb32e8b-c2d5-4ef7-9095-1acea62743be) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:05:37 [PERFORMANCE] API - Auth API Verification: 273.23ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+08:05:41 [INFO] Advancing invoices "e601b951-182b-42cd-a64f-1fdb4dccb2e3"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=500
+[KNOWN_BUG #7] Invoice e601b951-182b-42cd-a64f-1fdb4dccb2e3 unreceived_amount ($100) < requested amount ($500). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $100.
+[RECEIPT] amount=100 | invoice=e601b951... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/28/000943
+08:05:47 [INFO] Advancing receipts "d847bce5-bb6b-4fa8-bea0-7b96f4224b93"...
+[ACTION] Reversing Receipt RCPT/2026/08/28/000943...
+[AUDIT] After Receipt Reversal: unreceived_amount = 100

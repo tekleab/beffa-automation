@@ -1,0 +1,36 @@
+[DateHelper] Resolved in-period date: 2026-08-28T00:00:00Z (day=28, ecYear=2019)
+08:22:27 [PERFORMANCE] API - Auth API Verification: 257.95ms
+[AUTH] Session token and local storage injected successfully.
+08:22:28 [WARN] GET http://168.119.175.142:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007134 (ID: 268f1cc1-ef49-477a-88ad-040f5f899843)
+08:22:41 [INFO] Advancing inventory-adjustments "268f1cc1-ef49-477a-88ad-040f5f899843"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787905359424 (3bf594b7-0f60-4c35-a533-e29fb82fc022) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007135 (ID: 88911646-89fe-47f7-82c0-5c012a47173a)
+08:22:47 [INFO] Advancing inventory-adjustments "88911646-89fe-47f7-82c0-5c012a47173a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787905365703 (c8e0e5de-7118-40f8-b1b2-6ae5f601a0e0) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:22:50 [INFO] [STOCK_TOPUP] Injecting 70 units for item 3bf594b7-0f60-4c35-a533-e29fb82fc022...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+08:22:51 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+08:22:51 [INFO] [STOCK_TOPUP] Injecting 70 units for item 3bf594b7-0f60-4c35-a533-e29fb82fc022...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+08:22:52 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+08:22:52 [INFO] [STOCK_TOPUP] Injecting 70 units for item 3bf594b7-0f60-4c35-a533-e29fb82fc022...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+08:22:54 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+[DateHelper] Resolved in-period date: 2026-08-28T00:00:00Z (day=28, ecYear=2019)
+08:22:57 [PERFORMANCE] API - Auth API Verification: 290.53ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+08:23:05 [INFO] Picking date: "Sales Order Date" → target 2026-8-28
+08:23:06 [PASS] "Sales Order Date" set to day 28.
+08:23:07 [PERFORMANCE] UI - Pick Date: Sales Order Date: 2703.43ms
+08:23:10 [PERFORMANCE] UI - Random Selection: Customer: 2538.86ms
+08:23:12 [PERFORMANCE] UI - Random Selection: Accounts Receivable: 2206.66ms
+[CURRENCY] Selected via button: Birr
+[SKIP] Miscellaneous button not present in SO modal

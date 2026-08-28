@@ -1,0 +1,51 @@
+08:25:36 [PERFORMANCE] API - Auth API Verification: 294.97ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007145 (ID: 2864579a-3743-4b00-9e3f-033aeca236df)
+08:25:41 [INFO] Advancing inventory-adjustments "2864579a-3743-4b00-9e3f-033aeca236df"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1787905539476 (2c9f0701-d4f2-46ef-b2fd-1fdc8f528dc5) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1787905539476 (2c9f0701-d4f2-46ef-b2fd-1fdc8f528dc5) | Stock before: 50
+[STEP 2] Creating Sales Order...
+[SO] Created SO/2026/08/28/001036 (6499404b-26f7-4bc3-b07b-cd10cb1380f4) | Item id: 52b456da-3499-4a82-ade1-ad3fce7343ef
+08:25:45 [INFO] Advancing sales-orders "6499404b-26f7-4bc3-b07b-cd10cb1380f4"...
+[SO] Approved SO/2026/08/28/001036
+[STEP 3] Invoicing and releasing SO items...
+[INVOICE] Created from SO: INV/2026/08/28/003850 (364e17b8-c235-4dc8-b632-f131976560e8)
+08:25:49 [INFO] Advancing invoices "364e17b8-c235-4dc8-b632-f131976560e8"...
+[INVOICE] Approved INV/2026/08/28/003850
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 45...
+[SUCCESS] API Confirmed: Stock correctly reached 45.
+[STOCK] Expected: 45, Got: 45
+[INVOICE] Outstanding balance after Approval: 510 (expected ~3000 — [KNOWN_BUG] ERP uses unit_cost not unit_price for net_due)
+[INVOICE GL] Entries found: 5
+[INVOICE GL] AR debit=510 | Sales credit=10 (expected 3000 — [KNOWN_BUG #7])
+[STEP 4] Creating Receipt for Invoice...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=510 | Requested receipt amount=3000
+[KNOWN_BUG #7] Invoice 364e17b8-c235-4dc8-b632-f131976560e8 unreceived_amount ($510) < requested amount ($3000). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $510.
+[RECEIPT] amount=510 | invoice=364e17b8... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/28/000953
+[RECEIPT] Created RCPT/2026/08/28/000953 (e43e72e3-768e-486e-8d0f-7b6b0ae11b8d)
+08:25:57 [INFO] Advancing receipts "e43e72e3-768e-486e-8d0f-7b6b0ae11b8d"...
+[RECEIPT] Approved RCPT/2026/08/28/000953
+[INVOICE] Outstanding balance after Receipt: 0
+[RECEIPT GL] Entries found: 3
+
+  ╔════════════════════════════════════════════════════════════════════╗
+  ║ 📊 GL Receipt Journal Audit                                       ║
+  ╠════════════════════════════════════════════════════════════════════╣
+  ║  Receipt Paid        : $3000.00                                                    ║
+  ║  GL Cash Debit       : $1020.00                                                    ║
+  ║  GL AR Credit        : $510.00                                                     ║
+  ║  Difference          : $1980.00                                                    ║
+  ║  Account Mapping     : ⚠️  NOT IMPLEMENTED YET                                    ║
+  ║  Invoice Ref         : INV/2026/08/28/003850                                       ║
+  ║  Receipt Ref         : RCPT/2026/08/28/000953                                      ║
+  ╚════════════════════════════════════════════════════════════════════╝
+
+[SKIP GL AMOUNT CHECK] Account mapping (inventory/sales/payroll GL accounts) is not yet configured in this ERP instance.
+[SKIP GL AMOUNT CHECK] GL amount assertions will be enabled once account mapping is implemented.
+[SKIP GL AMOUNT CHECK] Verifying GL structure only (entries exist, correct account types debited/credited).
+[PASS] Full Order-to-Cash integration cycle completed successfully!

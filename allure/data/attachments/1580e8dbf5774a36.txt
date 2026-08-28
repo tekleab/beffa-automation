@@ -1,0 +1,19 @@
+08:13:35 [PERFORMANCE] API - Auth API Verification: 276.53ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007071 (ID: 0c6a7409-211d-4d52-829d-57abb0ed614b)
+08:13:42 [INFO] Advancing inventory-adjustments "0c6a7409-211d-4d52-829d-57abb0ed614b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787904821195 (89a517e1-5e13-455f-83f9-fb455ca2f316) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:13:47 [PERFORMANCE] API - Auth API Verification: 355.80ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating Payment with back date: 2017-12-31T00:00:00Z
+08:13:49 [INFO] Advancing bills "a1e0ae50-f033-426e-9890-d6f9e7b684fc"...
+[ACTION] Creating Bill Payment for a1e0ae50-f033-426e-9890-d6f9e7b684fc via API (CashAcct: b521c276-a826-4a32-a674-6d20550c0b4a)...
+[SUCCESS] Payment created: PAY/2026/08/28/000979 (ID: eb22ee03-fba3-4d84-a94a-a3d51d60809f)
+08:13:53 [INFO] Advancing payments "eb22ee03-fba3-4d84-a94a-a3d51d60809f"...
+[PASS] Payment created but blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2017-12-31 falls in a closed or missin

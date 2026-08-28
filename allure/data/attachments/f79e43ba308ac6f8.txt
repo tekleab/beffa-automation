@@ -1,0 +1,45 @@
+08:16:01 [PERFORMANCE] API - Auth API Verification: 268.93ms
+[AUTH] Session token and local storage injected successfully.
+08:16:05 [PERFORMANCE] API - Auth API Verification: 274.73ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating item to deactivate: DEACT-GUARD-1787904965828...
+[OK] Item created: DEACT-GUARD-1787904965828 (ID: 84088edf-cc11-4bfa-8ef9-a824123f5863)
+[STEP 2] Deactivating item via API...
+[OK] Item deactivated.
+[ATTACK] Attempting stock adjustment on deactivated item...
+[ADJ] quantity | qty=10 @ $0 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007096 (ID: ce733223-a76f-4782-a0a2-fa6b19d4d5f4)
+08:16:09 [INFO] Advancing inventory-adjustments "ce733223-a76f-4782-a0a2-fa6b19d4d5f4"...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║      DEACTIVATED ITEM GUARDRAIL — TEST SUMMARY            ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : DEACT-GUARD-1787904965828              ║
+  ║  Item ID      : 84088edf-cc11-4bfa-8ef9-a824123f5863   ║
+  ║  Status set   : inactive                                   ║
+  ║  Attack       : POST /inventory-adjustments qty=10         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : ACCEPTED ✕ — VULNERABILITY CONFIRMED  ║
+  ║  Adj Ref : ADJ/2026/08/28/007096                        ║
+  ║  Adj ID  : ce733223-a76f-4782-a0a2-fa6b19d4d5f4         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : Ghost stock written to inactive item           ║
+  ║  Fix     : Reject adjustments if item.status != active    ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Deactivated Item Adjustment Guardrail                                   │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ DEACT-GUARD-1787904965828            │
+  │ Item ID                          │ 84088edf-cc11-4bfa-8ef9-a824123f586… │
+  │ Item Status                      │ inactive (set in Step 2)             │
+  │ Attack: Adj Qty                  │ 10 units (write-up)                  │
+  │ Adjustment Ref                   │ ADJ/2026/08/28/007096                │
+  │ Adjustment ID                    │ ce733223-a76f-4782-a0a2-fa6b19d4d5f… │
+  │ Block Reason                     │ Adjustment ADJ/2026/08/28/007096 cr… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✗ FAIL — VULNERABILITY — ghost stoc… │
+  └───────────────────────────────────────────────────────────────────────────┘
+

@@ -1,0 +1,36 @@
+[DateHelper] Resolved in-period date: 2026-08-28T00:00:00Z (day=28, ecYear=2019)
+08:19:55 [PERFORMANCE] API - Auth API Verification: 283.30ms
+[AUTH] Session token and local storage injected successfully.
+08:19:56 [PERFORMANCE] API - Auth API Verification: 290.06ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/007120 (ID: 0914411a-f902-42a6-8980-48a94fc289d1)
+08:20:08 [INFO] Advancing inventory-adjustments "0914411a-f902-42a6-8980-48a94fc289d1"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1787905207278 (e9471e2b-f7af-4281-82f1-8d9653c2e323) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:20:12 [INFO] Advancing bills "8a3b9166-bc39-4160-b7b2-9bb5db7de663"...
+[AP] Bill BILL/2026/08/28/003256 approved | amount=2000
+08:20:17 [INFO] Advancing invoices "3729d99a-351f-4af9-bc5a-c2255ac199fc"...
+
+══════════════════════════════════════════════════════════════════════
+[ERP_BUG #INV-BAL-01] STALE/INCORRECT INVOICE BALANCE FIELD
+  Invoice    : INV/2026/08/28/003843 (ID: 3729d99a-351f-4af9-bc5a-c2255ac199fc)
+  Created for: $3000
+  API reports: unreceived_amount=100 | total_amount=undefined | amount=undefined | net_due=100
+  Resolved to: $100  ← does NOT match created unit price $3000
+══════════════════════════════════════════════════════════════════════
+
+[AP] Bill BILL/2026/08/28/003256 | actual_outstanding=2000
+[ACTION] Creating Bill Payment for 8a3b9166-bc39-4160-b7b2-9bb5db7de663 via API (CashAcct: 0e41cae5-57a2-4245-9ece-d129ca61addd)...
+[SUCCESS] Payment created: PAY/2026/08/28/000989 (ID: c6172355-2025-45fa-8eee-73c1423dc2d1)
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=3729d99a... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/28/000952
+[CONCURRENT] Approving AP payment + AR receipt simultaneously...
+08:20:27 [INFO] Advancing payments "c6172355-2025-45fa-8eee-73c1423dc2d1"...
+08:20:27 [INFO] Advancing receipts "64e9a72d-507e-48f5-9bef-5d9bdd476924"...
+[CONCURRENT] AP: fulfilled | AR: fulfilled
+[AUDIT] AR invoice balance after receipt: 0 (expected: 0)
+[PASS] Simultaneous AP+AR settlement: both balances correctly zeroed.
