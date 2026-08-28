@@ -961,20 +961,41 @@ ${curlCmd}
       }
     }
 
-    // Strategy 3: Fallback for forms where the label is simply "Date" (e.g. Receipt New page)
+    // Strategy 3: Fallback for forms where the label is simply "Date" or "Receipt Date" (e.g. Receipt New page)
     if (!btn && /date/i.test(label)) {
-      const genericLabel = this.page.getByText(/^Date\*?$/i).first();
-      if (await genericLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        for (const ancestor of ['xpath=..', 'xpath=../..', 'xpath=../../..']) {
-          const parent = genericLabel.locator(ancestor);
-          const parentBtn = parent.locator('button').first();
-          if (await parentBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-            btn = parentBtn;
-            break;
+      // Try multiple common date label variants used across ERP modules
+      const dateLabelCandidates = [
+        this.page.getByText(/^Date\s*\*?$/i).first(),
+        this.page.getByText(/^Receipt\s+Date\s*\*?$/i).first(),
+        this.page.getByText(/^Payment\s+Date\s*\*?$/i).first(),
+        this.page.getByText(/^Transaction\s+Date\s*\*?$/i).first(),
+      ];
+      for (const candidateLabel of dateLabelCandidates) {
+        if (!btn && await candidateLabel.isVisible({ timeout: 2000 }).catch(() => false)) {
+          for (const ancestor of ['xpath=..', 'xpath=../..', 'xpath=../../..']) {
+            const parent = candidateLabel.locator(ancestor);
+            const parentBtn = parent.locator('button').first();
+            if (await parentBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+              btn = parentBtn;
+              break;
+            }
           }
         }
+        if (btn) break;
       }
     }
+
+    // Strategy 4: Last resort — any visible button containing a calendar icon on the page
+    if (!btn && /date/i.test(label)) {
+      const calendarBtn = this.page.locator('button').filter({
+        has: this.page.locator('svg, img[alt*="calendar" i], [class*="calendar" i]')
+      }).first();
+      if (await calendarBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+        btn = calendarBtn;
+        Logger.warn(`[pickDate] Using calendar icon fallback for label "${label}"`);
+      }
+    }
+
 
     if (!btn) {
       throw new Error(`[pickDate] Could not find date trigger button for label "${label}"`);

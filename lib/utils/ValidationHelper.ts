@@ -9,6 +9,39 @@ export interface ValidationCaptureResult {
 }
 
 /**
+ * Formats and prints a highly visible developer bug banner to the test console.
+ */
+export function printBackendBugBanner(details: {
+  jiraTicket?: string;
+  defectTitle: string;
+  endpoint: string;
+  method?: string;
+  statusCode: number;
+  expectedStatus?: string;
+  rootCause: string;
+  responsePreview?: any;
+}): void {
+  const line = '═'.repeat(72);
+  const pad = (label: string, value: string) => `  ║ ${label.padEnd(15)}: ${value.padEnd(51)} ║`;
+
+  console.log(`\n  ╔${line}╗`);
+  console.log(`  ║ 🚨 BACKEND DEFECT DETECTED${details.jiraTicket ? ` [${details.jiraTicket}]` : ''}`.padEnd(74) + '║');
+  console.log(`  ╠${line}╣`);
+  console.log(pad('Defect Title', details.defectTitle.slice(0, 48)));
+  console.log(pad('Endpoint', `${details.method || 'POST'} ${details.endpoint}`.slice(0, 48)));
+  console.log(pad('Status Code', `HTTP ${details.statusCode} (Expected: ${details.expectedStatus || '422 / 400'})`));
+  console.log(pad('Root Cause', details.rootCause.slice(0, 48)));
+  if (details.jiraTicket) {
+    console.log(pad('Jira Ticket', `https://bmtechnology.atlassian.net/browse/${details.jiraTicket}`.slice(0, 48)));
+  }
+  if (details.responsePreview) {
+    const raw = typeof details.responsePreview === 'object' ? JSON.stringify(details.responsePreview) : String(details.responsePreview);
+    console.log(pad('Response Snippet', raw.slice(0, 48)));
+  }
+  console.log(`  ╚${line}╝\n`);
+}
+
+/**
  * Validates that an API request was properly rejected (4xx error)
  * without hard-crashing on minor schema format discrepancies.
  * The error shape is automatically captured in the Developer Defect Catalog.
@@ -21,6 +54,7 @@ export async function assertValidationRejection(
     requestData?: any;
     url?: string;
     method?: string;
+    jiraTicket?: string;
   }
 ): Promise<ValidationCaptureResult> {
   const status = typeof response.status === 'function' ? response.status() : (response.status || 0);
@@ -56,7 +90,20 @@ export async function assertValidationRejection(
   const classification = apiErrorCollector.classifySchema(status, body);
   const isStandard = ['CODE_MESSAGE', 'ARRAY_ERRORS', 'VALIDATION_OBJECT'].includes(classification.schemaType);
 
-  console.log(`[VALIDATION AUDIT] ${options.label} → Status ${status} (${classification.schemaType}): "${classification.primaryMessage}"`);
+  if (status === 500) {
+    printBackendBugBanner({
+      jiraTicket: options.jiraTicket || 'BDEV-1272',
+      defectTitle: `Unhandled HTTP 500 on ${options.label}`,
+      endpoint: options.url || 'POST /api/...',
+      method: options.method || 'POST',
+      statusCode: status,
+      expectedStatus: 'HTTP 422 Unprocessable Entity',
+      rootCause: 'Backend crashed with unhandled 500 instead of input validation map',
+      responsePreview: body
+    });
+  } else {
+    console.log(`[VALIDATION AUDIT] ${options.label} → Status ${status} (${classification.schemaType}): "${classification.primaryMessage}"`);
+  }
 
   // Assert business requirement: system MUST reject invalid input
   expect(isRejected, `Expected ${options.label} to be rejected by server, received status ${status}`).toBe(true);
@@ -69,4 +116,5 @@ export async function assertValidationRejection(
     standardSchema: isStandard,
   };
 }
+
 

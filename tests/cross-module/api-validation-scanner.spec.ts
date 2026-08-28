@@ -195,9 +195,13 @@ test.describe('Enterprise ERP Full-Spectrum API Validation Scanner', () => {
 
     // 1.3 Receipts
     await probe('Sales', 'Receipt', 'POST', '/receipts', 'Empty Payload', {});
+    await probe('Sales', 'Receipt', 'POST', '/receipts', 'Null Accounts & Customer Payload', {
+      customer_id: null, amount: 0, cash_account_id: null
+    });
     await probe('Sales', 'Receipt', 'POST', '/receipts', 'Negative Receipt Amount (-2500)', {
       customer_id: '00000000-0000-0000-0000-000000000000', receipt_date: periodDate, amount: -2500
     }, { disallow2xx: true, expectedFieldInError: 'amount' });
+
 
     // 1.4 Customers
     await probe('Sales', 'Customer Master', 'POST', '/customers', 'Empty Payload', {});
@@ -278,9 +282,13 @@ test.describe('Enterprise ERP Full-Spectrum API Validation Scanner', () => {
 
     // 4.3 Payroll Runs & Timesheets
     await probe('HR', 'Payroll Runs', 'POST', '/payroll-runs', 'Empty Payload', {});
+    await probe('HR', 'Timesheets', 'POST', '/timesheets', 'Non-existent Employee UUID', {
+      employee_id: '00000000-0000-0000-0000-000000000000', date: periodDate, hours: 8
+    });
     await probe('HR', 'Timesheets', 'POST', '/timesheets', 'Negative Hours Worked (-12)', {
       employee_id: '00000000-0000-0000-0000-000000000000', date: periodDate, hours: -12
     });
+
     await probe('HR', 'Leave Applications', 'POST', '/leave-applications', 'End Date Before Start Date', {
       employee_id: '00000000-0000-0000-0000-000000000000',
       start_date: '2026-08-30T00:00:00Z',

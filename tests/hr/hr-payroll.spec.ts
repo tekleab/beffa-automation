@@ -171,23 +171,49 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
         const uiApp = new AppManager(uiPage);
         await uiApp.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await uiPage.goto('/payrolls/payroll-runs', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-        const isServer404 = await uiPage.locator('text=/ENOENT|stat .*index\.html/i').first().isVisible({ timeout: 2000 }).catch(() => false);
+        const isServer404 = await uiPage.locator('text=/ENOENT|stat .*index\\.html/i').first().isVisible({ timeout: 2000 }).catch(() => false);
         if (isServer404) {
             console.log('[SKIP] Frontend preview server is returning static 404 ENOENT');
             return;
         }
-        await uiPage.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
-        await uiPage.locator('#loading-screen, img[alt="Logo"], .chakra-spinner').waitFor({ state: 'hidden', timeout: 25000 }).catch(() => {});
-        await uiPage.waitForTimeout(2000);
+
+        // Wait for full network settle — payroll page lazy-loads data
+        await uiPage.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+
+        // Wait for any loading spinner/skeleton to disappear
+        await uiPage.locator('#loading-screen, img[alt="Logo"], .chakra-spinner, [data-testid="skeleton"], .chakra-skeleton')
+            .waitFor({ state: 'hidden', timeout: 30000 }).catch(() => {});
+
+        // Give React time to render after data arrives
+        await uiPage.waitForTimeout(3000);
+
         const hasError = await uiPage.locator('text=/Something went wrong|Internal Server Error/i').first()
             .isVisible({ timeout: 2000 }).catch(() => false);
         expect(hasError).toBe(false);
-        const anyContent = await uiPage.locator(
-            'table tbody tr, [role="row"], h1, h2, h3, [role="heading"], .chakra-text, [role="table"], button, main, div'
-        ).first().isVisible({ timeout: 20000 }).catch(() => false);
-        expect(anyContent, 'Payroll Runs page rendered no content').toBe(true);
+
+        // Check for meaningful content: table rows, empty-state text, heading, or New button
+        const meaningfulContent = await uiPage.locator([
+            'table tbody tr',
+            '[role="row"]',
+            'h1, h2, h3, [role="heading"]',
+            'text=/No payroll runs|No records|No data|Empty/i',
+            'button:has-text("New"), button:has-text("Run")',
+            'main p, main span, .chakra-text',
+        ].join(', ')).first().isVisible({ timeout: 15000 }).catch(() => false);
+
+        if (!meaningfulContent) {
+            // Final screenshot-style DOM dump for CI diagnostics
+            const url = uiPage.url();
+            const title = await uiPage.title().catch(() => 'unknown');
+            const bodyText = await uiPage.locator('body').innerText().catch(() => '').then(t => t.slice(0, 300));
+            console.log(`[DIAGNOSTIC] URL: ${url} | Title: ${title}`);
+            console.log(`[DIAGNOSTIC] Body preview: ${bodyText}`);
+        }
+
+        expect(meaningfulContent, 'Payroll Runs page rendered no content — page may still be loading or route does not exist').toBe(true);
         console.log(`[PASS] Payroll Runs page loaded`);
     });
+
 
     test('UI: Pay Components settings page must render the components list', async ({ page: uiPage }) => {
         const uiApp = new AppManager(uiPage);

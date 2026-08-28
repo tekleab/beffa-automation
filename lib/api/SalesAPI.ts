@@ -585,8 +585,11 @@ export class SalesAPI extends BasePage {
           await this.advanceDocumentAPI(data.invoiceId, 'invoices').catch(() => {});
         }
         const outstanding = parseFloat(invoiceData.unreceived_amount ?? invoiceData.balance ?? invoiceData.outstanding_balance ?? '-1');
+        console.log(`[RECEIPT PRE-FLIGHT] Invoice outstanding=${outstanding} | Requested receipt amount=${finalAmount}`);
         if (outstanding >= 0 && outstanding < finalAmount) {
-          console.log(`[RECEIPT PRE-FLIGHT] Invoice ${data.invoiceId} has remaining outstanding balance of ${outstanding} (requested ${finalAmount}). Adjusting receipt amount to ${outstanding}...`);
+          // [KNOWN_BUG #7] ERP's unreceived_amount is computed from WAC unit_cost not unit_price.
+          // This causes the receipt to be created for a lower amount than the invoice selling price.
+          console.log(`[KNOWN_BUG #7] Invoice ${data.invoiceId} unreceived_amount ($${outstanding}) < requested amount ($${finalAmount}). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $${outstanding}.`);
           finalAmount = outstanding;
         }
       }
