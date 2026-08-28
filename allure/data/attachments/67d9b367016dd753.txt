@@ -1,0 +1,41 @@
+06:47:40 [PERFORMANCE] API - Auth API Verification: 546.17ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/28/006901 (ID: 3508a91a-9518-4f20-9e5b-4dd8702f5288)
+06:47:47 [INFO] Advancing inventory-adjustments "3508a91a-9518-4f20-9e5b-4dd8702f5288"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: WAC-Item-1787899666349 (226c4d13-b556-4a37-b92a-815766388058) | method=WAC | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:47:51 [PERFORMANCE] API - Auth API Verification: 294.02ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating PO for 10 units...
+06:48:56 [INFO] Advancing purchase-orders "88375aed-65dc-4ba9-a9e5-a56ea63956e6"...
+[OK] PO PO/2026/08/28/001873 approved.
+[STEP 2] Receiving only 5 / 10 units via partial PO bill...
+06:49:00 [INFO] Advancing bills "843b26d3-fda7-4076-8c59-d3d0693f29b8"...
+06:49:18 [WARN] Transient network drop/socket hang up on advance attempt 1/4: apiRequestContext.patch: socket hang up Call log:   - → PATCH http://168.119.175.142:8001/api/bills/843b26d3-fda7-4076-8c59-d3d0693f29b8/advance?year=2019&period=yearly&calendar=ec     - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.7727.15 Safari/537.36     - accept: */*     - accept-encoding: gzip,deflate,br     - x-company: BM Tech     - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4Nzk4NjA3MSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODc5ODYwNzF9.X5d64Ak8CgYcSurlDIdQfS9zpIscfaTtfSsfBywHAHg     - Content-Type: application/json     - x-role: IT Administrator / User Manager     - content-length: 55     - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4Nzk4NjA3MSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODc5ODYwNzF9.X5d64Ak8CgYcSurlDIdQfS9zpIscfaTtfSsfBywHAHg; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4Nzk4NjA3MSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODc5ODYwNzF9.X5d64Ak8CgYcSurlDIdQfS9zpIscfaTtfSsfBywHAHg . Retrying in 2s...
+[OK] Bill BILL/2026/08/28/003159 approved for 5 units.
+[STEP 3] Verifying partial release via bill detail...
+
+  ┌───────────────────────────────────────────────────────────────────┐
+  │ Partial PO Release Audit                                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Ref                       │ PO/2026/08/28/001873             │
+  │ PO ID                        │ 88375aed-65dc-4ba9-a9e5-a56ea63… │
+  │ Bill Ref                     │ BILL/2026/08/28/003159           │
+  │ Bill ID                      │ 843b26d3-fda7-4076-8c59-d3d0693… │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Qty Authorized            │ 10 units                         │
+  │ Received (this bill)         │ 5 units                          │
+  │ Remaining on PO              │ 5 units                          │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Unit Price                   │ $5000.00                         │
+  │ Bill Amount                  │ $25000.00                        │
+  │ Remaining Liability          │ $25000.00                        │
+  │ PO Total                     │ $50000.00                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Result                       │ ✓ PASS — Partial tracking corre… │
+  └───────────────────────────────────────────────────────────────────┘
+
+[PASS] Partial PO release confirmed: 5 received, 5 remaining.

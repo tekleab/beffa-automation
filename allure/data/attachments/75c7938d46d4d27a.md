@@ -1,0 +1,178 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: purchase/po-payment-attacks.spec.ts >> Procurement Payment Attack Vectors @purchase @security @logic @regression @full >> Guardrail: System must reject payment where split array does not match total
+- Location: tests/purchase/po-payment-attacks.spec.ts:175:9
+
+# Error details
+
+```
+Error: [PAYMENT_ATTACK_VULNERABILITY] UNVALIDATED FIELD: 'amount' header ignored — only bill_payments sum processed. Sent amount=5000, bill_payments sum=3000. ERP does not validate that amount == sum(bill_payments).
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e6]
+      - img [ref=e8]
+      - generic [ref=e11]:
+        - heading "Welcome to, befa" [level=3] [ref=e12]
+        - paragraph [ref=e13]: Empower Your Finances, Simplify Your Success
+        - paragraph [ref=e14]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+    - generic [ref=e16]:
+      - heading "Login To Your Account" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - text: Not a member?
+        - link "Register" [ref=e19] [cursor=pointer]:
+          - /url: /users/register
+      - generic [ref=e21]:
+        - group [ref=e22]:
+          - generic [ref=e23]: Email *
+          - textbox "Email *" [ref=e25]:
+            - /placeholder: Enter your email
+        - group [ref=e26]:
+          - generic [ref=e27]: Password *
+          - generic [ref=e28]:
+            - textbox "Password *" [ref=e29]:
+              - /placeholder: Enter your password
+            - button "Show password" [ref=e31] [cursor=pointer]:
+              - img [ref=e32]
+        - link "Forget Password?" [ref=e37] [cursor=pointer]:
+          - /url: forget-password
+        - button "Login" [ref=e39] [cursor=pointer]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  253 |             paymentRef = `${mismatchPayment.ref} (${mismatchPayment.id})`;
+  254 |             console.log(`[INFO] Mismatch payment created: ${paymentRef}`);
+  255 |             await app.advanceDocumentAPI(mismatchPayment.id, 'payments');
+  256 | 
+  257 |             // Bill balance check
+  258 |             const billData = await app.api.purchase.getBillAPI(bill.id);
+  259 |             balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? -1);
+  260 |             console.log(`[RESULT] Bill balance after mismatch payment: ${balance}`);
+  261 | 
+  262 |             // COA snapshot AFTER — re-fetch the same two accounts
+  263 |             const acctRespAfter = await page.request.get(`${apiBase}/accounts?page=1&pageSize=300&${qs}`, { headers });
+  264 |             const acctDataAfter = await acctRespAfter.json();
+  265 |             const allAccountsAfter: any[] = acctDataAfter.items || acctDataAfter.data || [];
+  266 | 
+  267 |             const cashAfter = allAccountsAfter.find((a: any) => a.id === cashAccount?.id);
+  268 |             const apAfter   = allAccountsAfter.find((a: any) => a.id === apAccount?.id);
+  269 |             cashBalanceAfter = parseFloat(cashAfter?.balance || cashAfter?.current_balance || '0');
+  270 |             apBalanceAfter   = parseFloat(apAfter?.balance   || apAfter?.current_balance   || '0');
+  271 | 
+  272 |             // Movement = how much each account moved (absolute)
+  273 |             cashMovement = Math.abs(cashBalanceAfter - cashBalanceBefore);
+  274 |             apMovement   = Math.abs(apBalanceAfter   - apBalanceBefore);
+  275 | 
+  276 |             console.log(`[COA SNAPSHOT] Cash after: ${cashBalanceAfter} (moved: ${cashMovement}) | AP after: ${apBalanceAfter} (moved: ${apMovement})`);
+  277 | 
+  278 |             const tolerance = 0.01;
+  279 |             // Double-entry integrity: Dr Cash must == Cr AP for a balanced journal.
+  280 |             // Any deviation means the ledger is out of balance.
+  281 |             const doubleEntryBroken = Math.abs(cashMovement - apMovement) > tolerance;
+  282 |             // True ghost: cash drained by full header amount but AP only relieved by bill_payments sum
+  283 |             const ghostFunds = Math.abs(cashMovement - PAYMENT_TOTAL) < tolerance &&
+  284 |                                Math.abs(apMovement   - ALLOCATED)     < tolerance;
+  285 |             // Header ignored: only bill_payments sum processed on both sides (no ghost, but `amount` unvalidated)
+  286 |             const headerIgnored = Math.abs(cashMovement - ALLOCATED) < tolerance &&
+  287 |                                   Math.abs(apMovement   - ALLOCATED) < tolerance;
+  288 | 
+  289 |             blocked = false;
+  290 |             const imbalance = Math.abs(cashMovement - apMovement);
+  291 |             if (ghostFunds) {
+  292 |                 blockReason = `GHOST FUNDS: Cash debited ${cashMovement} but AP credited only ${apMovement} — ${(cashMovement - apMovement).toFixed(2)} unaccounted`;
+  293 |             } else if (doubleEntryBroken) {
+  294 |                 blockReason = `BROKEN DOUBLE-ENTRY: Dr Cash ${cashMovement} ≠ Cr AP ${apMovement} — ledger imbalance of ${imbalance.toFixed(2)}`;
+  295 |             } else if (headerIgnored) {
+  296 |                 blockReason = `UNVALIDATED FIELD: 'amount' header ignored — only bill_payments sum processed`;
+  297 |             } else {
+  298 |                 blockReason = `Mismatch accepted: balance=${balance}, cashMoved=${cashMovement}, apMoved=${apMovement}`;
+  299 |             }
+  300 | 
+  301 |             console.log([
+  302 |                 ``,
+  303 |                 `  ╔══════════════════════════════════════════════════════════╗`,
+  304 |                 `  ║        PAYMENT MISMATCH — FINANCIAL IMPACT SUMMARY       ║`,
+  305 |                 `  ╠══════════════════════════════════════════════════════════╣`,
+  306 |                 `  ║  What we sent:                                           ║`,
+  307 |                 `  ║    • Payment total (header)  : $${String(PAYMENT_TOTAL).padEnd(26)}║`,
+  308 |                 `  ║    • Allocated to bill       : $${String(ALLOCATED).padEnd(26)}║`,
+  309 |                 `  ║    • Gap (unaccounted)        : $${String(UNACCOUNTED).padEnd(26)}║`,
+  310 |                 `  ╠══════════════════════════════════════════════════════════╣`,
+  311 |                 `  ║  What the system posted to the ledger:                   ║`,
+  312 |                 `  ║    Dr  ${(cashAccount?.name ?? 'Cash').substring(0, 20).padEnd(20)}  -$${String(cashMovement.toFixed(2)).padEnd(22)}║`,
+  313 |                 `  ║    Cr  ${(apAccount?.name ?? 'Accounts Payable').substring(0, 20).padEnd(20)}  +$${String(apMovement.toFixed(2)).padEnd(22)}║`,
+  314 |                 `  ╠══════════════════════════════════════════════════════════╣`,
+  315 |                 imbalance > tolerance
+  316 |                     ? `  ║  ⚠  LEDGER IMBALANCE: Dr ≠ Cr by $${String(imbalance.toFixed(2)).padEnd(22)}║`
+  317 |                     : `  ║  ✓  Ledger balanced (Dr == Cr)                            ║`,
+  318 |                 `  ║  Bill remaining balance      : $${String((balance ?? 0).toFixed(2)).padEnd(26)}║`,
+  319 |                 `  ╠══════════════════════════════════════════════════════════╣`,
+  320 |                 `  ║  Root cause:                                             ║`,
+  321 |                 ghostFunds
+  322 |                     ? `  ║  header 'amount' drained cash but AP not fully relieved  ║`
+  323 |                     : doubleEntryBroken
+  324 |                     ? `  ║  AP relieved by remaining balance, not payment amount    ║`
+  325 |                     : `  ║  header 'amount' field is not validated by the API       ║`,
+  326 |                 `  ║  Fix: validate amount == sum(bill_payments) on POST       ║`,
+  327 |                 `  ╚══════════════════════════════════════════════════════════╝`,
+  328 |                 ``
+  329 |             ].join('\n'));
+  330 |         }
+  331 | 
+  332 |         printAuditTable('Split Array Mismatch Guardrail', [
+  333 |             ['Bill Ref',                    bill.ref],
+  334 |             ['Bill ID',                     bill.id],
+  335 |             ['Bill Amount',                 `$${BILL_AMOUNT.toFixed(2)}`],
+  336 |             ['Payment Total (header)',       `$${PAYMENT_TOTAL.toFixed(2)}`],
+  337 |             ['Allocated to Bill',           `$${ALLOCATED.toFixed(2)}`],
+  338 |             ['Unaccounted Amount',           `$${UNACCOUNTED.toFixed(2)}`],
+  339 |             ['Payment Ref',                 paymentRef || 'N/A (blocked)'],
+  340 |             ['Bill Balance After',          balance !== null ? `$${balance.toFixed(2)}` : 'N/A (blocked)'],
+  341 |             ['─────────────────────────────', '────────────────────────────────────'],
+  342 |             [`COA: ${cashAccount?.name ?? 'Cash'} Before`,  `$${cashBalanceBefore.toFixed(2)}`],
+  343 |             [`COA: ${cashAccount?.name ?? 'Cash'} After`,   cashBalanceAfter !== null ? `$${cashBalanceAfter.toFixed(2)}` : 'N/A'],
+  344 |             [`COA: Cash Movement`,                          cashBalanceAfter !== null ? `$${cashMovement.toFixed(2)} debited` : 'N/A'],
+  345 |             [`COA: ${apAccount?.name ?? 'AP'} Before`,      `$${apBalanceBefore.toFixed(2)}`],
+  346 |             [`COA: ${apAccount?.name ?? 'AP'} After`,       apBalanceAfter !== null ? `$${apBalanceAfter.toFixed(2)}` : 'N/A'],
+  347 |             [`COA: AP Movement`,                            apBalanceAfter !== null ? `$${apMovement.toFixed(2)} credited` : 'N/A'],
+  348 |             ['─────────────────────────────', '────────────────────────────────────'],
+  349 |             ['Vulnerability Finding',       blockReason || 'Correctly blocked'],
+  350 |         ], blocked, blocked ? 'Mismatch rejected at API layer' : 'VULNERABILITY — broken double-entry');
+  351 | 
+  352 |         if (!blocked) {
+> 353 |             throw new Error(`[PAYMENT_ATTACK_VULNERABILITY] ${blockReason}. Sent amount=${PAYMENT_TOTAL}, bill_payments sum=${ALLOCATED}. ERP does not validate that amount == sum(bill_payments).`);
+      |                   ^ Error: [PAYMENT_ATTACK_VULNERABILITY] UNVALIDATED FIELD: 'amount' header ignored — only bill_payments sum processed. Sent amount=5000, bill_payments sum=3000. ERP does not validate that amount == sum(bill_payments).
+  354 |         } else {
+  355 |             console.log(`[PASS] Mismatched payment correctly rejected.`);
+  356 |         }
+  357 |     });
+  358 | });
+  359 | 
+```

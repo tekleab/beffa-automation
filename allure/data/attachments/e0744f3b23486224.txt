@@ -1,0 +1,15 @@
+06:43:42 [PERFORMANCE] API - Auth API Verification: 253.00ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+06:43:44 [INFO] Advancing invoices "6424780f-fc39-4306-a125-4dd088fbf175"...
+[TEST] Creating Receipt with back date: 2017-12-31T00:00:00Z
+[RECEIPT] amount=100 | invoice=6424780f... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/28/000915
+06:43:53 [INFO] Advancing receipts "3e526929-712c-474b-a39b-45c865bc5ae4"...
+06:43:54 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+06:43:54 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+06:43:56 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E2796)" } 
+06:43:56 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+[PASS] Back-dated Receipt blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2017-12-31 falls in a closed or missin
