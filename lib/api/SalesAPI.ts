@@ -353,6 +353,21 @@ export class SalesAPI extends BasePage {
       label: 'Standalone Invoice'
     });
 
+    if (response.status() === 401) {
+      console.warn(`[WARN] Create Standalone Invoice received 401 (likely invalid/stale customer ID ${custId}). Discovering fresh customer...`);
+      const freshMeta = await this.discoverMetadataAPI();
+      payload.customer_id = freshMeta.customerId;
+      payload.accounts_receivable_id = freshMeta.arAccountId;
+      payload.currency_id = freshMeta.currencyId;
+      const freshToken = await this._getAuthToken();
+      const freshHeaders = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': freshToken ? `Bearer ${freshToken}` : '' };
+      response = await this.safePost(`${apiBase}/invoices?${params}`, {
+        data: payload,
+        headers: freshHeaders,
+        label: 'Standalone Invoice (fresh customer retry)'
+      });
+    }
+
     // ── Auto-recovery: if invoice fails with "insufficient stock", top up via adjustment and retry ──
     for (let attempt = 0; !response.ok() && attempt < maxStockRetries; attempt++) {
       const errText = await response.text();
@@ -373,6 +388,7 @@ export class SalesAPI extends BasePage {
         label: 'Standalone Invoice (retry)'
       });
     }
+
 
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();

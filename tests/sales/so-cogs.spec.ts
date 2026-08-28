@@ -68,23 +68,42 @@ test.describe('Sales COGS Audit: Multi-Item Invoice @sales @inventory @logic @re
         // ── STEP 2: Create multi-item invoice (3 lines, 1 unit each) ─────────
         console.log(`[STEP 2] Creating multi-item invoice...`);
         const { apiBase, headers, qs } = await app.buildApiContext();
+        const { DateHelper: _DH } = require('../../lib/utils/DateHelper');
+        const resolvedDate = await _DH.resolve(page);
+        const isoDate = resolvedDate.iso;
+
+        // Ensure fresh metadata
+        const liveMeta = await app.api.sales.discoverMetadataAPI();
+        const arId = liveMeta.arAccountId || meta?.arAccountId;
+        const custId = liveMeta.customerId || meta?.customerId;
+        const currId = liveMeta.currencyId || meta?.currencyId;
+        const salesAcctId = liveMeta.salesAccountId || meta?.salesAccountId;
+
+        const payload = {
+            accounts_receivable_id: arId,
+            customer_id: custId,
+            date: isoDate,
+            posting_date: isoDate,
+            invoice_date: isoDate,
+            due_date: isoDate,
+            currency_id: currId,
+            status: 'draft',
+            released_sales_order_items: [],
+            items: [
+                { item_id: item1.itemId, quantity: 1, unit_price: 100, amount: 100, general_ledger_account_id: salesAcctId, location_id: item1.locationId, warehouse_id: item1.warehouseId },
+                { item_id: item2.itemId, quantity: 1, unit_price: 200, amount: 200, general_ledger_account_id: salesAcctId, location_id: item2.locationId, warehouse_id: item2.warehouseId },
+                { item_id: item3.itemId, quantity: 1, unit_price: 300, amount: 300, general_ledger_account_id: salesAcctId, location_id: item3.locationId, warehouse_id: item3.warehouseId },
+            ],
+        };
+
         const invoiceResp = await page.request.post(`${apiBase}/invoices?${qs}`, {
             headers,
-            data: {                accounts_receivable_id: meta.arAccountId,
-                customer_id: meta.customerId,                invoice_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
-                due_date: (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso,
-                currency_id: meta.currencyId,
-                released_sales_order_items: [],
-                items: [
-                    { item_id: item1.itemId, quantity: 1, unit_price: 100, amount: 100, general_ledger_account_id: meta.salesAccountId, location_id: item1.locationId, warehouse_id: item1.warehouseId },
-                    { item_id: item2.itemId, quantity: 1, unit_price: 200, amount: 200, general_ledger_account_id: meta.salesAccountId, location_id: item2.locationId, warehouse_id: item2.warehouseId },
-                    { item_id: item3.itemId, quantity: 1, unit_price: 300, amount: 300, general_ledger_account_id: meta.salesAccountId, location_id: item3.locationId, warehouse_id: item3.warehouseId },
-                ],
-            },
+            data: payload,
         });
         if (!invoiceResp.ok()) throw new Error(`Invoice creation failed: ${invoiceResp.status()} — ${await invoiceResp.text()}`);
         const inv = await invoiceResp.json();
         console.log(`[PASS] Invoice: ${inv.invoice_number} (${inv.id})`);
+
 
         // ── STEP 3: Approve invoice ───────────────────────────────────────────
         await app.advanceDocumentAPI(inv.id, 'invoices');

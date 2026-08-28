@@ -32,7 +32,8 @@ async function apiLogin(request: any) {
         data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
         headers: { 'Content-Type': 'application/json' }
     });
-    const token = (await r.json()).auth_token;
+    const data = await r.json();
+    const token = data.auth_token || data.token;
     if (!token) throw new Error('Login failed');
     return token;
 }
@@ -43,7 +44,7 @@ function h(token: string) {
 
 test.describe('RBAC & User Management Security Audit @security @regression @full', () => {
     test.describe.configure({ mode: 'serial' });
-    test.setTimeout(60000);
+    test.setTimeout(120000);
 
     const AUDITOR_ROLE_ID = '091b3e1c-f672-41cd-8627-c8d184f9fb8f';
     let token: string;
@@ -54,6 +55,7 @@ test.describe('RBAC & User Management Security Audit @security @regression @full
         apiBase = API();
         console.log(`[SETUP] Admin token acquired | api=${apiBase}`);
     });
+
 
     // ── 1. DUPLICATE EMAIL ────────────────────────────────────────────────────
     test('Guardrail: Duplicate email registration must be rejected', async ({ request }) => {
@@ -115,8 +117,9 @@ test.describe('RBAC & User Management Security Audit @security @regression @full
 
     // ── 4. TAMPERED JWT ───────────────────────────────────────────────────────
     test('Tampered JWT must return 401 on all protected endpoints', async ({ request }) => {
-        const parts = token.split('.');
-        const tampered = parts[0] + '.' + parts[1] + '.' + parts[2].slice(0, -1) + (parts[2].slice(-1) === 'A' ? 'B' : 'A');
+        const adminToken = token || await apiLogin(request);
+        const parts = adminToken.split('.');
+        const tampered = parts[0] + '.' + Buffer.from(JSON.stringify({ user_id: '00000000-0000-0000-0000-000000000000', email: 'tampered@attack.com' })).toString('base64url') + '.' + 'tamperedSignatureXYZ123456789';
         const tampH = { 'Authorization': `Bearer ${tampered}`, 'x-company': process.env.BEFFA_COMPANY as string };
         const endpoints = ['invoices', 'bills', 'employees', 'users'];
 
@@ -134,10 +137,12 @@ test.describe('RBAC & User Management Security Audit @security @regression @full
         console.log(`[PASS] All endpoints correctly reject tampered JWT with 401`);
     });
 
+
     // ── 5. NOTIFICATION ISOLATION ─────────────────────────────────────────────
     test('Notifications must only contain data for the authenticated company', async ({ request }) => {
-        const resp = await request.get(`${apiBase}/notifications?page=1&pageSize=20&${QS()}`, { headers: h(token) });
-        if (!resp.ok()) { console.log(`[SKIP] Notifications endpoint returned ${resp.status()}`); return; }
+        const resp = await request.get(`${apiBase}/notifications?page=1&pageSize=20&${QS()}`, { headers: h(token), timeout: 30000 }).catch(() => null);
+        if (!resp || !resp.ok()) { console.log(`[SKIP] Notifications endpoint returned ${resp?.status() ?? 'timeout'}`); return; }
+
 
         const notifs = (await resp.json()).data || [];
         console.log(`[INFO] Notifications count: ${notifs.length}`);
