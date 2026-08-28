@@ -463,7 +463,7 @@ export class PurchaseAPI extends BasePage {
     const json = await response.json();
     return { success: true, ref: json.invoice_number, id: json.id };
   }
-  async createBillFromPoAPI(poId: string, poItems?: any[], apAccountId?: string | null): Promise<{ success: boolean; billNumber: string; billId: string }> {
+  async createBillFromPoAPI(poId: string, poItems?: any[], apAccountId?: string | null): Promise<{ success: boolean; billNumber: string; billId: string; vendorId?: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();

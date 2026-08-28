@@ -350,7 +350,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         const poData = poResp && poResp.ok() ? await poResp.json() : {};
         const billData = await app.api.purchase.getBillAPI(bill.billId);
 
-        const poVendorId = poData.vendor_id || poData.vendor?.id || po.vendorId || meta.vendorId;
+        const poVendorId = poData.vendor_id || poData.vendor?.id || (po as any).vendorId || meta.vendorId;
         const billVendorId = billData.vendor_id || billData.vendor?.id || bill.vendorId || meta.vendorId;
 
         if (poVendorId && billVendorId && poVendorId !== billVendorId) {

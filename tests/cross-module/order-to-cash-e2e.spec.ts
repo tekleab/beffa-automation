@@ -205,8 +205,8 @@ test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @logic 
                     // Account mapping is configured — enforce full amount equality
                     expect(cashDebit, 'Cash must be debited on Receipt approval').toBeTruthy();
                     expect(arCredit, 'AR must be credited on Receipt approval').toBeTruthy();
-                    expect(cashDebitAmt, `[BDEV-1007] Receipt GL Cash debit ($${cashDebitAmt}) must equal receipt amount ($${soTotal}).`).toBeCloseTo(soTotal, 1);
-                    expect(arCreditAmt, `[BDEV-1007] Receipt GL AR credit ($${arCreditAmt}) must equal receipt amount ($${soTotal}).`).toBeCloseTo(soTotal, 1);
+                    expect(cashDebitAmt, `Receipt GL Cash debit ($${cashDebitAmt}) must equal receipt amount ($${soTotal}).`).toBeCloseTo(soTotal, 1);
+                    expect(arCreditAmt, `Receipt GL AR credit ($${arCreditAmt}) must equal receipt amount ($${soTotal}).`).toBeCloseTo(soTotal, 1);
                 }
             }
         }

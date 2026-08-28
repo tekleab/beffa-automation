@@ -90,7 +90,8 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             expectedStatuses: [400, 422, 500],
             method: 'POST',
             requestData: payload,
-            jiraTicket: 'BDEV-1272'
+        });
+
         if (status === 422 || status === 400) {
             console.log(`[DIAGNOSTIC STATUS] ✅ Guardrail operational. Server rejected payload with HTTP ${status}`);
         }
