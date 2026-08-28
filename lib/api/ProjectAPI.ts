@@ -20,9 +20,8 @@ export interface ProjectRecord {
 }
 
 export class ProjectAPI extends BasePage {
-    _getAuthToken!: () => Promise<string | null>;
-
     constructor(page: Page) {
+
         super(page);
     }
 

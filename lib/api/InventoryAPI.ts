@@ -12,9 +12,9 @@ export class InventoryAPI extends BasePage {
   approvedStatus: string;
   actionButtons: string;
   companyBtn: Locator;
-  _getAuthToken!: () => Promise<string | null>;
 
   constructor(page: Page) {
+
     super(page);
     this.page = page;
 

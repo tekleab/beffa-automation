@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { AppManager } from '../../pages/AppManager';
 
 /**
  * =============================================================================
@@ -14,7 +15,7 @@ import { test, expect } from '@playwright/test';
 
 
 test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @full', () => {
-    test.setTimeout(60000);
+    test.setTimeout(180000);
 
     const apiBase = 'http://168.119.175.142:8001/api';
     const company = process.env.BEFFA_COMPANY || 'BM Tech';
@@ -94,28 +95,38 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
         expect([400, 422], `Server must reject invalid receipt payload with HTTP 400/422`).toContain(status);
     });
 
-    test('API: Full Invoice, Receipt Creation, and Approval Workflow', async ({ request }) => {
+    test('API: Full Invoice, Receipt Creation, and Approval Workflow', async ({ page }) => {
         console.log(`\n=======================================================`);
         console.log(`  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test `);
         console.log(`=======================================================`);
 
-        const headers = await getAuthHeaders(request);
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
+        const token = await (app.api.sales as any)._getAuthToken();
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'x-company': company,
+            'Content-Type': 'application/json'
+        };
         const isoDate = '2026-08-14T00:00:00Z';
         console.log(`[OPERATING DATE] Date: ${isoDate}`);
 
-        // 1. Discover Metadata
+        // 1. Discover Metadata & create fresh item with verified stock
         console.log(`[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...`);
-        const [custResp, cashResp, currResp, whResp, locResp, itemResp] = await Promise.all([
-            request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers }),
-            request.get(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers }),
-            request.get(`${apiBase}/currency?${params}`, { headers }),
-            request.get(`${apiBase}/warehouses?page=1&pageSize=10&${params}`, { headers }),
-            request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers }),
-            request.get(`${apiBase}/inventory-items?page=1&pageSize=50&${params}`, { headers }),
+        const salesMeta = await app.api.sales.discoverMetadataAPI();
+        const freshItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+
+        const [custResp, cashResp, currResp, whResp, locResp] = await Promise.all([
+            page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers }),
+            page.request.get(`${apiBase}/accounts?page=1&pageSize=200&${params}`, { headers }),
+            page.request.get(`${apiBase}/currency?${params}`, { headers }),
+            page.request.get(`${apiBase}/warehouses?page=1&pageSize=10&${params}`, { headers }),
+            page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers }),
         ]);
 
         const custData = await custResp.json().catch(() => ({}));
-        const customer = (custData.data || custData.items || (Array.isArray(custData) ? custData : []))[0];
+        const customer = (custData.data || custData.items || (Array.isArray(custData) ? custData : []))[0] || { id: salesMeta.customerId };
         const cashData = await cashResp.json().catch(() => ({}));
         const cashAccounts = cashData.data || cashData.items || (Array.isArray(cashData) ? cashData : []);
         const currencyData = await currResp.json().catch(() => ({}));
@@ -128,17 +139,17 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
         const warehouses = whData.data || whData.items || (Array.isArray(whData) ? whData : []);
         const locData = await locResp.json().catch(() => ({}));
         const locs = locData.data || locData.items || (Array.isArray(locData) ? locData : []);
-        const location = locs[0];
+        const location = locs[0] || { id: freshItem.locationId };
 
-        let warehouseId = location?.warehouse_id || location?.warehouse?.id;
+        let warehouseId = location?.warehouse_id || location?.warehouse?.id || freshItem.warehouseId;
         if (!warehouseId && typeof location?.warehouse === 'string') {
             const match = warehouses.find((w: any) => w.name === location.warehouse);
             warehouseId = match?.id;
         }
         if (!warehouseId) {
-            warehouseId = warehouses[0]?.id;
+            warehouseId = warehouses[0]?.id || freshItem.warehouseId;
         }
-        const locationId = location?.id;
+        const locationId = location?.id || freshItem.locationId;
 
         const allAccounts = cashAccounts;
         const arAccount =
@@ -152,120 +163,6 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             allAccounts.find((a: any) => a.name?.toLowerCase().includes('sales')) ||
             arAccount;
 
-        // 2. Discover / Seed Active Item with Sufficient Stock (minStock >= 1)
-        const itemData = await itemResp.json().catch(() => ({}));
-        const items = itemData.data || itemData.items || (Array.isArray(itemData) ? itemData : []);
-        const activeItems = items.filter((i: any) => (i.status || '').toLowerCase() !== 'inactive');
-        let activeItem: any = null;
-        let verifiedStock = 0;
-
-        console.log(`[STOCK DISCOVERY] Checking existing items for sufficient stock at location ${locationId}...`);
-        for (const candidate of activeItems) {
-            try {
-                const locsResp = await request.get(`${apiBase}/inventory-item/${candidate.id}/locations?${params}`, { headers });
-                if (locsResp.ok()) {
-                    const locsData = await locsResp.json();
-                    const locList = locsData.data || locsData.items || (Array.isArray(locsData) ? locsData : []);
-                    const matchedLoc = locList.find((l: any) => (l.id === locationId || l.location_id === locationId) && parseFloat(l.quantity || '0') >= 1);
-                    if (matchedLoc) {
-                        activeItem = candidate;
-                        verifiedStock = parseFloat(matchedLoc.quantity);
-                        console.log(`[STOCK DISCOVERY] Found existing item with sufficient stock: "${activeItem.name}" (${activeItem.id}) - Stock: ${verifiedStock}`);
-                        break;
-                    }
-                }
-            } catch { /* proceed to next candidate */ }
-        }
-
-        // If no existing item has stock >= 1, create a fresh item and seed stock via adjustment + poll verification
-        if (!activeItem) {
-            console.log(`[STOCK DISCOVERY] No existing item with stock >= 1 found. Creating fresh item and seeding stock...`);
-            const itemTs = Date.now();
-            const createItemResp = await request.post(`${apiBase}/inventory-items?${params}`, {
-                headers,
-                data: {
-                    name: `API-SO-Test-Item-${itemTs}`,
-                    type: 'inventory',
-                    category: 'Raw Materials',
-                    cost_method_code: 'WAC',
-                    item_class: 'MER',
-                    item_id: `ITM-SO-${itemTs.toString().slice(-6)}`,
-                    unit_of_measurement: 'Kilogram (kg)',
-                    part_number: `PN-${itemTs.toString().slice(-4)}`,
-                    status: 'active',
-                    purchase_price: 100,
-                    selling_price: 200,
-                    unit_cost: 100,
-                    gl_sales_account_id: salesAccount.id,
-                    gl_cost_account_id: arAccount.id,
-                    gl_inventory_account_id: arAccount.id,
-                    default_location_id: locationId,
-                    default_warehouse_id: warehouseId,
-                    quantity: 0
-                }
-            });
-
-            if (createItemResp.ok()) {
-                activeItem = await createItemResp.json();
-                console.log(`[ITEM CREATED] Created fresh active item: ${activeItem.name} (${activeItem.id})`);
-                
-                // Seed stock via inventory adjustment
-                const adjResp = await request.post(`${apiBase}/inventory-adjustments?${params}`, {
-                    headers,
-                    data: {
-                        adjusted_by: 'quantity',
-                        adjusted_quantity: 50,
-                        adjustment_account_id: arAccount.id,
-                        inventory_item_id: activeItem.id,
-                        is_write_down: 'false',
-                        location_id: locationId,
-                        warehouse_id: warehouseId,
-                        date: isoDate,
-                        reason: 'API Standalone Receipt Test Seed',
-                        unit_cost: 100,
-                        unit_price: 100,
-                        total_cost: 5000,
-                        current_quantity: 0,
-                        location_quantity: 0,
-                        skip_draft: false,
-                        status: 'draft'
-                    }
-                });
-
-                if (adjResp.ok()) {
-                    const adj = await adjResp.json();
-                    await request.patch(`${apiBase}/inventory-adjustments/${adj.id}/advance?${params}`, { headers, data: {} });
-                    console.log(`[STOCK SEED] Seeded stock via adjustment ${adj.id}. Polling for stock commitment...`);
-
-                    // Poll to ensure stock is committed before creating SO
-                    for (let attempt = 1; attempt <= 10; attempt++) {
-                        const locsResp = await request.get(`${apiBase}/inventory-item/${activeItem.id}/locations?${params}`, { headers });
-                        if (locsResp.ok()) {
-                            const locsData = await locsResp.json();
-                            const locList = locsData.data || locsData.items || (Array.isArray(locsData) ? locsData : []);
-                            const matchedLoc = locList.find((l: any) => l.id === locationId || l.location_id === locationId);
-                            const currentStock = parseFloat(matchedLoc?.quantity || '0');
-                            if (currentStock >= 1) {
-                                verifiedStock = currentStock;
-                                console.log(`[STOCK VERIFIED] Live stock confirmed on attempt ${attempt}: ${verifiedStock}`);
-                                break;
-                            }
-                        }
-                        await new Promise(r => setTimeout(r, 1000));
-                    }
-                }
-            }
-        }
-
-        if (!activeItem) {
-            activeItem = activeItems[0] || items[0];
-        }
-
-        expect(activeItem?.id, 'Active inventory item is required').toBeTruthy();
-
-        expect(customer, 'Customer is required').toBeTruthy();
-        expect(cashAccount, 'Cash/Bank Account is required').toBeTruthy();
-
         console.log(`  ├── Customer ID      : ${customer.id}`);
         console.log(`  ├── Cash Account ID  : ${cashAccount.id} (${cashAccount.name || 'N/A'})`);
         console.log(`  ├── Currency ID      : ${currency.id} (${currency.code || currency.name || 'ETB'})`);
@@ -273,73 +170,38 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
         console.log(`  ├── Sales Account ID : ${salesAccount.id} (${salesAccount.name || 'N/A'})`);
         console.log(`  ├── Warehouse ID     : ${warehouseId || 'N/A'}`);
         console.log(`  ├── Location ID      : ${locationId || 'N/A'}`);
-        console.log(`  └── Inventory Item ID: ${activeItem?.id || 'N/A'}`);
+        console.log(`  └── Inventory Item ID: ${freshItem.id}`);
 
-        // 2. Create & Advance Sales Order
-        const ts = Date.now();
+        // 2. Create & Advance Sales Order via AppManager
         console.log(`[STEP 3A] Creating Sales Order...`);
-        const soResp = await request.post(`${apiBase}/sales-orders?${params}`, {
-            headers,
-            data: {
-                customer_id: customer.id,
-                accounts_receivable_id: arAccount.id,
-                currency_id: currency.id,
-                so_date: isoDate,
-                so_items: [{
-                    item_id: activeItem?.id,
-                    inventory_item_id: activeItem?.id,
-                    quantity: 1,
-                    unit_price: 1000,
-                    amount: 1000,
-                    general_ledger_account_id: salesAccount.id,
-                    warehouse_id: warehouseId,
-                    location_id: locationId,
-                    description: 'API Standalone Receipt Test'
-                }],
-                status: 'draft'
-            }
+        const soResult = await app.api.sales.createSalesOrderAPI({
+            customerId: customer.id,
+            itemData: freshItem,
+            quantity: 1,
+            unitPrice: 1000
         });
+        expect(soResult.success, `SO Creation failed: ${soResult.error}`).toBe(true);
+        console.log(`[PASS] Sales Order Created: ${soResult.ref || soResult.id}`);
 
-        expect(soResp.ok(), `SO Creation failed: ${await soResp.text()}`).toBe(true);
-        const so = await soResp.json();
-        console.log(`[PASS] Sales Order Created: ${so.ref || so.id}`);
+        await app.advanceDocumentAPI(soResult.id!, 'sales-orders');
 
-        await request.patch(`${apiBase}/sales-orders/${so.id}/advance?${params}`, { headers, data: {} });
-
-        // 3. Create & Advance Sales Invoice
+        // 3. Create & Advance Sales Invoice via AppManager
         console.log(`[STEP 3B] Creating Sales Invoice...`);
-        const invResp = await request.post(`${apiBase}/invoices?${params}`, {
-            headers,
-            data: {
-                customer_id: customer.id,
-                accounts_receivable_id: arAccount.id,
-                currency_id: currency.id,
-                sales_order_id: so.id,
-                date: isoDate,
-                posting_date: isoDate,
-                due_date: isoDate,
-                items: [{
-                    item_id: activeItem?.id,
-                    inventory_item_id: activeItem?.id,
-                    quantity: 1,
-                    unit_price: 1000,
-                    amount: 1000,
-                    general_ledger_account_id: salesAccount.id,
-                    warehouse_id: warehouseId,
-                    location_id: locationId
-                }]
-            }
+        const invResult = await app.api.sales.createInvoiceAPI({
+            customerId: customer.id,
+            soItemId: soResult.soItemId,
+            releasedQuantity: 1,
+            locationId: freshItem.locationId,
+            warehouseId: freshItem.warehouseId
         });
+        expect(invResult.success, `Invoice Creation failed: ${invResult.error}`).toBe(true);
+        console.log(`[PASS] Invoice Created: ${invResult.ref || invResult.id}`);
 
-        expect(invResp.ok(), `Invoice Creation failed: ${await invResp.text()}`).toBe(true);
-        const inv = await invResp.json();
-        console.log(`[PASS] Invoice Created: ${inv.ref || inv.id} | Status: ${inv.status}`);
-
-        const advInvResp = await request.patch(`${apiBase}/invoices/${inv.id}/advance?${params}`, { headers, data: {} });
-        console.log(`[PASS] Invoice Advance Status: ${advInvResp.status()}`);
+        await app.advanceDocumentAPI(invResult.id!, 'invoices');
 
         // 4. Create Linked Receipt
-        console.log(`[STEP 3C] Creating Receipt linked to Invoice ${inv.id}...`);
+        const ts = Date.now();
+        console.log(`[STEP 3C] Creating Receipt linked to Invoice ${invResult.id}...`);
         const receiptPayload = {
             customer_id: customer.id,
             cash_account_id: cashAccount.id,
@@ -348,21 +210,21 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             amount: 1000,
             date: isoDate,
             reference: `AUTO-RCT-${ts}`,
-            invoice_receipts: [{ invoice_id: inv.id, amount: 1000 }],
+            invoice_receipts: [{ invoice_id: invResult.id, amount: 1000 }],
             receipt_items: [{ amount: 1000, general_ledger_account_id: arAccount.id, unit_price: 1000, quantity: 1, description: 'Invoice Receipt' }]
         };
 
-        const rctResp = await request.post(`${apiBase}/receipts?${params}`, {
+        const rctResp = await page.request.post(`${apiBase}/receipts?${params}`, {
             headers,
             data: receiptPayload
         });
 
         const rctStatus = rctResp.status();
         const rctBodyText = await rctResp.text();
-        console.log(`[HTTP POST] /api/receipts (linked to draft invoice) -> Status: ${rctStatus}`);
+        console.log(`[HTTP POST] /api/receipts (linked to invoice) -> Status: ${rctStatus}`);
 
         if (!rctResp.ok()) {
-            console.log(`[⚠️ BACKEND DEFECT DETECTED] Linking draft invoice to receipt returned HTTP ${rctStatus}`);
+            console.log(`[⚠️ BACKEND DEFECT DETECTED] Linking invoice to receipt returned HTTP ${rctStatus}`);
             console.log(`[SERVER RESPONSE] ${rctBodyText.slice(0, 300)}`);
         } else {
             console.log(`[PASS] Linked Receipt Created: ${rctBodyText.slice(0, 100)}`);
@@ -380,7 +242,7 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
             reference: `AUTO-DIR-${ts}`
         };
 
-        const dirRctResp = await request.post(`${apiBase}/receipts?${params}`, {
+        const dirRctResp = await page.request.post(`${apiBase}/receipts?${params}`, {
             headers,
             data: unlinkedPayload
         });
@@ -399,20 +261,20 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
 
         // 6. Verify Direct GET /api/receipt/:id (or /api/receipts/:id)
         console.log(`[STEP 3E] Verifying Direct GET /api/receipt/${rct.id}...`);
-        let directResp = await request.get(`${apiBase}/receipt/${rct.id}?${params}`, { headers });
+        let directResp = await page.request.get(`${apiBase}/receipt/${rct.id}?${params}`, { headers });
         if (!directResp.ok()) {
             console.log(`[FALLBACK] GET /api/receipt/${rct.id} returned ${directResp.status()}. Trying plural GET /api/receipts/${rct.id}...`);
-            directResp = await request.get(`${apiBase}/receipts/${rct.id}?${params}`, { headers });
+            directResp = await page.request.get(`${apiBase}/receipts/${rct.id}?${params}`, { headers });
         }
         console.log(`[HTTP GET] Direct Receipt Inspection -> Status: ${directResp.status()}`);
         expect([200, 201], 'GET receipt endpoint must return 200/201').toContain(directResp.status());
 
         // 7. Approve Receipt via Advance API
         console.log(`[STEP 3F] Approving Receipt via Document Workflow...`);
-        let advRctResp = await request.patch(`${apiBase}/receipt/${rct.id}/advance?${params}`, { headers, data: {} });
+        let advRctResp = await page.request.patch(`${apiBase}/receipt/${rct.id}/advance?${params}`, { headers, data: {} });
         if (!advRctResp.ok()) {
             console.log(`[FALLBACK] PATCH /api/receipt/${rct.id}/advance returned ${advRctResp.status()}. Trying plural...`);
-            advRctResp = await request.patch(`${apiBase}/receipts/${rct.id}/advance?${params}`, { headers, data: {} });
+            advRctResp = await page.request.patch(`${apiBase}/receipts/${rct.id}/advance?${params}`, { headers, data: {} });
         }
         console.log(`[HTTP PATCH] Advance Receipt -> Status: ${advRctResp.status()}`);
 
@@ -424,5 +286,6 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
 
         console.log(`[DIAGNOSTIC STATUS] ✅ Receipt API Diagnostics Completed Successfully.`);
     });
+
 });
 

@@ -2,9 +2,8 @@ import { Page } from '@playwright/test';
 import { BasePage } from '../base-page';
 
 export class HrAPI extends BasePage {
-  _getAuthToken!: () => Promise<string | null>;
-
   constructor(page: Page) {
+
     super(page);
   }
 

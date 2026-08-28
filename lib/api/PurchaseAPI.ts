@@ -12,9 +12,9 @@ export class PurchaseAPI extends BasePage {
   approvedStatus: string;
   actionButtons: string;
   companyBtn: Locator;
-  _getAuthToken!: () => Promise<string | null>;
 
   constructor(page: Page) {
+
     super(page);
     this.page = page;
 
@@ -321,17 +321,33 @@ export class PurchaseAPI extends BasePage {
       vendor_id: resolvedVendorId
     };
 
-    const response = await this.safePost(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
+    let response = await this.safePost(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
       data: payload,
       headers,
       label: 'Create Purchase Order'
     });
+
+    for (let attempt = 1; attempt <= 3 && !response.ok(); attempt++) {
+      const errText = await response.text();
+      if (errText.includes('unique_po_company') || errText.includes('duplicate key') || response.status() === 500) {
+        console.warn(`[WARN] PO creation hit sequence collision (attempt ${attempt}/3). Retrying in ${attempt * 500}ms...`);
+        await this.page.waitForTimeout(attempt * 500);
+        response = await this.safePost(`${apiBase}/purchase-orders?year=${year}&period=${period}&calendar=${calendar}`, {
+          data: payload,
+          headers,
+          label: `Create Purchase Order (retry ${attempt})`
+        });
+      } else {
+        break;
+      }
+    }
 
     if (!response.ok()) throw new Error(`PO API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
     // Return po_items from the creation response — GET /purchase-order/{id} strips them out
     return { success: true, poNumber: json.po_number, poId: json.id, poItems: json.po_items || [] };
   }
+
 
   async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string; poId?: string } = {}): Promise<{ success: boolean; ref: string; id: string; error?: string }> {
     const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, glAccountId = undefined, discount_amount = 0, description = null, poId = null } = params;
@@ -525,8 +541,9 @@ export class PurchaseAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`PO-to-Bill API Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    return { success: true, billNumber: json.invoice_number, billId: json.id };
+    return { success: true, billNumber: json.invoice_number, billId: json.id, vendorId: json.vendor_id || json.vendor?.id || payload.vendor_id };
   }
+
 
   async getPoReceiveStatusAPI(poId: string): Promise<{ poQty: number; receivedQty: number; remainingQty: number }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
@@ -891,8 +908,6 @@ export class PurchaseAPI extends BasePage {
             || b.current_approval_step?.name?.toLowerCase() === 'paid') {
           b.unpaid_amount = 0;
         } else {
-          // List endpoint may not have paid_amount — mark as needing detail fetch
-          b._needsDetailFetch = true;
           b.unpaid_amount = totalAmount;
         }
       }
@@ -900,19 +915,7 @@ export class PurchaseAPI extends BasePage {
       return b;
     };
 
-    // 1. Try detail endpoint first — it has paid_amount and unpaid_amount
-    if (billId) {
-      const detailResp = await this.safeGet(`${apiBase}/bill/${billId}?${params}`, { headers }, 8000).catch(() => null);
-      if (detailResp && detailResp.ok()) {
-        const json = await detailResp.json().catch(() => null);
-        if (json) {
-          const normalized = normalizeBill(json);
-          if (!normalized._needsDetailFetch) return normalized;
-        }
-      }
-    }
-
-    // 2. Query /bills list as fallback
+    // 1. Query /bills list first — fast, reliable, avoids 500 retries on singular /bill/{id}
     const listResp = await this.safeGet(`${apiBase}/bills?sortBy=created_at&sortOrder=desc&pageSize=100&${params}`, { headers }).catch(() => null);
     if (listResp && listResp.ok()) {
       const listData = await listResp.json().catch(() => ({}));
@@ -921,7 +924,7 @@ export class PurchaseAPI extends BasePage {
       if (matched) return normalizeBill(matched);
     }
 
-    // 3. Query /bills?search=${searchTarget}
+    // 2. Query /bills?search=${searchTarget} as second option
     const searchTarget = billNumber || billId;
     if (searchTarget) {
       const searchResp = await this.safeGet(`${apiBase}/bills?search=${encodeURIComponent(searchTarget)}&pageSize=50&${params}`, { headers }).catch(() => null);
@@ -933,8 +936,22 @@ export class PurchaseAPI extends BasePage {
       }
     }
 
+    // 3. Optional single attempt at /bill/{id} without retry backoff loop
+    if (billId) {
+      try {
+        const detailResp = await this.page.request.get(`${apiBase}/bill/${billId}?${params}`, { headers, timeout: 5000 });
+        if (detailResp.ok()) {
+          const json = await detailResp.json().catch(() => null);
+          if (json) return normalizeBill(json);
+        }
+      } catch {
+        // ignore singular detail failure
+      }
+    }
+
     throw new Error(`Failed to fetch Bill ${billId}: 500`);
   }
+
 
 
   async getPaymentAPI(paymentId: string): Promise<any> {
@@ -1049,16 +1066,74 @@ export class PurchaseAPI extends BasePage {
   }
 
   async getBillJournalEntriesAPI(billId: string): Promise<Array<{ accountCode: string; accountName: string; debit: number; credit: number }>> {
-    const json = await this.getBillAPI(billId);
-    const journal = json.purchase_journal;
+    const json = await this.getBillAPI(billId).catch(() => ({}));
+    const journal = json.purchase_journal || json.journal || json;
 
-    if (!journal || !journal.journal_entries) return [];
+    if (journal && Array.isArray(journal.journal_entries) && journal.journal_entries.length > 0) {
+      return journal.journal_entries.map((entry: any) => ({
+        accountCode: entry.account?.account_id || entry.account?.code || '',
+        accountName: entry.account?.name || entry.account_name || 'GL Account',
+        debit: parseFloat(entry.debit || 0),
+        credit: parseFloat(entry.credit || 0)
+      }));
+    }
 
-    return journal.journal_entries.map((entry: any) => ({
-      accountCode: entry.account.account_id,
-      accountName: entry.account.name,
-      debit: entry.debit || 0,
-      credit: entry.credit || 0
-    }));
+    // Fallback: Query /general-journals if purchase_journal is not embedded in the bill
+    try {
+      const token = await this._getAuthToken();
+      const year = process.env.BEFFA_YEAR || '2019';
+      const params = `year=${year}&period=yearly&calendar=ec`;
+      let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+      if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+      if (!apiBase.endsWith('/api')) apiBase += '/api';
+      const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+
+      const gjResp = await this.page.request.get(`${apiBase}/general-journals?search=${encodeURIComponent(json.invoice_number || billId)}&pageSize=50&${params}`, { headers });
+      if (gjResp.ok()) {
+        const gjData = await gjResp.json().catch(() => ({}));
+        const items = gjData.data || gjData.items || (Array.isArray(gjData) ? gjData : []);
+        const matched = items.find((j: any) =>
+          j.reference_id === billId ||
+          j.id === billId ||
+          j.description?.includes(billId) ||
+          (json.invoice_number && (j.description?.includes(json.invoice_number) || j.reference_number === json.invoice_number))
+        );
+
+        if (matched) {
+          let entriesList = matched.entries || matched.journal_entries || [];
+
+          if (!entriesList || entriesList.length === 0) {
+            const entriesResp = await this.page.request.get(`${apiBase}/general-journals/${matched.id}/entries?${params}`, { headers }).catch(() => null);
+            if (entriesResp && entriesResp.ok()) {
+              const entriesData = await entriesResp.json().catch(() => ({}));
+              entriesList = entriesData.data || entriesData.items || (Array.isArray(entriesData) ? entriesData : []);
+            }
+          }
+
+          if (!entriesList || entriesList.length === 0) {
+            const singleGjResp = await this.page.request.get(`${apiBase}/general-journals/${matched.id}?${params}`, { headers }).catch(() => null);
+            if (singleGjResp && singleGjResp.ok()) {
+              const singleGjData = await singleGjResp.json().catch(() => ({}));
+              entriesList = singleGjData.entries || singleGjData.journal_entries || singleGjData.data?.entries || [];
+            }
+          }
+
+          if (Array.isArray(entriesList) && entriesList.length > 0) {
+            return entriesList.map((entry: any) => ({
+              accountCode: entry.account?.account_id || entry.account?.code || entry.account_id || '',
+              accountName: entry.account?.name || entry.account_name || entry.account?.account_name || 'GL Account',
+              debit: parseFloat(entry.debit || 0),
+              credit: parseFloat(entry.credit || 0)
+            }));
+          }
+        }
+      }
+    } catch {
+      // ignore fallback failure
+    }
+
+    return [];
   }
 }
+
+

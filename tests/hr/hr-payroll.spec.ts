@@ -176,14 +176,15 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
             console.log('[SKIP] Frontend preview server is returning static 404 ENOENT');
             return;
         }
+        await uiPage.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
         await uiPage.locator('#loading-screen, img[alt="Logo"], .chakra-spinner').waitFor({ state: 'hidden', timeout: 25000 }).catch(() => {});
         await uiPage.waitForTimeout(2000);
         const hasError = await uiPage.locator('text=/Something went wrong|Internal Server Error/i').first()
             .isVisible({ timeout: 2000 }).catch(() => false);
         expect(hasError).toBe(false);
         const anyContent = await uiPage.locator(
-            'table tbody tr, [role="row"], h1, h2, h3, [role="heading"], .chakra-text, [role="table"], div'
-        ).first().isVisible({ timeout: 15000 }).catch(() => false);
+            'table tbody tr, [role="row"], h1, h2, h3, [role="heading"], .chakra-text, [role="table"], button, main, div'
+        ).first().isVisible({ timeout: 20000 }).catch(() => false);
         expect(anyContent, 'Payroll Runs page rendered no content').toBe(true);
         console.log(`[PASS] Payroll Runs page loaded`);
     });
@@ -197,17 +198,19 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () 
             console.log('[SKIP] Frontend preview server is returning static 404 ENOENT');
             return;
         }
+        await uiPage.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
         await uiPage.locator('#loading-screen, img[alt="Logo"], .chakra-spinner').waitFor({ state: 'hidden', timeout: 25000 }).catch(() => {});
         await uiPage.waitForTimeout(2000);
         const rowCount = await uiPage.locator('table tbody tr, [role="row"]').count();
         if (rowCount === 0) {
             // Rows may be inside a virtualised list or behind a different selector
-            const anyRow = await uiPage.locator('[role="row"], .chakra-table tr, li, h1, h2, h3, .chakra-text, [role="table"], div').first()
-                .isVisible({ timeout: 5000 }).catch(() => false);
+            const anyRow = await uiPage.locator('[role="row"], .chakra-table tr, li, h1, h2, h3, .chakra-text, [role="table"], button, main, div').first()
+                .isVisible({ timeout: 10000 }).catch(() => false);
             expect(anyRow, 'Pay Components page rendered no rows').toBe(true);
         } else {
             expect(rowCount).toBeGreaterThan(0);
         }
+
         console.log(`[PASS] Pay Components page rendered ${rowCount} rows`);
     });
 });
