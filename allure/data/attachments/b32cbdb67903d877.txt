@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+05:46:30 [PERFORMANCE] API - Auth API Verification: 227.41ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007448 (ID: 17b27a38-e737-41e0-ab37-87fcf7d6281a)
+05:46:38 [INFO] Advancing inventory-adjustments "17b27a38-e737-41e0-ab37-87fcf7d6281a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788068796734 (55b19978-0eb4-4315-accd-5a5c5b4f2b03) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:46:41 [PERFORMANCE] API - Auth API Verification: 291.56ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating Payment with back date: 2017-12-31T00:00:00Z
+05:46:44 [INFO] Advancing bills "b7506a4a-6d62-4a01-b299-4c53ea741f1a"...
+[ACTION] Creating Bill Payment for b7506a4a-6d62-4a01-b299-4c53ea741f1a via API (CashAcct: b521c276-a826-4a32-a674-6d20550c0b4a)...
+[SUCCESS] Payment created: PAY/2026/08/30/001046 (ID: 26045d1e-0bfa-4b22-9f83-58bf0a06f002)
+05:46:48 [INFO] Advancing payments "26045d1e-0bfa-4b22-9f83-58bf0a06f002"...
+[PASS] Payment created but blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2017-12-31 falls in a closed or missin

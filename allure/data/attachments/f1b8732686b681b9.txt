@@ -1,0 +1,17 @@
+05:53:39 [PERFORMANCE] API - Auth API Verification: 211.25ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007499 (ID: d13d3c6f-627b-458c-8353-f115970a2bbf)
+05:53:51 [INFO] Advancing inventory-adjustments "d13d3c6f-627b-458c-8353-f115970a2bbf"...
+05:53:52 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+05:53:52 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1788069229616 (40335bc7-3ec4-42df-87ea-3dbf436f5ae8) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:53:57 [PERFORMANCE] API - Auth API Verification: 221.51ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[PRECISION TEST] Creating multi-line invoice with fractional unit price 33.3333...
+[INVOICE CREATED] ID: d566eb5e-bf42-42e6-a96e-aeac0861c08c | Ref: INV/2026/08/30/004046 | Amount: undefined
+05:53:57 [INFO] Advancing invoices "d566eb5e-bf42-42e6-a96e-aeac0861c08c"...
+[APPROVED] Invoice d566eb5e-bf42-42e6-a96e-aeac0861c08c posted to GL

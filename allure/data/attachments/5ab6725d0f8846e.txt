@@ -1,0 +1,14 @@
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007381 (ID: 18e8b199-5b0a-4325-8418-fe1cb526fcb4)
+05:36:16 [INFO] Advancing inventory-adjustments "18e8b199-5b0a-4325-8418-fe1cb526fcb4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788068175641 (74bead83-78a2-4565-bd86-3a0499c2eb8a) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:36:20 [INFO] Advancing invoices "75a09fef-6083-41a4-ad0c-68929d4275ca"...
+[STRESS] Invoice INV/2026/08/30/003986 approved.
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=1500
+[KNOWN_BUG #7] Invoice 75a09fef-6083-41a4-ad0c-68929d4275ca unreceived_amount ($100) < requested amount ($1500). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $100.
+[RECEIPT] amount=100 | invoice=75a09fef... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/30/001026
+[STRESS] Draft receipt RCPT/2026/08/30/001026 created.

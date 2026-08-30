@@ -1,0 +1,26 @@
+05:37:45 [PERFORMANCE] API - Auth API Verification: 311.94ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007395 (ID: b9cca55b-7965-446a-9e56-bc31d8ef8e19)
+05:37:49 [INFO] Advancing inventory-adjustments "b9cca55b-7965-446a-9e56-bc31d8ef8e19"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788068268846 (1e060c9b-be03-47e1-b830-f9e42066b8a0) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:37:52 [PERFORMANCE] API - Auth API Verification: 213.62ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+05:37:54 [INFO] Advancing invoices "d679cd73-c3ee-4200-93f1-1a4701f68a6a"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=d679cd73... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/30/001033
+05:38:01 [INFO] Advancing receipts "cfb61049-1cfc-4db5-97df-497955eca6ac"...
+[ATTACK] Attempting second receipt on fully paid invoice...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=0 | Requested receipt amount=100
+[KNOWN_BUG #7] Invoice d679cd73-c3ee-4200-93f1-1a4701f68a6a unreceived_amount ($0) < requested amount ($100). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $0.
+[RECEIPT PRE-FLIGHT] Invoice d679cd73-c3ee-4200-93f1-1a4701f68a6a is already fully paid/cleared.
+05:38:07 [INFO] Advancing receipts "d679cd73-c3ee-4200-93f1-1a4701f68a6a"...
+[PASS] Second receipt correctly rejected: [API BLOCK] 422: {
+	"code": 422,
+	"message": "You cannot approve an already approved Receipt (E2888)"
+}
+

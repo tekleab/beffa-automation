@@ -1,0 +1,21 @@
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+05:48:35 [PERFORMANCE] API - Auth API Verification: 480.09ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=10 @ $15 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007467 (ID: 3ef4f32c-a433-4bd7-936c-d2916976f864)
+05:48:39 [INFO] Advancing inventory-adjustments "3ef4f32c-a433-4bd7-936c-d2916976f864"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: Pencil-A-1788068915356 (4336c6ef-ed95-4159-89c0-84fea0c51715) | method=FIFO | stock=10@$15 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SETUP] Item: Pencil-A-1788068915356 (4336c6ef-ed95-4159-89c0-84fea0c51715)
+05:48:46 [INFO] Advancing purchase-orders "9c560228-b612-45a0-b78f-e52943fe5168"...
+05:48:49 [INFO] Advancing bills "664ea42b-34c6-4087-b379-1f337ed599e8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[SETUP] Layers built: import(10@$15) + bill(2@$40) + received-PO(3@$25) → qty=15
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[AUDIT-A] qty=15 (exp:15)
+[AUDIT-A] Layers (0): none — ERP does not expose fifo_layers on item endpoint
+[AUDIT-A] Item response keys: category, cost_method_code, description, gl_cost_account, gl_inventory_account, gl_sales_account, id, item_class, item_id, name, note, nrv, part_number, purchase_price, quantity, selling_price, serial, status, unit_cost, unit_of_measurement
+[KNOWN_LIMITATION] ERP does not expose fifo_layers on GET /inventory-item/{id} — qty=15 verified, layer structure not assertable via this endpoint
