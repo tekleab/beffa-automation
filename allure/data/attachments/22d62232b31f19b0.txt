@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+01:42:31 [PERFORMANCE] API - Auth API Verification: 263.71ms
+[AUTH] Session token and local storage injected successfully.
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007343 (ID: 17254fe6-ff07-4161-b0d3-74d6b764506b)
+01:42:42 [INFO] Advancing inventory-adjustments "17254fe6-ff07-4161-b0d3-74d6b764506b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788054161018 (f46e85e2-5199-495c-88e0-4995820b7a6d) | method=WAC | stock=20@$500 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] PO created: PO/2026/08/30/002012 for Vendor Manenderas (f1df90ff-0033-4600-b49e-0913c59a25d5)
+01:42:51 [INFO] Advancing purchase-orders "6359b2ab-7590-49f4-bf69-7d7cc07570e8"...
+[OK] PO PO/2026/08/30/002012 approved
+[STEP] Phase 2: Create linked Bill via API
+01:42:55 [INFO] Advancing bills "0d641e3d-cf9b-45f6-a2a4-0c189e583a8c"...
+[OK] Bill BILL/2026/08/30/003352 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/08/30/003352 is physically present in Manenderas's ledger.
+[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection
+[WARN] Bill BILL/2026/08/30/003352 confirmed via API ledger. UI table did not show row within 1 pages.
