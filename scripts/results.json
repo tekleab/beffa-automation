@@ -1,29 +1,37 @@
 {
-  "total": 23,
-  "passed": 23,
-  "failed": 0,
+  "total": 267,
+  "passed": 242,
+  "failed": 25,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 24980,
-  "lastUpdated": "2026-08-30T05:30:58.634Z",
+  "passRate": 90.6,
+  "avgDurationMs": 16669,
+  "lastUpdated": "2026-08-30T05:59:13.281Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 23,
-      "failed": 0,
+      "passed": 242,
+      "failed": 25,
       "skipped": 0,
       "trend": [
-        95.7,
         92.1,
         100,
         100,
         100,
         100,
-        100
+        100,
+        90.6
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "721",
+      "commit": "3cfe5ea",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "74m 10s",
+      "passRate": 90.6,
+      "status": "success"
+    },
     {
       "run": "720",
       "commit": "25c00a8",
@@ -95,15 +103,88 @@
       "duration": "8m 49s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "711",
-      "commit": "e84552f",
-      "trigger": "push (smoke)",
-      "duration": "0m 0s",
-      "passRate": 0,
-      "status": "unknown"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "STRESS: Receipt against an invoice reversed mid-flight must be rejected",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  197 |         // Reverse the invoice (void)\n  198 |         const reversed = await app.api.sales",
+      "firstSeen": "2026-08-30T05:36:08.568Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: 100, Expected: 500\n\n  192 |\n  193 |             if (Number(finalInv.unreceived_amount) !== IN",
+      "firstSeen": "2026-08-30T05:37:05.653Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  138 |                 await app.advanceDocumentAPI(body1.id, 'invoices', { skipStockTopUp: tr",
+      "firstSeen": "2026-08-30T05:37:33.680Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
+      "error": "Error: AR mismatch: expected 5000, got 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m5000\u001b[39m\nReceived: \u001b[31m",
+      "firstSeen": "2026-08-30T05:38:38.923Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (2017-12-31T00:00:00Z)!\n\n  77 |             try {\n  78 |                 await app.advanceDocumentAPI(so.id, 'sales-",
+      "firstSeen": "2026-08-30T05:38:45.410Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2019)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved future-dated SO (2019-01-01T00:00:00Z)!\n\n  109 |             try {\n  110 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 111 |     ",
+      "firstSeen": "2026-08-30T05:39:00.848Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System accepted pre-epoch date (1969-12-31T00:00:00Z)!\n\n  345 |\n  346 |         if (inv.success) {\n> 347 |             throw new Error(`[PERIOD_CONTROL_BUG] System accepted",
+      "firstSeen": "2026-08-30T05:39:18.179Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "STRESS: Payment against a bill reversed mid-flight must be rejected",
+      "error": "Error: [REVERSED_BILL_BUG] Payment PAY/2026/08/30/001036 approved against reversed bill BILL/2026/08/30/003379!\n\n  215 |\n  216 |         if (approved) {\n> 217 |             throw new Error(`[REVERSED_",
+      "firstSeen": "2026-08-30T05:41:15.628Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/08/30/003381 never appeared in \"Manenderas\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:728\n\n  726 |     }\n  727 |\n> 728 |     throw new Error(`[ERR",
+      "firstSeen": "2026-08-30T05:41:27.138Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "LOAD: 20 concurrent PO submissions must all succeed within 30s",
+      "error": "Error: 20 concurrent POs took 73105ms — exceeds 60s SLA\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m60000\u001b[39m\nReceived:   \u001b[31m7",
+      "firstSeen": "2026-08-30T05:43:13.849Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ]
 }
