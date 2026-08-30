@@ -1,0 +1,21 @@
+07:03:35 [PERFORMANCE] API - Auth API Verification: 279.99ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007604 (ID: a4ddf29d-5adf-4382-a706-3481a3c01537)
+07:03:48 [INFO] Advancing inventory-adjustments "a4ddf29d-5adf-4382-a706-3481a3c01537"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788073426666 (27edd166-da80-47f9-8219-007bfe1be053) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+07:03:52 [PERFORMANCE] API - Auth API Verification: 260.04ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[PASS] Back-dated Bill correctly rejected at creation: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"The invoice date 2017-12-31 falls in a closed or missing accounting period. Please open the period for this date or update the document date"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007539 (ID: eb77cc55-f420-473a-a8fb-59fa1e1ee180)
+06:52:22 [INFO] Advancing inventory-adjustments "eb77cc55-f420-473a-a8fb-59fa1e1ee180"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788072740777 (62eed650-0c66-43b1-959d-a3d4e362e1d6) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:52:25 [WARN] GET http://168.119.175.142:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+06:52:28 [INFO] Advancing invoices "549a3600-54be-4cc8-b5d6-e381f1f48fd9"...
+[STRESS] Invoice INV/2026/08/30/004070 approved.
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=1500
+[KNOWN_BUG #7] Invoice 549a3600-54be-4cc8-b5d6-e381f1f48fd9 unreceived_amount ($100) < requested amount ($1500). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $100.
+[RECEIPT] amount=100 | invoice=549a3600... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/08/30/001059
+[STRESS] Draft receipt RCPT/2026/08/30/001059 created.
+[VOID] Invoice 549a3600-54be-4cc8-b5d6-e381f1f48fd9 voided → status=draft (no separate credit note; sales_journal cleared)
+[STRESS] Invoice INV/2026/08/30/004070 reversed successfully.
+[STRESS] Attempting to approve receipt RCPT/2026/08/30/001059 against reversed invoice...
+06:52:40 [INFO] Advancing receipts "127a69cd-de48-4918-bcd2-3efbdc58922b"...
+[PASS] Receipt rejected correctly: [REVERSED_INVOICE_BUG] Receipt RCPT/2026/08/30/001059 approved against reversed invoice INV/2026/08/30/004070!

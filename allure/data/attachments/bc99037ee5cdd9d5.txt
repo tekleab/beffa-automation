@@ -1,0 +1,46 @@
+07:12:01 [PERFORMANCE] API - Auth API Verification: 369.12ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007662 (ID: 74ee2a79-12b2-4a3a-b2b7-63d04554b5c6)
+07:12:12 [INFO] Advancing inventory-adjustments "74ee2a79-12b2-4a3a-b2b7-63d04554b5c6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1788073929983 (2fbb7977-54e6-404f-9fb7-b0180e89eed8) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007663 (ID: f2806934-912e-48c7-bcb5-e7bc88b71c97)
+07:12:18 [INFO] Advancing inventory-adjustments "f2806934-912e-48c7-bcb5-e7bc88b71c97"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1788073936965 (c79def4f-9c9e-45e3-9070-92f1c81559d8) | method=WAC | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+07:12:21 [INFO] [STOCK_TOPUP] Injecting 70 units for item 2fbb7977-54e6-404f-9fb7-b0180e89eed8...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+07:12:22 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+07:12:22 [INFO] [STOCK_TOPUP] Injecting 70 units for item 2fbb7977-54e6-404f-9fb7-b0180e89eed8...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+07:12:24 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+07:12:24 [INFO] [STOCK_TOPUP] Injecting 70 units for item 2fbb7977-54e6-404f-9fb7-b0180e89eed8...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+07:12:25 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+07:12:29 [PERFORMANCE] API - Auth API Verification: 315.23ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+07:12:37 [INFO] Picking date: "Purchase Order Date" → target 2026-8-30
+07:12:39 [PASS] "Purchase Order Date" set to day 30.
+07:12:40 [PERFORMANCE] UI - Pick Date: Purchase Order Date: 2698.82ms
+07:12:43 [PERFORMANCE] UI - Random Selection: Vendor: 2698.41ms
+07:12:45 [PERFORMANCE] UI - Random Selection: Accounts Payable: 2370.94ms
+07:12:54 [PERFORMANCE] UI - Random Selection: Purchase Type: 9066.02ms
+[API PRE-CAPTURE] Using guaranteed-stock item "WAC-Item-1788073929983" @ $100
+07:12:58 [PERFORMANCE] UI - Random Selection: Item: 2297.69ms
+[ITEM MODAL] Price check: val=$14925.684210526315
+[ITEM MODAL] ✅ Price confirmed: $100
+07:13:02 [PERFORMANCE] UI - Random Selection: Warehouse: 2511.30ms
+07:13:05 [PERFORMANCE] UI - Random Selection: Location: 2453.36ms
+07:13:08 [PERFORMANCE] UI - Random Selection: G/L Account: 2495.97ms
+[MODAL] Filled Quantity: 5
+07:13:12 [PERFORMANCE] UI - Random Selection: Tax: 2843.64ms
+[MODAL] Item line item added successfully
+[OK] Inventory line item added to PO
+07:13:15 [INFO] Advancing purchase-orders "20636670-43a0-43cb-86b3-74ef98fc72d3"...
+[PASS] PO with inventory line item created and approved

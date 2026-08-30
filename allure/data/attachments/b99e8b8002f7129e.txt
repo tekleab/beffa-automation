@@ -1,0 +1,16 @@
+06:55:08 [PERFORMANCE] API - Auth API Verification: 279.61ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007566 (ID: c2ae311f-3911-4894-a4b5-fca54fcb8323)
+06:55:14 [INFO] Advancing inventory-adjustments "c2ae311f-3911-4894-a4b5-fca54fcb8323"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788072913378 (3ab153e4-51fa-488f-b93b-d4093bf05119) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:55:18 [PERFORMANCE] API - Auth API Verification: 252.77ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating Invoice with future date: 2019-01-01T00:00:00Z
+06:55:20 [INFO] Advancing invoices "4dbbdd22-a2f7-433b-9692-38aad24f7b0a"...
+[PASS] Future-dated Invoice blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "Posting failed: the journal date 2019-01-01 falls in a closed or missin

@@ -1,0 +1,276 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/order-to-cash-e2e.spec.ts >> Order-to-Cash (O2C) Full Integration @cross-module @sales @logic @regression @full >> Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification
+- Location: tests/cross-module/order-to-cash-e2e.spec.ts:45:9
+
+# Error details
+
+```
+Error: [FRESH ITEM] Stock adjustment failed for 4fd2ac49-ef3c-4654-b928-7995148063c0: {
+	"code": 400,
+	"message": "Unable to create Inventory Adjustment."
+}
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e6]
+      - img [ref=e8]
+      - generic [ref=e11]:
+        - heading "Welcome to, befa" [level=3] [ref=e12]
+        - paragraph [ref=e13]: Empower Your Finances, Simplify Your Success
+        - paragraph [ref=e14]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+    - generic [ref=e16]:
+      - heading "Login To Your Account" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - text: Not a member?
+        - link "Register" [ref=e19] [cursor=pointer]:
+          - /url: /users/register
+      - generic [ref=e21]:
+        - group [ref=e22]:
+          - generic [ref=e23]: Email *
+          - textbox "Email *" [ref=e25]:
+            - /placeholder: Enter your email
+        - group [ref=e26]:
+          - generic [ref=e27]: Password *
+          - generic [ref=e28]:
+            - textbox "Password *" [ref=e29]:
+              - /placeholder: Enter your password
+            - button "Show password" [ref=e31] [cursor=pointer]:
+              - img [ref=e32]
+        - link "Forget Password?" [ref=e37] [cursor=pointer]:
+          - /url: forget-password
+        - button "Login" [ref=e39] [cursor=pointer]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  641 |     const calendar = process.env.BEFFA_CALENDAR || 'ec';
+  642 |     const params = `year=${year}&period=${period}&calendar=${calendar}`;
+  643 | 
+  644 |     // Try singular invoice endpoint first
+  645 |     let response = await this.safeGet(`${apiBase}/invoice/${receiptId}?${params}`, {
+  646 |       headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+  647 |     });
+  648 | 
+  649 |     if (!response.ok() && response.status() === 404) {
+  650 |       // fallback to plural invoices and generic receipt endpoint if needed
+  651 |       response = await this.safeGet(`${apiBase}/invoices/${receiptId}?${params}`, {
+  652 |         headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+  653 |       });
+  654 |       if (!response.ok() && response.status() === 404) {
+  655 |         response = await this.safeGet(`${apiBase}/receipts/${receiptId}?${params}`, {
+  656 |           headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+  657 |         });
+  658 |       }
+  659 |     }
+  660 | 
+  661 |     if (!response.ok()) {
+  662 |       console.warn(`[WARN] Journal fetch failed: ${response.status()}`);
+  663 |       return [];
+  664 |     }
+  665 | 
+  666 |     const json = await response.json();
+  667 |     const invoiceData = json.data ? (Array.isArray(json.data) ? json.data[0] : json.data) : json;
+  668 |     
+  669 |     const journal = invoiceData.sales_journal || invoiceData.cash_disbursement_journal || invoiceData.cash_receipt_journal;
+  670 |     if (!journal || !journal.journal_entries) {
+  671 |       console.warn('[WARN] No journal entries found in response');
+  672 |       return [];
+  673 |     }
+  674 |     return journal.journal_entries.map((entry: any) => ({
+  675 |       accountCode: entry.account?.account_id || entry.account_id || '',
+  676 |       accountName: entry.account?.name || entry.account?.account_name || entry.account?.account_id || '',
+  677 |       accountType: entry.account?.type?.name || entry.account?.type?.type || entry.account?.account_type || '',
+  678 |       debit: entry.debit?.toString() || '0',
+  679 |       credit: entry.credit?.toString() || '0'
+  680 |     }));
+  681 |   }
+  682 | 
+  683 |   /**
+  684 |    * Creates a fresh inventory item with the specified costing method and injects
+  685 |    * initial stock via an approved adjustment. Tests own this item from line 1 —
+  686 |    * no seeded-data pollution.
+  687 |    */
+  688 |   async createFreshItemWithStockAPI(opts: {
+  689 |     name?: string;
+  690 |     cost_method_code: 'FIFO' | 'WAC' | 'AVERAGE';
+  691 |     quantity: number;
+  692 |     unit_cost: number;
+  693 |     locationId?: string;
+  694 |     warehouseId?: string;
+  695 |     skipStockPoll?: boolean;
+  696 |   }): Promise<{ id: string; itemId: string; itemName: string; currentStock: number; unitCost: number; locationId: string; warehouseId: string }> {
+  697 |     let locationId = opts.locationId;
+  698 |     let warehouseId = opts.warehouseId;
+  699 |     if (!locationId || !warehouseId) {
+  700 |       const meta = await this.discoverMetadataAPI();
+  701 |       locationId = locationId || meta.locationId;
+  702 |       warehouseId = warehouseId || meta.warehouseId;
+  703 |     }
+  704 | 
+  705 |     const ts = Date.now();
+  706 |     const name = opts.name || `${opts.cost_method_code}-Item-${ts}`;
+  707 | 
+  708 |     // Create item with quantity=0 so the ERP has no pre-existing stock to conflict with.
+  709 |     // Stock is injected via an approved adjustment with explicit current_quantity=0 and
+  710 |     // location_quantity=0 — this is the only path that reliably registers inventory_item_locations
+  711 |     // AND passes the ERP's quantity-consistency check.
+  712 |     const item = await this.createInventoryItemAPI({
+  713 |       name,
+  714 |       item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-9)}`,
+  715 |       part_number: `PN-${ts.toString().slice(-7)}`,
+  716 |       cost_method_code: opts.cost_method_code,
+  717 |       quantity: 0,
+  718 |       unit_cost: opts.unit_cost,
+  719 |       default_location_id: locationId,
+  720 |       default_warehouse_id: warehouseId,
+  721 |     });
+  722 | 
+  723 |     // Inject stock via adjustment with up to 3 retries for transient DB lock/lag.
+  724 |     // Pass current_quantity=0 and location_quantity=0 explicitly so ERP consistency check passes.
+  725 |     let adj: any;
+  726 |     for (let attempt = 1; attempt <= 3; attempt++) {
+  727 |       adj = await this.createInventoryAdjustmentAPI({
+  728 |         itemId: item.id,
+  729 |         quantity: opts.quantity,
+  730 |         cost: opts.unit_cost,
+  731 |         locationId,
+  732 |         warehouseId,
+  733 |         adjusted_by: 'quantity',
+  734 |         _overrideCurrentQty: 0,
+  735 |         _overrideLocationQty: 0,
+  736 |       });
+  737 |       if (adj.success && adj.id) break;
+  738 |       console.warn(`[FRESH ITEM] Stock adjustment attempt ${attempt} failed: ${adj.error}. Retrying in 1s...`);
+  739 |       await this.page.waitForTimeout(1000);
+  740 |     }
+> 741 |     if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
+      |                                        ^ Error: [FRESH ITEM] Stock adjustment failed for 4fd2ac49-ef3c-4654-b928-7995148063c0: {
+  742 |     await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');
+  743 |     if (!opts.skipStockPoll) {
+  744 |       await this.pollStockAPI(item.id, opts.quantity, locationId, 15);
+  745 |     }
+  746 | 
+  747 |     console.log(`[FRESH ITEM] Created: ${name} (${item.id}) | method=${opts.cost_method_code} | stock=${opts.quantity}@$${opts.unit_cost} | loc=${locationId}`);
+  748 |     return {
+  749 |       id: item.id,
+  750 |       itemId: item.id,
+  751 |       itemName: name,
+  752 |       currentStock: opts.quantity,
+  753 |       unitCost: opts.unit_cost,
+  754 |       locationId: locationId!,
+  755 |       warehouseId: warehouseId!
+  756 |     };
+  757 |   }
+  758 | 
+  759 |   // --- Missing Methods / Aliases for Compatibility ---
+  760 |   async adjustStockAPI(data: any) { return this.createInventoryAdjustmentAPI(data); }
+  761 |   async createEmployeeRequestAPI(data: any) { console.warn('Stub: createEmployeeRequestAPI'); return { id: 'stub' }; }
+  762 |   async submitEmployeeRequestAPI(id: string) { console.warn('Stub: submitEmployeeRequestAPI'); }
+  763 |   async consolidateRequestsAPI(ids: string[]) { console.warn('Stub: consolidateRequestsAPI'); return { id: 'stub' }; }
+  764 |   async approveDepartmentRequestAPI(id: string) { console.warn('Stub: approveDepartmentRequestAPI'); }
+  765 |   async reviewPropertyRequestAPI(id: string) { console.warn('Stub: reviewPropertyRequestAPI'); }
+  766 |   async issueStoreRequestAPI(id: string) { console.warn('Stub: issueStoreRequestAPI'); }
+  767 | 
+  768 |   async createMoveOrderAPI(data: {
+  769 |     itemId: string;
+  770 |     quantity: number;
+  771 |     fromLocationId: string;
+  772 |     fromWarehouseId: string;
+  773 |     toLocationId: string;
+  774 |     toWarehouseId: string;
+  775 |   }): Promise<{ id: string; ref?: string; status: string; fromLocationId: string; toLocationId: string }> {
+  776 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+  777 |     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  778 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  779 |     const token = await this._getAuthToken();
+  780 |     const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+  781 |     const headers = {
+  782 |       'x-company': process.env.BEFFA_COMPANY as string,
+  783 |       'Authorization': `Bearer ${token}`,
+  784 |       'Content-Type': 'application/json',
+  785 |       'x-role': 'IT Administrator / User Manager'
+  786 |     };
+  787 | 
+  788 |     const createResp = await this.safePost(`${apiBase}/move-orders?${params}`, {
+  789 |       data: {
+  790 |         inventory_item_id: data.itemId,
+  791 |         quantity: data.quantity,
+  792 |         from_warehouse_id: data.fromWarehouseId,
+  793 |         from_location_id: data.fromLocationId,
+  794 |         destination_warehouse_id: data.toWarehouseId,
+  795 |         destination_location_id: data.toLocationId
+  796 |       },
+  797 |       headers,
+  798 |       label: 'Create Move Order'
+  799 |     });
+  800 |     if (!createResp.ok()) throw new Error(`[MOVE ORDER] Create failed: ${createResp.status()} - ${await createResp.text()}`);
+  801 |     const order = await createResp.json();
+  802 |     console.log(`[MOVE ORDER] Created: ${order.id} (status: ${order.status})`);
+  803 | 
+  804 |     await this.advanceDocumentAPI(order.id, 'move-orders');
+  805 |     return { id: order.id, ref: order.ref, status: 'approved', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
+  806 |   }
+  807 | 
+  808 |   async ensureTransferDestinationAPI(fromLocationId: string, itemId?: string): Promise<{ locationId: string; warehouseId: string }> {
+  809 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+  810 |     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  811 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  812 |     const token = await this._getAuthToken();
+  813 |     const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+  814 |     const headers = {
+  815 |       'x-company': process.env.BEFFA_COMPANY as string,
+  816 |       'Authorization': `Bearer ${token}`,
+  817 |       'Content-Type': 'application/json',
+  818 |       'x-role': 'IT Administrator / User Manager'
+  819 |     };
+  820 | 
+  821 |     // Priority 1: another location the item is already registered at
+  822 |     if (itemId) {
+  823 |       const itemResp = await this.safeGet(`${apiBase}/inventory-item/${itemId}?${params}`, { headers });
+  824 |       if (itemResp.ok()) {
+  825 |         const itemData = await itemResp.json();
+  826 |         // inventory_item_locations stripped from detail response — skip this path
+  827 |       }
+  828 |     }
+  829 | 
+  830 |     // Priority 2: any other system location
+  831 |     const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=100&${params}`, { headers });
+  832 |     if (locResp.ok()) {
+  833 |       const locData = await locResp.json();
+  834 |       const allLocs = locData.items || locData.data || [];
+  835 |       const dest = allLocs.find((l: any) => l.id !== fromLocationId);
+  836 |       if (dest) {
+  837 |         const warehouseId = await this.resolveWarehouseIdFromLocation(dest);
+  838 |         console.log(`[DEST] Using system location: ${dest.id} | Warehouse: ${warehouseId}`);
+  839 |         return { locationId: dest.id, warehouseId };
+  840 |       }
+  841 | 
+```

@@ -1,0 +1,14 @@
+07:03:58 [PERFORMANCE] API - Auth API Verification: 461.55ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating Bill with future date: 2019-01-01T00:00:00Z
+[PASS] Future-dated Bill correctly rejected at creation: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"The invoice date 2019-01-01 falls in a closed or missing accounting period. Please open the period for this date or update the document date"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

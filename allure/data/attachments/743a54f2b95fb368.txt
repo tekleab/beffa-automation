@@ -1,0 +1,49 @@
+06:53:26 [PERFORMANCE] API - Auth API Verification: 262.76ms
+[AUTH] Session token and local storage injected successfully.
+06:53:30 [PERFORMANCE] API - Auth API Verification: 279.92ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating 3 fresh WAC items...
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007546 (ID: d7d04307-7f5e-45fe-9f1d-977a529c0762)
+06:53:33 [INFO] Advancing inventory-adjustments "d7d04307-7f5e-45fe-9f1d-977a529c0762"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1788072812083 (10c5a23d-3a27-433e-8611-d9268388c788) | method=WAC | stock=10@$50 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007547 (ID: c1fca530-a621-4e49-b7e3-89c639761adc)
+06:53:39 [INFO] Advancing inventory-adjustments "c1fca530-a621-4e49-b7e3-89c639761adc"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1788072818194 (31764526-f546-4518-be23-6c8e4741931e) | method=WAC | stock=10@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $120 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007549 (ID: c2ef1b70-4333-474c-9a9f-598913e789ef)
+06:53:45 [INFO] Advancing inventory-adjustments "c2ef1b70-4333-474c-9a9f-598913e789ef"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1788072824036 (b5bcb061-06a7-455f-b176-442a323d8a8d) | method=WAC | stock=10@$120 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM 1] WAC-Item-1788072812083 | stock:10 | cost:$50
+[ITEM 2] WAC-Item-1788072818194 | stock:10 | cost:$80
+[ITEM 3] WAC-Item-1788072824036 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/08/30/004076 (22847ddd-9e8f-4989-964e-750b16ad0d28)
+06:53:50 [INFO] Advancing invoices "22847ddd-9e8f-4989-964e-750b16ad0d28"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] WAC-Item-1788072812083 | before:10 → after:9 (exp:9)
+[ITEM 2] WAC-Item-1788072818194 | before:10 → after:9 (exp:9)
+[ITEM 3] WAC-Item-1788072824036 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales () | Dr:0 Cr:50
+[JE] Cash at Bank - CBE () | Dr:50 Cr:0
+[JE] Inventory () | Dr:0 Cr:50
+[JE] Sales () | Dr:0 Cr:80
+[JE] Cash at Bank - CBE () | Dr:80 Cr:0
+[JE] Inventory () | Dr:0 Cr:80
+[JE] Sales () | Dr:0 Cr:120
+[JE] Cash at Bank - CBE () | Dr:120 Cr:0
+[JE] Inventory () | Dr:0 Cr:120
+[JE] Accounts Receivable () | Dr:250 Cr:0
+[AUDIT] Total Dr: $500 | Total Cr: $500 | Expected COGS: $250
+[PASS] COGS journal balanced — Dr:$500 = Cr:$500
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced
