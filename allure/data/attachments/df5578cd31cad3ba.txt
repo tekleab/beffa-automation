@@ -1,0 +1,39 @@
+[DateHelper] Resolved in-period date: 2026-08-30T00:00:00Z (day=30, ecYear=2019)
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007276 (ID: 2dc56a42-6962-4e9e-924a-f1373bd757b6)
+01:21:27 [INFO] Advancing inventory-adjustments "2dc56a42-6962-4e9e-924a-f1373bd757b6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1788052886044 (672dbe2a-b41b-4b6c-8d41-a2c70e467a9e) | method=WAC | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[LOAD] "WAC-Item-1788052886044" | initial=10 | expected=60
+[LOAD] Firing 10 concurrent +5 adjustments...
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007277 (ID: 09c8b718-1803-44a4-95f2-db11fdc12c87)
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[ADJ] quantity | qty=5 @ $100 | current=10 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007278 (ID: 4c846e67-52ad-43a2-aded-f706db93f9a1)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007279 (ID: 3ccff6ff-210a-49fc-af31-bc83412b31c8)
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007280 (ID: 6db1eea6-5f10-41d5-be7a-5d20429a1aec)
+[LOAD] Created: 10 | Failed: 0
+01:21:32 [INFO] Advancing inventory-adjustments "09c8b718-1803-44a4-95f2-db11fdc12c87"...
+01:21:32 [INFO] Advancing inventory-adjustments "4c846e67-52ad-43a2-aded-f706db93f9a1"...
+01:21:32 [INFO] Advancing inventory-adjustments "6db1eea6-5f10-41d5-be7a-5d20429a1aec"...
+01:21:32 [INFO] Advancing inventory-adjustments "3ccff6ff-210a-49fc-af31-bc83412b31c8"...
+01:21:34 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+01:21:34 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+01:21:35 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+01:21:35 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+01:21:36 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+01:21:36 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+01:21:38 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+01:21:38 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 60...
+[WARN] pollStockAPI timed out. Expected 60, actual 30.
+[LOAD] final=30 | expected=60 | net=+20

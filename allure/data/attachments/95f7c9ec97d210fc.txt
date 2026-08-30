@@ -1,0 +1,20 @@
+01:19:55 [PERFORMANCE] API - Auth API Verification: 300.19ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving PO...
+01:20:00 [INFO] Advancing purchase-orders "0691f378-f516-4b4e-8e5d-c8a842547b8c"...
+[PO] PO/2026/08/30/001997 (0691f378-f516-4b4e-8e5d-c8a842547b8c)
+[STEP 2] Creating first Bill from PO...
+01:20:05 [INFO] Advancing bills "389c4ffa-856b-4ba6-b3e0-acf8b04e264b"...
+[BILL 1] BILL/2026/08/30/003320 (389c4ffa-856b-4ba6-b3e0-acf8b04e264b) — approved
+[ATTACK] Attempting second Bill from same PO PO/2026/08/30/001997...
+[PASS] Double-billing correctly blocked: PO-to-Bill API Failed: 422 - {
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quantity": [
+			"Unable to consume 5 items from purchase order item, only 0 remaining"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

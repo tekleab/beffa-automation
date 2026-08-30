@@ -1,0 +1,56 @@
+01:29:01 [PERFORMANCE] API - Auth API Verification: 240.15ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007317 (ID: 9d67dce3-02ac-464c-8d82-48c87cf48a6f)
+01:29:08 [INFO] Advancing inventory-adjustments "9d67dce3-02ac-464c-8d82-48c87cf48a6f"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: WAC-Item-1788053346842 (7bc87377-d2c7-48e2-8386-8b65a4238c21) | method=WAC | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] WAC-Item-1788053346842 (7bc87377-d2c7-48e2-8386-8b65a4238c21) | Stock before: 10
+[STEP 2] Creating Purchase Order...
+[PO] Created PO/2026/08/30/002010 (10370381-f185-490f-84bc-4664becf1dd6)
+01:29:17 [INFO] Advancing purchase-orders "10370381-f185-490f-84bc-4664becf1dd6"...
+[PO] Approved/Released PO/2026/08/30/002010
+[STEP 3] Billing and Receiving PO items...
+[BILL] Created from PO: BILL/2026/08/30/003344 (a86b7007-6865-4e14-96e6-29926eb51251)
+01:29:20 [INFO] Advancing bills "a86b7007-6865-4e14-96e6-29926eb51251"...
+01:29:23 [WARN] 401 on advance — re-authenticating and retrying...
+01:29:23 [INFO] Re-authenticated successfully — retrying advance...
+[BILL] Approved BILL/2026/08/30/003344
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[STOCK] Expected: 15, Got: 15
+[BILL] Outstanding balance after Approval: 2500
+[BILL GL] Entries found: 0
+[STEP 4] Creating Payment for Bill...
+[ACTION] Creating Bill Payment for a86b7007-6865-4e14-96e6-29926eb51251 via API (CashAcct: 0e41cae5-57a2-4245-9ece-d129ca61addd)...
+[SUCCESS] Payment created: PAY/2026/08/30/001031 (ID: 10f7953b-942e-4a94-a59a-d0a20a2d40be)
+[PAYMENT] Created PAY/2026/08/30/001031 (10f7953b-942e-4a94-a59a-d0a20a2d40be)
+01:30:10 [INFO] Advancing payments "10f7953b-942e-4a94-a59a-d0a20a2d40be"...
+[PAYMENT] Approved PAY/2026/08/30/001031
+[BILL] Outstanding balance after Payment: 0
+[PAYMENT GL] Entries found: 2
+[PAYMENT GL DETAILS] [
+  {
+    "account": {
+      "account_id": "2003",
+      "id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+      "name": "Accounts Payable"
+    },
+    "credit": 0,
+    "debit": 2500,
+    "description": "BILL/2026/08/30/003344 bill payment"
+  },
+  {
+    "account": {
+      "account_id": "1007",
+      "id": "0e41cae5-57a2-4245-9ece-d129ca61addd",
+      "name": "Petty Cash"
+    },
+    "credit": 2500,
+    "debit": 0,
+    "description": "Payment - PAY/2026/08/30/001031"
+  }
+]
+[PASS] Full Procure-to-Pay integration cycle completed successfully!

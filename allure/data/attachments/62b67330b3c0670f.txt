@@ -1,0 +1,19 @@
+01:12:51 [PERFORMANCE] API - Auth API Verification: 324.23ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/08/30/007220 (ID: 093e96ae-f6ed-4735-a2a9-285f5f50d1fb)
+01:12:57 [INFO] Advancing inventory-adjustments "093e96ae-f6ed-4735-a2a9-285f5f50d1fb"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788052376025 (1ebf955d-746b-43fe-bfab-14144bd97d00) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+01:13:01 [PERFORMANCE] API - Auth API Verification: 276.99ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Discovering tax configuration...
+[TAX] Turnover Tax @ 2% | Expected tax amount: 20
+[STEP 2] Creating invoice with tax...
+[OK] Invoice created: INV/2026/08/30/003921 (ID: 8b196065-a0e9-42e7-b858-ce25fdcbc50b)
+01:13:01 [INFO] Advancing invoices "8b196065-a0e9-42e7-b858-ce25fdcbc50b"...
+[STEP 3] Fetching journal entries to verify tax account...
+[TAX ENTRY] VAT Payable | CR: 2
+[PASS] Tax GL confirmed: VAT Payable credited 2 on invoice approval.
