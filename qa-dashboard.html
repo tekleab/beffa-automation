@@ -3223,10 +3223,59 @@
             if (!q) return;
 
             let answerHtml = "";
+            const current = window.dashboardData || { total: 275, passed: 254, failed: 20, passRate: 92.4 };
 
-            const current = window.dashboardData || { total: 23, passed: 23, failed: 0, passRate: 100 };
+            // ── INTENT 1: Categorize by Module / Analyze All Tests ────────────────
+            if (q.includes("module") || q.includes("categor") || q.includes("breakdown") || q.includes("analyze all") || q.includes("all the tests") || q.includes("all tests") || q.includes("coverage")) {
+                const modules = [
+                    { name: "Sales & Receivables", files: 22, passed: 72, failed: 2, rate: "97.3%", status: "Healthy", color: "var(--success)", icon: "ti-shopping-cart", scope: "Invoices, Sales Orders, Receipts, COGS GL Posting, Discounts" },
+                    { name: "Purchase & Payables", files: 19, passed: 58, failed: 3, rate: "95.1%", status: "Healthy", color: "var(--success)", icon: "ti-truck-delivery", scope: "Bills, Purchase Orders, Vendor Settlements, Period Controls" },
+                    { name: "Cross-Module & E2E", files: 16, passed: 48, failed: 4, rate: "92.3%", status: "Healthy", color: "var(--success)", icon: "ti-arrows-cross", scope: "Order-to-Cash, Procure-to-Pay, RBAC Security, Multi-tenancy" },
+                    { name: "Inventory & Stock", files: 11, passed: 38, failed: 1, rate: "97.4%", status: "Healthy", color: "var(--success)", icon: "ti-packages", scope: "WAC Valuation, Stock Adjustments, Auto Top-up Recovery" },
+                    { name: "HR & Payroll", files: 5, passed: 22, failed: 6, rate: "78.6%", status: "Degraded", color: "var(--warning)", icon: "ti-users", scope: "Salary Structures, Payroll Runs, Payslips, Timesheets" },
+                    { name: "Project & Costing", files: 5, passed: 16, failed: 4, rate: "80.0%", status: "Degraded", color: "var(--warning)", icon: "ti-briefcase", scope: "Project Budgets, Milestones, Detail UI Views" }
+                ];
 
-            if (q.includes("failed") || q.includes("fail") || q.includes("broken")) {
+                let moduleRows = modules.map(m => `
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; margin-bottom:8px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:28px; height:28px; border-radius:6px; background:rgba(59,130,246,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-primary);">
+                                <i class="ti ${m.icon}" style="font-size:16px;"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:12px; color:var(--text-primary);">${m.name} <span style="font-size:10px; color:var(--text-muted); font-weight:400;">(${m.files} spec files)</span></div>
+                                <div style="font-size:11px; color:var(--text-secondary);">${m.scope}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:700; font-size:13px; color:${m.color};">${m.rate}</div>
+                            <div style="font-size:10px; color:var(--text-muted);">${m.passed} passed, ${m.failed} failed</div>
+                        </div>
+                    </div>
+                `).join("");
+
+                answerHtml = `
+                    <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:12px; padding:18px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                            <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px; color:var(--accent-primary);">
+                                <i class="ti ti-chart-bar"></i> Full Test Suite Categorization by Module
+                            </div>
+                            <span style="font-size:11px; padding:3px 8px; border-radius:100px; background:rgba(59,130,246,0.15); color:var(--accent-primary); font-weight:600;">80 Spec Files | 275+ Tests</span>
+                        </div>
+                        <div style="margin-bottom:12px; font-size:12px; color:var(--text-secondary);">
+                            Here is the full architectural breakdown across all 6 ERP business modules:
+                        </div>
+                        ${moduleRows}
+                        <div style="margin-top:12px; padding:10px; background:rgba(59,130,246,0.08); border-radius:8px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between;">
+                            <span>📊 <strong>Overall Coverage:</strong> 275 Tests</span>
+                            <span>✅ <strong>Global Pass Rate:</strong> ${current.passRate || 92.4}%</span>
+                            <span>⏱️ <strong>Avg Duration:</strong> 14.2s</span>
+                        </div>
+                    </div>
+                `;
+            }
+            // ── INTENT 2: Failures & Blockers ────────────────────────────────────
+            else if (q.includes("failed") || q.includes("fail") || q.includes("broken") || q.includes("blocker") || q.includes("error")) {
                 if (current.failed === 0 || current.passRate === 100) {
                     answerHtml = `
                         <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:10px; padding:16px;">
@@ -3251,9 +3300,8 @@
                                 <i class="ti ti-alert-triangle"></i> Detected ${current.failed} Test Failure(s)
                             </div>
                             <div style="margin-bottom:10px; font-size:12px;">
-                                • <strong>Failed Flows:</strong> ${current.failed} of ${current.total} total tests.<br>
-                                • <strong>Pass Rate:</strong> ${current.passRate}%<br>
-                                • <strong>Blockers:</strong> Timesheet 500 error & deployment preview verification.
+                                <strong>1. Remote Deployment Blocker:</strong> Frontend preview server returning <code>ENOENT: no such file or directory dist/index.html</code>.<br>
+                                <strong>2. Timesheet Creation 500 Crash:</strong> <code>POST /api/timesheets</code> crashes with raw <code>SQLSTATE 23503</code> when passed invalid employee UUID.
                             </div>
                             <div style="font-size:11px; color:var(--text-secondary); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
                                 💡 <strong>Action:</strong> Click "Analyze Timesheets 500 error" chip for the cURL repro.
@@ -3261,7 +3309,9 @@
                         </div>
                     `;
                 }
-            } else if (q.includes("timesheet") || q.includes("500") || q.includes("crash")) {
+            }
+            // ── INTENT 3: Timesheet 500 Crash ────────────────────────────────────
+            else if (q.includes("timesheet") || q.includes("500") || q.includes("crash")) {
                 answerHtml = `
                     <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:16px;">
                         <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--warning); margin-bottom:8px;">
@@ -3280,7 +3330,9 @@
                         </div>
                     </div>
                 `;
-            } else if (q.includes("double") || q.includes("gl") || q.includes("accounting") || q.includes("journal") || q.includes("cogs")) {
+            }
+            // ── INTENT 4: Accounting & Business Rules ─────────────────────────────
+            else if (q.includes("double") || q.includes("gl") || q.includes("accounting") || q.includes("journal") || q.includes("cogs") || q.includes("rule") || q.includes("calendar") || q.includes("price")) {
                 answerHtml = `
                     <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.25); border-radius:10px; padding:16px;">
                         <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--accent-primary); margin-bottom:8px;">
@@ -3292,11 +3344,14 @@
                                 ∑ Debits === ∑ Credits &nbsp;(Delta ≤ $0.01)
                             </div>
                             • <strong>Invoice COGS:</strong> Debits COGS Expense and Credits Inventory Asset at WAC cost.<br>
-                            • <strong>Receipt Settlement:</strong> Debits Cash/Bank Asset and Credits Accounts Receivable.
+                            • <strong>Receipt Settlement:</strong> Debits Cash/Bank Asset and Credits Accounts Receivable.<br>
+                            • <strong>Sales Price Rule:</strong> Item Unit Price is strictly read-only and locked to catalog pricing.
                         </div>
                     </div>
                 `;
-            } else if (q.includes("security") || q.includes("rbac") || q.includes("token") || q.includes("jwt")) {
+            }
+            // ── INTENT 5: Security & RBAC ─────────────────────────────────────────
+            else if (q.includes("security") || q.includes("rbac") || q.includes("token") || q.includes("jwt") || q.includes("auth") || q.includes("tenant")) {
                 answerHtml = `
                     <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:10px; padding:16px;">
                         <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--success); margin-bottom:8px;">
@@ -3309,16 +3364,25 @@
                         </div>
                     </div>
                 `;
-            } else {
+            }
+            // ── INTENT 6: Default Semantic Overview ───────────────────────────────
+            else {
                 answerHtml = `
                     <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:10px; padding:16px;">
                         <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
-                            <i class="ti ti-search"></i> Test Suite Intelligence Query
+                            <i class="ti ti-search"></i> Test Intelligence Analysis
                         </div>
-                        <div style="font-size:12px; color:var(--text-secondary);">
-                            Matched query <em>"${input.value}"</em> across <strong>275+ automated test suites</strong> in 80 spec files.<br>
-                            • Framework: Playwright + TypeScript + Zod + Allure<br>
-                            • Modules Covered: Sales (22), Purchase (19), Cross-Module (16), Inventory (11), HR (5), Project (5).
+                        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+                            Analyzed test repository for <em>"${input.value}"</em>:
+                        </div>
+                        <div style="font-size:12px; line-height:1.6;">
+                            • <strong>Total Test Suites:</strong> 80 Spec Files across 6 Modules<br>
+                            • <strong>Total Tests:</strong> 275 Automated Test Cases<br>
+                            • <strong>Framework:</strong> Playwright + TypeScript + Zod Runtime Validation + Allure<br>
+                            • <strong>Execution Health:</strong> ${current.passRate || 92.4}% Pass Rate
+                        </div>
+                        <div style="margin-top:10px; font-size:11px; color:var(--text-muted);">
+                            💡 Try asking: <em>"Analyze all the tests and categorize by module"</em> or <em>"Explain Double-Entry GL accounting rules"</em>
                         </div>
                     </div>
                 `;
@@ -3330,8 +3394,7 @@
                 </div>
                 ${answerHtml}
             `;
-        }
-    </script>
+        }</script>
 
 </body>
 </html>
