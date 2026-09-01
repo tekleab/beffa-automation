@@ -1,0 +1,33 @@
+11:40:22 [PERFORMANCE] API - Auth API Verification: 1662.01ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] Resolved in-period date: 2026-09-01T00:00:00Z (day=1, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/01/007834 (ID: 8757c2fc-178e-4bdc-8abd-7dc8b26e0aae)
+11:41:05 [INFO] Advancing inventory-adjustments "8757c2fc-178e-4bdc-8abd-7dc8b26e0aae"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788262860978 (f12cabd1-c67d-4386-8f6a-e380b90b9121) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:41:10 [PERFORMANCE] API - Auth API Verification: 371.25ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving Bill for 5000...
+11:41:11 [INFO] Advancing bills "07209f91-baa7-4301-94bb-00bf144ae054"...
+[BILL] BILL/2026/09/01/003557 (07209f91-baa7-4301-94bb-00bf144ae054)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for 07209f91-baa7-4301-94bb-00bf144ae054 via API (CashAcct: 0e41cae5-57a2-4245-9ece-d129ca61addd)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/09/01/003557               │
+  │ Bill ID                          │ 07209f91-baa7-4301-94bb-00bf144ae05… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 422 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.

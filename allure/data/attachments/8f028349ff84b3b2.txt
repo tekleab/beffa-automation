@@ -1,0 +1,78 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://168.119.175.142:8001/api/bills?year=2019&period=yearly&calendar=ec`
+- **Method**: `POST`
+- **Status Code**: `422`
+- **Latency**: `317.89ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "BM Tech",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "Content-Type": "application/json"
+}
+```
+
+**Body**:
+```json
+{
+  "accounts_payable_id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+  "currency_id": "ffbf8ef2-bffe-4c52-b588-17472d6baeb3",
+  "due_date": "2026-09-01T00:00:00Z",
+  "invoice_date": "2026-09-01T00:00:00Z",
+  "items": [],
+  "purchase_order_id": "9d025d0d-2a94-45b0-b298-06768212abe8",
+  "vendor_id": "f1df90ff-0033-4600-b49e-0913c59a25d5",
+  "received_purchase_order_items": [
+    {
+      "po_item_id": "47746aee-68cd-408c-b55c-aaf04346ff8f",
+      "received_quantity": 5,
+      "received_unit_price": 1000
+    }
+  ],
+  "status": "draft"
+}
+```
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quantity": [
+			"Unable to consume 5 items from purchase order item, only 0 remaining"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X POST \
+  -H "x-company: BM Tech" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "accounts_payable_id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+  "currency_id": "ffbf8ef2-bffe-4c52-b588-17472d6baeb3",
+  "due_date": "2026-09-01T00:00:00Z",
+  "invoice_date": "2026-09-01T00:00:00Z",
+  "items": [],
+  "purchase_order_id": "9d025d0d-2a94-45b0-b298-06768212abe8",
+  "vendor_id": "f1df90ff-0033-4600-b49e-0913c59a25d5",
+  "received_purchase_order_items": [
+    {
+      "po_item_id": "47746aee-68cd-408c-b55c-aaf04346ff8f",
+      "received_quantity": 5,
+      "received_unit_price": 1000
+    }
+  ],
+  "status": "draft"
+}' \
+  "http://168.119.175.142:8001/api/bills?year=2019&period=yearly&calendar=ec"
+```

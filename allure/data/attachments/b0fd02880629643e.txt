@@ -1,0 +1,22 @@
+11:31:45 [PERFORMANCE] API - Auth API Verification: 263.14ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/01/007777 (ID: b18fee37-f1d6-49ff-b0ca-9d401de89871)
+11:31:52 [INFO] Advancing inventory-adjustments "b18fee37-f1d6-49ff-b0ca-9d401de89871"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788262308996 (fa8e8dd6-3fb0-4304-a783-b251d1a86ffd) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:31:56 [PERFORMANCE] API - Auth API Verification: 267.74ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+11:31:58 [INFO] Advancing invoices "2c6f299e-a370-491d-947e-b5bf938303cd"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=40
+[RECEIPT] amount=40 | invoice=2c6f299e... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/01/001129
+11:32:04 [INFO] Advancing receipts "a9098f1e-3b3a-47f2-8223-01715aaa4ef5"...
+[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=60 | Requested receipt amount=80
+[KNOWN_BUG #7] Invoice 2c6f299e-a370-491d-947e-b5bf938303cd unreceived_amount ($60) < requested amount ($80). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $60.
+[RECEIPT] amount=60 | invoice=2c6f299e... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/01/001130
+11:32:11 [INFO] Advancing receipts "83994f45-3918-4020-b5e7-c6ca6c54c2a2"...

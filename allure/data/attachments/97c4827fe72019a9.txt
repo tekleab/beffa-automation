@@ -1,0 +1,28 @@
+11:30:59 [PERFORMANCE] API - Auth API Verification: 237.56ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/01/007771 (ID: ddf1d1a0-bc88-4102-99b5-e82857b04b03)
+11:31:04 [INFO] Advancing inventory-adjustments "ddf1d1a0-bc88-4102-99b5-e82857b04b03"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788262260782 (6f2da532-86e1-49c8-9e24-6f0aca8d1a17) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] Created fresh item: "WAC-Item-1788262260782" | Stock: 20
+11:31:09 [INFO] Advancing sales-orders "3ed8f78a-49d2-49f4-b62d-5b8fd565095e"...
+[OK] Sales Order SO/2026/09/01/001134 approved via API
+11:31:13 [INFO] Advancing invoices "0c8c39c1-bf5e-41ed-a850-ac96c861ab27"...
+[OK] Invoice INV/2026/09/01/004227 approved via API
+[INFO] Document Setup Complete: INV/2026/09/01/004227 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT PRE-FLIGHT] Invoice outstanding=102 | Requested receipt amount=102
+[RECEIPT] amount=102 | invoice=0c8c39c1... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/01/001127
+[OK] Receipt created via API: RCPT/2026/09/01/001127
+[STEP] Phase 3: Approval flow
+11:31:24 [INFO] Advancing receipts "9630c4e1-f498-49e0-807f-d26e51926a1a"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/09/01/001127 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/09/01/001127 verified

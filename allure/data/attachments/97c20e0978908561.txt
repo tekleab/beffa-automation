@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-09-01T00:00:00Z (day=1, ecYear=2019)
+11:49:55 [PERFORMANCE] API - Auth API Verification: 427.25ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/01/007884 (ID: e2521e07-6b08-4135-a9e8-477e1686f71e)
+11:50:06 [INFO] Advancing inventory-adjustments "e2521e07-6b08-4135-a9e8-477e1686f71e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: WAC-Item-1788263402385 (a39d1b58-ff13-40bc-95b6-5331bffa5716) | method=WAC | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+  ╔════════════════════════════════════════════════════════════════════════╗
+  ║ 🚨 BACKEND DEFECT DETECTED                                            ║
+  ╠════════════════════════════════════════════════════════════════════════╣
+  ║ Defect Title   : Schema Contract Violation: Single Bill GET Contr    ║
+  ║ Endpoint       : POST /api/bills/b2383ace-451c-476a-91f1-4b6472e3    ║
+  ║ Status Code    : HTTP 200 (Expected: Valid Schema Match)             ║
+  ║ Root Cause     : Payload returned unexpected schema: status: Inva    ║
+  ║ Response Snippet: {"current_approval_step":{"approval_flow":null,"    ║
+  ╚════════════════════════════════════════════════════════════════════════╝
+
