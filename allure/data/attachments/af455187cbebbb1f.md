@@ -12,26 +12,69 @@
 # Error details
 
 ```
-TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
-Call log:
-  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible
-
+TimeoutError: page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+  navigated to "http://168.119.175.142:4173/users/login"
+============================================================
 ```
 
 # Page snapshot
 
 ```yaml
-- generic [ref=e2]: "Error: ENOENT: no such file or directory, stat '/home/old-private-befa/finance-frontend/dist/index.html'"
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e6]
+      - img [ref=e8]
+      - generic [ref=e11]:
+        - heading "Welcome to, befa" [level=3] [ref=e12]
+        - paragraph [ref=e13]: Empower Your Finances, Simplify Your Success
+        - paragraph [ref=e14]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+    - generic [ref=e16]:
+      - heading "Login To Your Account" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - text: Not a member?
+        - link "Register" [ref=e19] [cursor=pointer]:
+          - /url: /users/register
+      - generic [ref=e20]:
+        - generic [ref=e22]: Network Error
+        - generic [ref=e23]:
+          - group [ref=e24]:
+            - generic [ref=e25]: Email *
+            - textbox "Email *" [ref=e27]:
+              - /placeholder: Enter your email
+              - text: admin@beffa.com
+          - group [ref=e28]:
+            - generic [ref=e29]: Password *
+            - generic [ref=e30]:
+              - textbox "Password *" [ref=e31]:
+                - /placeholder: Enter your password
+                - text: Beff.$#!
+              - button "Show password" [ref=e33] [cursor=pointer]:
+                - img [ref=e34]
+          - link "Forget Password?" [ref=e39] [cursor=pointer]:
+            - /url: forget-password
+          - button "Login" [ref=e41] [cursor=pointer]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
 ```
 
 # Test source
 
 ```ts
-  39  |       headers: { 'Content-Type': 'application/json' }
-  40  |     });
-  41  | 
-  42  |     if (!response.ok()) throw new Error(`API Login Failed: ${response.status()}`);
-  43  |     const session = await response.json();
   44  |     const token = session.auth_token || session.token || session.access_token;
   45  |     if (!token) throw new Error('No token returned from API');
   46  |     this.cachedToken = token;
@@ -127,13 +170,13 @@ Call log:
   136 |     } catch (error: any) {
   137 |       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
   138 |       await this.page.goto('/users/login');
-> 139 |       await this.emailInput.waitFor({ state: 'visible', timeout: 15000 });
-      |                             ^ TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+  139 |       await this.emailInput.waitFor({ state: 'visible', timeout: 15000 });
   140 |       await this.emailInput.fill(cleanEmail);
   141 |       await this.passwordInput.fill(cleanPass);
   142 |       await expect(this.loginBtn).toBeEnabled({ timeout: 15000 });
   143 |       await this.loginBtn.click();
-  144 |       await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 30000 });
+> 144 |       await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 30000 });
+      |                       ^ TimeoutError: page.waitForURL: Timeout 30000ms exceeded.
   145 |     }
   146 |   }
   147 | 
@@ -229,4 +272,9 @@ Call log:
   237 |     if (await option.isVisible({ timeout: 1500 }).catch(() => false)) {
   238 |       await option.click();
   239 |       await this.page.waitForTimeout(500);
+  240 |       console.log(`[AUTH] Switched fiscal year to ${targetYear}.`);
+  241 |     } else {
+  242 |       await this.page.keyboard.press('Escape');
+  243 |     }
+  244 |   }
 ```
