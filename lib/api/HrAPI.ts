@@ -60,10 +60,17 @@ export class HrAPI extends BasePage {
 
   async createEmployee(data: Record<string, any>): Promise<any> {
     const h = await this.headers();
-    const resp = await this.page.request.post(
-      `${this.apiBase}/employees?${this.params}`, { headers: h, data, timeout: 30000 }
-    );
-    const text = await resp.text();
+    let resp: any;
+    let text = '';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      resp = await this.page.request.post(
+        `${this.apiBase}/employees?${this.params}`, { headers: h, data, timeout: 30000 }
+      );
+      text = await resp.text();
+      if (resp.ok() || resp.status() !== 500) break;
+      console.warn(`[HR] createEmployee attempt ${attempt} returned 500. Retrying in ${attempt * 2000}ms...`);
+      await this.page.waitForTimeout(attempt * 2000);
+    }
     if (!resp.ok()) throw new Error(`Create employee failed: ${resp.status()} - ${text}`);
 
     // Try to parse direct response first

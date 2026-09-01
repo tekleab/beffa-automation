@@ -144,9 +144,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
     }
 
     async function captureItemWithPriceAPI(page: any, app: AppManager): Promise<{ name: string; price: string; validNames: Set<string> } | null> {
-        // Always prefer itemA — it has guaranteed stock (50 units created in beforeAll)
+        // Always prefer itemA — it has guaranteed stock and selling_price > 0
         if (itemA) {
-            const name = (itemA as any).name || itemA.itemName;
+            const name = itemA.itemName || (itemA as any).name;
             const price = String(itemA.unitCost || 100);
             if (name) {
                 console.log(`[API PRE-CAPTURE] Using guaranteed-stock item "${name}" @ $${price}`);
@@ -231,9 +231,54 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         if (type === 'Item' || hasItemField) {
             const targetItemPrice = opts.unitPrice || '100';
 
-            // Select Item using AppManager's battle-tested selectRandomOption
-            await app.selectRandomOption(itemBtn, 'Item');
-            await page.waitForTimeout(600);
+            // If a specific item name is provided, search for it directly so we get
+            // an item with a known selling_price > 0. Random selection risks picking
+            // legacy ERP items that have selling_price=0 and fail modal validation.
+            if (opts.itemName) {
+                await itemBtn.scrollIntoViewIfNeeded().catch(() => {});
+                await itemBtn.click({ force: true });
+                await page.waitForTimeout(800);
+                // The item dropdown opens as a portal overlay OUTSIDE the modal.
+                // smartSearch(null) would search the modal itself and type into the
+                // price input instead. We must scope to the dropdown overlay.
+                const itemDropdown = page.locator(
+                    '.chakra-menu__menu-list, [role="listbox"], .chakra-popover__content, [role="menu"]'
+                ).filter({ visible: true }).last();
+                const dropdownVisible = await itemDropdown.isVisible({ timeout: 3000 }).catch(() => false);
+                if (dropdownVisible) {
+                    // Type into the search input inside the dropdown
+                    const dropdownSearch = itemDropdown.locator('input').first();
+                    if (await dropdownSearch.isVisible({ timeout: 2000 }).catch(() => false)) {
+                        await dropdownSearch.fill(opts.itemName);
+                        await page.waitForTimeout(1500);
+                        // Click the first matching option
+                        const option = itemDropdown.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, li')
+                            .filter({ hasText: opts.itemName }).first();
+                        const anyOption = itemDropdown.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, li')
+                            .filter({ visible: true }).first();
+                        if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
+                            await option.click({ force: true });
+                        } else if (await anyOption.isVisible({ timeout: 1000 }).catch(() => false)) {
+                            await anyOption.click({ force: true });
+                        } else {
+                            await page.keyboard.press('Enter');
+                        }
+                    } else {
+                        // No search input — click matching text directly
+                        const option = itemDropdown.getByText(opts.itemName, { exact: false }).first();
+                        if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
+                            await option.click({ force: true });
+                        }
+                    }
+                } else {
+                    // Dropdown didn't open as overlay — fall back to smartSearch scoped to modal
+                    await app.smartSearch(modal, opts.itemName);
+                }
+            } else {
+                await app.selectRandomOption(itemBtn, 'Item');
+            }
+            // Wait for ERP to finish async reset of price field after item selection
+            await page.waitForTimeout(1000);
 
             // Inspect Selling Price / Unit Price field state and fill price
             const priceInput = modal.locator('.chakra-form-control').filter({
@@ -242,27 +287,35 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
 
             if (await priceInput.isVisible({ timeout: 2000 }).catch(() => false)) {
                 await priceInput.waitFor({ state: 'attached', timeout: 3000 }).catch(() => { });
-                const val = parseFloat(await priceInput.inputValue().catch(() => '0')) || 0;
-                console.log(`[ITEM MODAL] Price check: val=$${val}`);
 
-                // ALWAYS force-fill price > 0 — ERP items with selling_price=0 fail validation
-                await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
-                await priceInput.fill(targetItemPrice, { force: true } as any).catch(() => { });
-                await page.keyboard.press('Tab').catch(() => { });
-                await page.waitForTimeout(200);
-
-                // Re-check and use evaluate as last resort
-                const updatedVal = parseFloat(await priceInput.inputValue().catch(() => '0')) || 0;
-                if (updatedVal <= 0) {
+                // Use React's nativeInputValueSetter to properly update controlled input state,
+                // then dispatch both input and change events so React re-renders the field.
+                // Plain fill() / evaluate(el.value=) do not trigger React's synthetic event system.
+                const forceReactFill = async (value: string) => {
                     await priceInput.evaluate((el: HTMLInputElement, v: string) => {
-                        el.removeAttribute('disabled');
-                        el.removeAttribute('readonly');
-                        el.value = v;
+                        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                        if (nativeSetter) {
+                            nativeSetter.call(el, v);
+                        } else {
+                            el.value = v;
+                        }
                         el.dispatchEvent(new Event('input', { bubbles: true }));
                         el.dispatchEvent(new Event('change', { bubbles: true }));
-                    }, targetItemPrice);
+                    }, value);
                     await page.keyboard.press('Tab').catch(() => { });
-                    console.log(`[ITEM MODAL] ⚠️ Price forced via DOM evaluate to: ${targetItemPrice}`);
+                    await page.waitForTimeout(200);
+                };
+
+                await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
+                await forceReactFill(targetItemPrice);
+
+                // Verify — if still 0, retry once more after a short wait
+                const updatedVal = parseFloat(await priceInput.inputValue().catch(() => '0')) || 0;
+                if (updatedVal <= 0) {
+                    await page.waitForTimeout(500);
+                    await priceInput.click({ clickCount: 3, force: true }).catch(() => { });
+                    await forceReactFill(targetItemPrice);
+                    console.log(`[ITEM MODAL] ⚠️ Price re-forced via React setter to: ${targetItemPrice}`);
                 } else {
                     console.log(`[ITEM MODAL] ✅ Price confirmed: $${updatedVal}`);
                 }

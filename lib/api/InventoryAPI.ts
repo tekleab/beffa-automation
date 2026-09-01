@@ -123,7 +123,7 @@ export class InventoryAPI extends BasePage {
         initial_stock: typeof data === 'string' ? 0 : (data.quantity || 0),
         purchase_price: typeof data === 'string' ? 1 : (data.unit_cost || 1),
         selling_price: typeof data === 'string' ? 1 : (data.unit_cost || 1),
-        unit_cost: typeof data === 'string' ? 0 : (data.unit_cost || 0),
+        unit_cost: typeof data === 'string' ? 1 : (data.unit_cost || 1),
         gl_sales_account_id: incAcct,
         gl_cost_account_id: expAcct,
         gl_inventory_account_id: invAcct,
@@ -720,10 +720,15 @@ export class InventoryAPI extends BasePage {
       default_warehouse_id: warehouseId,
     });
 
-    // Inject stock via adjustment with up to 3 retries for transient DB lock/lag.
+    // Wait for the ERP to index the newly created item before attempting adjustment.
+    // Without this, the backend returns 400 "Unable to create Inventory Adjustment" because
+    // the item record is not yet visible to the adjustment service.
+    await this.page.waitForTimeout(2000);
+
+    // Inject stock via adjustment with up to 5 retries for transient DB lock/lag or indexing delay.
     // Pass current_quantity=0 and location_quantity=0 explicitly so ERP consistency check passes.
     let adj: any;
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    for (let attempt = 1; attempt <= 5; attempt++) {
       adj = await this.createInventoryAdjustmentAPI({
         itemId: item.id,
         quantity: opts.quantity,
@@ -735,8 +740,9 @@ export class InventoryAPI extends BasePage {
         _overrideLocationQty: 0,
       });
       if (adj.success && adj.id) break;
-      console.warn(`[FRESH ITEM] Stock adjustment attempt ${attempt} failed: ${adj.error}. Retrying in 1s...`);
-      await this.page.waitForTimeout(1000);
+      const backoff = attempt * 2000;
+      console.warn(`[FRESH ITEM] Stock adjustment attempt ${attempt} failed: ${adj.error}. Retrying in ${backoff}ms...`);
+      await this.page.waitForTimeout(backoff);
     }
     if (!adj.success || !adj.id) throw new Error(`[FRESH ITEM] Stock adjustment failed for ${item.id}: ${adj.error}`);
     await this.advanceDocumentAPI(adj.id, 'inventory-adjustments');

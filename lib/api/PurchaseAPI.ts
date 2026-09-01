@@ -670,9 +670,26 @@ export class PurchaseAPI extends BasePage {
       vendorId = vendor.id;
     }
 
-    // 2. Poll Vendor Bills Ledger — paginate all pages to find the bill
+    // 2. Poll Vendor Bills Ledger — try direct bill lookup first, then paginate
 
     const findInPages = async (): Promise<boolean> => {
+      // Fast path: direct bill lookup by ID (billNumber may be a ref, not UUID — try both)
+      const directResp = await this.safeGet(
+        `${apiBase}/bills?search=${encodeURIComponent(billNumber)}&pageSize=20&${params}`,
+        { headers }
+      );
+      if (directResp && directResp.ok()) {
+        const directData = await safeJson(directResp);
+        const directBills: any[] = directData ? (Array.isArray(directData) ? directData : (directData.data || directData.items || [])) : [];
+        const cleanTarget = billNumber.trim().toLowerCase();
+        const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
+        const directFound = directBills.find((b: any) => {
+          const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
+          return refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget);
+        });
+        if (directFound) return true;
+      }
+
       let page = 1;
       const pageSize = 100;
       while (true) {
@@ -715,7 +732,7 @@ export class PurchaseAPI extends BasePage {
       return false;
     };
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 8; i++) {
       const found = await findInPages();
       if (found) {
         console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);

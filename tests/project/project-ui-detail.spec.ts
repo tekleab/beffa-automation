@@ -24,6 +24,7 @@ test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @r
 
     async function setup(page: any) {
         const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = await app.api.project.discoverMetadataAPI();
         return { app, meta };
     }
