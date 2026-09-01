@@ -4,8 +4,8 @@
   "failed": 1,
   "skipped": 0,
   "passRate": 0,
-  "avgDurationMs": 16600,
-  "lastUpdated": "2026-09-01T05:48:59.038Z",
+  "avgDurationMs": 33495,
+  "lastUpdated": "2026-09-01T10:44:59.291Z",
   "moduleBreakdown": [
     {
       "module": "Other",
@@ -15,15 +15,23 @@
       "trend": [
         100,
         100,
-        100,
         90.6,
         95.7,
         90.2,
+        0,
         0
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "725",
+      "commit": "795d758",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "0m 33s",
+      "passRate": 0,
+      "status": "failed"
+    },
     {
       "run": "724",
       "commit": "58966e4",
@@ -95,22 +103,14 @@
       "duration": "9m 53s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "715",
-      "commit": "3faa09a",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "70m 31s",
-      "passRate": 92.1,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "critical",
       "title": "authenticate globally once",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\n\n   at ../lib/auth.ts:139\n\n  137 |       console.lo",
-      "firstSeen": "2026-09-01T05:48:33.714Z",
+      "error": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/us",
+      "firstSeen": "2026-09-01T10:44:16.580Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
