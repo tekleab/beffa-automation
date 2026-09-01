@@ -19,7 +19,8 @@
     "latency:track": "npx ts-node scripts/latency.ts",
     "report:allure": "npm run allure:generate && npx allure open allure-report",
     "analyze:modules": "node scripts/modules.js",
-    "report:modules:md": "node scripts/modules.js --markdown"
+    "report:modules:md": "node scripts/modules.js --markdown",
+    "mcp": "ts-node mcp/qa-server.ts"
   },
   "keywords": [],
   "author": "Tekleab",
@@ -34,6 +35,7 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
-    "dotenv": "^17.3.1"
+    "dotenv": "^17.3.1",
+    "zod": "^4.5.4"
   }
 }
