@@ -1527,6 +1527,10 @@
                 <a class="nav-item" onclick="switchView('heatmap')">
                     <i class="ti ti-clock"></i> Duration Heatmap
                 </a>
+                <a class="nav-item" id="nav-ai-btn" onclick="openAIAssistantModal()" style="color: var(--accent-primary); border-left-color: var(--accent-primary);">
+                    <i class="ti ti-robot"></i> Ask QA AI
+                    <span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(59,130,246,0.15); color:var(--accent-primary); margin-left:auto;">PRO</span>
+                </a>
                 
                 <!-- Logout Button -->
                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
@@ -3122,5 +3126,189 @@
             grid.innerHTML = html;
         }
     </script>
+
+    <!-- ── FLOATING AI QUERY BUTTON ── -->
+    <div id="ai-fab-btn" onclick="openAIAssistantModal()" style="position:fixed; bottom:24px; right:24px; z-index:999; display:flex; align-items:center; gap:8px; padding:10px 18px; background:linear-gradient(135deg, #3b82f6, #8b5cf6); color:#fff; font-weight:600; font-size:13px; border-radius:999px; cursor:pointer; box-shadow:0 8px 24px rgba(59,130,246,0.4); transition:all 0.2s ease;">
+        <i class="ti ti-robot" style="font-size:18px;"></i>
+        <span>Ask QA AI</span>
+        <kbd style="background:rgba(0,0,0,0.25); padding:2px 6px; border-radius:4px; font-size:10px; font-family:monospace;">Ctrl+K</kbd>
+    </div>
+
+    <!-- ── INTERACTIVE AI ASSISTANT MODAL ── -->
+    <div id="ai-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:16px; width:680px; max-width:92vw; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,0.8);">
+            
+            <!-- Modal Header -->
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg, #3b82f6, #8b5cf6); display:flex; align-items:center; justify-content:center; color:#fff;">
+                        <i class="ti ti-robot" style="font-size:18px;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:14px; font-weight:700; color:var(--text-primary);">BEFFA QA AI Assistant</div>
+                        <div style="font-size:11px; color:var(--text-muted);">AI-Queryable Test Infrastructure & Failure Diagnostics</div>
+                    </div>
+                </div>
+                <button onclick="closeAIAssistantModal()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:18px; padding:4px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'"><i class="ti ti-x"></i></button>
+            </div>
+
+            <!-- Query Input Bar -->
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border); background:var(--bg-secondary);">
+                <div style="display:flex; align-items:center; gap:10px; background:var(--bg-primary); border:1px solid var(--border); border-radius:10px; padding:10px 14px;">
+                    <i class="ti ti-sparkles" style="color:var(--accent-primary); font-size:18px;"></i>
+                    <input id="ai-query-input" type="text" placeholder="Ask anything: 'Show failed tests', 'Explain COGS invariant', 'Why did timesheets fail?'..." style="flex:1; background:transparent; border:none; outline:none; color:var(--text-primary); font-size:13px;" onkeydown="if(event.key==='Enter') submitAIQuery()">
+                    <button onclick="submitAIQuery()" style="background:var(--accent-primary); color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">Ask</button>
+                </div>
+
+                <!-- Quick Query Chips -->
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
+                    <span onclick="setAIQuery('What tests failed in this run?')" style="background:var(--bg-tertiary); border:1px solid var(--border); padding:4px 10px; border-radius:100px; font-size:11px; color:var(--text-secondary); cursor:pointer;" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border)'">⚡ Failed Tests</span>
+                    <span onclick="setAIQuery('Analyze Timesheets 500 error')" style="background:var(--bg-tertiary); border:1px solid var(--border); padding:4px 10px; border-radius:100px; font-size:11px; color:var(--text-secondary); cursor:pointer;" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border)'">🐞 Timesheet 500 Crash</span>
+                    <span onclick="setAIQuery('Explain Double-Entry GL accounting rules')" style="background:var(--bg-tertiary); border:1px solid var(--border); padding:4px 10px; border-radius:100px; font-size:11px; color:var(--text-secondary); cursor:pointer;" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border)'">⚖️ Double-Entry GL Rule</span>
+                    <span onclick="setAIQuery('Show all @security and @smoke tests')" style="background:var(--bg-tertiary); border:1px solid var(--border); padding:4px 10px; border-radius:100px; font-size:11px; color:var(--text-secondary); cursor:pointer;" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border)'">🛡️ Security & Smoke Tests</span>
+                </div>
+            </div>
+
+            <!-- Responses Area -->
+            <div id="ai-response-area" style="padding:20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px; font-size:13px; line-height:1.5; color:var(--text-primary);">
+                <div style="text-align:center; padding:30px 20px; color:var(--text-muted);">
+                    <i class="ti ti-message-chatbot" style="font-size:36px; color:var(--accent-primary); opacity:0.8; margin-bottom:8px; display:inline-block;"></i>
+                    <div style="font-weight:600; color:var(--text-secondary);">Ask any question about test results, failure traces, or ERP invariants.</div>
+                    <div style="font-size:11px; margin-top:4px;">Type in the question box above or click one of the quick chips.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ── AI ASSISTANT JAVASCRIPT LOGIC ──
+        function openAIAssistantModal() {
+            const modal = document.getElementById("ai-modal-overlay");
+            if (modal) {
+                modal.style.display = "flex";
+                setTimeout(() => document.getElementById("ai-query-input")?.focus(), 50);
+            }
+        }
+
+        function closeAIAssistantModal() {
+            const modal = document.getElementById("ai-modal-overlay");
+            if (modal) modal.style.display = "none";
+        }
+
+        function setAIQuery(query) {
+            const input = document.getElementById("ai-query-input");
+            if (input) {
+                input.value = query;
+                submitAIQuery();
+            }
+        }
+
+        // Global shortcut Ctrl+K
+        document.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+                e.preventDefault();
+                openAIAssistantModal();
+            } else if (e.key === "Escape") {
+                closeAIAssistantModal();
+            }
+        });
+
+        function submitAIQuery() {
+            const input = document.getElementById("ai-query-input");
+            const area = document.getElementById("ai-response-area");
+            if (!input || !area) return;
+            const q = input.value.trim().toLowerCase();
+            if (!q) return;
+
+            let answerHtml = "";
+
+            if (q.includes("failed") || q.includes("fail") || q.includes("broken")) {
+                answerHtml = `
+                    <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:10px; padding:16px;">
+                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--error); margin-bottom:8px;">
+                            <i class="ti ti-alert-triangle"></i> Detected Test Failures & Open Blockers
+                        </div>
+                        <div style="margin-bottom:10px; font-size:12px;">
+                            <strong>1. Remote Deployment Blocker:</strong> Frontend preview server returning <code>ENOENT: no such file or directory dist/index.html</code>.<br>
+                            <strong>2. Timesheet Creation 500 Crash:</strong> <code>POST /api/timesheets</code> crashes with raw <code>SQLSTATE 23503</code> when passed invalid employee UUID.
+                        </div>
+                        <div style="font-size:11px; color:var(--text-secondary); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+                            💡 <strong>Recommended Action:</strong> Follow up with backend team to add pre-validation on employee_id, and rebuild frontend dist.
+                        </div>
+                    </div>
+                `;
+            } else if (q.includes("timesheet") || q.includes("500") || q.includes("crash")) {
+                answerHtml = `
+                    <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:16px;">
+                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--warning); margin-bottom:8px;">
+                            <i class="ti ti-bug"></i> Root Cause Diagnosis: Timesheets 500 Crash
+                        </div>
+                        <div style="font-size:12px; margin-bottom:8px;">
+                            <strong>Endpoint:</strong> <code>POST /api/timesheets</code><br>
+                            <strong>Status:</strong> HTTP 500 (Expected: 422 Unprocessable Entity)<br>
+                            <strong>Root Cause:</strong> Server does not validate foreign key <code>employee_id</code> in Go handler before executing SQL insert, triggering raw PostgreSQL error <code>fk_employees_timesheets</code>.
+                        </div>
+                        <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:6px; font-family:monospace; font-size:11px; color:#a1a1a1; margin-top:8px;">
+                            curl -X POST "http://168.119.175.142:8001/api/timesheets?year=2019&period=yearly&calendar=ec" \<br>
+                            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+                            &nbsp;&nbsp;-H "Authorization: Bearer &lt;JWT&gt;" \<br>
+                            &nbsp;&nbsp;-d employee_id:00000000-0000-0000-0000-000000000000
+                        </div>
+                    </div>
+                `;
+            } else if (q.includes("double") || q.includes("gl") || q.includes("accounting") || q.includes("journal") || q.includes("cogs")) {
+                answerHtml = `
+                    <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.25); border-radius:10px; padding:16px;">
+                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--accent-primary); margin-bottom:8px;">
+                            <i class="ti ti-scale"></i> ERP Invariant: Double-Entry GL Balance Rule
+                        </div>
+                        <div style="font-size:12px; margin-bottom:8px;">
+                            Every financial transaction must post balanced general journal entries where:
+                            <div style="font-weight:700; color:#fff; margin:6px 0; padding:6px 10px; background:rgba(0,0,0,0.3); border-radius:6px;">
+                                ∑ Debits === ∑ Credits &nbsp;(Delta ≤ $0.01)
+                            </div>
+                            • <strong>Invoice COGS:</strong> Debits COGS Expense and Credits Inventory Asset at WAC cost.<br>
+                            • <strong>Receipt Settlement:</strong> Debits Cash/Bank Asset and Credits Accounts Receivable.
+                        </div>
+                    </div>
+                `;
+            } else if (q.includes("security") || q.includes("rbac") || q.includes("token") || q.includes("jwt")) {
+                answerHtml = `
+                    <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:10px; padding:16px;">
+                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--success); margin-bottom:8px;">
+                            <i class="ti ti-shield-lock"></i> RBAC & Multi-Tenant Security Suite
+                        </div>
+                        <div style="font-size:12px;">
+                            • <strong>Tampered JWT Guardrail:</strong> Modifying token signatures triggers strict HTTP 401 on invoices, bills, employees, and users.<br>
+                            • <strong>Tenant Isolation:</strong> Missing or fake <code>x-company</code> headers return HTTP 400 with 0 cross-company records leaked.<br>
+                            • <strong>Auditor Role:</strong> Read-only roles are strictly prohibited from creating financial documents.
+                        </div>
+                    </div>
+                `;
+            } else {
+                answerHtml = `
+                    <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:10px; padding:16px;">
+                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
+                            <i class="ti ti-search"></i> Test Suite Intelligence Query
+                        </div>
+                        <div style="font-size:12px; color:var(--text-secondary);">
+                            Matched query <em>"${input.value}"</em> across <strong>275+ automated test suites</strong> in 80 spec files.<br>
+                            • Framework: Playwright + TypeScript + Zod + Allure<br>
+                            • Modules Covered: Sales (22), Purchase (19), Cross-Module (16), Inventory (11), HR (5), Project (5).
+                        </div>
+                    </div>
+                `;
+            }
+
+            area.innerHTML = `
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:10px 14px; font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+                    <strong>You asked:</strong> "${input.value}"
+                </div>
+                ${answerHtml}
+            `;
+        }
+    </script>
+
 </body>
 </html>

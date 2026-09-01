@@ -1,0 +1,51 @@
+
+=======================================================
+  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test 
+=======================================================
+[DateHelper] Resolved in-period date: 2026-09-01T00:00:00Z (day=1, ecYear=2019)
+10:54:59 [PERFORMANCE] API - Auth API Verification: 255.31ms
+[AUTH] Session token and local storage injected successfully.
+[OPERATING DATE] Date: 2026-08-14T00:00:00Z
+[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/01/007684 (ID: 457869be-6950-4b81-9d75-8fba52bab098)
+10:55:09 [INFO] Advancing inventory-adjustments "457869be-6950-4b81-9d75-8fba52bab098"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1788260103886 (518d6baf-cdd0-4e44-9ea1-633fe73d9955) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+  ├── Customer ID      : 243b9845-e056-48ce-924d-6f233d99c574
+  ├── Cash Account ID  : e8b0574b-87e1-44fd-a021-cb26ddc0b9c0 (Cash at Bank - CBE)
+  ├── Currency ID      : ffbf8ef2-bffe-4c52-b588-17472d6baeb3 (BRR)
+  ├── AR Account ID    : bd0e0b51-b32d-4925-b442-05a3e63abf16 (Accounts Receivable)
+  ├── Sales Account ID : 7641cae0-1158-4cd8-9817-704ef86019dc (Sales)
+  ├── Warehouse ID     : 274c6ccf-b0f0-4c67-bbff-309c3f63a871
+  ├── Location ID      : 539ab667-5559-4db7-8cd4-24f797d57ebb
+  └── Inventory Item ID: 518d6baf-cdd0-4e44-9ea1-633fe73d9955
+[STEP 3A] Creating Sales Order...
+[PASS] Sales Order Created: SO/2026/09/01/001115
+10:55:14 [INFO] Advancing sales-orders "ff129e89-06f6-40b4-ac52-0f42c35b5878"...
+[STEP 3B] Creating Sales Invoice...
+[PASS] Invoice Created: INV/2026/09/01/004141
+10:55:19 [INFO] Advancing invoices "30c604d0-82ca-44c0-9088-16b50c012698"...
+[STEP 3C] Creating Receipt linked to Invoice 30c604d0-82ca-44c0-9088-16b50c012698...
+[HTTP POST] /api/receipts (linked to invoice) -> Status: 201
+[PASS] Linked Receipt Created: {
+	"amount": 0,
+	"budget": null,
+	"budget_id": null,
+	"cash_account": null,
+	"cash_account_id": "e8b
+[STEP 3D] Creating Standalone Customer Receipt (unlinked to draft invoice)...
+[HTTP POST] /api/receipts (standalone customer receipt) -> Status: 201
+[PASS] Standalone Receipt Created Successfully!
+  ├── Receipt ID  : 4ff6cdd1-89bd-44ce-84fd-b95183b11f11
+  ├── Ref Number  : RCPT/2026/09/01/001080
+  ├── Status      : draft
+  └── Amount      : 0
+[STEP 3E] Verifying Direct GET /api/receipt/4ff6cdd1-89bd-44ce-84fd-b95183b11f11...
+[HTTP GET] Direct Receipt Inspection -> Status: 200
+[STEP 3F] Approving Receipt via Document Workflow...
+[FALLBACK] PATCH /api/receipt/4ff6cdd1-89bd-44ce-84fd-b95183b11f11/advance returned 404. Trying plural...
+[HTTP PATCH] Advance Receipt -> Status: 200
+[PASS] Receipt 4ff6cdd1-89bd-44ce-84fd-b95183b11f11 Approved Successfully!
+[DIAGNOSTIC STATUS] ✅ Receipt API Diagnostics Completed Successfully.
