@@ -1,29 +1,37 @@
 {
-  "total": 23,
-  "passed": 23,
-  "failed": 0,
+  "total": 269,
+  "passed": 240,
+  "failed": 29,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 30477,
-  "lastUpdated": "2026-09-02T05:52:15.380Z",
+  "passRate": 89.2,
+  "avgDurationMs": 18200,
+  "lastUpdated": "2026-09-02T06:25:17.464Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 23,
-      "failed": 0,
+      "passed": 240,
+      "failed": 29,
       "skipped": 0,
       "trend": [
-        0,
         100,
         100,
         100,
         100,
         89.2,
-        100
+        100,
+        89.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "733",
+      "commit": "7232c84",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "81m 35s",
+      "passRate": 89.2,
+      "status": "success"
+    },
     {
       "run": "732",
       "commit": "65bb6c5",
@@ -95,15 +103,88 @@
       "duration": "80m 0s",
       "passRate": 89.9,
       "status": "success"
-    },
-    {
-      "run": "722",
-      "commit": "3a455d3",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "11m 21s",
-      "passRate": 95.7,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "LOAD: 10 concurrent invoices for same customer must all be created with distinct IDs",
+      "error": "Error: More than 1 invoice failed — possible backend overload\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m1\u001b[39m\nReceived",
+      "firstSeen": "2026-09-02T05:58:49.660Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
+      "error": "Error: AR mismatch: expected 5000, got 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m5000\u001b[39m\nReceived: \u001b[31m",
+      "firstSeen": "2026-09-02T05:59:02.921Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (2017-12-31T00:00:00Z)!\n\n  77 |             try {\n  78 |                 await app.advanceDocumentAPI(so.id, 'sales-",
+      "firstSeen": "2026-09-02T05:59:16.653Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2022)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved future-dated SO (2022-01-01T00:00:00Z)!\n\n  109 |             try {\n  110 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 111 |     ",
+      "firstSeen": "2026-09-02T05:59:34.640Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System accepted pre-epoch date (1969-12-31T00:00:00Z)!\n\n  345 |\n  346 |         if (inv.success) {\n> 347 |             throw new Error(`[PERIOD_CONTROL_BUG] System accepted",
+      "firstSeen": "2026-09-02T05:59:43.518Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "LOAD: Concurrently approving 5 bill payments must succeed without database deadlocks",
+      "error": "Error: Database deadlocks/concurrency errors during concurrent payment approvals\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpecte",
+      "firstSeen": "2026-09-02T06:01:47.423Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "STRESS: Payment against a bill reversed mid-flight must be rejected",
+      "error": "Error: [REVERSED_BILL_BUG] Payment PAY/2026/09/02/001135 approved against reversed bill BILL/2026/09/02/003620!\n\n  215 |\n  216 |         if (approved) {\n> 217 |             throw new Error(`[REVERSED_",
+      "firstSeen": "2026-09-02T06:02:01.249Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "LOAD: 20 concurrent PO submissions must all succeed within 30s",
+      "error": "Error: 20 concurrent POs took 72177ms — exceeds 60s SLA\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m60000\u001b[39m\nReceived:   \u001b[31m7",
+      "firstSeen": "2026-09-02T06:05:01.405Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject payment where split array does not match total",
+      "error": "Error: [PAYMENT_ATTACK_VULNERABILITY] UNVALIDATED FIELD: 'amount' header ignored — only bill_payments sum processed. Sent amount=5000, bill_payments sum=3000. ERP does not validate that amount == sum(",
+      "firstSeen": "2026-09-02T06:07:08.480Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must strictly segregate bills and payments by Vendor",
+      "error": "Error: [CRITICAL_SECURITY_BUG] IDOR VULNERABILITY! Vendor B successfully paid Vendor A's bill.\n\n  121 |                 const finalBill = await app.api.purchase.getBillAPI(billA.id);\n  122 |          ",
+      "firstSeen": "2026-09-02T06:08:43.002Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ]
 }

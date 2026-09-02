@@ -1,0 +1,38 @@
+[DateHelper] Resolved in-period date: 2026-09-02T00:00:00Z (day=2, ecYear=2019)
+06:00:32 [PERFORMANCE] API - Auth API Verification: 197.12ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/02/008004 (ID: 8a62cd5d-c93e-40c2-beeb-c00ea2ba9551)
+06:00:49 [INFO] Advancing inventory-adjustments "8a62cd5d-c93e-40c2-beeb-c00ea2ba9551"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1788328845130 (5a93a090-3a53-48c7-a2f6-e5c19a5c5c14) | method=FIFO | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:00:59 [INFO] Advancing purchase-orders "b078daf7-8550-4311-ab9b-4a0d0b5c9236"...
+06:01:02 [INFO] Advancing bills "c88d8a4f-56a1-485c-a261-1e81efaa4a81"...
+[SETUP] Bill created and approved: BILL/2026/09/02/003608 (c88d8a4f-56a1-485c-a261-1e81efaa4a81)
+06:01:07 [PERFORMANCE] API - Auth API Verification: 541.02ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=c88d8a4f-56a1-485c-a261-1e81efaa4a81...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/09/02/003608
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 1800

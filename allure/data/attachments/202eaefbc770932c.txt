@@ -1,0 +1,28 @@
+[DateHelper] Resolved in-period date: 2026-09-02T00:00:00Z (day=2, ecYear=2019)
+06:00:50 [PERFORMANCE] API - Auth API Verification: 389.01ms
+[AUTH] Session token and local storage injected successfully.
+06:00:52 [WARN] GET http://168.119.175.142:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/02/008007 (ID: 74d3fe1e-7ea2-4581-ad4b-41aeeab2de8c)
+06:01:05 [INFO] Advancing inventory-adjustments "74d3fe1e-7ea2-4581-ad4b-41aeeab2de8c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788328861673 (9f09c53b-3ee3-4bf5-bfe0-fa51c6ece702) | method=FIFO | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:01:10 [INFO] Advancing bills "9607691b-ba5a-45bf-a74d-b741ad8d1cbc"...
+[BILL] BILL/2026/09/02/003609 approved | amount: 3500
+[POLL] Waiting for bill journal entries… attempt 1/10
+[POLL] Waiting for bill journal entries… attempt 2/10
+[POLL] Waiting for bill journal entries… attempt 3/10
+[POLL] Waiting for bill journal entries… attempt 4/10
+[POLL] Waiting for bill journal entries… attempt 5/10
+[POLL] Waiting for bill journal entries… attempt 6/10
+[POLL] Waiting for bill journal entries… attempt 7/10
+[POLL] Waiting for bill journal entries… attempt 8/10
+[POLL] Waiting for bill journal entries… attempt 9/10
+[POLL] Waiting for bill journal entries… attempt 10/10
+[STEP] AP credit on bill: 0.00
+[SKIP GL AUDIT] Account mapping not implemented — bill payment GL assertions skipped.
+[ACTION] Creating Bill Payment for 9607691b-ba5a-45bf-a74d-b741ad8d1cbc via API (CashAcct: 0e41cae5-57a2-4245-9ece-d129ca61addd)...
+[SUCCESS] Payment created: PAY/2026/09/02/001133 (ID: 1c640eac-fe23-4c14-8176-cad5c00c4ee9)
+06:01:57 [INFO] Advancing payments "1c640eac-fe23-4c14-8176-cad5c00c4ee9"...
+[SKIP] Bill balance after payment: 0 (account mapping not configured — GL structure not assertable)

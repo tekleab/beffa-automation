@@ -1,0 +1,13 @@
+[DateHelper] Resolved in-period date: 2026-09-02T00:00:00Z (day=2, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/02/008018 (ID: 945bec0c-9429-482e-9290-db1185ecb44b)
+06:03:33 [INFO] Advancing inventory-adjustments "945bec0c-9429-482e-9290-db1185ecb44b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788329009537 (1e7eb134-63f5-40d6-8db1-30b0c9dc81a6) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ATTACK] Injecting Bill with future date: 2028-09-02T00:00:00Z...
+[PASS] Future-dated bill correctly blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"The invoice da

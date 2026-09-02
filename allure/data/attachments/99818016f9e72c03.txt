@@ -1,0 +1,33 @@
+06:03:40 [PERFORMANCE] API - Auth API Verification: 355.84ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/02/008020 (ID: 8fa45569-51cd-41a8-a4de-fd7faa00f926)
+06:04:48 [INFO] Advancing inventory-adjustments "8fa45569-51cd-41a8-a4de-fd7faa00f926"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1788329084412 (76636895-ddd1-493b-a303-f191adcf09e4) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:04:51 [PERFORMANCE] API - Auth API Verification: 309.07ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

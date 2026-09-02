@@ -1,0 +1,23 @@
+05:57:20 [PERFORMANCE] API - Auth API Verification: 224.30ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/02/007972 (ID: 4b313fa8-4f04-4e57-811f-f20ac64b68a7)
+05:57:26 [INFO] Advancing inventory-adjustments "4b313fa8-4f04-4e57-811f-f20ac64b68a7"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788328642993 (f4daa0e8-c153-4f27-af26-955889150721) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:57:30 [PERFORMANCE] API - Auth API Verification: 206.71ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+05:57:31 [WARN] GET http://168.119.175.142:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+05:57:33 [INFO] Advancing invoices "84c302fc-fd06-421e-8600-ce0abeba0b77"...
+[AUDIT] Invoice created at $500, ERP unreceived_amount = $100
+[BUG] ⚠️  KNOWN_BUG #7: ERP stores unreceived_amount=$100 instead of unit_price=$500. ERP uses unit_cost (not selling price) for AR outstanding balance. Costing method: FIFO.
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=84c302fc... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/02/001172
+05:57:40 [INFO] Advancing receipts "ae582c4f-d833-4fbd-8a60-49a534fa5f33"...
+[ACTION] Reversing Receipt RCPT/2026/09/02/001172...
+[AUDIT] Poll 1/8 — unreceived_amount = 100
+[PASS] Receipt reversed. Invoice balance restored to 100.
+[VOID] Invoice 84c302fc-fd06-421e-8600-ce0abeba0b77 voided → status=draft (no separate credit note; sales_journal cleared)
