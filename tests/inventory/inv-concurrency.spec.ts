@@ -26,7 +26,7 @@ test.describe('Inventory Concurrency & Race Condition Audits @inventory @concurr
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         const initialStock = item.currentStock;
         const adjustment = 10;
         const expectedStock = initialStock + (adjustment * 2);

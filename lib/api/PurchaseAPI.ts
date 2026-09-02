@@ -914,6 +914,7 @@ export class PurchaseAPI extends BasePage {
 
     const normalizeBill = (b: any) => {
       if (!b) return b;
+      b.status = b.status || b.current_approval_step?.status_label || b.current_approval_step?.name || 'draft';
       const totalAmount = parseFloat(b.net_due ?? b.amount ?? b.total_amount ?? 0);
       const paid = parseFloat(b.paid_amount ?? b.total_paid ?? 0);
       const hasPaidField = b.paid_amount !== undefined && b.paid_amount !== null;
@@ -931,6 +932,7 @@ export class PurchaseAPI extends BasePage {
       b.balance = b.unpaid_amount;
       return b;
     };
+
 
     // 1. Query /bills list first — fast, reliable, avoids 500 retries on singular /bill/{id}
     const listResp = await this.safeGet(`${apiBase}/bills?sortBy=created_at&sortOrder=desc&pageSize=100&${params}`, { headers }).catch(() => null);

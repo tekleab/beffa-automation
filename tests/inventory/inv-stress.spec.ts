@@ -49,7 +49,7 @@ test.describe('Inventory Stress & Costing Edge Cases @inventory @logic @security
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
         console.log(`[ITEM] ${item.itemName} | stock=10 @ loc=${item.locationId}`);
 
         // Transfer all 10 units out

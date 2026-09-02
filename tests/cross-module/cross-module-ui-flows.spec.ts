@@ -20,7 +20,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
 
         console.log(`[STEP 1] Creating & approving invoice for ${INVOICE_AMOUNT} via API...`);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: meta.customerId,

@@ -57,7 +57,7 @@ test.describe('Procure-to-Pay (P2P) Full Integration @cross-module @purchase @lo
         console.log(`[STEP 1] Metadata & Inventory Setup...`);
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC',
+            cost_method_code: 'FIFO',
             quantity: 10,
             unit_cost: 100
         });

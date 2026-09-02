@@ -31,7 +31,7 @@ test.describe('Load: Concurrent Inventory Adjustments @inventory @load @full', (
 
     test('LOAD: 10 concurrent +5 adjustments must produce exactly +50 net stock', async () => {
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 10, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 10, unit_cost: 100
         });
         const initialStock = item.currentStock;
         const CONCURRENCY = 10;
@@ -67,7 +67,7 @@ test.describe('Load: Concurrent Inventory Adjustments @inventory @load @full', (
 
     test('LOAD: 10 concurrent -2 adjustments on 20-unit stock must not go below zero', async () => {
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 20, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 20, unit_cost: 100
         });
         const initialStock = item.currentStock;
         const CONCURRENCY = 10;

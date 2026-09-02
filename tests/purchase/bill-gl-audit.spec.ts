@@ -84,7 +84,7 @@ test.describe('Purchase GL & AP Ledger Audits @purchase @logic @regression @full
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 200 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 200 });
         const BILL_AMOUNT = 4000;
 
         console.log(`[ITEM] ${item.itemName} | stock:${item.currentStock}`);
@@ -159,7 +159,7 @@ test.describe('Purchase GL & AP Ledger Audits @purchase @logic @regression @full
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.purchase.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 200 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 200 });
         const BILL_AMOUNT = 3500;
 
         const bill = await app.api.purchase.createBillAPI({ itemData: item, quantity: 1, unitPrice: BILL_AMOUNT, vendorId: meta.vendorId });
@@ -240,7 +240,7 @@ test.describe('Purchase GL & AP Ledger Audits @purchase @logic @regression @full
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.purchase.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 200 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 200 });
         const BILL_AMOUNT = 2500;
 
         const bill = await app.api.purchase.createBillAPI({ itemData: item, quantity: 1, unitPrice: BILL_AMOUNT, vendorId: meta.vendorId });
@@ -301,7 +301,7 @@ test.describe('Purchase GL & AP Ledger Audits @purchase @logic @regression @full
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         const meta = await app.api.purchase.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 200 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 200 });
         const BILL_TOTAL = 6000;
         const PARTIAL = 2000;
 

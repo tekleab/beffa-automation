@@ -120,7 +120,7 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @
         // 1. Discover Metadata & create fresh item with verified stock
         console.log(`[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...`);
         const salesMeta = await app.api.sales.discoverMetadataAPI();
-        const freshItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const freshItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
 
         const [custResp, cashResp, currResp, whResp, locResp] = await Promise.all([
             page.request.get(`${apiBase}/customers?page=1&pageSize=10&${params}`, { headers }),

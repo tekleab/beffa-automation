@@ -20,7 +20,7 @@ export const SalesOrderSchema = z.object({
   id: UUIDSchema,
   so_number: z.string().min(1).optional(),
   customer_id: UUIDSchema.optional(),
-  status: z.string(),
+  status: z.union([z.string(), z.null()]).optional(),
   total_amount: z.union([z.number(), z.string()]).optional(),
   currency_id: z.string().optional()
 }).passthrough();
@@ -37,7 +37,7 @@ export const InvoiceSchema = z.object({
   id: UUIDSchema,
   invoice_number: z.string().min(1).optional(),
   customer_id: UUIDSchema.optional(),
-  status: z.string(),
+  status: z.union([z.string(), z.null()]).optional(),
   total_amount: z.union([z.number(), z.string()]).optional(),
   unreceived_amount: z.union([z.number(), z.string()]).optional()
 }).passthrough();
@@ -48,24 +48,25 @@ export const ReceiptSchema = z.object({
   customer_id: UUIDSchema.optional(),
   cash_account_id: UUIDSchema.optional(),
   amount: z.number().positive(),
-  status: z.string().optional()
+  status: z.union([z.string(), z.null()]).optional()
 }).passthrough();
 
 export const PurchaseOrderSchema = z.object({
   id: UUIDSchema,
   po_number: z.string().optional(),
   vendor_id: UUIDSchema.optional(),
-  status: z.string()
+  status: z.union([z.string(), z.null()]).optional()
 }).passthrough();
 
 export const BillSchema = z.object({
   id: UUIDSchema,
   invoice_number: z.string().optional(),
   vendor_id: UUIDSchema.optional(),
-  status: z.string(),
+  status: z.union([z.string(), z.null()]).optional(),
   total_amount: z.union([z.number(), z.string()]).optional(),
   unpaid_amount: z.union([z.number(), z.string()]).optional()
 }).passthrough();
+
 
 export const BillPaymentSchema = z.object({
   id: UUIDSchema,

@@ -35,7 +35,7 @@ test.describe('Bill Detail DTO Contract & Schema Audit @purchase @api @full', ()
         // Provision a fresh Purchase Order and linked Bill for contract testing
         console.log('[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...');
         const meta = await app.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 15, unit_cost: 450 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 15, unit_cost: 450 });
         const { poId, poItems } = await app.createPurchaseOrderAPI(item, 4, item.unitCost || 450, meta.vendorId);
         await app.advanceDocumentAPI(poId, 'purchase-orders');
 

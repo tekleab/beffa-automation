@@ -45,7 +45,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log('[TICKET 1] Provisioning Sales Order & Invoice for DTO Audit...');
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 300 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 300 });
         const soRes = await app.api.sales.createSalesOrderAPI({ itemId: item.id, quantity: 3, unitPrice: 500 });
         if (soRes.success && soRes.id) {
             await app.advanceDocumentAPI(soRes.id, 'sales-orders');
@@ -170,7 +170,7 @@ test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @f
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log('[TICKET 5] Provisioning Sales Order for Detail DTO Audit...');
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 250 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 250 });
         const soRes = await app.api.sales.createSalesOrderAPI({ itemId: item.id, quantity: 2, unitPrice: 400 });
         console.log(`[TICKET 5] SO Created: ${soRes.ref} (${soRes.id})`);
 

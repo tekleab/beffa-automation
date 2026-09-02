@@ -107,7 +107,7 @@ export class InventoryAPI extends BasePage {
         name,
         type: 'inventory',
         category: typeof data === 'string' ? "Raw Materials" : (data.category || "Raw Materials"),
-        cost_method_code: typeof data === 'string' ? "WAC" : (data.cost_method_code || "WAC"),
+        cost_method_code: typeof data === 'string' ? "FIFO" : (data.cost_method_code || "FIFO"),
         item_class: typeof data === 'string' ? 'MER' : (data.item_class || 'MER'),
         item_id: typeof data === 'string' ? `ITM-${Date.now().toString().slice(-6)}` : (data.item_id || `ITM-${Date.now().toString().slice(-6)}`),
         unit_of_measurement: "Kilogram (kg)",
@@ -687,7 +687,7 @@ export class InventoryAPI extends BasePage {
    */
   async createFreshItemWithStockAPI(opts: {
     name?: string;
-    cost_method_code: 'FIFO' | 'WAC' | 'AVERAGE';
+    cost_method_code?: 'FIFO' | 'WAC' | 'AVERAGE';
     quantity: number;
     unit_cost: number;
     locationId?: string;

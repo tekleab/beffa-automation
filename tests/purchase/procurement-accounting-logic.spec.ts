@@ -29,7 +29,7 @@ test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', (
         const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
 
         console.log(`[STEP 1] Creating fresh item and creating bill...`);
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         const BILL_AMOUNT = 3000;
 
         const bill = await app.api.purchase.createBillAPI({
@@ -93,7 +93,7 @@ test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @full', (
         };
 
         console.log(`[STEP 1] Creating fresh item and approving bill...`);
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         const BILL_AMOUNT = 2500;
 
         const bill = await app.api.purchase.createBillAPI({

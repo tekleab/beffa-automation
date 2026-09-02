@@ -311,7 +311,7 @@ export class SalesAPI extends BasePage {
     if (!itemId) {
       const { InventoryAPI } = require('./InventoryAPI');
       const invApi = new InventoryAPI(this.page);
-      const fresh = await invApi.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: q + 20, unit_cost: 100 });
+      const fresh = await invApi.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: q + 20, unit_cost: 100 });
       itemId = fresh.itemId;
       locationId = fresh.locationId;
       warehouseId = fresh.warehouseId;

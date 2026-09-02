@@ -36,7 +36,7 @@ test.describe('Procurement: Three-Way Match Audit @purchase @logic @regression @
 
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC',
+            cost_method_code: 'FIFO',
             quantity: 20,
             unit_cost: 100
         });
@@ -85,7 +85,7 @@ test.describe('Procurement: Three-Way Match Audit @purchase @logic @regression @
 
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC',
+            cost_method_code: 'FIFO',
             quantity: 10,
             unit_cost: 100
         });

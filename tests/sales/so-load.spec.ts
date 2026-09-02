@@ -32,7 +32,7 @@ test.describe('Load: Concurrent Sales Invoices @sales @load @full', () => {
     test('LOAD: 10 concurrent invoices for same customer must all be created with distinct IDs', async () => {
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 100, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 100, unit_cost: 100
         });
 
         const CONCURRENCY = 10;
@@ -71,7 +71,7 @@ test.describe('Load: Concurrent Sales Invoices @sales @load @full', () => {
     test('LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts', async () => {
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 50, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 50, unit_cost: 100
         });
 
         const CONCURRENCY = 5;

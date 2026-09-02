@@ -44,7 +44,7 @@ export const isolatedTest = base.extend<IsolatedFixtures>({
 
   salesContext: async ({ app }, use) => {
     const meta = await app.api.sales.discoverMetadataAPI();
-    const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: "WAC", quantity: 50, unit_cost: 100 });
+    const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: "FIFO", quantity: 50, unit_cost: 100 });
 
     await use({
       customerId: meta.customerId,
@@ -62,7 +62,7 @@ export const isolatedTest = base.extend<IsolatedFixtures>({
 
   purchaseContext: async ({ app }, use) => {
     const meta = await app.api.purchase.discoverMetadataAPI();
-    const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: "WAC", quantity: 50, unit_cost: 100 });
+    const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: "FIFO", quantity: 50, unit_cost: 100 });
 
     await use({
       vendorId: meta.vendorId,

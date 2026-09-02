@@ -56,7 +56,7 @@ test.describe('Procurement Document Integrity Attacks @purchase @security @logic
         await DateHelper.resolve(page);
 
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         await page.close().catch(() => {});
     });
 

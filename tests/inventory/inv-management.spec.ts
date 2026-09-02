@@ -106,7 +106,7 @@ test.describe('Inventory Item Management @inventory @logic @regression @full', (
 
 
         console.log(`[STEP 1] Creating item with stock via API...`);
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100, skipStockPoll: true });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100, skipStockPoll: true });
 
         if (!item) {
             console.log(`[SKIP] No item with stock >= 1 found. Cannot run oversell guardrail.`);

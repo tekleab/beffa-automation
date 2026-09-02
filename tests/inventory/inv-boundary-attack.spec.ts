@@ -66,7 +66,7 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @l
             headers: h(token),
             data: {
                 name: `BND-Item-${Date.now()}`, type: 'inventory', category: 'Raw Materials',
-                cost_method_code: 'WAC', item_class: 'MER', item_id: `ITM-BND-${Date.now().toString().slice(-6)}`,
+                cost_method_code: 'FIFO', item_class: 'MER', item_id: `ITM-BND-${Date.now().toString().slice(-6)}`,
                 unit_of_measurement: 'Kilogram (kg)', part_number: `PN-BND-${Date.now().toString().slice(-5)}`,
                 serial: 'Z', status: 'active', min_stock: 0, initial_stock: 0,
                 purchase_price: 100, selling_price: 100, unit_cost: 100,
@@ -204,7 +204,7 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @l
             headers: h(token),
             data: {
                 name: `CONC-Item-${Date.now()}`, type: 'inventory', category: 'Raw Materials',
-                cost_method_code: 'WAC', item_class: 'MER', item_id: `ITM-CONC-${Date.now().toString().slice(-6)}`,
+                cost_method_code: 'FIFO', item_class: 'MER', item_id: `ITM-CONC-${Date.now().toString().slice(-6)}`,
                 unit_of_measurement: 'Kilogram (kg)', part_number: `PN-CONC-${Date.now().toString().slice(-5)}`,
                 serial: 'Z', status: 'active', min_stock: 0, initial_stock: 0,
                 purchase_price: 100, selling_price: 100, unit_cost: 100,

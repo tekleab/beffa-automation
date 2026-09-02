@@ -34,7 +34,7 @@ test.describe('Advanced Financial & Accounting Integrity API Audit @sales @purch
 
         salesMeta = await app.api.sales.discoverMetadataAPI();
         purchaseMeta = await app.api.purchase.discoverMetadataAPI();
-        itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
+        itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
         await page.close().catch(() => {});
     });
 

@@ -33,7 +33,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         // Pick an item with at least 51 units so -50 reduction is physically possible
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 100, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 100, unit_cost: 100 });
 
         if (!item) {
             console.log('[SKIP] No item found with stock >= 51. Skipping.');
@@ -73,7 +73,7 @@ test.describe('Inventory Integrity & Boundary Audits @inventory @logic @regressi
     test('Guardrail: System must reject zero-quantity adjustments', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
 
         console.log(`[ATTACK] Attempting zero-quantity adjustment for item: ${item.itemName}`);
 

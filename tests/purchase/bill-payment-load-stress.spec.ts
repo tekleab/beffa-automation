@@ -49,7 +49,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @load @stress @regres
     test('LOAD: Concurrently approving 5 bill payments must succeed without database deadlocks', async () => {
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 100, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 100, unit_cost: 100
         });
 
         const CONCURRENCY = 5;
@@ -122,7 +122,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @load @stress @regres
         test.fail(true, '[CONFIRMED BUG] Double payment race condition in ERP backend');
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 20, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 20, unit_cost: 100
         });
 
         const BILL_AMOUNT = 2500;
@@ -177,7 +177,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @load @stress @regres
         test.fail(true, '[CONFIRMED BUG] Payment approved against reversed bill');
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 20, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 20, unit_cost: 100
         });
 
         const BILL_AMOUNT = 3000;

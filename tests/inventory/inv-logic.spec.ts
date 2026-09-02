@@ -41,7 +41,7 @@ test.describe('Location Transfer (Move Order) Audits @inventory @logic @regressi
         app = new AppManager(page);
 
 
-        item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 30, unit_cost: 100 });
+        item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 30, unit_cost: 100 });
         if (!item) throw new Error('[SETUP] No item with minStock=10 found.');
 
         // TC-04 and TC-05 only need item + source location — destination resolved best-effort

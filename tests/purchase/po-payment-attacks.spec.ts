@@ -53,7 +53,7 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
         await DateHelper.resolve(page);
 
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 

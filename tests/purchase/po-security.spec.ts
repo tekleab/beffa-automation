@@ -29,7 +29,7 @@ test.describe('Procurement Security & Guardrails Audits @purchase @security @reg
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 

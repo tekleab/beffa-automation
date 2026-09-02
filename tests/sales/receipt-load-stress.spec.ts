@@ -48,7 +48,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
         const meta = await app.api.sales.discoverMetadataAPI();
         const customer = await app.api.sales.createFreshCustomerAPI({ name: `Load-Cust-${Date.now()}` });
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 100, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 100, unit_cost: 100
         });
 
         const CONCURRENCY = 5;
@@ -114,7 +114,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
         const meta = await app.api.sales.discoverMetadataAPI();
         const customer = await app.api.sales.createFreshCustomerAPI({ name: `Stress-Cust1-${Date.now()}` });
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 20, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 20, unit_cost: 100
         });
 
         const INVOICE_AMOUNT = 2000;
@@ -171,7 +171,7 @@ test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regre
         const meta = await app.api.sales.discoverMetadataAPI();
         const customer = await app.api.sales.createFreshCustomerAPI({ name: `Stress-Cust2-${Date.now()}` });
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 20, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 20, unit_cost: 100
         });
 
         const INVOICE_AMOUNT = 1500;

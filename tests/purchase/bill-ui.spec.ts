@@ -21,7 +21,7 @@ test.describe('Purchase to Bill Flow @purchase @smoke @full', () => {
 
         console.log('[STEP] Phase 1: Create PO via API');
         const meta = await app.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 500 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 500 });
         const { poNumber, poId, poItems } = await app.createPurchaseOrderAPI(item, 5, item.unitCost || 500, meta.vendorId);
         console.log(`[OK] PO created: ${poNumber} for Vendor ${meta.vendorName} (${meta.vendorId})`);
 

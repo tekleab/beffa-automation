@@ -8,7 +8,7 @@ export class WorkerDataFactory {
     return {
       itemName: `Item-${suffix}`,
       sku: `SKU-${suffix}`,
-      cost_method_code: 'WAC'
+      cost_method_code: 'FIFO'
     };
   }
 }

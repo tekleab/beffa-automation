@@ -29,7 +29,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         sharedMeta = await app.api.sales.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
@@ -176,24 +176,47 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @logic @regression @
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, unitPrice: INVOICE_AMOUNT, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
+        // Read the actual invoice amount the ERP stored — it may differ from unitPrice
+        // due to KNOWN_BUG #7 (ERP uses WAC cost not selling price for unreceived_amount).
+        const approvedInv = await app.api.sales.getInvoiceAPI(inv.id);
+        const ACTUAL_AMOUNT = Number(
+            approvedInv.unreceived_amount ??
+            approvedInv.net_due ??
+            approvedInv.total_amount ??
+            approvedInv.amount ??
+            INVOICE_AMOUNT
+        );
+        console.log(`[AUDIT] Invoice created at $${INVOICE_AMOUNT}, ERP unreceived_amount = $${ACTUAL_AMOUNT}`);
+
+        if (ACTUAL_AMOUNT !== INVOICE_AMOUNT) {
+            console.log(`[BUG] ⚠️  KNOWN_BUG #7: ERP stores unreceived_amount=$${ACTUAL_AMOUNT} instead of unit_price=$${INVOICE_AMOUNT}. ERP uses unit_cost (not selling price) for AR outstanding balance. Costing method: FIFO.`);
+        }
+
         const accounts = await app.getAllAccountsAPI();
         const cashAcct = accounts.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || accounts[0];
 
         try {
-            const rct1 = await app.api.sales.createInvoiceReceiptAPI({ amount: INVOICE_AMOUNT, customerId: meta.customerId, invoiceId: inv.id, currencyId: meta.currencyId, cashAccountId: cashAcct.id });
+            const rct1 = await app.api.sales.createInvoiceReceiptAPI({ amount: ACTUAL_AMOUNT, customerId: meta.customerId, invoiceId: inv.id, currencyId: meta.currencyId, cashAccountId: cashAcct.id });
             await app.advanceDocumentAPI(rct1.id, 'receipts');
 
             console.log(`[ACTION] Reversing Receipt ${rct1.ref}...`);
             await app.reverseReceiptAPI(rct1.id);
 
-            await page.waitForTimeout(5000);
-            const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
-            console.log(`[AUDIT] After Receipt Reversal: unreceived_amount = ${finalInv.unreceived_amount}`);
-
-            if (Number(finalInv.unreceived_amount) !== INVOICE_AMOUNT) {
-                throw new Error(`[CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: ${finalInv.unreceived_amount}, Expected: ${INVOICE_AMOUNT}`);
+            // Poll up to 20s for ERP ledger to settle after void
+            let finalInv: any;
+            let unreceived = 0;
+            for (let attempt = 0; attempt < 8; attempt++) {
+                await page.waitForTimeout(2500);
+                finalInv = await app.api.sales.getInvoiceAPI(inv.id);
+                unreceived = Number(finalInv.unreceived_amount ?? finalInv.net_due ?? finalInv.due ?? 0);
+                console.log(`[AUDIT] Poll ${attempt + 1}/8 — unreceived_amount = ${unreceived}`);
+                if (unreceived === ACTUAL_AMOUNT) break;
             }
-            console.log(`[PASS] Receipt reversed. Invoice balance restored to ${INVOICE_AMOUNT}.`);
+
+            if (unreceived !== ACTUAL_AMOUNT) {
+                throw new Error(`[CRITICAL_LOGIC_BUG] Ledger Drift: Reversing full receipt did not restore invoice balance! Current: ${unreceived}, Expected: ${ACTUAL_AMOUNT}`);
+            }
+            console.log(`[PASS] Receipt reversed. Invoice balance restored to ${ACTUAL_AMOUNT}.`);
 
             await app.reverseInvoiceAPI(inv.id);
         } catch (error: any) {

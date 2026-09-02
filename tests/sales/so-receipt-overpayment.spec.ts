@@ -97,7 +97,7 @@ test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regr
             headers: h(token),
             data: {
                 name: `OVP-Item-${Date.now()}`, type: 'inventory', category: 'Raw Materials',
-                cost_method_code: 'WAC', item_class: 'MER', item_id: `ITM-OVP-${Date.now().toString().slice(-6)}`,
+                cost_method_code: 'FIFO', item_class: 'MER', item_id: `ITM-OVP-${Date.now().toString().slice(-6)}`,
                 unit_of_measurement: 'Each (ea)', part_number: `PN-OVP-${Date.now().toString().slice(-5)}`,
                 serial: 'Z', status: 'active', min_stock: 0, initial_stock: 50,
                 purchase_price: 200, selling_price: 200, unit_cost: 200,

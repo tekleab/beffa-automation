@@ -49,9 +49,9 @@ test.describe('Sales COGS Audit: Multi-Item Invoice @sales @inventory @logic @re
 
         // ── STEP 1: Create 3 distinct fresh items with known stock + cost ─────
         console.log(`[STEP 1] Creating 3 fresh WAC items...`);
-        const item1 = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 50 });
-        const item2 = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 80 });
-        const item3 = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 120 });
+        const item1 = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 50 });
+        const item2 = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 80 });
+        const item3 = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 120 });
 
         const stock1Before = item1.currentStock;
         const stock2Before = item2.currentStock;

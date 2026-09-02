@@ -33,7 +33,7 @@ test.describe('Load: Concurrent PO Submissions @purchase @load @full', () => {
 
     test('LOAD: 20 concurrent PO submissions must all succeed within 30s', async () => {
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 200, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 200, unit_cost: 100
         });
 
         const CONCURRENCY = 20;
@@ -74,7 +74,7 @@ test.describe('Load: Concurrent PO Submissions @purchase @load @full', () => {
 
     test('LOAD: Response time must not degrade more than 5x from sequential to burst', async () => {
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC', quantity: 100, unit_cost: 100
+            cost_method_code: 'FIFO', quantity: 100, unit_cost: 100
         });
 
         const baselineTimes: number[] = [];

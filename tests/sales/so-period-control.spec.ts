@@ -40,7 +40,7 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         sharedMeta = await app.api.sales.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
         await page.close();
     });
 
@@ -86,13 +86,13 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('SO: Reject future-dated Sales Order from next fiscal year (2019)', async ({ page }) => {
+    test('SO: Reject future-dated Sales Order from next fiscal year (2022)', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
-        const futureDate = '2019-01-01T00:00:00Z';
+        const futureDate = '2022-01-01T00:00:00Z';
         console.log(`[TEST] Creating SO with future date: ${futureDate}`);
 
         const so = await app.api.sales.createSalesOrderAPI({
@@ -154,13 +154,13 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('Invoice: Reject future-dated Invoice from next fiscal year (2019)', async ({ page }) => {
+    test('Invoice: Reject future-dated Invoice from next fiscal year (2022)', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
         const item = sharedItem;
 
-        const futureDate = '2019-01-01T00:00:00Z';
+        const futureDate = '2022-01-01T00:00:00Z';
         console.log(`[TEST] Creating Invoice with future date: ${futureDate}`);
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
@@ -250,7 +250,7 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         }
     });
 
-    test('Receipt: Reject future-dated Receipt from next fiscal year (2019)', async ({ page }) => {
+    test('Receipt: Reject future-dated Receipt from next fiscal year (2022)', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = sharedMeta;
@@ -266,7 +266,7 @@ test.describe('Sales Period Control Edge Cases @sales @security @temporal @regre
         });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
-        const futureDate = '2019-01-01T00:00:00Z';
+        const futureDate = '2022-01-01T00:00:00Z';
         console.log(`[TEST] Creating Receipt with future date: ${futureDate}`);
 
         const invData = await app.api.sales.getInvoiceAPI(inv.id);

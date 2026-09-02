@@ -29,7 +29,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         sharedMeta = await app.api.sales.discoverMetadataAPI();
-        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
+        sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
     });
 
     test.afterAll(async () => {
@@ -51,7 +51,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 50, unit_cost: 100 });
+        const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
         await ensureStock(app, item, 5);
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, quantity: 1, unitPrice: 500, locationId: item.locationId, warehouseId: item.warehouseId });
@@ -117,7 +117,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 100 });
+        const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
         await ensureStock(app, item, 2);
 
         console.log(`[ATTACK] Injecting bounds-breaking discount: -3500 on 1000 invoice`);
@@ -146,7 +146,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @
         const { apiBase, headers, qs } = await app.buildApiContext();
         const meta = await app.api.sales.discoverMetadataAPI();
         // Use a fresh isolated item so stock depletion from other tests doesn't cause 422
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
         await ensureStock(app, item, 5);
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, unitPrice: 250, locationId: item.locationId, warehouseId: item.warehouseId, quantity: 1 });

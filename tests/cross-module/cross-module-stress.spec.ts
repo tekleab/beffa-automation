@@ -42,7 +42,7 @@ test.describe('Cross-Module Stress & Financial Integrity @cross-module @logic @s
 
         const purchaseMeta = await app.api.purchase.discoverMetadataAPI();
         const salesMeta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
 
         // Create PO bill (adds stock) and SO invoice (removes stock) — approve concurrently
         const po = await app.api.purchase.createPurchaseOrderAPI(item, 5, 100, purchaseMeta.vendorId);
@@ -83,7 +83,7 @@ test.describe('Cross-Module Stress & Financial Integrity @cross-module @logic @s
 
         const purchaseMeta = await app.api.purchase.discoverMetadataAPI();
         const salesMeta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
 
         const billAmount = 2000;
         const invoiceUnitPrice = 3000;

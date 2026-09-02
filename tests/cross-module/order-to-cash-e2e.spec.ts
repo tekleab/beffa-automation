@@ -57,7 +57,7 @@ test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @logic 
         console.log(`[STEP 1] Metadata & Inventory Setup...`);
         const meta = await app.api.sales.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
-            cost_method_code: 'WAC',
+            cost_method_code: 'FIFO',
             quantity: 50,
             unit_cost: 100
         });
