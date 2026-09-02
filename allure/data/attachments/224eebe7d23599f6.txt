@@ -1,0 +1,51 @@
+
+=======================================================
+  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test 
+=======================================================
+[DateHelper] Resolved in-period date: 2026-09-02T00:00:00Z (day=2, ecYear=2019)
+05:49:14 [PERFORMANCE] API - Auth API Verification: 212.29ms
+[AUTH] Session token and local storage injected successfully.
+[OPERATING DATE] Date: 2026-08-14T00:00:00Z
+[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/02/007948 (ID: c938a88e-698d-40b4-9b5c-4ac0e0162de5)
+05:49:24 [INFO] Advancing inventory-adjustments "c938a88e-698d-40b4-9b5c-4ac0e0162de5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788328158108 (b917b587-2b05-4340-bef2-09cf881bee74) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+  ├── Customer ID      : 243b9845-e056-48ce-924d-6f233d99c574
+  ├── Cash Account ID  : e8b0574b-87e1-44fd-a021-cb26ddc0b9c0 (Cash at Bank - CBE)
+  ├── Currency ID      : ffbf8ef2-bffe-4c52-b588-17472d6baeb3 (BRR)
+  ├── AR Account ID    : bd0e0b51-b32d-4925-b442-05a3e63abf16 (Accounts Receivable)
+  ├── Sales Account ID : 7641cae0-1158-4cd8-9817-704ef86019dc (Sales)
+  ├── Warehouse ID     : 274c6ccf-b0f0-4c67-bbff-309c3f63a871
+  ├── Location ID      : 539ab667-5559-4db7-8cd4-24f797d57ebb
+  └── Inventory Item ID: b917b587-2b05-4340-bef2-09cf881bee74
+[STEP 3A] Creating Sales Order...
+[PASS] Sales Order Created: SO/2026/09/02/001154
+05:49:28 [INFO] Advancing sales-orders "ccd757e3-6b14-4901-acda-8237d21465e8"...
+[STEP 3B] Creating Sales Invoice...
+[PASS] Invoice Created: INV/2026/09/02/004304
+05:49:32 [INFO] Advancing invoices "03997f1c-73bd-472e-8f1c-a24d916c052c"...
+[STEP 3C] Creating Receipt linked to Invoice 03997f1c-73bd-472e-8f1c-a24d916c052c...
+[HTTP POST] /api/receipts (linked to invoice) -> Status: 500
+[⚠️ BACKEND DEFECT DETECTED] Linking invoice to receipt returned HTTP 500
+[SERVER RESPONSE] {
+	"code": 500,
+	"message": "Internal Server Error"
+}
+
+[STEP 3D] Creating Standalone Customer Receipt (unlinked to draft invoice)...
+[HTTP POST] /api/receipts (standalone customer receipt) -> Status: 201
+[PASS] Standalone Receipt Created Successfully!
+  ├── Receipt ID  : 633d294f-5bc2-4f1a-bf49-710a59947202
+  ├── Ref Number  : RCPT/2026/09/02/001155
+  ├── Status      : draft
+  └── Amount      : 0
+[STEP 3E] Verifying Direct GET /api/receipt/633d294f-5bc2-4f1a-bf49-710a59947202...
+[HTTP GET] Direct Receipt Inspection -> Status: 200
+[STEP 3F] Approving Receipt via Document Workflow...
+[FALLBACK] PATCH /api/receipt/633d294f-5bc2-4f1a-bf49-710a59947202/advance returned 404. Trying plural...
+[HTTP PATCH] Advance Receipt -> Status: 200
+[PASS] Receipt 633d294f-5bc2-4f1a-bf49-710a59947202 Approved Successfully!
+[DIAGNOSTIC STATUS] ✅ Receipt API Diagnostics Completed Successfully.

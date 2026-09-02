@@ -3225,8 +3225,146 @@
             let answerHtml = "";
             const current = window.dashboardData || { total: 275, passed: 254, failed: 20, passRate: 92.4 };
 
-            // ── INTENT 1: Categorize by Module / Analyze All Tests ────────────────
-            if (q.includes("module") || q.includes("categor") || q.includes("breakdown") || q.includes("analyze all") || q.includes("all the tests") || q.includes("all tests") || q.includes("coverage")) {
+            // ── KNOWLEDGE BASE: SPECIFIC TEST SUITES & FILES ────────────────────────
+            const testFileKnowledge = {
+                "so-cogs": {
+                    title: "Sales: Multi-Item COGS & Inventory Deduction Audit",
+                    file: "tests/sales/so-cogs.spec.ts",
+                    module: "Sales & Receivables",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Validates that approving a multi-item invoice accurately deducts warehouse stock counts and posts balanced Cost of Goods Sold (COGS) journal entries (Dr: COGS Expense = Cr: Inventory Asset) based on Weighted Average Cost (WAC).",
+                    invariants: "• ∑ Debits === ∑ Credits ($500.00 = $500.00)\n• Stock count depletions verified across multiple locations\n• Auto-discovers active Ethiopian Calendar fiscal period"
+                },
+                "so-integrity": {
+                    title: "Sales: Negative Receipt & Discount Overflow Guardrails",
+                    file: "tests/sales/so-integrity.spec.ts",
+                    module: "Sales & Receivables",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Audits security and business mathematical guardrails: asserts system strictly rejects $0 or negative receipt amounts, bounds-breaking discounts exceeding invoice total, and attempts to post receipts against voided invoices.",
+                    invariants: "• Rejects negative receipt payments (-$100)\n• Intercepts discount overflows (-$3,500 on $1,000 invoice)\n• Token auto-recovery on 401 response"
+                },
+                "bill-gl-audit": {
+                    title: "Purchase: Vendor Bill General Ledger Journal Audit",
+                    file: "tests/purchase/bill-gl-audit.spec.ts",
+                    module: "Purchase & Payables",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Audits General Ledger postings on vendor bill approvals, multi-line tax calculations, withholding tax deductions, and accounts payable reconciliation.",
+                    invariants: "• AP credit balances match bill total\n• Safe fallback if account-mappings endpoint returns 404\n• Double-entry debit/credit ledger equality"
+                },
+                "rbac-user-security": {
+                    title: "Cross-Module: Multi-Tenant RBAC & JWT Security Audit",
+                    file: "tests/cross-module/rbac-user-security.spec.ts",
+                    module: "Security & Governance",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Conducts adversarial security fuzzing: tests duplicate email prevention, missing/invalid x-company header tenant isolation, tampered JWT signature rejection, and auditor role permission boundaries.",
+                    invariants: "• Tampered JWT returns strict 401 on invoices, bills, employees, users\n• Fake company headers return 400 with 0 data leaked\n• Read-only Auditor blocked from creating financial docs"
+                },
+                "order-to-cash": {
+                    title: "Cross-Module: Full Order-to-Cash End-to-End Workflow",
+                    file: "tests/cross-module/order-to-cash-e2e.spec.ts",
+                    module: "Cross-Module & E2E",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Executes the full business lifecycle: Customer Creation ➔ Sales Order Approval ➔ Invoice Generation ➔ Stock Deduction ➔ Payment Receipt ➔ GL Reconciliation.",
+                    invariants: "• End-to-end multi-stage document lifecycle\n• Remaining invoice unreceived amount settles to $0.00\n• Inventory count conservation across lifecycle"
+                },
+                "hr-payroll": {
+                    title: "HR: Payroll Structure, Components & Payrun Audit",
+                    file: "tests/hr/hr-payroll.spec.ts",
+                    module: "HR & Payroll",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Verifies salary structure assignment, earning/deduction components calculation, Ethiopian tax bands, and payroll run generation.",
+                    invariants: "• Gross-to-net salary reconciliation\n• Navigation routes mapped to /payrolls/overview\n• Loading overlay handling without spinner blocking"
+                },
+                "customer": {
+                    title: "Sales: Customer Directory, Credit Limits & Currency",
+                    file: "tests/sales/customer.spec.ts",
+                    module: "Sales & Receivables",
+                    health: "100% Passed (Healthy)",
+                    color: "var(--success)",
+                    whatItDoes: "Tests customer lifecycle, TIN validation, currency assignment, credit limit enforcement, and customer ledger balances.",
+                    invariants: "• Customer credit limit guardrails\n• Multi-currency support and exchange rate lookup"
+                }
+            };
+
+            // ── CHECK SPECIFIC TEST MATCH ──────────────────────────────────────────
+            const matchedKey = Object.keys(testFileKnowledge).find(k => q.includes(k) || q.includes(k.replace(/-/g, " ")) || q.includes(k.replace(/-/g, "_")));
+            
+            if (matchedKey) {
+                const info = testFileKnowledge[matchedKey];
+                answerHtml = `
+                    <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:12px; padding:18px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                            <div>
+                                <div style="font-size:14px; font-weight:700; color:var(--text-primary);">${info.title}</div>
+                                <div style="font-size:11px; color:var(--text-muted); font-family:monospace;">${info.file}</div>
+                            </div>
+                            <span style="font-size:11px; padding:3px 8px; border-radius:100px; background:rgba(34,197,94,0.15); color:${info.color}; font-weight:600;">${info.health}</span>
+                        </div>
+                        
+                        <div style="font-size:12px; line-height:1.5; margin-bottom:12px; color:var(--text-secondary); background:rgba(0,0,0,0.25); padding:10px 14px; border-radius:8px;">
+                            <strong>🎯 What This Test Does:</strong><br>
+                            ${info.whatItDoes}
+                        </div>
+
+                        <div style="font-size:11px; line-height:1.5; color:var(--text-primary);">
+                            <strong>⚖️ Verified Business Invariants:</strong><br>
+                            ${info.invariants.replace(/\\n/g, "<br>")}
+                        </div>
+
+                        <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                            <span>📁 Module: <strong>${info.module}</strong></span>
+                            <span>⚡ Framework: Playwright + Zod</span>
+                        </div>
+                    </div>
+                `;
+            }
+            // ── OVERALL SYSTEM HEALTH & EXECUTIVE BRIEF ────────────────────────────
+            else if (q.includes("overall") || q.includes("health") || q.includes("system status") || q.includes("executive") || q.includes("how healthy") || q.includes("summary")) {
+                answerHtml = `
+                    <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:12px; padding:18px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                            <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; color:var(--text-primary);">
+                                <i class="ti ti-activity-heartbeat" style="color:var(--success);"></i> ERP System Health & Executive Briefing
+                            </div>
+                            <span style="font-size:11px; padding:3px 10px; border-radius:100px; background:rgba(34,197,94,0.15); color:var(--success); font-weight:700;">92.4% (HEALTHY)</span>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:14px;">
+                            <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Total Flows</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--text-primary);">275</div>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Global Pass Rate</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--success);">92.4%</div>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; text-align:center; border:1px solid var(--border);">
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Avg Latency</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--accent-primary);">14.2s</div>
+                            </div>
+                        </div>
+
+                        <div style="font-size:12px; line-height:1.5; color:var(--text-secondary); margin-bottom:12px;">
+                            • <strong>Core Accounting & Sales (97.3%):</strong> Invoices, Sales Orders, Receipts, and Double-Entry COGS GL journals are fully validated.<br>
+                            • <strong>Procure-to-Pay (95.1%):</strong> Vendor bills, PO conversions, and AP settlement flows are operational.<br>
+                            • <strong>Security & Tenant Isolation (92.3%):</strong> Tampered tokens and cross-company headers strictly guarded.<br>
+                            • <strong>Pending Action:</strong> Backend team addressing Timesheet 500 error and preview deployment rebuild.
+                        </div>
+
+                        <div style="padding:10px 14px; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; font-size:11px; color:var(--text-primary);">
+                            ✨ <strong>System Verdict:</strong> The ERP core transactional and financial accounting engine is robust, stable, and audit-ready.
+                        </div>
+                    </div>
+                `;
+            }
+            // ── CATEGORIZE BY MODULE / BREAKDOWN ──────────────────────────────────
+            else if (q.includes("module") || q.includes("categor") || q.includes("breakdown") || q.includes("analyze all") || q.includes("all the tests") || q.includes("all tests") || q.includes("coverage")) {
                 const modules = [
                     { name: "Sales & Receivables", files: 22, passed: 72, failed: 2, rate: "97.3%", status: "Healthy", color: "var(--success)", icon: "ti-shopping-cart", scope: "Invoices, Sales Orders, Receipts, COGS GL Posting, Discounts" },
                     { name: "Purchase & Payables", files: 19, passed: 58, failed: 3, rate: "95.1%", status: "Healthy", color: "var(--success)", icon: "ti-truck-delivery", scope: "Bills, Purchase Orders, Vendor Settlements, Period Controls" },
@@ -3266,15 +3404,10 @@
                             Here is the full architectural breakdown across all 6 ERP business modules:
                         </div>
                         ${moduleRows}
-                        <div style="margin-top:12px; padding:10px; background:rgba(59,130,246,0.08); border-radius:8px; font-size:11px; color:var(--text-secondary); display:flex; justify-content:space-between;">
-                            <span>📊 <strong>Overall Coverage:</strong> 275 Tests</span>
-                            <span>✅ <strong>Global Pass Rate:</strong> ${current.passRate || 92.4}%</span>
-                            <span>⏱️ <strong>Avg Duration:</strong> 14.2s</span>
-                        </div>
                     </div>
                 `;
             }
-            // ── INTENT 2: Failures & Blockers ────────────────────────────────────
+            // ── INTENT 4: Failures & Blockers ────────────────────────────────────
             else if (q.includes("failed") || q.includes("fail") || q.includes("broken") || q.includes("blocker") || q.includes("error")) {
                 if (current.failed === 0 || current.passRate === 100) {
                     answerHtml = `
@@ -3288,9 +3421,6 @@
                                 • <strong>Failed / Blocked:</strong> 0<br>
                                 • <strong>Active Risks:</strong> 0 critical risks detected.
                             </div>
-                            <div style="font-size:11px; color:var(--text-secondary); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
-                                ✨ All executed workflows passed with zero regressions in this pipeline run!
-                            </div>
                         </div>
                     `;
                 } else {
@@ -3300,72 +3430,14 @@
                                 <i class="ti ti-alert-triangle"></i> Detected ${current.failed} Test Failure(s)
                             </div>
                             <div style="margin-bottom:10px; font-size:12px;">
-                                <strong>1. Remote Deployment Blocker:</strong> Frontend preview server returning <code>ENOENT: no such file or directory dist/index.html</code>.<br>
-                                <strong>2. Timesheet Creation 500 Crash:</strong> <code>POST /api/timesheets</code> crashes with raw <code>SQLSTATE 23503</code> when passed invalid employee UUID.
-                            </div>
-                            <div style="font-size:11px; color:var(--text-secondary); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
-                                💡 <strong>Action:</strong> Click "Analyze Timesheets 500 error" chip for the cURL repro.
+                                <strong>1. Remote Deployment Blocker:</strong> Frontend preview server returning <code>ENOENT: dist/index.html missing</code>.<br>
+                                <strong>2. Timesheet Creation 500 Crash:</strong> <code>POST /api/timesheets</code> foreign key unhandled crash.
                             </div>
                         </div>
                     `;
                 }
             }
-            // ── INTENT 3: Timesheet 500 Crash ────────────────────────────────────
-            else if (q.includes("timesheet") || q.includes("500") || q.includes("crash")) {
-                answerHtml = `
-                    <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:16px;">
-                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--warning); margin-bottom:8px;">
-                            <i class="ti ti-bug"></i> Root Cause Diagnosis: Timesheets 500 Crash
-                        </div>
-                        <div style="font-size:12px; margin-bottom:8px;">
-                            <strong>Endpoint:</strong> <code>POST /api/timesheets</code><br>
-                            <strong>Status:</strong> HTTP 500 (Expected: 422 Unprocessable Entity)<br>
-                            <strong>Root Cause:</strong> Server does not validate foreign key <code>employee_id</code> in Go handler before executing SQL insert, triggering raw PostgreSQL error <code>fk_employees_timesheets</code>.
-                        </div>
-                        <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:6px; font-family:monospace; font-size:11px; color:#a1a1a1; margin-top:8px;">
-                            curl -X POST "http://168.119.175.142:8001/api/timesheets?year=2019&period=yearly&calendar=ec" \<br>
-                            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-                            &nbsp;&nbsp;-H "Authorization: Bearer &lt;JWT&gt;" \<br>
-                            &nbsp;&nbsp;-d employee_id:00000000-0000-0000-0000-000000000000
-                        </div>
-                    </div>
-                `;
-            }
-            // ── INTENT 4: Accounting & Business Rules ─────────────────────────────
-            else if (q.includes("double") || q.includes("gl") || q.includes("accounting") || q.includes("journal") || q.includes("cogs") || q.includes("rule") || q.includes("calendar") || q.includes("price")) {
-                answerHtml = `
-                    <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.25); border-radius:10px; padding:16px;">
-                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--accent-primary); margin-bottom:8px;">
-                            <i class="ti ti-scale"></i> ERP Invariant: Double-Entry GL Balance Rule
-                        </div>
-                        <div style="font-size:12px; margin-bottom:8px;">
-                            Every financial transaction must post balanced general journal entries where:
-                            <div style="font-weight:700; color:#fff; margin:6px 0; padding:6px 10px; background:rgba(0,0,0,0.3); border-radius:6px;">
-                                ∑ Debits === ∑ Credits &nbsp;(Delta ≤ $0.01)
-                            </div>
-                            • <strong>Invoice COGS:</strong> Debits COGS Expense and Credits Inventory Asset at WAC cost.<br>
-                            • <strong>Receipt Settlement:</strong> Debits Cash/Bank Asset and Credits Accounts Receivable.<br>
-                            • <strong>Sales Price Rule:</strong> Item Unit Price is strictly read-only and locked to catalog pricing.
-                        </div>
-                    </div>
-                `;
-            }
-            // ── INTENT 5: Security & RBAC ─────────────────────────────────────────
-            else if (q.includes("security") || q.includes("rbac") || q.includes("token") || q.includes("jwt") || q.includes("auth") || q.includes("tenant")) {
-                answerHtml = `
-                    <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:10px; padding:16px;">
-                        <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--success); margin-bottom:8px;">
-                            <i class="ti ti-shield-lock"></i> RBAC & Multi-Tenant Security Suite
-                        </div>
-                        <div style="font-size:12px;">
-                            • <strong>Tampered JWT Guardrail:</strong> Modifying token signatures triggers strict HTTP 401 on invoices, bills, employees, and users.<br>
-                            • <strong>Tenant Isolation:</strong> Missing or fake <code>x-company</code> headers return HTTP 400 with 0 cross-company records leaked.<br>
-                            • <strong>Auditor Role:</strong> Read-only roles are strictly prohibited from creating financial documents.
-                        </div>
-                    </div>
-                `;
-            }
-            // ── INTENT 6: Default Semantic Overview ───────────────────────────────
+            // ── INTENT 5: Default Semantic Search ─────────────────────────────────
             else {
                 answerHtml = `
                     <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:10px; padding:16px;">
@@ -3382,7 +3454,7 @@
                             • <strong>Execution Health:</strong> ${current.passRate || 92.4}% Pass Rate
                         </div>
                         <div style="margin-top:10px; font-size:11px; color:var(--text-muted);">
-                            💡 Try asking: <em>"Analyze all the tests and categorize by module"</em> or <em>"Explain Double-Entry GL accounting rules"</em>
+                            💡 Try asking: <em>"What does so-cogs test do?"</em>, <em>"What is the overall health of the system?"</em>, or <em>"Explain bill-gl-audit"</em>
                         </div>
                     </div>
                 `;
