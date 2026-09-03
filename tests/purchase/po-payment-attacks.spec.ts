@@ -355,4 +355,153 @@ test.describe('Procurement Payment Attack Vectors @purchase @security @logic @re
             console.log(`[PASS] Mismatched payment correctly rejected.`);
         }
     });
+
+    // ── 4. CROSS-VENDOR PAYMENT ALLOCATION (IDOR) ─────────────────────────────
+    //
+    // Attack: Submit a payment under Vendor B but allocate it to Vendor A's bill.
+    // Expected: API must verify payment.vendor_id == bill.vendor_id and reject.
+    // If accepted: Vendor A's bill balance drops to $0 — confirmed IDOR defect.
+    //
+    test('Guardrail: System must strictly segregate bills and payments by Vendor', async ({ page }) => {
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
+        const BILL_AMOUNT = 5000;
+        const W = { l: 32, v: 36 };
+        const pad = (s: string, n: number) => s.length >= n ? s.substring(0, n - 1) + '…' : s.padEnd(n);
+        const dline = '─'.repeat(W.l + W.v + 7);
+
+        // ── Step 1: Create two distinct vendors ──────────────────────────────
+        console.log(`\n[STEP 1] Creating Vendor A and Vendor B...`);
+        const vendorA = await app.api.purchase.createVendorAPI(`IDOR-VendorA-${Date.now()}`);
+        const vendorB = await app.api.purchase.createVendorAPI(`IDOR-VendorB-${Date.now()}`);
+        console.log(`  Vendor A : ${vendorA.name} (${vendorA.id})`);
+        console.log(`  Vendor B : ${vendorB.name} (${vendorB.id})`);
+
+        // ── Step 2: Create and approve a Bill under Vendor A ─────────────────
+        console.log(`\n[STEP 2] Creating Bill for ${BILL_AMOUNT} under Vendor A...`);
+        const billA = await app.api.purchase.createBillAPI({
+            itemData: sharedItem,
+            unitPrice: BILL_AMOUNT,
+            quantity: 1,
+            vendorId: vendorA.id
+        });
+        await app.advanceDocumentAPI(billA.id, 'bills');
+        console.log(`  Bill A   : ${billA.ref} (${billA.id}) — belongs to Vendor A`);
+
+        const billBefore = await app.api.purchase.getBillAPI(billA.id, billA.ref);
+        const balanceBefore = parseFloat(billBefore.unpaid_amount ?? billBefore.balance ?? BILL_AMOUNT);
+        console.log(`  Balance before attack: $${balanceBefore.toFixed(2)}`);
+
+        // ── Step 3: Attack — payment under Vendor B targeting Vendor A's bill ─
+        console.log(`\n[STEP 3] ATTACK — POST /payments: vendor_id=VendorB, bill_id=VendorA's bill...`);
+
+        const { apiBase, headers, qs } = await app.buildApiContext();
+
+        const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=100&${qs}`, { headers });
+        const acctData = await acctResp.json();
+        const allAccounts: any[] = acctData.items || acctData.data || [];
+        const cashAccount = allAccounts.find((a: any) =>
+            (a.type || a.account_type || '').toLowerCase().includes('cash') ||
+            (a.type || a.account_type || '').toLowerCase().includes('bank')
+        ) || allAccounts[0];
+
+        const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
+        const currData = await currResp.json();
+        const currency = currData.items?.[0] || currData.data?.[0];
+
+        const { DateHelper } = require('../../lib/utils/DateHelper');
+        const dateIso = (await DateHelper.resolve(page)).iso;
+
+        // The IDOR attack payload
+        const attackPayload = {
+            amount:          BILL_AMOUNT,
+            cash_account_id: cashAccount?.id,
+            vendor_id:       vendorB.id,   // <- Vendor B is the payer
+            date:            dateIso,
+            payment_method:  'cash',
+            currency_id:     currency?.id,
+            bill_payments: [{
+                amount:  BILL_AMOUNT,
+                bill_id: billA.id          // <- but paying Vendor A's bill
+            }]
+        };
+
+        let blocked     = false;
+        let blockReason = '';
+        let balanceAfter: number | null = null;
+        let paymentRef  = '';
+        let httpStatus  = 0;
+
+        const attackResp = await page.request.post(`${apiBase}/payments?${qs}`, {
+            headers,
+            data: attackPayload
+        });
+        httpStatus = attackResp.status();
+
+        if (!attackResp.ok()) {
+            blocked     = true;
+            blockReason = `HTTP ${httpStatus} — rejected at POST /payments`;
+        } else {
+            const paymentJson = await attackResp.json();
+            paymentRef = `${paymentJson.ref} (${paymentJson.id})`;
+            console.log(`  Payment created under Vendor B: ${paymentRef}`);
+
+            try {
+                await app.advanceDocumentAPI(paymentJson.id, 'payments');
+            } catch (advErr: any) {
+                blocked     = true;
+                blockReason = `Approval blocked: ${advErr.message.substring(0, 80)}`;
+            }
+
+            const billAfterData = await app.api.purchase.getBillAPI(billA.id, billA.ref);
+            balanceAfter = parseFloat(
+                billAfterData.unpaid_amount ?? billAfterData.balance ?? billAfterData.amount_due ?? -1
+            );
+            console.log(`  Vendor A bill balance after attack: $${balanceAfter?.toFixed(2)}`);
+
+            if (!blocked) {
+                blockReason = balanceAfter !== null && balanceAfter < balanceBefore
+                    ? `Vendor A bill balance dropped ${balanceBefore} → ${balanceAfter} using Vendor B payment`
+                    : `Payment approved under wrong vendor; balance unchanged at ${balanceAfter} — ghost entry possible`;
+            }
+        }
+
+        // ── Audit table ────────────────────────────────────────────────────
+        console.log(`\n  ┌${dline}┐`);
+        console.log(`  │ ${'Cross-Vendor IDOR Payment Allocation Audit'.padEnd(W.l + W.v + 3)} │`);
+        console.log(`  ├${dline}┤`);
+        const auditRows: [string, string][] = [
+            ['Vendor A (bill owner)',   vendorA.name],
+            ['Vendor A ID',            vendorA.id],
+            ['Vendor B (attacker)',    vendorB.name],
+            ['Vendor B ID',            vendorB.id],
+            ['Bill (Vendor A)',         `${billA.ref} (${billA.id})`],
+            ['Bill Amount',            `$${BILL_AMOUNT.toFixed(2)}`],
+            ['Balance Before Attack',  `$${balanceBefore.toFixed(2)}`],
+            ['Attack HTTP Status',     `${httpStatus}`],
+            ['Payment Ref',            paymentRef || 'N/A (blocked at creation)'],
+            ['Balance After Attack',   balanceAfter !== null ? `$${balanceAfter.toFixed(2)}` : 'N/A'],
+            ['Finding',                blockReason || 'Correctly rejected at API level'],
+        ];
+        for (const [label, value] of auditRows) {
+            console.log(`  │ ${pad(label, W.l)} │ ${pad(value, W.v)} │`);
+        }
+        console.log(`  ├${dline}┤`);
+        const verdict = blocked
+            ? `PASS — Cross-vendor allocation blocked`
+            : `FAIL — IDOR DEFECT CONFIRMED`;
+        console.log(`  │ ${pad('Result', W.l)} │ ${pad(verdict, W.v)} │`);
+        console.log(`  └${dline}┘\n`);
+
+        if (!blocked) {
+            throw new Error(
+                `[IDOR_DEFECT] Cross-vendor payment allocation succeeded. ` +
+                `Payment submitted under Vendor B (${vendorB.id}) reduced ` +
+                `Vendor A's bill ${billA.ref} balance from ${balanceBefore} to ${balanceAfter}. ` +
+                `Root cause: POST /api/payments does not verify payment.vendor_id == bill.vendor_id.`
+            );
+        }
+        console.log(`[PASS] Cross-vendor payment allocation correctly blocked.`);
+    });
 });

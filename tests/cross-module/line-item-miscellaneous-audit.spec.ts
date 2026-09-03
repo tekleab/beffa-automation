@@ -252,15 +252,16 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
                         await dropdownSearch.fill(opts.itemName);
                         await page.waitForTimeout(1500);
                         // Click the first matching option
-                        const option = itemDropdown.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, li')
+                        const option = itemDropdown.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, li, tr')
                             .filter({ hasText: opts.itemName }).first();
-                        const anyOption = itemDropdown.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, li')
-                            .filter({ visible: true }).first();
-                        if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
+                        const anyOption = itemDropdown.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, li, tr')
+                            .filter({ visible: true }).filter({ hasNotText: /Clear|Search/i }).first();
+                        if (await option.isVisible({ timeout: 2500 }).catch(() => false)) {
                             await option.click({ force: true });
-                        } else if (await anyOption.isVisible({ timeout: 1000 }).catch(() => false)) {
+                        } else if (await anyOption.isVisible({ timeout: 2500 }).catch(() => false)) {
                             await anyOption.click({ force: true });
                         } else {
+                            await page.keyboard.press('ArrowDown');
                             await page.keyboard.press('Enter');
                         }
                     } else {
@@ -1224,10 +1225,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
         await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
 
-        // Bill tabs are not role="tab" — use text locator. Click Purchases to reveal Line Item button.
-        const purchasesTab = page.locator('button, [role="tab"], li, div').filter({ hasText: /^Purchases$/ }).first();
-        await purchasesTab.waitFor({ state: 'visible', timeout: 60000 });
-        await purchasesTab.click();
         await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 30000 });
 
         await app.pickDate('Invoice Date');
@@ -1259,9 +1256,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
         await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
 
-        const purchasesTab = page.locator('button, [role="tab"], li, div').filter({ hasText: /^Purchases$/ }).first();
-        await purchasesTab.waitFor({ state: 'visible', timeout: 60000 });
-        await purchasesTab.click();
         await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 30000 });
 
         await app.pickDate('Invoice Date');
@@ -1299,9 +1293,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regressi
         await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
         await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
 
-        const purchasesTab = page.locator('button, [role="tab"], li, div').filter({ hasText: /^Purchases$/ }).first();
-        await purchasesTab.waitFor({ state: 'visible', timeout: 60000 });
-        await purchasesTab.click();
         await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 30000 });
 
         await app.pickDate('Invoice Date');

@@ -40,7 +40,6 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
 
         sharedMeta = await app.api.purchase.discoverMetadataAPI();
         sharedItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
-        await page.close();
     });
 
     test('Guardrail: System must handle concurrent duplicate Bill payments atomically', async ({ page }) => {
@@ -154,4 +153,161 @@ test.describe('Procurement Concurrency & Race Condition Audits @purchase @concur
         expect(finalStock, `Stock desync under concurrent bill approval: expected ${expectedStock}, got ${finalStock}`).toBe(expectedStock);
         console.log(`[PASS] Stock Addition is atomic and thread-safe.`);
     });
+
+    // ── 3. 20 CONCURRENT PO CREATION BURST TRAFFIC (PERFORMANCE & LOCKING) ──────
+    test('Guardrail: System must maintain performance under 20 concurrent PO creation requests (<30s threshold)', async ({ page }) => {
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
+        const meta = sharedMeta;
+        const item = sharedItem;
+        const CONCURRENT_REQUESTS = 20;
+        const TIMEOUT_THRESHOLD_MS = 30000;
+
+        console.log(`\n[STEP 1] Preparing burst traffic of ${CONCURRENT_REQUESTS} concurrent PO creation requests...`);
+
+        const startTime = Date.now();
+        const promises: Promise<any>[] = [];
+
+        for (let i = 0; i < CONCURRENT_REQUESTS; i++) {
+            const reqPromise = (async () => {
+                const reqStart = Date.now();
+                try {
+                    const po = await app.api.purchase.createPurchaseOrderAPI(item, 1, 100 + i, meta.vendorId);
+                    const duration = Date.now() - reqStart;
+                    return { success: true, duration, poId: po.poId, ref: po.poNumber, error: null };
+                } catch (err: any) {
+                    const duration = Date.now() - reqStart;
+                    return { success: false, duration, poId: null, ref: null, error: err.message || String(err) };
+                }
+            })();
+            promises.push(reqPromise);
+        }
+
+        console.log(`[BURST] Firing ${CONCURRENT_REQUESTS} PO creation API requests simultaneously...`);
+        const results = await Promise.all(promises);
+        const totalWallTimeMs = Date.now() - startTime;
+
+        const succeeded = results.filter(r => r.success);
+        const failed = results.filter(r => !r.success);
+        const durations = results.map(r => r.duration);
+        const maxDurationMs = Math.max(...durations);
+        const avgDurationMs = durations.reduce((a, b) => a + b, 0) / durations.length;
+        const minDurationMs = Math.min(...durations);
+        const timedOutCount = results.filter(r => r.duration >= TIMEOUT_THRESHOLD_MS || (r.error && r.error.toLowerCase().includes('timeout'))).length;
+
+        // Print high-density audit table
+        const W = { l: 36, v: 36 };
+        const pad = (s: string, n: number) => s.length >= n ? s.substring(0, n - 1) + '…' : s.padEnd(n);
+        const line = '─'.repeat(W.l + W.v + 7);
+
+        console.log(`\n  ┌${line}┐`);
+        console.log(`  │ ${pad('20 Concurrent PO Creation Performance Audit', W.l + W.v + 3)} │`);
+        console.log(`  ├${line}┤`);
+        console.log(`  │ ${pad('Concurrent Requests Fired', W.l)} │ ${pad(`${CONCURRENT_REQUESTS}`, W.v)} │`);
+        console.log(`  │ ${pad('Successful Creations', W.l)} │ ${pad(`${succeeded.length} / ${CONCURRENT_REQUESTS}`, W.v)} │`);
+        console.log(`  │ ${pad('Failed Requests', W.l)} │ ${pad(`${failed.length}`, W.v)} │`);
+        console.log(`  │ ${pad('Timed-Out Requests (≥30s)', W.l)} │ ${pad(`${timedOutCount}`, W.v)} │`);
+        console.log(`  │ ${pad('Total Wall Execution Time', W.l)} │ ${pad(`${(totalWallTimeMs / 1000).toFixed(2)}s`, W.v)} │`);
+        console.log(`  │ ${pad('Min Request Latency', W.l)} │ ${pad(`${(minDurationMs / 1000).toFixed(2)}s`, W.v)} │`);
+        console.log(`  │ ${pad('Avg Request Latency', W.l)} │ ${pad(`${(avgDurationMs / 1000).toFixed(2)}s`, W.v)} │`);
+        console.log(`  │ ${pad('Max Request Latency', W.l)} │ ${pad(`${(maxDurationMs / 1000).toFixed(2)}s`, W.v)} │`);
+        console.log(`  ├${line}┤`);
+
+        const isDegraded = maxDurationMs > TIMEOUT_THRESHOLD_MS || timedOutCount > 0 || failed.length > 0;
+        const verdict = !isDegraded
+            ? 'PASS — System maintained <30s latency under 20 concurrent writes'
+            : 'FAIL — CONCURRENCY DEGRADATION DETECTED';
+
+        console.log(`  │ ${pad('Result', W.l)} │ ${pad(verdict, W.v)} │`);
+        console.log(`  └${line}┘\n`);
+
+        if (failed.length > 0) {
+            console.log(`[FAILURE SAMPLES] Sample error: ${failed[0].error}`);
+        }
+
+        if (isDegraded) {
+            throw new Error(
+                `[PO_CONCURRENCY_DEGRADATION] 20 concurrent PO creation requests degraded system performance beyond 30s threshold.\n` +
+                `  Max Latency: ${(maxDurationMs / 1000).toFixed(2)}s (Threshold: ${(TIMEOUT_THRESHOLD_MS / 1000)}s)\n` +
+                `  Timed-out Requests: ${timedOutCount}\n` +
+                `  Failed Requests: ${failed.length} / ${CONCURRENT_REQUESTS}\n` +
+                `  Root Cause: Synchronous table-level reference locks on PO creation & missing FK indexes during high volume.`
+            );
+        }
+
+        console.log(`[PASS] 20 concurrent PO creations processed cleanly under threshold.`);
+    });
+
+    // ── 4. CONCURRENT IDENTICAL PO SUBMISSIONS (DUPLICATE LIABILITY / RACE CONDITION) ──
+    test('Guardrail: Concurrent identical PO submissions must be deduplicated (prevent duplicate AP liability)', async ({ page }) => {
+        const app = new AppManager(page);
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+
+        const meta = sharedMeta;
+        const item = sharedItem;
+        const UNIT_PRICE = 500;
+        const QTY = 2;
+
+        console.log(`\n[STEP 1] Preparing two IDENTICAL PO creation requests (Same Vendor, Same Item, Same Qty & Price)...`);
+
+        // Fire 2 IDENTICAL PO creation requests simultaneously
+        const p1 = app.api.purchase.createPurchaseOrderAPI(item, QTY, UNIT_PRICE, meta.vendorId);
+        const p2 = app.api.purchase.createPurchaseOrderAPI(item, QTY, UNIT_PRICE, meta.vendorId);
+
+        console.log(`[ATTACK] Firing 2 identical PO creation API requests concurrently...`);
+        const results = await Promise.allSettled([p1, p2]);
+
+        const fulfilled = results.filter(r => r.status === 'fulfilled');
+        const rejected = results.filter(r => r.status === 'rejected');
+
+        const createdPOs = fulfilled.map((f: any) => f.value);
+        const totalCreated = createdPOs.length;
+        const totalLiabilityCreated = totalCreated * (QTY * UNIT_PRICE);
+        const expectedLiability = QTY * UNIT_PRICE;
+
+        // Print High-Density Audit Table
+        const W = { l: 36, v: 38 };
+        const pad = (s: string, n: number) => s.length >= n ? s.substring(0, n - 1) + '…' : s.padEnd(n);
+        const line = '─'.repeat(W.l + W.v + 7);
+
+        console.log(`\n  ┌${line}┐`);
+        console.log(`  │ ${pad('Concurrent Identical PO Deduplication Audit', W.l + W.v + 3)} │`);
+        console.log(`  ├${line}┤`);
+        console.log(`  │ ${pad('Simultaneous Requests Fired', W.l)} │ ${pad('2 Identical Requests', W.v)} │`);
+        console.log(`  │ ${pad('Successful PO Creations', W.l)} │ ${pad(`${totalCreated} / 2`, W.v)} │`);
+        console.log(`  │ ${pad('Deduplicated / Blocked', W.l)} │ ${pad(`${rejected.length} / 2`, W.v)} │`);
+        console.log(`  │ ${pad('Expected Liability Created', W.l)} │ ${pad(`$${expectedLiability.toFixed(2)}`, W.v)} │`);
+        console.log(`  │ ${pad('Actual Liability Created', W.l)} │ ${pad(`$${totalLiabilityCreated.toFixed(2)}`, W.v)} │`);
+        console.log(`  ├${line}┤`);
+
+        const isDuplicateLiability = totalCreated > 1;
+        const verdict = !isDuplicateLiability
+            ? 'PASS — System deduplicated concurrent submission'
+            : 'FAIL — DUPLICATE LIABILITY CREATED (RACE CONDITION)';
+
+        console.log(`  │ ${pad('Result', W.l)} │ ${pad(verdict, W.v)} │`);
+        console.log(`  └${line}┘\n`);
+
+        if (createdPOs.length > 1) {
+            console.log(`[VULNERABILITY DETAILS] Both identical POs were accepted by backend:`);
+            createdPOs.forEach((po: any, idx: number) => {
+                console.log(`  PO #${idx + 1}: ${po.poNumber} (ID: ${po.poId}) | Total: $${QTY * UNIT_PRICE}`);
+            });
+        }
+
+        if (isDuplicateLiability) {
+            throw new Error(
+                `[IDENTICAL_PO_RACE_CONDITION] Concurrent identical PO submissions were both created without deduplication.\n` +
+                `  POs Created: ${totalCreated} (${createdPOs.map((p: any) => p.poNumber).join(' + ')})\n` +
+                `  AP Liability Inflated: $${totalLiabilityCreated.toFixed(2)} (Expected: $${expectedLiability.toFixed(2)})\n` +
+                `  Impact: Artificial double-entry liability inflation on Accounts Payable GL.\n` +
+                `  Fix Required: Backend must enforce atomic transaction lock or idempotency hash check on vendor+item+amount payload.`
+            );
+        }
+
+        console.log(`[PASS] Concurrent identical PO submission correctly blocked/deduplicated.`);
+    });
 });
+
+

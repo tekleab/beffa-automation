@@ -20,7 +20,7 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
 
         console.log(`[STEP 1] Creating & approving invoice for ${INVOICE_AMOUNT} via API...`);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 20, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 20, unit_cost: 100 });
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({
             customerId: meta.customerId,
@@ -43,17 +43,13 @@ test.describe('Cross-Module UI Flow Audits @sales @purchase @smoke @full', () =>
         await page.goto(`/receivables/invoices/${inv.id}/detail`, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
         await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
 
-        if (page.url().includes('/users/login')) {
-            await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-            await page.goto(`/receivables/invoices/${inv.id}/detail`, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-            await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
-        }
+        console.log(`[STEP 3] Verifying Amount Due is displayed on invoice detail page...`);
+        // Look for the amount due value rendered anywhere on the page
+        const amountDueText = actualDue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        const amountDueLocator = page.getByText(new RegExp(amountDueText.replace('.', '\\.'), 'i')).first();
+        await expect(amountDueLocator).toBeVisible({ timeout: 15000 });
 
-        console.log(`[STEP 3] Verifying invoice is displayed on detail page...`);
-        const invVisible = await page.getByText(inv.ref).first().isVisible({ timeout: 15000 }).catch(() => false);
-        expect(invVisible || actualDue > 0).toBe(true);
-
-        console.log(`[PASS] Invoice ${inv.ref} Amount Due (${actualDue}) verified on detail page.`);
+        console.log(`[PASS] Invoice ${inv.ref} Amount Due (${actualDue}) is visible on detail page.`);
     });
 
     test('Purchase UI: Approved bill reflects outstanding balance in vendor profile', async ({ page }) => {

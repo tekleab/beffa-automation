@@ -21,7 +21,7 @@ const addressData: Array<{ region: string; zones: Array<{ name: string; woredas:
 );
 
 test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @full', () => {
-    test.setTimeout(300000);
+    test.setTimeout(180000);
 
     test('Validate TIN, create customer, edit, remove', async ({ page }) => {
         const app = new AppManager(page);
@@ -31,85 +31,75 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @full', ()
         const customerName = `Kebede-${Date.now()}`;
         const updatedName = `${customerName}-Updated`;
 
+        // Use first region/zone/woreda — avoids cascading select race conditions
         const region  = addressData[0];
         const zone    = region.zones[0];
         const woreda  = zone.woredas[0];
 
         // ── Phase 1: TIN validation ───────────────────────────────────────────
         console.log('[STEP] Phase 1: TIN validation check');
-        await page.goto('/receivables/customers', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-        await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
-
-        const newBtn = page.locator('a[href*="/customers/new"], button:has-text("New"), button:has-text("Add"), button:has-text("Create")').first();
-        if (await newBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-            await newBtn.click({ force: true });
-        } else {
+        await page.goto('/receivables/customers/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+        if (page.url().includes('/users/login')) {
+            await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
             await page.goto('/receivables/customers/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
         }
+        await app.customerNameInput.waitFor({ state: 'visible', timeout: 15000 });
+        await app.customerNameInput.fill('Validation Test');
+        await app.customerTypeSelect.selectOption('individual');
+        await app.customerTinInput.fill('123');
+        await app.customerPhoneInput.fill('0911223344');
+        await app.fillEthiopianAddress(region.region, zone.name, woreda);
+        await app.createCustomerBtn.click();
+        await expect(page.getByText(/10 digit|must be 10/i)).toBeVisible({ timeout: 10000 });
+        console.log('[OK] Invalid TIN correctly blocked');
 
-        const nameInput = page.locator('#customer_name-input-id, input[name="name"], input[placeholder*="Name" i], input[id*="name" i]').or(page.getByRole('textbox', { name: /Customer Name|Name/i })).first();
-        const tinInput = page.locator('#customer_tin-input-id, input[name="tin"], input[id*="tin" i]').or(page.getByRole('textbox', { name: /TIN/i })).first();
-        const phoneInput = page.locator('input[name="phone.p1"], #customer_phone-input-id, input[name="phone"], input[id*="phone" i]').or(page.getByRole('textbox', { name: /Phone/i })).first();
-        const typeSelect = page.locator('#type-select-id, select[name="type"]').or(page.getByLabel(/Customer Type|Type/i)).first();
-        const createBtn = page.locator('button:has-text("Add Now"), button:has-text("Create Customer"), button:has-text("Create customer"), button:has-text("Save")').first();
+        // ── Phase 2: Create ───────────────────────────────────────────────────
+        console.log(`[STEP] Phase 2: Creating customer "${customerName}"`);
+        const uniquePhone = `09${Math.floor(10000000 + Math.random() * 90000000)}`;
+        await app.customerTinInput.fill(fixedTIN);
+        await app.customerPhoneInput.fill(uniquePhone);
+        await app.customerNameInput.clear();
+        await app.customerNameInput.fill(customerName);
+        await app.createCustomerBtn.click();
+        await page.waitForURL(url => url.href.includes('/detail'), { timeout: 60000 });
+        // Wait for detail page to fully render before interacting
+        await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+        console.log(`[OK] Customer "${customerName}" created`);
 
-        const formVisible = await nameInput.isVisible({ timeout: 15000 }).catch(() => false);
-        if (formVisible) {
-            await nameInput.fill('Validation Test');
-            if (await typeSelect.isVisible().catch(() => false)) {
-                await typeSelect.selectOption('individual').catch(() => {});
-            }
-            await tinInput.fill('123');
-            await phoneInput.fill('0911223344');
-            await app.fillEthiopianAddress(region.region, zone.name, woreda).catch(() => {});
-            await createBtn.click();
-            await expect(page.getByText(/10 digit|must be 10|invalid/i)).toBeVisible({ timeout: 10000 });
-            console.log('[OK] Invalid TIN correctly blocked');
+        // ── Phase 3: Edit ─────────────────────────────────────────────────────
+        console.log(`[STEP] Phase 3: Editing to "${updatedName}"`);
+        await app.editCustomerBtn.waitFor({ state: 'visible', timeout: 20000 });
+        await app.editCustomerBtn.click({ force: true });
+        // Wait for form inputs to be editable — not just visible
+        await app.customerNameInput.waitFor({ state: 'visible', timeout: 20000 });
+        await expect(app.customerNameInput).toBeEditable({ timeout: 15000 });
+        await app.customerNameInput.clear();
+        await app.customerNameInput.fill(updatedName);
+        const saveBtn = page.locator('button:has-text("Save"), button:has-text("Update")').first();
+        await saveBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await saveBtn.click({ force: true });
+        await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+        // Poll for updated name — React re-render may lag behind networkidle
+        await expect(page.getByText(updatedName).first()).toBeVisible({ timeout: 30000 });
+        console.log('[OK] Customer updated');
 
-            // ── Phase 2: Create ───────────────────────────────────────────────────
-            console.log(`[STEP] Phase 2: Creating customer "${customerName}"`);
-            const uniquePhone = `09${Math.floor(10000000 + Math.random() * 90000000)}`;
-            await tinInput.fill(fixedTIN);
-            await phoneInput.fill(uniquePhone);
-            await nameInput.clear();
-            await nameInput.fill(customerName);
-            await createBtn.click();
-            await page.waitForURL(url => url.href.includes('/detail') || url.href.includes('/customers'), { timeout: 60000 });
-            console.log(`[OK] Customer "${customerName}" created`);
+        // ── Phase 4: Remove ───────────────────────────────────────────────────
+        console.log('[STEP] Phase 4: Removing customer');
+        await page.waitForTimeout(2000);
+        const removeBtn = page.getByRole('button', { name: /remove|delete/i }).first();
+        await removeBtn.waitFor({ state: 'visible', timeout: 20000 });
+        await removeBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await removeBtn.click();
 
-            // ── Phase 3: Edit ─────────────────────────────────────────────────────
-            console.log(`[STEP] Phase 3: Editing to "${updatedName}"`);
-            const editBtn = page.getByRole('button', { name: /Edit/i }).first();
-            if (await editBtn.isVisible({ timeout: 15000 }).catch(() => false)) {
-                await editBtn.click({ force: true });
-                await nameInput.waitFor({ state: 'visible', timeout: 20000 });
-                await nameInput.clear();
-                await nameInput.fill(updatedName);
-                const saveBtn = page.locator('button:has-text("Save"), button:has-text("Update")').first();
-                await saveBtn.click({ force: true });
-                await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
-                console.log('[OK] Customer updated');
-            }
+        const confirmBtn = page.locator('section[role="dialog"] button, div[role="alertdialog"] button, [role="dialog"] button, .modal button').filter({ hasText: /Yes|Confirm|Delete|Remove/i }).first();
 
-            // ── Phase 4: Remove ───────────────────────────────────────────────────
-            console.log('[STEP] Phase 4: Removing customer');
-            page.on('dialog', dialog => dialog.accept().catch(() => {}));
-            const removeBtn = page.getByRole('button', { name: /remove|delete/i }).first();
-            if (await removeBtn.isVisible({ timeout: 15000 }).catch(() => false)) {
-                await removeBtn.click({ force: true });
-                const confirmBtn = page.locator('section[role="dialog"] button, div[role="alertdialog"] button, [role="dialog"] button, .chakra-modal__content button, .modal button').filter({ hasText: /Yes|Confirm|Delete|Remove/i }).first();
-                if (await confirmBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-                    await confirmBtn.click({ force: true });
-                }
-                await page.waitForURL(url => url.href.includes('/receivables/customers'), { timeout: 30000 }).catch(() => {});
-            }
-        } else {
-            console.log('[INFO] UI Customer form rendered via alternative view — verifying customer profile access');
-            const meta = await app.api.sales.discoverMetadataAPI();
-            expect(meta.customerId, 'Metadata customer ID must exist').toBeTruthy();
-            console.log(`[OK] Customer profile accessible: ${meta.customerId}`);
+        if (!await confirmBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await removeBtn.click({ force: true });
         }
 
+        await confirmBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await confirmBtn.click({ force: true });
+        await page.waitForURL(url => url.href.includes('/receivables/customers'), { timeout: 30000 });
         console.log('[RESULT] Customer Lifecycle: PASSED');
     });
 });
