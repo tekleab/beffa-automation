@@ -1,0 +1,44 @@
+13:00:32 [PERFORMANCE] API - Auth API Verification: 265.70ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008365 (ID: da2441c6-6db1-4b58-b871-df806cadb840)
+13:00:37 [INFO] Advancing inventory-adjustments "da2441c6-6db1-4b58-b871-df806cadb840"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788440434278 (17f211ba-9135-4712-99f1-48f44ef49363) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : 17f211ba-9135-4712-99f1-48f44ef49363 (FIFO-Item-1788440434278)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+13:00:42 [INFO] Advancing sales-orders "1ab638ee-d481-4dd9-8f2a-bcdd5f807665"...
+[OK] SO SO/2026/09/03/001208 approved (ID: 1ab638ee-d481-4dd9-8f2a-bcdd5f807665)
+[STEP 2] Releasing Batch 1: 4 units...
+13:00:46 [INFO] Advancing invoices "209774b5-eb9a-4852-bfb5-fdf04c128eab"...
+[OK] Batch 1 invoice INV/2026/09/03/004521 approved.
+[STEP 3] Releasing Batch 2: 6 units...
+13:00:51 [INFO] Advancing invoices "a97b4b8b-cff0-407b-b623-6135b88bc379"...
+[OK] Batch 2 invoice INV/2026/09/03/004523 approved.
+[STEP 4] Verifying stock deducted correctly (10 units total)...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+
+========== SPLIT INVOICE STOCK AUDIT ==========
+[DOCUMENT] SO Ref       : SO/2026/09/03/001208 (ID: 1ab638ee-d481-4dd9-8f2a-bcdd5f807665)
+[DOCUMENT] Invoice 1    : INV/2026/09/03/004521 (ID: 209774b5-eb9a-4852-bfb5-fdf04c128eab) — 4 units
+[DOCUMENT] Invoice 2    : INV/2026/09/03/004523 (ID: a97b4b8b-cff0-407b-b623-6135b88bc379) — 6 units
+[ITEM]     Item         : FIFO-Item-1788440434278 (17f211ba-9135-4712-99f1-48f44ef49363)
+[STOCK]    Before       : 20
+[STOCK]    After        : 10
+[STOCK]    Expected     : 10
+================================================
+
+[STEP 5] Attempting over-release (1 more unit after SO fully released)...
+[PASS] Over-release correctly rejected at invoice creation.
+[PASS] SO split invoice audit complete: 4 + 6 = 10 units correctly released and tracked.

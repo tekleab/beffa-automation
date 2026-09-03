@@ -1,0 +1,18 @@
+[DateHelper] Resolved in-period date: 2026-09-03T00:00:00Z (day=3, ecYear=2019)
+13:00:15 [PERFORMANCE] API - Auth API Verification: 224.43ms
+[WARN] API Login failed (API Login Failed: 500). Falling back to UI Login...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008362 (ID: c54ec92b-9140-4812-ae99-2ce6bf6ac28c)
+13:00:28 [INFO] Advancing inventory-adjustments "c54ec92b-9140-4812-ae99-2ce6bf6ac28c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788440424497 (61b62d1e-e6bd-42ce-9593-4b15639f8137) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:00:32 [PERFORMANCE] API - Auth API Verification: 259.53ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[TEST] Creating SO with valid date, Invoice with back date
+13:00:34 [INFO] Advancing sales-orders "4490b1b8-807c-4118-a76f-b94669f8be0d"...
+13:00:39 [INFO] Advancing invoices "8575ccca-7821-40ac-aadf-3fa43e13568a"...
+[PASS] Back-dated Invoice in chain blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "CalculateItemCost failed: insufficient FIFO stock: only 0.00 of 1.00 un

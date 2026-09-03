@@ -1,0 +1,28 @@
+[DateHelper] Resolved in-period date: 2026-09-03T00:00:00Z (day=3, ecYear=2019)
+13:30:24 [PERFORMANCE] API - Auth API Verification: 278.09ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating SO and fully invoicing it...
+[ADJ] quantity | qty=5 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008506 (ID: 2a0dbb43-276d-4b6b-8f90-d75780636c3f)
+13:30:31 [INFO] Advancing inventory-adjustments "2a0dbb43-276d-4b6b-8f90-d75780636c3f"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 5...
+[SUCCESS] API Confirmed: Stock correctly reached 5.
+[FRESH ITEM] Created: WAC-Item-1788442227658 (6c7ca2d2-962c-4608-a866-443e80f74a3c) | method=WAC | stock=5@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:30:36 [INFO] Advancing sales-orders "2807a176-41a3-4da9-8efa-11608f2b1033"...
+13:30:40 [INFO] Advancing invoices "f69ca26d-5c33-4536-9dc2-5904c465a03f"...
+[OK] SO SO/2026/09/03/001219 fully invoiced via INV/2026/09/03/004545.
+[STEP 2] Navigating to SO-to-Invoice form for fully-invoiced SO...
+
+  ┌───────────────────────────────────────────────────────────────────────────────┐
+  │ SO-to-Invoice: Empty State Boundary                                         │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ SO Ref                             │ SO/2026/09/03/001219                   │
+  │ SO ID                              │ 2807a176-41a3-4da9-8efa-11608f2b1033   │
+  │ Empty State Message Visible        │ No                                     │
+  │ Submit Button Disabled             │ No                                     │
+  │ Redirected Away                    │ No                                     │
+  │ Empty Boundary Verdict             │ DEFECT: Form displays empty table wit… │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Result                             │ ⚠ DEFECT — Empty state gap detected    │
+  └───────────────────────────────────────────────────────────────────────────────┘
+

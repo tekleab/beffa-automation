@@ -1,0 +1,30 @@
+[DateHelper] Resolved in-period date: 2026-09-03T00:00:00Z (day=3, ecYear=2019)
+13:04:04 [PERFORMANCE] API - Auth API Verification: 581.94ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008384 (ID: 3c83c96e-712f-4286-8433-f3f1c0c9e06e)
+13:05:01 [INFO] Advancing inventory-adjustments "3c83c96e-712f-4286-8433-f3f1c0c9e06e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788440698219 (a2d9aab5-5469-4cb0-81ad-d4037292b312) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:05:05 [PERFORMANCE] API - Auth API Verification: 280.90ms
+[AUTH] Session token and local storage injected successfully.
+
+[STEP 1] Preparing burst traffic of 20 concurrent PO creation requests...
+[BURST] Firing 20 PO creation API requests simultaneously...
+
+  ┌───────────────────────────────────────────────────────────────────────────────┐
+  │ 20 Concurrent PO Creation Performance Audit                                 │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Concurrent Requests Fired            │ 20                                   │
+  │ Successful Creations                 │ 20 / 20                              │
+  │ Failed Requests                      │ 0                                    │
+  │ Timed-Out Requests (≥30s)            │ 20                                   │
+  │ Total Wall Execution Time            │ 69.92s                               │
+  │ Min Request Latency                  │ 64.94s                               │
+  │ Avg Request Latency                  │ 68.27s                               │
+  │ Max Request Latency                  │ 69.91s                               │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Result                               │ FAIL — CONCURRENCY DEGRADATION DETE… │
+  └───────────────────────────────────────────────────────────────────────────────┘
+

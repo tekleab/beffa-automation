@@ -1,0 +1,24 @@
+[DateHelper] Resolved in-period date: 2026-09-03T00:00:00Z (day=3, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008329 (ID: 24e8a905-81d0-45e2-8054-5e17aaa70c18)
+12:56:15 [INFO] Advancing inventory-adjustments "24e8a905-81d0-45e2-8054-5e17aaa70c18"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788440171628 (a44154fd-e009-479f-8343-431f76058729) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:56:20 [INFO] Advancing invoices "79e969cd-b5d0-4dd6-8b83-ba93c0ab44c3"...
+[STRESS] Invoice INV/2026/09/03/004475 approved | amount: 2000
+[STRESS] Creating 2 concurrent receipts for full amount...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=2000
+[KNOWN_BUG #7] Invoice 79e969cd-b5d0-4dd6-8b83-ba93c0ab44c3 unreceived_amount ($100) < requested amount ($2000). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $100.
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=2000
+[KNOWN_BUG #7] Invoice 79e969cd-b5d0-4dd6-8b83-ba93c0ab44c3 unreceived_amount ($100) < requested amount ($2000). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $100.
+[RECEIPT] amount=100 | invoice=79e969cd... | year=2019
+[RECEIPT] amount=100 | invoice=79e969cd... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/03/001223
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/03/001224
+[STRESS] Created 2 receipt documents.
+[STRESS] Approving both receipts concurrently to trigger race condition...
+12:56:28 [INFO] Advancing receipts "cefa86c2-a181-4f32-9151-d617c9dc1e92"...
+12:56:28 [INFO] Advancing receipts "40827cc7-6af2-4e09-b0a4-88579c67b9e3"...
+[STRESS] Approved 2 of 2 receipts.
+[STRESS] Final invoice balance: -100

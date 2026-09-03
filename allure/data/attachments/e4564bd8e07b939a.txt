@@ -1,0 +1,26 @@
+12:58:09 [PERFORMANCE] API - Auth API Verification: 238.81ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008344 (ID: 51435499-25a8-4c7f-95b3-0c749ebaa582)
+12:58:16 [INFO] Advancing inventory-adjustments "51435499-25a8-4c7f-95b3-0c749ebaa582"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788440293597 (a5a8f702-da78-42a1-a1fe-0831193cb16f) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:58:21 [PERFORMANCE] API - Auth API Verification: 314.99ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+12:58:23 [INFO] Advancing invoices "1a6d4b54-113d-4ba5-9260-5adb6776d951"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=1a6d4b54... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/03/001236
+12:58:30 [INFO] Advancing receipts "6d4d9ee3-37d8-47ee-a691-d645b2855942"...
+[ATTACK] Attempting second receipt on fully paid invoice...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=0 | Requested receipt amount=100
+[KNOWN_BUG #7] Invoice 1a6d4b54-113d-4ba5-9260-5adb6776d951 unreceived_amount ($0) < requested amount ($100). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $0.
+[RECEIPT PRE-FLIGHT] Invoice 1a6d4b54-113d-4ba5-9260-5adb6776d951 is already fully paid/cleared.
+12:58:38 [INFO] Advancing receipts "1a6d4b54-113d-4ba5-9260-5adb6776d951"...
+[PASS] Second receipt correctly rejected: [API BLOCK] 422: {
+	"code": 422,
+	"message": "You cannot approve an already approved Receipt (E2888)"
+}
+
