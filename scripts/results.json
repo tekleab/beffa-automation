@@ -1,29 +1,37 @@
 {
-  "total": 23,
-  "passed": 22,
-  "failed": 1,
+  "total": 290,
+  "passed": 241,
+  "failed": 49,
   "skipped": 0,
-  "passRate": 95.7,
-  "avgDurationMs": 30249,
-  "lastUpdated": "2026-09-03T12:53:38.346Z",
+  "passRate": 83.1,
+  "avgDurationMs": 20753,
+  "lastUpdated": "2026-09-03T13:31:02.083Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 22,
-      "failed": 1,
+      "passed": 241,
+      "failed": 49,
       "skipped": 0,
       "trend": [
-        100,
         100,
         89.2,
         100,
         89.2,
         85.1,
-        95.7
+        95.7,
+        83.1
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "736",
+      "commit": "ce4d381",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "100m 18s",
+      "passRate": 83.1,
+      "status": "success"
+    },
     {
       "run": "735",
       "commit": "1ac596d",
@@ -95,14 +103,6 @@
       "duration": "11m 0s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "725",
-      "commit": "795d758",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "0m 33s",
-      "passRate": 0,
-      "status": "failed"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,79 @@
       "severity": "critical",
       "title": "Validate TIN, create customer, edit, remove",
       "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\n\n  72 |         await app.editCustomerBtn.click({ force: t",
-      "firstSeen": "2026-09-03T12:50:20.330Z",
+      "firstSeen": "2026-09-03T12:55:06.911Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "STRESS: Concurrent duplicate receipt submittals against same invoice must be blocked",
+      "error": "Error: [DOUBLE_RECEIPT_BUG] Race condition allowed: both receipts approved concurrently for invoice INV/2026/09/03/004475!\n\n  158 |\n  159 |             if (approvedCount === 2) {\n> 160 |              ",
+      "firstSeen": "2026-09-03T12:56:01.731Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  138 |                 await app.advanceDocumentAPI(body1.id, 'invoices', { skipStockTopUp: tr",
+      "firstSeen": "2026-09-03T12:58:04.140Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
+      "error": "Error: AR mismatch: expected 5000, got 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m5000\u001b[39m\nReceived: \u001b[31m",
+      "firstSeen": "2026-09-03T12:59:18.012Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (2017-12-31T00:00:00Z)!\n\n  77 |             try {\n  78 |                 await app.advanceDocumentAPI(so.id, 'sales-",
+      "firstSeen": "2026-09-03T12:59:33.153Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2022)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved future-dated SO (2022-01-01T00:00:00Z)!\n\n  109 |             try {\n  110 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 111 |     ",
+      "firstSeen": "2026-09-03T12:59:51.608Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System accepted pre-epoch date (1969-12-31T00:00:00Z)!\n\n  345 |\n  346 |         if (inv.success) {\n> 347 |             throw new Error(`[PERIOD_CONTROL_BUG] System accepted",
+      "firstSeen": "2026-09-03T13:00:04.291Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Second receipt on a fully-paid invoice must be rejected",
+      "error": "Error: Invoice creation failed: {\"code\":500,\"message\":\"Internal Server Error\"}\n\n  131 |         });\n  132 |         const raw = await invR.json();\n> 133 |         if (!raw.id) throw new Error(`Invoice",
+      "firstSeen": "2026-09-03T13:00:10.818Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-03T13:01:07.513Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-03T13:01:52.162Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
