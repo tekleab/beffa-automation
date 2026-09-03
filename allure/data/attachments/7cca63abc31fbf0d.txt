@@ -1,0 +1,16 @@
+08:55:19 [PERFORMANCE] API - Auth API Verification: 1316.16ms
+[AUTH] Session token and local storage injected successfully.
+08:55:24 [WARN] GET http://168.119.175.142:8001/api/locations?page=1&pageSize=10&year=2019&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008187 (ID: 7db9bdcd-b9dc-4ad2-a293-9328b057dd01)
+08:56:46 [INFO] Advancing inventory-adjustments "7db9bdcd-b9dc-4ad2-a293-9328b057dd01"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788425794930 (173167be-31f5-49d9-9d5c-558138f6dbf3) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:56:59 [PERFORMANCE] API - Auth API Verification: 1512.96ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[PASS] Back-dated Bill correctly rejected at creation: Vendor Discovery HTTP 0: apiRequestContext.get: Timeout 15000ms exceeded.
+Call log:
+  - → GET http://168.119.175.142:8001/api/vendors?page=1&pageSize=10
+    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebK

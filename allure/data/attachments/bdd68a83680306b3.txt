@@ -1,0 +1,29 @@
+[DateHelper] Resolved in-period date: 2026-09-03T00:00:00Z (day=3, ecYear=2019)
+08:59:54 [PERFORMANCE] API - Auth API Verification: 249.34ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/03/008197 (ID: e12f6909-38ce-4b82-bd69-af026edc0e20)
+09:00:14 [INFO] Advancing inventory-adjustments "e12f6909-38ce-4b82-bd69-af026edc0e20"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788426010222 (f56ee316-8046-4179-92b3-95687ceb20c8) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:00:17 [PERFORMANCE] API - Auth API Verification: 192.44ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating & approving PO...
+09:00:30 [INFO] Advancing purchase-orders "b468b956-f5a8-4eb7-ae1b-219e5420f4af"...
+[PO] PO/2026/09/03/002237 (b468b956-f5a8-4eb7-ae1b-219e5420f4af)
+[STEP 2] Creating first Bill from PO...
+09:00:33 [INFO] Advancing bills "ab852d15-b5f6-49ed-8f51-e265c5adc1ee"...
+[BILL 1] BILL/2026/09/03/003714 (ab852d15-b5f6-49ed-8f51-e265c5adc1ee) — approved
+[ATTACK] Attempting second Bill from same PO PO/2026/09/03/002237...
+[PASS] Double-billing correctly blocked: PO-to-Bill API Failed: 422 - {
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quantity": [
+			"Unable to consume 5 items from purchase order item, only 0 remaining"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
