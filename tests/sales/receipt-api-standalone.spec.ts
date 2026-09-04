@@ -14,7 +14,7 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 
-test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @sanity @smoke @regression @full', () => {
+test.describe('Receipt API Standalone Diagnostics Suite @sales @receipt @smoke @regression @full', () => {
     test.setTimeout(180000);
 
     const apiBase = 'http://168.119.175.142:8001/api';

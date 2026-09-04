@@ -21,7 +21,7 @@ import { AppManager } from'../../pages/AppManager';
  * 2. Guardrail: system must reject zero-quantity movements.
  */
 
-test.describe('Inventory Integrity & Boundary Audits @inventory @logic @sanity @smoke @regression @full', () => {
+test.describe('Inventory Integrity & Boundary Audits @inventory @logic @smoke @regression @full', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);

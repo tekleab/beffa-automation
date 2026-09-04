@@ -89,6 +89,12 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
       use: { storageState: undefined },
     },
+    // ── Sanity: pure connectivity, no auth dependency, no storageState ──────
+    {
+      name: 'Sanity',
+      testMatch: '**/sanity.spec.ts',
+      use: { storageState: undefined },
+    },
     {
       name: 'Sales',
       testMatch: '**/sales/*.spec.ts',

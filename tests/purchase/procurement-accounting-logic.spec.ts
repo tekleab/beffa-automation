@@ -19,7 +19,7 @@ import { AppManager } from '../../pages/AppManager';
  * Validates that approved bills correctly post to the general ledger
  * and that vendor balances reflect outstanding amounts.
  */
-test.describe('Purchase: Procurement Accounting Logic @purchase @sanity @smoke @regression @full', () => {
+test.describe('Purchase: Procurement Accounting Logic @purchase @smoke @regression @full', () => {
     test.setTimeout(300000);
 
     test('API: Approved bill must post a debit to Accounts Payable', async ({ page }) => {

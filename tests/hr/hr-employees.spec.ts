@@ -19,7 +19,7 @@ import { AppManager } from '../../pages/AppManager';
  * Happy path: full creation with all required fields
  * Edge cases: missing required fields, duplicate email, org-chart integrity
  */
-test.describe('HR: Employee Lifecycle @hr @sanity @smoke @regression @full', () => {
+test.describe('HR: Employee Lifecycle @hr @smoke @regression @full', () => {
     test.setTimeout(120000);
 
     // HAPPY PATH: Full employee creation with all required fields

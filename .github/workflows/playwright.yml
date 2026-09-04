@@ -154,6 +154,16 @@ jobs:
 
         if [ "$TEST_TYPE" = "sanity" ]; then
           GREP_ARGS="--grep @sanity"
+          # Sanity runs ONLY the dedicated Sanity project — no auth, no setup dependency
+          echo "=========================================================="
+          echo "🟢 SANITY: Connectivity-only checks (no auth required)..."
+          echo "=========================================================="
+          npx playwright test \
+            --project=Sanity \
+            --workers=4 \
+            $GREP_ARGS \
+            --pass-with-no-tests || exit $?
+          exit 0
         elif [ "$TEST_TYPE" = "smoke" ]; then
           GREP_ARGS="--grep @smoke"
         elif [ "$TEST_TYPE" = "regression" ]; then
@@ -172,8 +182,17 @@ jobs:
             --pass-with-no-tests || exit $?
           exit 0
         else
-          # Fallback: push/PR → sanity (absolute minimum gate)
-          GREP_ARGS="--grep @sanity"
+          # Fallback: push/PR → run sanity project (absolute minimum gate, <1 min)
+          echo "=========================================================="
+          echo "🟢 SANITY (fallback): push/PR connectivity-only gate..."
+          echo "=========================================================="
+          rm -rf allure-results && mkdir -p allure-results
+          npx playwright test \
+            --project=Sanity \
+            --workers=4 \
+            --grep @sanity \
+            --pass-with-no-tests || exit $?
+          exit 0
         fi
 
         echo "Test Type Selected : $TEST_TYPE"
