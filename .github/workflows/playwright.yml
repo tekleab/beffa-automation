@@ -64,7 +64,6 @@ jobs:
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2019' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
     - uses: actions/checkout@v4
@@ -360,15 +359,3 @@ jobs:
           playwright-report/
           allure-results/
         retention-days: 7
-
-    - name: Notify Failure via Slack / Webhook
-      if: failure() && env.SLACK_WEBHOOK_URL != ''
-      continue-on-error: true
-      run: |
-        cat << 'EOF' > slack_payload.json
-        {
-          "text": "🚨 *BEFFA Level 3 CI/CD Deployment Test Failed*\n• *Trigger*: `${{ github.event_name }}`\n• *Test Suite*: `${{ env.TEST_TYPE }}`\n• *Target Company*: `${{ env.BEFFA_COMPANY }}`\n• *Run Details*: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View GitHub Actions Log>"
-        }
-        EOF
-        curl -s -X POST -H 'Content-type: application/json' --data @slack_payload.json "$SLACK_WEBHOOK_URL"
-        rm -f slack_payload.json
