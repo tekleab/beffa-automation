@@ -25,7 +25,7 @@ import { Logger } from '../../lib/utils/Logger';
  * 3. STRESS: Receipt against an invoice that was reversed/voided mid-flight.
  */
 
-test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @regression @full', () => {
+test.describe('Customer Receipt Load & Stress Audits @sales @load @stress @full', () => {
     test.setTimeout(240000);
 
     let page: Page;

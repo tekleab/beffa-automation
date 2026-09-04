@@ -16,7 +16,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * CATEGORY 1: Financial Integrity & Sanity Boundaries
  */
-test.describe('Financial Integrity & Boundary Audits @sales @logic @regression @full', () => {
+test.describe('Financial Integrity & Boundary Audits @sales @logic @smoke @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;

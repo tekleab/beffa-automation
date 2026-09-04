@@ -12,7 +12,7 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 
-test.describe('Purchase to Bill Flow @purchase @smoke @full', () => {
+test.describe('Purchase to Bill Flow @purchase @sanity @smoke @regression @full', () => {
     test.setTimeout(480000);
 
     test('Create PO via API, approve, create linked bill, verify in vendor profile', async ({ page }) => {

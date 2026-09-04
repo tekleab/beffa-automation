@@ -10,7 +10,7 @@ import {
   EmployeeSchema
 } from "../../lib/schemas";
 
-test.describe("API Contract & Runtime Schema Validation @smoke @regression @full", () => {
+test.describe("API Contract & Runtime Schema Validation @sanity @smoke @regression @full", () => {
   test.setTimeout(60000);
 
   test("Sales Invoice API response matches strict schema contract", async ({ app, salesContext, validateSchema }) => {

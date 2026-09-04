@@ -22,7 +22,7 @@ import { AppManager } from '../../pages/AppManager';
  * 3. Verify system enforces mandatory GL account selection for standalone bills.
  */
 
-test.describe('Procurement Integrity & Financial Guardrails @purchase @logic @regression @full', () => {
+test.describe('Procurement Integrity & Financial Guardrails @purchase @logic @smoke @regression @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;

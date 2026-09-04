@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { AppManager } from '../../pages/AppManager';
 
-test.describe('BDEV-1147: GL Module DTO & Schema - Empty Entries TypeError Audit @gl @bdev-1147 @frontend', () => {
+test.describe('BDEV-1147: GL Module DTO & Schema - Empty Entries TypeError Audit @gl @bdev-1147 @frontend @regression @full', () => {
     test.setTimeout(120000);
 
     test('Verify Frontend TypeError when general-journals entries are empty []', async ({ page }) => {

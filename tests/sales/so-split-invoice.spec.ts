@@ -21,7 +21,7 @@ import { AppManager } from '../../pages/AppManager';
  * Assert total invoiced never exceeds SO qty and system blocks a 3rd invoice.
  */
 
-test.describe('Sales SO Split Invoice Audit @sales @logic @regression @full', () => {
+test.describe('Sales SO Split Invoice Audit @sales @logic @smoke @regression @full', () => {
     test.setTimeout(120000);
 
     test('Audit: SO split into multiple invoices — total must never exceed SO quantity', async ({ page }) => {

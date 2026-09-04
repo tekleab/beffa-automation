@@ -20,7 +20,7 @@ const addressData: Array<{ region: string; zones: Array<{ name: string; woredas:
     fs.readFileSync(path.join(__dirname,'../../data/address_locations.json'),'utf8')
 );
 
-test.describe('Vendor Lifecycle — Validation & CRUD @purchase @smoke @full', () => {
+test.describe('Vendor Lifecycle — Validation & CRUD @purchase @sanity @smoke @regression @full', () => {
     test.setTimeout(120000);
 
     test('Validate TIN, create vendor, edit, remove', async ({ page }) => {

@@ -12,7 +12,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('Purchase Bill Index Page Data Fetching Audit @purchase @bills @ui @api @regression @full', () => {
+test.describe('Purchase Bill Index Page Data Fetching Audit @purchase @bills @ui @api @smoke @regression @full', () => {
     test.setTimeout(180000);
 
     test('API: Bill Index endpoint must return paginated, lightweight summary items (<1000ms)', async ({ page }) => {

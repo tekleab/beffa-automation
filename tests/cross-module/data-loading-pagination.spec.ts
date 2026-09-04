@@ -12,7 +12,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('Data Loading & Pagination Audit Suite (BDEV-1135) @pagination @regression @full', () => {
+test.describe('Data Loading & Pagination Audit Suite (BDEV-1135) @pagination @smoke @regression @full', () => {
     test.setTimeout(180000);
 
     test('BDEV-1136: Verify Pagination on COA Detail / Accounts List', async ({ page }) => {

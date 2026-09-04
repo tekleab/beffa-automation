@@ -39,7 +39,7 @@ const isCash = (e: any) => {
     return n.includes('cash') || n.includes('bank');
 };
 
-test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @logic @regression @full', () => {
+test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @logic @e2e @regression @full', () => {
     test.setTimeout(360000);
 
     test('Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification', async ({ page }) => {

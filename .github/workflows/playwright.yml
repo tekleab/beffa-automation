@@ -1,5 +1,5 @@
 name: Playwright Tests
-run-name: "[${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'smoke' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
+run-name: "[${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'sanity' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
 on:
   workflow_dispatch:
     inputs:
@@ -9,6 +9,7 @@ on:
         default: 'smoke'
         type: choice
         options:
+          - sanity
           - smoke
           - regression
           - full
@@ -135,90 +136,86 @@ jobs:
       if: always()
       continue-on-error: true
       run: |
-        # ── Tag → grep mapping ──────────────────────────────────────────────
-        # smoke      → @smoke       (fast critical path tests only)
-        # regression → @regression  (logic audits and guardrails only)
-        # full       → @smoke @regression (merged smoke + regression)
-        # e2e        → @e2e         (end-to-end cross-module flows only)
-        # ────────────────────────────────────────────────────────────────────
-        if [ "$TEST_TYPE" = "smoke" ]; then
-          GREP_ARGS="--grep @smoke --grep-invert @regression"
+        # ── 5-Tier Tag → Grep Mapping (DevOps Standard) ─────────────────────
+        # sanity     → @sanity      Dead-simple alive checks. <1 min. On EVERY deploy event.
+        # smoke      → @smoke       Critical happy-path. ~5-10 min. On deployment trigger.
+        # regression → @regression  Business logic & guardrails. ~20-40 min. Nightly / PR.
+        # e2e        → @e2e         Cross-module O2C/P2P integration. Explicit only.
+        # full       → @full        Everything incl. load, stress, e2e. Release gates.
+        # ─────────────────────────────────────────────────────────────────────
+
+        # Deployment trigger always defaults to @sanity (fastest gate)
+        # workflow_dispatch allows full tier selection
+        if [ "${{ github.event_name }}" = "repository_dispatch" ] || [ "${{ github.event_name }}" = "deployment_status" ]; then
+          DEPLOY_TRIGGERED=true
+        else
+          DEPLOY_TRIGGERED=false
+        fi
+
+        if [ "$TEST_TYPE" = "sanity" ]; then
+          GREP_ARGS="--grep @sanity"
+        elif [ "$TEST_TYPE" = "smoke" ]; then
+          GREP_ARGS="--grep @smoke"
         elif [ "$TEST_TYPE" = "regression" ]; then
-          GREP_ARGS="--grep @regression --grep-invert @smoke"
+          GREP_ARGS="--grep @regression --grep-invert @sanity"
+        elif [ "$TEST_TYPE" = "e2e" ]; then
+          GREP_ARGS="--grep @e2e"
         elif [ "$TEST_TYPE" = "full" ]; then
           GREP_ARGS="--grep @full"
-          # For @full tests, we run ALL projects with 4 workers
           echo "=========================================================="
           echo "🚀 FULL SUITE: Running ALL Projects with 4 Workers..."
           echo "=========================================================="
+          rm -rf allure-results && mkdir -p allure-results
           npx playwright test \
             --workers=4 \
             $GREP_ARGS \
-            --pass-with-no-tests || FINAL_EXIT_CODE=$?
-          # Skip the separate parts for full - everything runs together
-          exit $FINAL_EXIT_CODE
-        elif [ "$TEST_TYPE" = "e2e" ]; then
-          GREP_ARGS="--grep @e2e"
+            --pass-with-no-tests || exit $?
+          exit 0
         else
-          GREP_ARGS="--grep @smoke --grep-invert @regression"
+          # Fallback: push/PR → sanity (absolute minimum gate)
+          GREP_ARGS="--grep @sanity"
         fi
 
         echo "Test Type Selected : $TEST_TYPE"
         echo "Grep Filter        : $GREP_ARGS"
         echo "Company Target     : $BEFFA_COMPANY"
         echo "Trigger            : ${{ github.event_name }}"
+        echo "Deploy Triggered   : $DEPLOY_TRIGGERED"
 
-        # Reset Allure results for a clean run (always, before any test execution)
+        # Reset Allure results for a clean run
         rm -rf allure-results && mkdir -p allure-results
 
         set +e
         FINAL_EXIT_CODE=0
 
         # ── PART 1: Standard UI Workflows (parallel) ────────────────────────
-        if [ "$TEST_TYPE" != "full" ]; then
-          echo "=========================================================="
-          echo "🚀 PART 1: Running Standard UI Workflows in Parallel..."
-          echo "=========================================================="
-          npx playwright test \
-            --project=Sales \
-            --project=Purchase \
-            --project=Cross-Module \
-            --project=HR \
-            --project=Project-Management \
-            --workers=4 \
-            $GREP_ARGS \
-            --pass-with-no-tests || FINAL_EXIT_CODE=$?
-        fi
+        echo "=========================================================="
+        echo "🚀 PART 1: Running Standard UI & API Workflows in Parallel..."
+        echo "=========================================================="
+        npx playwright test \
+          --project=Sales \
+          --project=Purchase \
+          --project=Cross-Module \
+          --project=HR \
+          --project=Project-Management \
+          --workers=4 \
+          $GREP_ARGS \
+          --pass-with-no-tests || FINAL_EXIT_CODE=$?
 
-        # ── PART 2: Forensic Audits (sequential — runs for regression + full) ──────
-        if [ "$TEST_TYPE" = "regression" ]; then
+        # ── PART 2: Inventory (separate project — always included unless full) ──
+        if [ "$TEST_TYPE" = "regression" ] || [ "$TEST_TYPE" = "smoke" ] || [ "$TEST_TYPE" = "sanity" ]; then
           echo "=========================================================="
-          echo "🛡️ PART 2: Running Deep Forensic Audits (Sequential)..."
+          echo "🛡️ PART 2: Inventory Audits..."
           echo "=========================================================="
-
-          echo "--> Forensic Sales..."
-          npx playwright test --project=Sales --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
-
-          echo "--> Forensic Purchase..."
-          npx playwright test --project=Purchase --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
-
-          echo "--> Forensic Inventory..."
           npx playwright test --project=Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
-
-          echo "--> Forensic Project Management..."
-          npx playwright test --project=Project-Management --workers=4 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
-        elif [ "$TEST_TYPE" != "full" ]; then
-          echo "=========================================================="
-          echo "⏭️  Skipping Forensic Audits for $TEST_TYPE run."
-          echo "=========================================================="
         fi
 
-        # ── PART 3: E2E cross-module flows (only for e2e) ───────────
+        # ── PART 3: E2E cross-module flows (only for e2e type) ──────────────
         if [ "$TEST_TYPE" = "e2e" ]; then
           echo "=========================================================="
           echo "🔗 PART 3: Running E2E Cross-Module Flows..."
           echo "=========================================================="
-          npx playwright test --project=Purchase --workers=1 --grep @e2e --pass-with-no-tests || FINAL_EXIT_CODE=$?
+          npx playwright test --project=Purchase --project=Cross-Module --workers=1 --grep @e2e --pass-with-no-tests || FINAL_EXIT_CODE=$?
         fi
 
         set -e

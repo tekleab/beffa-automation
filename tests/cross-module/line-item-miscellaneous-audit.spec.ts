@@ -35,7 +35,7 @@ import { assertValidationRejection } from '../../lib/utils/ValidationHelper';
  *   - Guardrail: zero-qty line → $0 or rejected
  *   - Guardrail: negative price line → rejected or flagged
  */
-test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @regression @full', () => {
+test.describe('Line Item & Miscellaneous Audit @sales @purchase @logic @smoke @regression @full', () => {
     test.setTimeout(600000);
 
     let salesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

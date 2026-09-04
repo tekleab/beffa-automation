@@ -21,7 +21,7 @@ import { AppManager } from '../../pages/AppManager';
  * 1. Guardrail: System must reject creation of a duplicate item_id / part_number.
  */
 
-test.describe('Inventory Item Management @inventory @logic @regression @full', () => {
+test.describe('Inventory Item Management @inventory @logic @smoke @regression @full', () => {
 
     test('Guardrail: System must reject duplicate item_id on creation', async ({ page }) => {
         const app = new AppManager(page);
