@@ -1,35 +1,43 @@
 {
-  "total": 23,
-  "passed": 22,
+  "total": 18,
+  "passed": 17,
   "failed": 1,
   "skipped": 0,
-  "passRate": 95.7,
-  "avgDurationMs": 30671,
-  "lastUpdated": "2026-09-04T12:48:37.206Z",
+  "passRate": 94.4,
+  "avgDurationMs": 217,
+  "lastUpdated": "2026-09-04T13:19:58.085Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 22,
+      "passed": 17,
       "failed": 1,
       "skipped": 0,
       "trend": [
-        89.2,
         100,
         89.2,
         85.1,
         95.7,
         83.1,
-        95.7
+        82.8,
+        94.4
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "739",
-      "commit": "69d0607",
-      "trigger": "push (smoke)",
-      "duration": "11m 45s",
-      "passRate": 95.7,
+      "run": "743",
+      "commit": "b307dc4",
+      "trigger": "push (sanity)",
+      "duration": "0m 3s",
+      "passRate": 94.4,
+      "status": "success"
+    },
+    {
+      "run": "737",
+      "commit": "6949b39",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "95m 33s",
+      "passRate": 82.8,
       "status": "success"
     },
     {
@@ -95,22 +103,14 @@
       "duration": "10m 53s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "727",
-      "commit": "a0c1b7f",
-      "trigger": "push (smoke)",
-      "duration": "11m 14s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\n\n  72 |         await app.editCustomerBtn.click({ force: t",
-      "firstSeen": "2026-09-04T12:45:19.235Z",
+      "severity": "medium",
+      "title": "API: /users/login endpoint accepts POST",
+      "error": "Error: Login endpoint returned unexpected status 201\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m201\u001b[39m\nReceived ar",
+      "firstSeen": "2026-09-04T13:19:45.136Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
