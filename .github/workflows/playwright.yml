@@ -1,5 +1,5 @@
 name: Playwright Tests
-run-name: "[${{ github.event.inputs.test_type || 'smoke' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
+run-name: "[${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'smoke' }}] ${{ github.event_name }} → ${{ github.ref_name }} by @${{ github.actor }}"
 on:
   workflow_dispatch:
     inputs:
@@ -21,6 +21,10 @@ on:
         options:
           - 'BM Tech'
           - 'Beffa-UAT-Practice'
+  deployment_status:
+    types: [success]
+  repository_dispatch:
+    types: [deploy_complete, test_deploy_success]
   push:
     paths-ignore:
       # Ignore commits made by the CI bot itself — prevents infinite loop
@@ -42,6 +46,8 @@ concurrency:
 
 jobs:
   test:
+    # Filter deployment_status events to only fire for the target 'test' environment
+    if: ${{ github.event_name != 'deployment_status' || github.event.deployment.environment == 'test' }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
@@ -52,12 +58,13 @@ jobs:
       API_URL: ${{ secrets.API_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
-      BEFFA_COMPANY: ${{ github.event.inputs.company || 'BM Tech' }}
-      # push/PR → smoke (fast gate, ~10 min). Use workflow_dispatch for full/regression.
-      TEST_TYPE: ${{ github.event.inputs.test_type || 'smoke' }}
+      BEFFA_COMPANY: ${{ github.event.inputs.company || github.event.client_payload.company || 'BM Tech' }}
+      # push/PR/deploy → smoke (fast gate, ~5-10 min). Use workflow_dispatch for full/regression.
+      TEST_TYPE: ${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'smoke' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2019' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
     - uses: actions/checkout@v4
@@ -87,30 +94,36 @@ jobs:
       if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: npx playwright install chromium
 
-    - name: ERP Health Check
+    - name: ERP Health Check & Readiness Polling
       id: erp-health
-      continue-on-error: true
       run: |
-        echo "[HEALTH] Checking ERP server reachability..."
-        FRONTEND_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE_URL" 2>/dev/null || echo "000")
-        API_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$API_URL" 2>/dev/null || echo "000")
+        echo "[HEALTH] Checking ERP server reachability & readiness..."
+        MAX_ATTEMPTS=24 # 24 attempts * 5s = 120s (2 minutes timeout)
+        ATTEMPT=1
+        READY=false
 
-        echo "[HEALTH] Frontend ($BASE_URL) → HTTP $FRONTEND_CODE"
-        echo "[HEALTH] API      ($API_URL)  → HTTP $API_CODE"
+        while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+          FRONTEND_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE_URL" 2>/dev/null || echo "000")
+          API_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$API_URL" 2>/dev/null || echo "000")
 
-        if [ "$FRONTEND_CODE" = "000" ] && [ "$API_CODE" = "000" ]; then
-          echo "::error::❌ ERP server is UNREACHABLE (Frontend: $FRONTEND_CODE, API: $API_CODE). Aborting pipeline."
-          echo "::error::→ Check BASE_URL and API_URL GitHub Secrets and confirm the server is running."
+          echo "[HEALTH] Attempt $ATTEMPT/$MAX_ATTEMPTS: Frontend ($BASE_URL) → HTTP $FRONTEND_CODE | API ($API_URL) → HTTP $API_CODE"
+
+          if [ "$FRONTEND_CODE" = "200" ] && [ "$API_CODE" = "200" ]; then
+            echo "[HEALTH] ✅ ERP application server is fully ready and accepting traffic."
+            READY=true
+            break
+          fi
+
+          echo "[HEALTH] ⏳ Environment not ready yet. Retrying in 5 seconds..."
+          sleep 5
+          ATTEMPT=$((ATTEMPT + 1))
+        done
+
+        if [ "$READY" = "false" ]; then
+          echo "::error::❌ ERP test environment failed readiness check after 2 minutes polling timeout."
+          echo "::error::→ Frontend ($BASE_URL): HTTP $FRONTEND_CODE | API ($API_URL): HTTP $API_CODE"
           exit 1
         fi
-
-        if [ "$FRONTEND_CODE" = "000" ]; then
-          echo "::warning::Frontend ($BASE_URL) is unreachable — UI tests will likely fail."
-        fi
-        if [ "$API_CODE" = "000" ]; then
-          echo "::warning::API ($API_URL) is unreachable — API-driven tests will likely fail."
-        fi
-        echo "[HEALTH] ✅ ERP server connectivity confirmed."
 
     - name: Fetch Company from ERP API
       if: github.event_name != 'workflow_dispatch'
@@ -347,3 +360,15 @@ jobs:
           playwright-report/
           allure-results/
         retention-days: 7
+
+    - name: Notify Failure via Slack / Webhook
+      if: failure() && env.SLACK_WEBHOOK_URL != ''
+      continue-on-error: true
+      run: |
+        cat << 'EOF' > slack_payload.json
+        {
+          "text": "🚨 *BEFFA Level 3 CI/CD Deployment Test Failed*\n• *Trigger*: `${{ github.event_name }}`\n• *Test Suite*: `${{ env.TEST_TYPE }}`\n• *Target Company*: `${{ env.BEFFA_COMPANY }}`\n• *Run Details*: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View GitHub Actions Log>"
+        }
+        EOF
+        curl -s -X POST -H 'Content-type: application/json' --data @slack_payload.json "$SLACK_WEBHOOK_URL"
+        rm -f slack_payload.json
