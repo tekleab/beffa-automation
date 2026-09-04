@@ -39,7 +39,7 @@ const isCash = (e: any) => {
     return n.includes('cash') || n.includes('bank');
 };
 
-test.describe('Procure-to-Pay (P2P) Full Integration @cross-module @purchase @logic @e2e @regression @full', () => {
+test.describe('Procure-to-Pay (P2P) Full Integration @cross-module @purchase @regression', () => {
     test.setTimeout(360000);
 
     test('Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification', async ({ page }) => {

@@ -60,8 +60,8 @@ jobs:
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
       BEFFA_COMPANY: ${{ github.event.inputs.company || github.event.client_payload.company || 'BM Tech' }}
-      # push/PR/deploy → smoke (fast gate, ~5-10 min). Use workflow_dispatch for full/regression.
-      TEST_TYPE: ${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'smoke' }}
+      # push/PR → sanity (absolute minimum gate). Use workflow_dispatch for deeper tiers.
+      TEST_TYPE: ${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'sanity' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2019' }}
       BEFFA_PERIOD: ${{ secrets.BEFFA_PERIOD || 'yearly' }}
       BEFFA_CALENDAR: ${{ secrets.BEFFA_CALENDAR || 'ec' }}
@@ -136,16 +136,16 @@ jobs:
       if: always()
       continue-on-error: true
       run: |
-        # ── 5-Tier Tag → Grep Mapping (DevOps Standard) ─────────────────────
-        # sanity     → @sanity      Dead-simple alive checks. <1 min. On EVERY deploy event.
-        # smoke      → @smoke       Critical happy-path. ~5-10 min. On deployment trigger.
-        # regression → @regression  Business logic & guardrails. ~20-40 min. Nightly / PR.
-        # e2e        → @e2e         Cross-module O2C/P2P integration. Explicit only.
-        # full       → @full        Everything incl. load, stress, e2e. Release gates.
-        # ─────────────────────────────────────────────────────────────────────
+        # ── 5-Tier Tag Composition (EXCLUSIVE tags + cumulative grep) ──────────
+        # Each spec has EXACTLY ONE tier tag. Higher tiers compose via OR patterns:
+        #
+        # sanity     → --project=Sanity (dedicated spec, no auth, no grep needed)
+        # smoke      → @smoke only            (~5-10 min, happy-path flows)
+        # regression → @smoke|@regression     (~20-40 min, logic + guardrails)
+        # full       → no grep filter         (everything: load, stress, attacks, e2e)
+        # e2e        → @e2e (explicit cross-module integration tag, on-demand only)
+        # ─────────────────────────────────────────────────────────────────────────
 
-        # Deployment trigger always defaults to @sanity (fastest gate)
-        # workflow_dispatch allows full tier selection
         if [ "${{ github.event_name }}" = "repository_dispatch" ] || [ "${{ github.event_name }}" = "deployment_status" ]; then
           DEPLOY_TRIGGERED=true
         else
@@ -153,36 +153,44 @@ jobs:
         fi
 
         if [ "$TEST_TYPE" = "sanity" ]; then
-          GREP_ARGS="--grep @sanity"
-          # Sanity runs ONLY the dedicated Sanity project — no auth, no setup dependency
+          # Dedicated Sanity project: pure connectivity, no auth setup required, <1 min
           echo "=========================================================="
           echo "🟢 SANITY: Connectivity-only checks (no auth required)..."
           echo "=========================================================="
+          rm -rf allure-results && mkdir -p allure-results
           npx playwright test \
             --project=Sanity \
             --workers=4 \
-            $GREP_ARGS \
+            --grep @sanity \
             --pass-with-no-tests || exit $?
           exit 0
+
         elif [ "$TEST_TYPE" = "smoke" ]; then
+          # Smoke: ONLY @smoke-tagged tests (exclusive — no regression/full leakthrough)
           GREP_ARGS="--grep @smoke"
+          PROJECTS="--project=Sales --project=Purchase --project=Cross-Module --project=HR --project=Project-Management --project=Inventory"
+
         elif [ "$TEST_TYPE" = "regression" ]; then
-          GREP_ARGS="--grep @regression --grep-invert @sanity"
+          # Regression: smoke tier + regression tier (cumulative upward via OR)
+          GREP_ARGS="--grep @smoke|@regression"
+          PROJECTS="--project=Sales --project=Purchase --project=Cross-Module --project=HR --project=Project-Management --project=Inventory"
+
         elif [ "$TEST_TYPE" = "e2e" ]; then
+          # E2E: only explicitly tagged cross-module integration flows
           GREP_ARGS="--grep @e2e"
+          PROJECTS="--project=Cross-Module --project=Purchase --project=Sales"
+
         elif [ "$TEST_TYPE" = "full" ]; then
-          GREP_ARGS="--grep @full"
+          # Full: no grep filter — every test in every project runs
           echo "=========================================================="
-          echo "🚀 FULL SUITE: Running ALL Projects with 4 Workers..."
+          echo "🚀 FULL SUITE: ALL projects, ALL tiers, no filter..."
           echo "=========================================================="
           rm -rf allure-results && mkdir -p allure-results
-          npx playwright test \
-            --workers=4 \
-            $GREP_ARGS \
-            --pass-with-no-tests || exit $?
+          npx playwright test --workers=4 --pass-with-no-tests || exit $?
           exit 0
+
         else
-          # Fallback: push/PR → run sanity project (absolute minimum gate, <1 min)
+          # Fallback (push/PR with no TEST_TYPE) → sanity gate
           echo "=========================================================="
           echo "🟢 SANITY (fallback): push/PR connectivity-only gate..."
           echo "=========================================================="
@@ -207,35 +215,16 @@ jobs:
         set +e
         FINAL_EXIT_CODE=0
 
-        # ── PART 1: Standard UI Workflows (parallel) ────────────────────────
+        # ── Run test tier against scoped project list ────────────────────────
         echo "=========================================================="
-        echo "🚀 PART 1: Running Standard UI & API Workflows in Parallel..."
+        echo "🚀 Running $TEST_TYPE tier: $GREP_ARGS"
+        echo "   Projects: $PROJECTS"
         echo "=========================================================="
         npx playwright test \
-          --project=Sales \
-          --project=Purchase \
-          --project=Cross-Module \
-          --project=HR \
-          --project=Project-Management \
+          $PROJECTS \
           --workers=4 \
           $GREP_ARGS \
           --pass-with-no-tests || FINAL_EXIT_CODE=$?
-
-        # ── PART 2: Inventory (separate project — always included unless full) ──
-        if [ "$TEST_TYPE" = "regression" ] || [ "$TEST_TYPE" = "smoke" ] || [ "$TEST_TYPE" = "sanity" ]; then
-          echo "=========================================================="
-          echo "🛡️ PART 2: Inventory Audits..."
-          echo "=========================================================="
-          npx playwright test --project=Inventory --workers=2 $GREP_ARGS --pass-with-no-tests || FINAL_EXIT_CODE=$?
-        fi
-
-        # ── PART 3: E2E cross-module flows (only for e2e type) ──────────────
-        if [ "$TEST_TYPE" = "e2e" ]; then
-          echo "=========================================================="
-          echo "🔗 PART 3: Running E2E Cross-Module Flows..."
-          echo "=========================================================="
-          npx playwright test --project=Purchase --project=Cross-Module --workers=1 --grep @e2e --pass-with-no-tests || FINAL_EXIT_CODE=$?
-        fi
 
         set -e
         if [ $FINAL_EXIT_CODE -ne 0 ]; then

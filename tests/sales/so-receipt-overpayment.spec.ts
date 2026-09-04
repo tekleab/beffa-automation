@@ -41,7 +41,7 @@ function h(token: string) {
     return { 'Authorization': `Bearer ${token}`, 'x-company': process.env.BEFFA_COMPANY as string, 'Content-Type': 'application/json' };
 }
 
-test.describe('Sales Receipt Overpayment Integrity @sales @security @logic @regression @full', () => {
+test.describe('Sales Receipt Overpayment Integrity @sales @full', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(120000);
 

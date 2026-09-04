@@ -12,7 +12,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('Refactored Index Page Data Fetching (Warehouse & Location) @inventory @performance @smoke @regression @full', () => {
+test.describe('Refactored Index Page Data Fetching (Warehouse & Location) @inventory @regression', () => {
     test.setTimeout(120000);
 
     test('INV-INDEX-01: API Audit — Lightweight Paginated Fetching for /api/warehouses', async ({ page }) => {

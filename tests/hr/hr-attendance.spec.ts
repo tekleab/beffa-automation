@@ -18,7 +18,7 @@ import { AppManager } from '../../pages/AppManager';
  * Happy path: create timesheet → advance through approval
  * Edge cases: duplicate date conflict (409), zero hours
  */
-test.describe('HR: Timesheets & Attendances @hr @smoke @regression @full', () => {
+test.describe('HR: Timesheets & Attendances @hr @smoke', () => {
     test.setTimeout(120000);
 
     // -------------------------------------------------------------------------

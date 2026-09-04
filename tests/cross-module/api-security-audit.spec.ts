@@ -13,7 +13,7 @@ import { test, expect } from '@playwright/test';
  * =============================================================================
  */
 
-test.describe('ERP API Security Hardening Audit @cross-module @security @api @regression @full', () => {
+test.describe('ERP API Security Hardening Audit @cross-module @full', () => {
     test.setTimeout(60000);
 
     const apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://168.119.175.142:8001')

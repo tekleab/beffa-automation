@@ -18,7 +18,7 @@ import { AppManager } from '../../pages/AppManager';
  * Happy path: endpoint health, pagination integrity
  * Edge cases: missing required fields on creation
  */
-test.describe('HR: Leave Applications @hr @smoke @regression @full', () => {
+test.describe('HR: Leave Applications @hr @smoke', () => {
     test.setTimeout(120000);
 
     // -------------------------------------------------------------------------

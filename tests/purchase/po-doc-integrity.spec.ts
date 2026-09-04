@@ -39,7 +39,7 @@ function printAuditTable(title: string, rows: AuditRow[]) {
  * 6. PO↔Bill 1:1 reconciliation        [PASS — maps correctly]
  */
 
-test.describe('Procurement Document Integrity Attacks @purchase @security @logic @regression @full', () => {
+test.describe('Procurement Document Integrity Attacks @purchase @full', () => {
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

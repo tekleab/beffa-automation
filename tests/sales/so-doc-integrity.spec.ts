@@ -16,7 +16,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * SALES DOCUMENT INTEGRITY GUARDRAILS
  */
-test.describe('Sales Document Integrity Guardrails @sales @logic @security @regression @full', () => {
+test.describe('Sales Document Integrity Guardrails @sales @full', () => {
     test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

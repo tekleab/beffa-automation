@@ -13,7 +13,7 @@ import { Logger } from '../../lib/utils/Logger';
  *   - Full buy-sell-return cycle                   → so-credit-note.spec.ts (invoice void + stock restore)
  */
 
-test.describe('Cross-Module Stress & Financial Integrity @cross-module @logic @security @regression @full', () => {
+test.describe('Cross-Module Stress & Financial Integrity @cross-module @full', () => {
 
     test.describe.configure({ timeout: 360000 });
 

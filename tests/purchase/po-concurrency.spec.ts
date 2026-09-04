@@ -27,7 +27,7 @@ import { AppManager } from '../../pages/AppManager';
  *   Confirmed by manual UI test: PAY/000096 + PAY/000097 both approved manually
  */
 
-test.describe('Procurement Concurrency & Race Condition Audits @purchase @concurrency @security @regression @full', () => {
+test.describe('Procurement Concurrency & Race Condition Audits @purchase @full', () => {
     test.setTimeout(300000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

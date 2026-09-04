@@ -20,7 +20,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('Bill Detail DTO Contract & Schema Audit @purchase @api @smoke @regression @full', () => {
+test.describe('Bill Detail DTO Contract & Schema Audit @purchase @regression', () => {
     test.setTimeout(120000);
 
     let app: AppManager;

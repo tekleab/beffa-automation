@@ -32,7 +32,7 @@ import { AppManager } from '../../pages/AppManager';
  *   input#is_active             — Is Active (checkbox)
  *   button[type="submit"] "Create project" — disabled=true until required fields filled
  */
-test.describe('Project Management: UI Form @project @ui @smoke @regression @full', () => {
+test.describe('Project Management: UI Form @project @smoke', () => {
 
     async function setup(page: any) {
         const app = new AppManager(page);

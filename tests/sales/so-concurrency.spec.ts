@@ -16,7 +16,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * CATEGORY 2: Concurrency & Race Conditions
  */
-test.describe('Concurrency & Race Condition Audits @sales @concurrency @security @regression @full', () => {
+test.describe('Concurrency & Race Condition Audits @sales @full', () => {
     test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

@@ -19,7 +19,7 @@ import { AppManager } from '../../pages/AppManager';
  * 1. Approved invoice → invoice detail shows non-zero Amount Due
  * 2. After full payment → invoice detail shows zero Amount Due
  */
-test.describe('Sales Customer Balance UI Audits @sales @smoke @regression @full', () => {
+test.describe('Sales Customer Balance UI Audits @sales @smoke', () => {
     test.setTimeout(300000);
 
     test('UI Audit: Approved invoice reflects outstanding balance in customer profile', async ({ page }) => {

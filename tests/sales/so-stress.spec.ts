@@ -26,7 +26,7 @@ import { Logger } from '../../lib/utils/Logger';
  *   - Partial receipt AR drift → po-stress.spec.ts (identical pattern)
  */
 
-test.describe('Sales Stress & Financial Edge Cases @sales @logic @security @regression @full', () => {
+test.describe('Sales Stress & Financial Edge Cases @sales @full', () => {
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;

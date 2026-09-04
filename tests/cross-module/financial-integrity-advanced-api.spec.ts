@@ -19,7 +19,7 @@ import { Logger } from '../../lib/utils/Logger';
  * 1. Multi-Currency Rounding & Trial Balance Arbitrage (Dr == Cr Precision Audit)
  * 2. Concurrent Multi-Bill Partial Payment Race & Ledger Locking Audit
  */
-test.describe('Advanced Financial & Accounting Integrity API Audit @sales @purchase @logic @security @regression @full', () => {
+test.describe('Advanced Financial & Accounting Integrity API Audit @sales @purchase @regression', () => {
     test.setTimeout(300000);
 
     let salesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

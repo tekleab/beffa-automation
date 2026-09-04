@@ -25,7 +25,7 @@ import { Logger } from '../../lib/utils/Logger';
  * 3. STRESS: Payment against a bill that was reversed mid-flight.
  */
 
-test.describe('Bill Payment Load & Stress Audits @purchase @load @stress @full', () => {
+test.describe('Bill Payment Load & Stress Audits @purchase @full', () => {
     test.setTimeout(240000);
 
     let page: Page;

@@ -16,7 +16,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * SALES PARTIAL SO RELEASE AUDIT
  */
-test.describe('Sales Partial SO Release Audit @sales @logic @smoke @regression @full', () => {
+test.describe('Sales Partial SO Release Audit @sales @regression', () => {
     test.setTimeout(120000);
 
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;

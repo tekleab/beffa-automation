@@ -20,7 +20,7 @@ const addressData: Array<{ region: string; zones: Array<{ name: string; woredas:
     fs.readFileSync(path.join(__dirname,'../../data/address_locations.json'),'utf8')
 );
 
-test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke @regression @full', () => {
+test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke', () => {
     test.setTimeout(180000);
 
     test('Validate TIN, create customer, edit, remove', async ({ page }) => {

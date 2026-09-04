@@ -18,7 +18,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('ERP DTO & Payment Route Contract Audit @cross-module @dto @api @regression @full', () => {
+test.describe('ERP DTO & Payment Route Contract Audit @cross-module @regression', () => {
     test.setTimeout(180000);
 
     function QS(): string {

@@ -20,7 +20,7 @@ import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
  * Flow: Employees (API) → Contracts (API) → Approve (API) → Pay Structure (API)
  *       → Payroll Run (API) → Assign all 3 (API) → Approve Run (UI) → Assert payrolls ≥ 3
  */
-test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke @regression @full', () => {
+test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke', () => {
     test.setTimeout(120000);
 
     const EMPLOYEE_COUNT = 3;

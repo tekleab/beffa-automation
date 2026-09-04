@@ -21,7 +21,7 @@ interface ApiValidationResult {
   recommendation: string;
 }
 
-test.describe('Enterprise ERP Full-Spectrum API Validation Scanner @cross-module @api @regression @full', () => {
+test.describe('Enterprise ERP Full-Spectrum API Validation Scanner @cross-module @full', () => {
   test('Audit all ERP modules: Sales, Purchase, HR, Inventory, Project, Assets, Accounting', async ({ page }) => {
     test.setTimeout(300000); // 5 minutes for deep multi-module inspection
     const app = new AppManager(page);

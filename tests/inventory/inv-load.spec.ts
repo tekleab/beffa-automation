@@ -13,7 +13,7 @@ import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
  */
 
 
-test.describe('Load: Concurrent Inventory Adjustments @inventory @load @full', () => {
+test.describe('Load: Concurrent Inventory Adjustments @inventory @full', () => {
     test.setTimeout(180000);
 
     let page: Page;

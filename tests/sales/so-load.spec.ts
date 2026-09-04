@@ -13,7 +13,7 @@ import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
  */
 
 
-test.describe('Load: Concurrent Sales Invoices @sales @load @full', () => {
+test.describe('Load: Concurrent Sales Invoices @sales @full', () => {
     test.setTimeout(180000);
 
     let page: Page;

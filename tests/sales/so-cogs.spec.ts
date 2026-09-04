@@ -22,7 +22,7 @@ import { AppManager } from '../../pages/AppManager';
  *   3. Posts an Inventory credit journal entry
  *   4. Total COGS debit = sum of (qty × unit_cost) across all lines
  */
-test.describe('Sales COGS Audit: Multi-Item Invoice @sales @inventory @logic @regression @full', () => {
+test.describe('Sales COGS Audit: Multi-Item Invoice @sales @inventory @regression', () => {
     test.setTimeout(180000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

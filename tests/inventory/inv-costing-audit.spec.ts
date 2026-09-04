@@ -33,7 +33,7 @@ import { AppManager } from '../../pages/AppManager';
  * Stage D — verify final: 5 units @ $300
  */
 
-test.describe('FIFO Write-Down & Sell-Through Audit @inventory @costing @regression @full', () => {
+test.describe('FIFO Write-Down & Sell-Through Audit @inventory @full', () => {
   test.setTimeout(300000);
 
   test('Audit: FIFO cost advances correctly through write-downs and multi-stage sales', async ({ page }) => {

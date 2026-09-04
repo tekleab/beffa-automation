@@ -20,7 +20,7 @@ import { AppManager } from '../../pages/AppManager';
  * Assert total received stock = PO qty, and system blocks a 3rd bill.
  */
 
-test.describe('Procurement PO Split Bill Audit @purchase @logic @smoke @regression @full', () => {
+test.describe('Procurement PO Split Bill Audit @purchase @regression', () => {
     test.setTimeout(120000);
 
     test('Audit: PO split into multiple bills — total must never exceed PO quantity', async ({ page }) => {

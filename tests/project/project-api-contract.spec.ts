@@ -22,7 +22,7 @@ import { apiLoginSetup } from '../../lib/utils/apiLoginSetup';
  * Pure API tests - no UI dependencies
  * Covers: Create, Read, Update, List, Filter, Search, Status Transitions
  */
-test.describe('Project Management: API Contract @project @api @smoke @regression @full', () => {
+test.describe('Project Management: API Contract @project @smoke', () => {
 
     async function setup(page: any) {
         const app = await apiLoginSetup(page);

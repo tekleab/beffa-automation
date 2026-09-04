@@ -40,7 +40,7 @@ import { AppManager } from '../../pages/AppManager';
  *                                       {qty:2,  doc_type:'bill'  },
  *                                       {qty:1,  doc_type:'bill'  }]
  */
-test.describe('FIFO Layer Integrity @inventory @fifo @regression @full', () => {
+test.describe('FIFO Layer Integrity @inventory @full', () => {
     test.setTimeout(480000);
 
     const getHeaders = async (app: AppManager) => ({

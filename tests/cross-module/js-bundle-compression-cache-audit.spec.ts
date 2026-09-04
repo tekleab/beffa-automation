@@ -12,7 +12,7 @@ import { test, expect } from '@playwright/test';
  * =============================================================================
  */
 
-test.describe('Frontend JS Bundle Compression & Caching Audit @cross-module @performance @cdn @regression @full', () => {
+test.describe('Frontend JS Bundle Compression & Caching Audit @cross-module @full', () => {
     test('Audit Frontend JS Bundle Compression and Caching headers', async ({ request }) => {
         const frontendUrl = process.env.BASE_URL || 'http://168.119.175.142:4173';
         console.log(`\n===============================================================`);

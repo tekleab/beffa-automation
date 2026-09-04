@@ -27,7 +27,7 @@ import { AppManager } from '../../pages/AppManager';
  * 5. Excess qty guard — move order exceeding available stock must be rejected
  */
 
-test.describe('Location Transfer (Move Order) Audits @inventory @logic @smoke @regression @full', () => {
+test.describe('Location Transfer (Move Order) Audits @inventory @regression', () => {
 
     let app: AppManager;
     let item: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;

@@ -17,7 +17,7 @@ import { AppManager } from '../../pages/AppManager';
  * CATEGORY 4: Security & Temporal Isolation for Procurement
  * Merged from: procurement-temporal-isolation.spec.ts + procurement-security-temporal-isolation.spec.ts + po-guardrails.spec.ts
  */
-test.describe('Procurement Security & Guardrails Audits @purchase @security @regression @full', () => {
+test.describe('Procurement Security & Guardrails Audits @purchase @full', () => {
     test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['purchase']['discoverMetadataAPI']>>;

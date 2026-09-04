@@ -67,7 +67,7 @@ function printGLReport(blocks: TxBlock[]) {
  *   Void rule       : receipt must be reversed BEFORE invoice can be voided
  */
 
-test.describe('Sales GL & Ledger Audits @sales @logic @smoke @regression @full', () => {
+test.describe('Sales GL & Ledger Audits @sales @regression', () => {
     test.setTimeout(180000);
 
     const isAR = (e: any) => {

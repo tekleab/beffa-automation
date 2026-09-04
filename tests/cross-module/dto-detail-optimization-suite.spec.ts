@@ -21,7 +21,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('DTO Detail Page Optimization Suite @dto-detail @regression @full', () => {
+test.describe('DTO Detail Page Optimization Suite @regression', () => {
     test.setTimeout(180000);
 
     let sharedApp: AppManager;

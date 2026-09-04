@@ -27,7 +27,7 @@ import { AppManager } from '../../pages/AppManager';
  *    - Attempt a 3rd GRN/Bill -> verify it is blocked.
  */
 
-test.describe('Procurement: Three-Way Match Audit @purchase @logic @regression @full', () => {
+test.describe('Procurement: Three-Way Match Audit @purchase @regression', () => {
     test.setTimeout(180000);
 
     test('Guardrail: Price variance between PO and Bill must be blocked or rejected', async ({ page }) => {

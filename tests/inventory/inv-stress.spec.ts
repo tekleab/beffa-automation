@@ -25,7 +25,7 @@ import { Logger } from '../../lib/utils/Logger';
  *   - Concurrent sell + adjustment     → inv-concurrency.spec.ts
  */
 
-test.describe('Inventory Stress & Costing Edge Cases @inventory @logic @security @regression @full', () => {
+test.describe('Inventory Stress & Costing Edge Cases @inventory @full', () => {
 
     let sharedPage: import('@playwright/test').Page;
     let sharedApp: AppManager;

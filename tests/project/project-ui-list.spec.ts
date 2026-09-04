@@ -21,7 +21,7 @@ import { AppManager } from '../../pages/AppManager';
  * UI-only tests for the projects list page
  * Covers: Table columns, filters, sorting, search, pagination, navigation
  */
-test.describe('Project Management: UI List Page @project @ui @smoke @regression @full', () => {
+test.describe('Project Management: UI List Page @project @smoke', () => {
 
     async function setup(page: any) {
         const app = new AppManager(page);

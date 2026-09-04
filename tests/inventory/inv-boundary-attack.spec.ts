@@ -40,7 +40,7 @@ function h(token: string) {
     return { 'Authorization': `Bearer ${token}`, 'x-company': process.env.BEFFA_COMPANY as string, 'Content-Type': 'application/json' };
 }
 
-test.describe('Inventory Boundary & Costing Attack Audit @inventory @security @logic @regression @full', () => {
+test.describe('Inventory Boundary & Costing Attack Audit @inventory @full', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(90000);
 

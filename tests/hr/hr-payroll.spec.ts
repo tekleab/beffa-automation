@@ -14,7 +14,7 @@ import { AppManager } from '../../pages/AppManager';
  */
 
 
-test.describe('Payroll: Runs & Pay Components @hr @smoke @regression @full', () => {
+test.describe('Payroll: Runs & Pay Components @hr @smoke', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(180000);
 

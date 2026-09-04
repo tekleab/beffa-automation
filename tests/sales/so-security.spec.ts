@@ -16,7 +16,7 @@ import { AppManager } from '../../pages/AppManager';
 /**
  * CATEGORY 4: Security & Temporal Isolation
  */
-test.describe('Security & Temporal Isolation Audits @sales @security @regression @full', () => {
+test.describe('Security & Temporal Isolation Audits @sales @full', () => {
     test.setTimeout(120000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;

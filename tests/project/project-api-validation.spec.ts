@@ -23,7 +23,7 @@ import { AppManager } from '../../pages/AppManager';
  * Pure API validation tests - no UI dependencies
  * Covers: Required fields, date validation, numeric constraints, invalid inputs
  */
-test.describe('Project Management: API Validation @project @validation @smoke @regression @full', () => {
+test.describe('Project Management: API Validation @project @smoke', () => {
 
     async function setup(page: any) {
         const app = new AppManager(page);

@@ -76,7 +76,7 @@ async function pollBillJournal(app: AppManager, billId: string, maxAttempts = 10
     return [];
 }
 
-test.describe('Purchase GL & AP Ledger Audits @purchase @logic @regression @full', () => {
+test.describe('Purchase GL & AP Ledger Audits @purchase @regression', () => {
     test.setTimeout(300000);
 
     // ── 1. BILL APPROVAL GL ───────────────────────────────────────────────────

@@ -12,7 +12,7 @@ import { AppManager } from'../../pages/AppManager';
  */
 
 
-test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sales @smoke @regression @full', () => {
+test.describe('Sales Receipt — Create Receipt & Verify in Customer Profile @sales @smoke', () => {
 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);

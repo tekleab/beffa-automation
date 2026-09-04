@@ -20,7 +20,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('Detail Page Tab On-Demand Fetching Suite @cross-module @ui @tabs @smoke @regression @full', () => {
+test.describe('Detail Page Tab On-Demand Fetching Suite @cross-module @regression', () => {
     test.setTimeout(120000);
 
     function QS(): string {

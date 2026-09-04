@@ -15,7 +15,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('System-Wide Error Visibility Audit @error-visibility @regression @full', () => {
+test.describe('System-Wide Error Visibility Audit @regression', () => {
     test.setTimeout(180000);
 
     let sharedApp: AppManager;

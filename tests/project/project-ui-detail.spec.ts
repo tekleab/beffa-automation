@@ -20,7 +20,7 @@ import { AppManager } from '../../pages/AppManager';
  * UI-only tests for project detail views and guardrails
  * Covers: Detail page, authentication, error handling, filter interactions
  */
-test.describe('Project Management: UI Detail & Guardrails @project @ui @smoke @regression @full', () => {
+test.describe('Project Management: UI Detail & Guardrails @project @smoke', () => {
 
     async function setup(page: any) {
         const app = new AppManager(page);
