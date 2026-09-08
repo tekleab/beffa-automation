@@ -142,17 +142,14 @@ export class DateHelper {
             const periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
             const periodEnd   = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
 
-            let useDate: Date;
-            if (now >= periodStart && now <= periodEnd) {
+            // Ensure date is strictly within the open EC fiscal year (EC 2019 starts Sep 11, 2026 GC)
+            let useDate: Date = new Date('2026-09-15T00:00:00Z');
+            if (now >= new Date('2026-09-11T00:00:00Z') && now <= periodEnd) {
               useDate = now;
-            } else {
-              // Select an early day in the valid open period to guarantee date is within bounds
-              const safeInPeriod = new Date(periodStart.getTime() + 5 * 86400000);
-              useDate = (safeInPeriod >= periodStart && safeInPeriod <= periodEnd) ? safeInPeriod : periodStart;
             }
             return DateHelper._fromDate(useDate, year);
           } else if (probeResp.status() === 200 || probeResp.status() === 201) {
-            return DateHelper._fromDate(now, year);
+            return DateHelper._fromDate(now >= new Date('2026-09-11T00:00:00Z') ? now : new Date('2026-09-15T00:00:00Z'), year);
           }
         }
       }
@@ -167,10 +164,10 @@ export class DateHelper {
     const ecYear = baseYear;
     // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
     const gcYear = ecYear + 7;
-    const periodStart = new Date(`${gcYear}-08-07T00:00:00Z`);
-    const periodEnd   = new Date(`${gcYear + 1}-07-07T00:00:00Z`);
+    const periodStart = new Date(`${gcYear}-09-11T00:00:00Z`);
+    const periodEnd   = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
 
-    const safeDate = new Date(`${gcYear}-08-14T00:00:00Z`);
+    const safeDate = new Date(`${gcYear}-09-15T00:00:00Z`);
     const now = new Date();
     let useDate: Date;
     if (now >= periodStart && now <= periodEnd) {
@@ -185,13 +182,14 @@ export class DateHelper {
   // ── Strategy 3: today ────────────────────────────────────────────────────────
   private static _today(): ResolvedDate {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
-    return DateHelper._fromDate(new Date(), baseYear);
+    const now = new Date();
+    return DateHelper._fromDate(now >= new Date('2026-09-11T00:00:00Z') ? now : new Date('2026-09-15T00:00:00Z'), baseYear);
   }
 
   private static _fromDate(d: Date, ecYear: number): ResolvedDate {
-    // Hard check: Ensure GC year is never prior to 2026 (prevents 2025 closed period errors)
-    if (d.getUTCFullYear() < 2026) {
-      d = new Date('2026-08-12T00:00:00Z');
+    // Hard check: Ensure GC date is within active EC 2019 (Sep 11, 2026 onwards)
+    if (d < new Date('2026-09-11T00:00:00Z')) {
+      d = new Date('2026-09-15T00:00:00Z');
       ecYear = 2019;
     }
     const yyyy = d.getUTCFullYear();

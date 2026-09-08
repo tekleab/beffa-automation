@@ -847,6 +847,7 @@ export class PurchaseAPI extends BasePage {
       vendor_id: data.vendorId, // Tests usually supply this
       date: (data as any).date || _dateIso,
       payment_method: 'cash',
+      currency_id: currency?.id,
       bill_payments: [{
         amount: data.amount,
         bill_id: data.billId

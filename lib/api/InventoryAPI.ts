@@ -42,6 +42,7 @@ export class InventoryAPI extends BasePage {
     item_class?: string, 
     quantity?: number, 
     unit_cost?: number, 
+    selling_price?: number,
     default_location_id?: string, 
     default_warehouse_id?: string,
     cost_method_code?: string,
@@ -49,7 +50,7 @@ export class InventoryAPI extends BasePage {
     gl_cost_account_id?: string,
     gl_inventory_account_id?: string,
     gl_sales_account_id?: string
-  }): Promise<{ itemName: string, id: string }> {
+  }): Promise<{ itemName: string, id: string, itemId?: string, locationId?: string, warehouseId?: string, unitCost?: number, sellingPrice?: number }> {
     const name = typeof data === 'string' ? data : data.name;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
@@ -142,7 +143,9 @@ export class InventoryAPI extends BasePage {
       }
       if (resp.ok()) {
         const json = await resp.json();
-        return { itemName: json.name, id: json.id };
+        const cost = typeof data === 'string' ? 1 : (data.unit_cost || 1);
+        const sellPrice = typeof data === 'string' ? 1 : (data.selling_price || data.unit_cost || 1);
+        return { itemName: json.name, id: json.id, itemId: json.id, locationId: locId, warehouseId, unitCost: cost, sellingPrice: sellPrice };
       }
       const status = resp.status();
       if (status === 401) {
@@ -300,9 +303,26 @@ export class InventoryAPI extends BasePage {
       }
     }
 
-    // 2. Discover Locations dynamically if not provided
+    // 2. Discover Locations dynamically if not provided (prefer where the item already exists)
     let locationId = data.locationId;
     let warehouseId = data.warehouseId;
+    let itemData: any = null;
+
+    if (data.itemId) {
+      const itemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+      itemData = await safeJson(itemResp);
+      if (itemData && (!locationId || !warehouseId)) {
+        const existingLoc = (itemData.inventory_item_locations || [])[0];
+        if (existingLoc) {
+          locationId = locationId || existingLoc.location_id || itemData.default_location_id;
+          warehouseId = warehouseId || existingLoc.warehouse_id || itemData.default_warehouse_id;
+        } else if (itemData.default_location_id) {
+          locationId = locationId || itemData.default_location_id;
+          warehouseId = warehouseId || itemData.default_warehouse_id;
+        }
+      }
+    }
+
     if (!locationId || !warehouseId) {
       const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers });
       const locData = await safeJson(locResp);
@@ -320,8 +340,10 @@ export class InventoryAPI extends BasePage {
     let locationQuantity = 0;
     let existingUnitCost = 0;
     if (data.itemId) {
-      const itemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
-      const itemData = await safeJson(itemResp);
+      if (!itemData) {
+        const itemResp = await this.safeGet(`${apiBase}/inventory-item/${data.itemId}?${params}`, { headers });
+        itemData = await safeJson(itemResp);
+      }
       if (itemData) {
         const locEntry = (itemData.inventory_item_locations || []).find((l: any) => l.location_id === locationId);
         locationQuantity = locEntry?.quantity ?? 0;

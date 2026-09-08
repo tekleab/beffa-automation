@@ -1052,7 +1052,8 @@ ${curlCmd}
     for (let step = 0; step < 24; step++) {
       const current = await getDisplayedYearMonth();
       if (current) {
-        const monthDiff = (navTargetYear - current.year) * 12 + (navTargetMonth - current.month);
+        const monthsPerYear = isEcCalendar ? 13 : 12;
+        const monthDiff = (navTargetYear - current.year) * monthsPerYear + (navTargetMonth - current.month);
         if (monthDiff === 0) break;
         const navBtn = monthDiff > 0 ? nextBtn : prevBtn;
         if (!await navBtn.isVisible({ timeout: 500 }).catch(() => false)) break;
@@ -1063,11 +1064,14 @@ ${curlCmd}
       }
     }
 
-    // Click the target day
-    const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: new RegExp(`^${targetDay}$`) });
+    // Click the target day in the navigated month
+    const ecDay = (isEcCalendar && targetMonth === 8 && targetDay >= 11) ? (targetDay - 10) : targetDay;
+    const enabledDays = popover.locator('button:not([disabled]):not([aria-disabled="true"])')
+      .filter({ hasText: new RegExp(`^${ecDay}$`) })
+      .or(popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: new RegExp(`^${targetDay}$`) }));
     if (await enabledDays.first().isVisible({ timeout: 2000 }).catch(() => false)) {
       await enabledDays.first().click({ force: true });
-      Logger.pass(`"${Logger.sanitize(label)}" set to day ${targetDay}.`);
+      Logger.pass(`"${Logger.sanitize(label)}" set to day ${ecDay}.`);
     } else {
       // Fallback: pick first/early enabled day in whatever month is showing to stay safely within period bounds
       const anyEnabled = popover.locator('button:not([disabled]):not([aria-disabled="true"])').filter({ hasText: /^\d{1,2}$/ });
@@ -1087,7 +1091,7 @@ ${curlCmd}
     await this.stopTacticalTimer(`Pick Date: ${label}`, 'UI');
   }
 
-  async selectRandomOption(selector: Locator, labelName: string, isOptional: boolean = false): Promise<number> {
+  async selectRandomOption(selector: Locator, labelName: string, isOptional: boolean = false, preferredText?: string): Promise<number> {
     const optionSelector = '[role="checkbox"], .chakra-checkbox, [role="option"], [role="menuitem"], .chakra-menu__menuitem, tbody tr, tr:not(:first-child), tr[role="row"], button:not(:has-text("Clear")), [role="button"]';
 
     await this.startTacticalTimer(); // Start Tactical UI Timer
@@ -1106,25 +1110,44 @@ ${curlCmd}
         if (overlayVisible) {
           const searchInput = overlay.locator('input').first();
           if (await searchInput.isVisible({ timeout: 800 }).catch(() => false)) {
-            const currentVal = await searchInput.inputValue().catch(() => '');
-            if (currentVal) {
-              await searchInput.focus().catch(() => {});
-              await searchInput.fill('').catch(() => {});
-              await this.page.waitForTimeout(500);
-            }
+            await searchInput.focus().catch(() => {});
+            await searchInput.fill(preferredText || '').catch(() => {});
+            await this.page.waitForTimeout(600);
           }
         }
 
-        const options = overlayVisible
-          ? overlay.locator(optionSelector).filter({ visible: true }).filter({ hasNotText: /^(Clear|No more items)$/i })
-          : this.page.locator(optionSelector).filter({ visible: true }).filter({ hasNotText: /^(Clear|No more items)$/i });
+        const actionFilter = /^\s*(\+|\b(Add|Create|New|Clear|No\s+more)\b)/i;
+        const tableRows = (overlayVisible ? overlay : this.page)
+          .locator('tbody tr, tr[role="row"]')
+          .filter({ visible: true })
+          .filter({ hasNotText: actionFilter });
+        const rowCount = await tableRows.count().catch(() => 0);
+
+        const options = (rowCount > 0)
+          ? tableRows
+          : (overlayVisible ? overlay : this.page)
+              .locator(optionSelector)
+              .filter({ visible: true })
+              .filter({ hasNotText: actionFilter });
+
         // Wait up to 15s for at least one option to appear (handles heavy backend queries)
         await options.first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => { });
         const count = await options.count();
         console.log(`[SELECT-OPTION] ${labelName} (attempt ${i + 1}): overlayVisible=${overlayVisible}, count=${count}`);
         if (count > 0) {
-          const randomIndex = Math.floor(Math.random() * count);
-          const target = options.nth(randomIndex);
+          let target = options.first();
+          if (preferredText) {
+            const preferred = options.filter({ hasText: new RegExp(preferredText, 'i') }).first();
+            if (await preferred.isVisible({ timeout: 1000 }).catch(() => false)) {
+              target = preferred;
+            } else {
+              const randomIndex = Math.floor(Math.random() * count);
+              target = options.nth(randomIndex);
+            }
+          } else {
+            const randomIndex = Math.floor(Math.random() * count);
+            target = options.nth(randomIndex);
+          }
           await target.scrollIntoViewIfNeeded().catch(() => {});
           const childCell = target.locator('td, [role="button"], button, p, span').first();
           if (await childCell.isVisible({ timeout: 500 }).catch(() => false)) {
@@ -1135,6 +1158,11 @@ ${curlCmd}
           await this.page.waitForTimeout(500);
           if (await overlay.isVisible().catch(() => false)) {
             await this.page.keyboard.press('Escape').catch(() => { });
+          }
+          // If an unexpected drawer/modal opened, close it
+          const openDrawerCloseBtn = this.page.locator('.chakra-modal__close-btn, button[aria-label="Close"]').filter({ visible: true }).first();
+          if (await openDrawerCloseBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+            await openDrawerCloseBtn.click().catch(() => this.page.keyboard.press('Escape'));
           }
           await this.stopTacticalTimer(`Random Selection: ${labelName}`, 'UI');
           return count;
