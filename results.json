@@ -1,36 +1,44 @@
 {
-  "total": 212,
-  "passed": 183,
-  "failed": 29,
+  "total": 18,
+  "passed": 14,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 86.3,
-  "avgDurationMs": 18137,
-  "lastUpdated": "2026-09-09T07:42:38.649Z",
+  "passRate": 77.8,
+  "avgDurationMs": 1125,
+  "lastUpdated": "2026-09-09T07:48:10.157Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 183,
-      "failed": 29,
+      "passed": 14,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        86.8,
-        94.4,
-        100,
-        91,
-        90.1,
-        90.6,
-        86.3
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        77.8
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "752",
+      "run": "754",
+      "commit": "efd2ace",
+      "trigger": "push (sanity)",
+      "duration": "0m 20s",
+      "passRate": 77.8,
+      "status": "failed"
+    },
+    {
+      "run": "751",
       "commit": "8e89472",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "64m 5s",
-      "passRate": 86.3,
-      "status": "success"
+      "trigger": "push (sanity)",
+      "duration": "0m 0s",
+      "passRate": 0,
+      "status": "unknown"
     },
     {
       "run": "750",
@@ -95,94 +103,38 @@
       "duration": "0m 3s",
       "passRate": 94.4,
       "status": "success"
-    },
-    {
-      "run": "737",
-      "commit": "6949b39",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "95m 33s",
-      "passRate": 82.8,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"], input[placeholder*=\"name\" i], input[id*=\"name\" i]').first()",
-      "firstSeen": "2026-09-09T07:19:03.620Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
       "severity": "medium",
-      "title": "DTO Schema Verification: GET /bill/{id} returns valid DTO structure",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-09T07:22:21.400Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Negative DTO Guardrail: Non-existent Bill ID returns 404 Error DTO",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-09T07:22:23.679Z",
+      "title": "API: /users/login endpoint accepts POST",
+      "error": "Error: apiRequestContext.post: socket hang up\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    - user-agent: Playwright/1.6",
+      "firstSeen": "2026-09-09T07:47:53.284Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "Audit: Approved bill must debit Expense/Inventory and credit AP",
-      "error": "Error: Vendor Discovery HTTP 0: apiRequestContext.get: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/vendors?page=1&pageSize=10&year=2018&period=yearly&calendar=ec\u001b",
-      "firstSeen": "2026-09-09T07:22:37.998Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
-      "error": "Error: Bill-Payment API failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"validation error on field \\\"_body\\\": invalid UUID length: 0\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = thi",
-      "firstSeen": "2026-09-09T07:22:44.272Z",
+      "title": "API: Sales Orders endpoint is reachable",
+      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/sales-orders?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Playw",
+      "firstSeen": "2026-09-09T07:47:53.776Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
-      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
-      "firstSeen": "2026-09-09T07:23:05.149Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-09T07:24:26.134Z",
+      "title": "API: Customers endpoint is reachable",
+      "error": "Error: apiRequestContext.get: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/customers?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Playwri",
+      "firstSeen": "2026-09-09T07:47:54.045Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errT",
-      "firstSeen": "2026-09-09T07:24:31.287Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-09T07:25:16.576Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: PO split into multiple bills — total must never exceed PO quantity",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-09T07:25:17.152Z",
+      "title": "API: Invoices endpoint is reachable",
+      "error": "Error: apiRequestContext.get: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/invoices?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Playwrig",
+      "firstSeen": "2026-09-09T07:47:54.052Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
