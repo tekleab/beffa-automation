@@ -1,16 +1,16 @@
 {
-  "total": 18,
-  "passed": 14,
-  "failed": 4,
+  "total": 212,
+  "passed": 177,
+  "failed": 35,
   "skipped": 0,
-  "passRate": 77.8,
-  "avgDurationMs": 1125,
-  "lastUpdated": "2026-09-09T07:48:10.157Z",
+  "passRate": 83.5,
+  "avgDurationMs": 20544,
+  "lastUpdated": "2026-09-09T08:16:52.667Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 14,
-      "failed": 4,
+      "passed": 177,
+      "failed": 35,
       "skipped": 0,
       "trend": [
         82,
@@ -19,18 +19,18 @@
         88,
         90,
         92,
-        77.8
+        83.5
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "754",
+      "run": "755",
       "commit": "efd2ace",
-      "trigger": "push (sanity)",
-      "duration": "0m 20s",
-      "passRate": 77.8,
-      "status": "failed"
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "72m 35s",
+      "passRate": 83.5,
+      "status": "success"
     },
     {
       "run": "751",
@@ -107,34 +107,82 @@
   ],
   "criticalBlockers": [
     {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"], input[placeholder*=\"name\" i], input[id*=\"name\" i]').first()",
+      "firstSeen": "2026-09-09T07:50:53.450Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: BUG #7: ERP unreceived_amount=$100 but invoice unit_price=$500. AR understated by $400. Invoice: INV/2026/09/09/004900 (f540f54c-2466-451c-9887-c3f202f320f6), Item: 6aab6b5e-ad9a-40a5-9234-4ad1",
+      "firstSeen": "2026-09-09T07:52:44.186Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
       "severity": "medium",
-      "title": "API: /users/login endpoint accepts POST",
-      "error": "Error: apiRequestContext.post: socket hang up\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    - user-agent: Playwright/1.6",
-      "firstSeen": "2026-09-09T07:47:53.284Z",
+      "title": "Guardrail: System must reject Invoicing for more units than the approved SO",
+      "error": "Error: SO creation failed\n\n  61 |             warehouseId: item.warehouseId\n  62 |         });\n> 63 |         if (!so.success) throw new Error(\"SO creation failed\");\n     |                            ",
+      "firstSeen": "2026-09-09T07:53:27.395Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "DTO Schema Verification: GET /bill/{id} returns valid DTO structure",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T07:54:33.326Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Negative DTO Guardrail: Non-existent Bill ID returns 404 Error DTO",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T07:54:35.056Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "API: Sales Orders endpoint is reachable",
-      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/sales-orders?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Playw",
-      "firstSeen": "2026-09-09T07:47:53.776Z",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-09T07:54:41.216Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill-Payment API failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"validation error on field \\\"_body\\\": invalid UUID length: 0\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = thi",
+      "firstSeen": "2026-09-09T07:55:22.911Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI: Bills Index page (/payables/bills) must resolve data grid without error states",
+      "error": "Error: Bills index page should not display error alert\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceive",
+      "firstSeen": "2026-09-09T07:55:38.368Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T07:56:00.537Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
-      "title": "API: Customers endpoint is reachable",
-      "error": "Error: apiRequestContext.get: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/customers?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Playwri",
-      "firstSeen": "2026-09-09T07:47:54.045Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "API: Invoices endpoint is reachable",
-      "error": "Error: apiRequestContext.get: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/invoices?page=1&pageSize=1&year=2018&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Playwrig",
-      "firstSeen": "2026-09-09T07:47:54.052Z",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errT",
+      "firstSeen": "2026-09-09T07:56:24.851Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }

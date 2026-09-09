@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2018)
+07:54:21 [PERFORMANCE] API - Auth API Verification: 185.72ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/09/009495 (ID: 47b83c75-c867-4976-9322-3f5f01787026)
+07:54:27 [INFO] Advancing inventory-adjustments "47b83c75-c867-4976-9322-3f5f01787026"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788940464885 (1d473344-1d09-4b78-b807-0a7f7ab98004) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+07:54:30 [PERFORMANCE] API - Auth API Verification: 277.31ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Discovering tax configuration...
+[TAX] Turnover Tax @ 2% | Expected tax amount: 20
+[STEP 2] Creating invoice with tax...
+[OK] Invoice created: INV/2026/09/09/004911 (ID: 4563a4b8-9fc8-4768-885f-de7afd3afb51)
+07:54:31 [INFO] Advancing invoices "4563a4b8-9fc8-4768-885f-de7afd3afb51"...
+[STEP 3] Fetching journal entries to verify tax account...
+[TAX ENTRY] VAT Payable | CR: 2
+[PASS] Tax GL confirmed: VAT Payable credited 2 on invoice approval.

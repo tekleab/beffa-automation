@@ -1,0 +1,86 @@
+07:53:18 [PERFORMANCE] API - Auth API Verification: 292.26ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/09/009487 (ID: 358c4cc8-23fd-4816-a1a9-bcca328614be)
+07:53:24 [INFO] Advancing inventory-adjustments "358c4cc8-23fd-4816-a1a9-bcca328614be"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1788940401632 (f2ad7f1b-c0a8-4e83-ab78-b2adfc119329) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] FIFO-Item-1788940401632 | stock:20
+07:53:28 [INFO] Advancing invoices "3caadc50-efb4-43fc-ad04-a16fa5125d38"...
+[INVOICE JOURNAL] INV/2026/09/09/004904 (4 entries)
+  Sales () Dr:0 Cr:100
+  Cash at Bank - CBE () Dr:100 Cr:0
+  Inventory () Dr:0 Cr:100
+  Accounts Receivable () Dr:100 Cr:0
+[PASS] AR debited $100 on INV/2026/09/09/004904
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=3caadc50... | year=2018
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/09/001402
+07:53:40 [INFO] Advancing receipts "9ad7c545-3dd4-463e-bedb-74441ffee81e"...
+07:53:51 [WARN] Transient network drop/socket hang up on advance attempt 1/4: apiRequestContext.patch: socket hang up Call log:   - → PATCH http://168.119.175.142:8001/api/receipts/9ad7c545-3dd4-463e-bedb-74441ffee81e/advance?year=2018&period=yearly&calendar=ec     - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36     - accept: */*     - accept-encoding: gzip,deflate,br     - x-company: BM Tech     - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4OTAyNjc5OCwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODkwMjY3OTh9.N6vNvp60Mq6UxhvEdvrOzVfP9JD5FII_EwWpT3QF3YQ     - Content-Type: application/json     - x-role: IT Administrator / User Manager     - content-length: 55     - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4OTAyNjc5OCwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODkwMjY3OTh9.N6vNvp60Mq6UxhvEdvrOzVfP9JD5FII_EwWpT3QF3YQ; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc4OTAyNjc5OCwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3ODkwMjY3OTh9.N6vNvp60Mq6UxhvEdvrOzVfP9JD5FII_EwWpT3QF3YQ . Retrying in 2s...
+[RECEIPT] RCPT/2026/09/09/001402 approved
+[STEP] Reversing receipt RCPT/2026/09/09/001402...
+[PASS] Receipt RCPT/2026/09/09/001402 reversed
+[STEP] Voiding invoice INV/2026/09/09/004904...
+[VOID] Invoice 3caadc50-efb4-43fc-ad04-a16fa5125d38 voided → status=draft (no separate credit note; sales_journal cleared)
+[VOID] id=3caadc50-efb4-43fc-ad04-a16fa5125d38 ref=INV/2026/09/09/004904 status=draft
+[VOID JOURNAL] original invoice after void (4 entries)
+   Dr:0 Cr:100
+   Dr:100 Cr:0
+   Dr:0 Cr:100
+   Dr:100 Cr:0
+[PASS] Void confirmed: mirror entries present, net AR = 0.00 (balanced) for INV/2026/09/09/004904
+
+===============================================================================================
+  GL AUDIT REPORT — BEFFA ERP  |  Company: BM Tech  |  2026-09-09T07:54:14.423Z
+===============================================================================================
+
+  ▶ 1. Invoice (AR Debit — Pre-Void) [APPROVED]
+    Ref: INV/2026/09/09/004904
+    ID : 3caadc50-efb4-43fc-ad04-a16fa5125d38
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Sales                                |                              |            — |       100.00 |
+  | Cash at Bank - CBE                   |                              |       100.00 |            — |
+  | Inventory                            |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 2. Receipt (AR Cleared)
+    Ref: RCPT/2026/09/09/001402
+    ID : 9ad7c545-3dd4-463e-bedb-74441ffee81e
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 3. Receipt Reversal
+    Ref: RCPT/2026/09/09/001402
+    ID : 9ad7c545-3dd4-463e-bedb-74441ffee81e
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 4. Invoice After Void (GL Cleared) [DRAFT]
+    Ref: INV/2026/09/09/004904
+    ID : 3caadc50-efb4-43fc-ad04-a16fa5125d38
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  |                                      |                              |            — |       100.00 |
+  |                                      |                              |       100.00 |            — |
+  |                                      |                              |            — |       100.00 |
+  |                                      |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
