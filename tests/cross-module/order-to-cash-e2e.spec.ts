@@ -109,8 +109,8 @@ test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @regres
         // Verify Invoice Outstanding Balance is positive (ERP Known Bug #7: net_due reflects unit_cost not unit_price)
         const invoiceMiddleData = await app.api.sales.getInvoiceAPI(invoice.id);
         const invoiceMiddleBal = parseFloat(invoiceMiddleData.unreceived_amount ?? invoiceMiddleData.balance ?? invoiceMiddleData.amount_due ?? '-1');
-        console.log(`[INVOICE] Outstanding balance after Approval: ${invoiceMiddleBal} (expected ~${soTotal} — [KNOWN_BUG] ERP uses unit_cost not unit_price for net_due)`);
-        expect(invoiceMiddleBal).toBeGreaterThan(0);
+        console.log(`[INVOICE] Outstanding balance after Approval: ${invoiceMiddleBal} (expected ${soTotal})`);
+        expect(invoiceMiddleBal, `BUG #7: ERP unreceived_amount=${invoiceMiddleBal} but invoice total=${soTotal}. AR understated. Invoice: ${invoice.id}`).toBe(soTotal);
 
         // Verify Invoice GL entries: Debit AR, Credit Sales/Revenue
         let invoiceEntries: any[] = [];
@@ -128,7 +128,9 @@ test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @regres
             const salesCredit = invoiceEntries.find(e => !isAR(e) && parseFloat(e.credit) > 0);
             expect(salesCredit, 'Sales/Revenue must be credited on Invoice approval').toBeTruthy();
 
-            console.log(`[INVOICE GL] AR debit=${arDebit.debit} | Sales credit=${salesCredit.credit} (expected ${soTotal} — [KNOWN_BUG #7])`);
+            expect(parseFloat(arDebit.debit), `BUG #7: AR debit=${arDebit.debit} should equal invoice total=${soTotal}. Invoice: ${invoice.id}`).toBeCloseTo(soTotal, 1);
+            expect(parseFloat(salesCredit.credit), `BUG #7: Sales credit=${salesCredit.credit} should equal invoice total=${soTotal}. Invoice: ${invoice.id}`).toBeCloseTo(soTotal, 1);
+            console.log(`[INVOICE GL] AR debit=${arDebit.debit} | Sales credit=${salesCredit.credit} | Expected: ${soTotal}`);
         }
 
         // ── STEP 4: Pay the Invoice (Create Receipt) ──────────────────────────────
@@ -148,8 +150,7 @@ test.describe('Order-to-Cash (O2C) Full Integration @cross-module @sales @regres
         const invoiceAfterData = await app.api.sales.getInvoiceAPI(invoice.id);
         const invoiceAfterBal = parseFloat(invoiceAfterData.unreceived_amount ?? invoiceAfterData.balance ?? invoiceAfterData.amount_due ?? '-1');
         console.log(`[INVOICE] Outstanding balance after Receipt: ${invoiceAfterBal}`);
-        // [KNOWN_BUG #7] unreceived_amount uses cost not price — assert it decreased from pre-receipt value
-        expect(invoiceAfterBal).toBeLessThanOrEqual(invoiceMiddleBal);
+        expect(invoiceAfterBal, `BUG: Invoice ${invoice.id} still has outstanding balance ${invoiceAfterBal} after full receipt ${receipt.ref}. AR not settled.`).toBeLessThanOrEqual(0.01);
 
         // Verify Receipt GL entries: Debit Cash/Bank, Credit AR
         // NOTE: GL amount verification requires account mapping to be configured in the ERP.

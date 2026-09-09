@@ -177,20 +177,31 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @regression', () => 
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
         // Read the actual invoice amount the ERP stored — it may differ from unitPrice
-        // due to KNOWN_BUG #7 (ERP uses WAC cost not selling price for unreceived_amount).
+        // due to KNOWN_BUG #7 (ERP uses unit_cost not unit_price for unreceived_amount).
         const approvedInv = await app.api.sales.getInvoiceAPI(inv.id);
-        const ACTUAL_AMOUNT = Number(
-            approvedInv.unreceived_amount ??
-            approvedInv.net_due ??
-            approvedInv.total_amount ??
-            approvedInv.amount ??
-            INVOICE_AMOUNT
-        );
-        console.log(`[AUDIT] Invoice created at $${INVOICE_AMOUNT}, ERP unreceived_amount = $${ACTUAL_AMOUNT}`);
+        const ACTUAL_AMOUNT = Number(approvedInv.unreceived_amount ?? approvedInv.net_due ?? approvedInv.total_amount ?? approvedInv.amount ?? 0);
+        const AR_UNDERSTATEMENT = INVOICE_AMOUNT - ACTUAL_AMOUNT;
 
-        if (ACTUAL_AMOUNT !== INVOICE_AMOUNT) {
-            console.log(`[BUG] ⚠️  KNOWN_BUG #7: ERP stores unreceived_amount=$${ACTUAL_AMOUNT} instead of unit_price=$${INVOICE_AMOUNT}. ERP uses unit_cost (not selling price) for AR outstanding balance. Costing method: FIFO.`);
+        console.log('');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('🔴 BUG #7 — AR Outstanding Balance Understatement');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log(`   Invoice ID        : ${inv.id}`);
+        console.log(`   Invoice Ref       : ${inv.ref}`);
+        console.log(`   Item ID           : ${item.itemId}`);
+        console.log(`   Item unit_cost    : $${item.unitCost}   ← ERP uses THIS for AR`);
+        console.log(`   Invoice unit_price : $${INVOICE_AMOUNT}   ← should be used for AR`);
+        console.log(`   ERP unreceived_amount: $${ACTUAL_AMOUNT}`);
+        console.log(`   Expected AR balance  : $${INVOICE_AMOUNT}`);
+        if (AR_UNDERSTATEMENT > 0) {
+            console.log(`   ❌ AR UNDERSTATED BY: $${AR_UNDERSTATEMENT} (${((AR_UNDERSTATEMENT / INVOICE_AMOUNT) * 100).toFixed(1)}%)`);
+            console.log(`   Impact: Customer pays $${ACTUAL_AMOUNT} — ERP marks $${INVOICE_AMOUNT} invoice FULLY SETTLED`);
+            console.log(`   Revenue lost per transaction: $${AR_UNDERSTATEMENT}`);
         }
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('');
+
+        expect(ACTUAL_AMOUNT, `BUG #7: ERP unreceived_amount=$${ACTUAL_AMOUNT} but invoice unit_price=$${INVOICE_AMOUNT}. AR understated by $${AR_UNDERSTATEMENT}. Invoice: ${inv.ref} (${inv.id}), Item: ${item.itemId}`).toBe(INVOICE_AMOUNT);
 
         const accounts = await app.getAllAccountsAPI();
         const cashAcct = accounts.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || accounts[0];
@@ -199,7 +210,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @regression', () => 
             const rct1 = await app.api.sales.createInvoiceReceiptAPI({ amount: ACTUAL_AMOUNT, customerId: meta.customerId, invoiceId: inv.id, currencyId: meta.currencyId, cashAccountId: cashAcct.id });
             await app.advanceDocumentAPI(rct1.id, 'receipts');
 
-            console.log(`[ACTION] Reversing Receipt ${rct1.ref}...`);
+            console.log(`[ACTION] Reversing Receipt ${rct1.ref} (ID: ${rct1.id})...`);
             await app.reverseReceiptAPI(rct1.id);
 
             // Poll up to 20s for ERP ledger to settle after void
@@ -221,7 +232,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @regression', () => 
             await app.reverseInvoiceAPI(inv.id);
         } catch (error: any) {
             if (error.message.includes('CRITICAL_LOGIC_BUG')) throw error;
-            console.log(`[PASS/BUG] Transaction failed or was blocked: ${error.message}`);
+            throw error;
         }
     });
 });

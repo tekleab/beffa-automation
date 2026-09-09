@@ -73,7 +73,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
         const balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? 0);
         console.log(`[RESULT] Bill ${bill.ref} balance after overpayment: ${balance} (expected: >= 0)`);
 
-        expect.soft(balance, `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Overpayment of ${overpayAmount} on ${billAmount} bill created negative balance=${balance}. Vendor credit injection possible.`).toBeGreaterThanOrEqual(0);
+        expect(balance, `BUG: Bill ${bill.ref} (${bill.id}): Overpayment of ${overpayAmount} on ${billAmount} bill created negative balance=${balance}. Vendor credit injection possible.`).toBeGreaterThanOrEqual(0);
         if (balance < 0) Logger.fail(`Bill ${bill.ref} overpayment bug confirmed: balance=${balance}`);
         else console.log(`[PASS] Balance capped at 0 — overpayment handled correctly.`);
     });
@@ -99,7 +99,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
         try {
             const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
             await app.advanceDocumentAPI(bill2.billId, 'bills');
-            expect.soft(false, `[CRITICAL_LOGIC_BUG] Double-billing allowed! PO ${po.poNumber} billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate liability created.`).toBe(true);
+            expect(false, `BUG: Double-billing allowed! PO ${po.poNumber} (${po.id}) billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate AP liability created.`).toBe(true);
             Logger.fail(`Double-billing bug confirmed on PO ${po.poNumber}`);
         } catch (err: any) {
             if (err.message.includes('[CRITICAL_LOGIC_BUG]')) Logger.fail(err.message);
@@ -187,7 +187,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
         const stockAfterReversal = await app.api.inventory.pollStockAPI(item.itemId, stockBefore, item.locationId);
         console.log(`[AUDIT] Stock after reversal: ${stockAfterReversal} (expected: ${stockBefore})`);
 
-        expect.soft(stockAfterReversal, `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Stock not rolled back after reversal. Expected ${stockBefore}, got ${stockAfterReversal}`).toBe(stockBefore);
+        expect(stockAfterReversal, `BUG: Bill ${bill.ref} (${bill.id}): Stock not rolled back after reversal. Expected ${stockBefore}, got ${stockAfterReversal}`).toBe(stockBefore);
         if (stockAfterReversal !== stockBefore) Logger.fail(`Stock rollback bug: expected ${stockBefore}, got ${stockAfterReversal}`);
         expect(stockAfterReversal).toBe(stockBefore);
         console.log(`[PASS] Bill ${bill.ref}: payment voided → bill reversed → stock and ledger correctly rolled back.`);
@@ -222,7 +222,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
 
             expect.soft(
                 Math.abs(balance - expectedBalance),
-                `[CRITICAL_LOGIC_BUG] Bill ${bill.ref}: Balance drift after partial payment ${i + 1}. Expected ${expectedBalance}, got ${balance}`
+                `BUG: Bill ${bill.ref} (${bill.id}): Balance drift after partial payment ${i + 1}. Expected ${expectedBalance}, got ${balance}`
             ).toBeLessThanOrEqual(0.01);
             if (Math.abs(balance - expectedBalance) > 0.01) Logger.fail(`Balance drift: expected ${expectedBalance}, got ${balance}`);
         }
@@ -268,7 +268,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
         const billStatus = (billData.status ?? billData.current_approval_step?.status_label ?? '').toLowerCase();
         console.log(`[AUDIT] Bill ${bill.billNumber} status after PO cancel: ${billStatus}`);
 
-        expect.soft(billStatus, `[CRITICAL_LOGIC_BUG] Bill ${bill.billNumber}: Cancelling source PO ${po.poNumber} corrupted bill status to "${billStatus}"`).toBe('approved');
+        expect(billStatus, `BUG: Bill ${bill.billNumber} (${bill.id}): Cancelling source PO ${po.poNumber} (${po.id}) corrupted bill status to "${billStatus}"`).toBe('approved');
         if (billStatus !== 'approved') Logger.fail(`Bill status corruption: expected approved, got ${billStatus}`);
         expect(billStatus).toBe('approved');
         console.log(`[PASS] Bill ${bill.billNumber} integrity maintained after PO ${po.poNumber} cancel attempt.`);

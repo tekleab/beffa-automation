@@ -1584,12 +1584,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
                 amount: PARTIAL, billId: bill.id, vendorId: purchaseMeta.vendorId,
             });
         } catch (e: any) {
-            // ERP BUG: POST /payments returns 500 "Unable to create Payment" on approved bills
-            // even with sufficient cash balance. Cash top-up of 2.5M+ does not resolve it.
-            // Root cause is server-side — not a test or balance issue.
-            console.log(`[BUG] ⚠️ KNOWN_BUG: ERP returns 500 "Unable to create Payment" on partial bill payment. Error: ${e.message}`);
-            test.info().annotations.push({ type: 'known_bug', description: 'ERP 500 on POST /payments for approved bill — server-side bug' });
-            return;
+            throw new Error(`BUG: ERP returns 500 "Unable to create Payment" on approved bill partial payment. Invoice: ${bill.id}. Error: ${e.message}`);
         }
         await app.advanceDocumentAPI(payment.id, 'payments');
 

@@ -46,8 +46,7 @@ test.describe('HR: Employee Lifecycle @hr @smoke', () => {
             });
         } catch (e: any) {
             if (e.message?.includes('response: null')) {
-                console.log(`[KNOWN_BUG] POST /employees returns null body — employee created server-side but ID not returned. Backend bug #5.`);
-                return;
+                throw new Error(`BUG #12: POST /employees returns null response body — employee created server-side but ID not returned. Cannot proceed with lifecycle test.`);
             }
             throw e;
         }
@@ -131,8 +130,7 @@ test.describe('HR: Employee Lifecycle @hr @smoke', () => {
             first = await app.api.hr.createEmployee(basePayload);
         } catch (e: any) {
             if (e.message?.includes('response: null')) {
-                console.log(`[KNOWN_BUG] POST /employees returns null body — skipping duplicate email test.`);
-                return;
+                throw new Error(`BUG #12: POST /employees returns null response body — cannot verify duplicate email guardrail.`);
             }
             throw e;
         }
