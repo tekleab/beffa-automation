@@ -70,11 +70,14 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke', () => {
         console.log(`[STEP] Phase 3: Editing to "${updatedName}"`);
         await app.editCustomerBtn.waitFor({ state: 'visible', timeout: 20000 });
         await app.editCustomerBtn.click({ force: true });
-        // Wait for form inputs to be editable — not just visible
-        await app.customerNameInput.waitFor({ state: 'visible', timeout: 20000 });
-        await expect(app.customerNameInput).toBeEditable({ timeout: 15000 });
-        await app.customerNameInput.clear();
-        await app.customerNameInput.fill(updatedName);
+        // Edit may navigate to /edit URL or render inline — wait for either
+        await page.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {});
+        // Broaden selector: edit form may use different input ID than create form
+        const nameInput = page.locator('#customer_name-input-id, input[name="name"], input[placeholder*="name" i], input[id*="name" i]').first();
+        await nameInput.waitFor({ state: 'visible', timeout: 20000 });
+        await expect(nameInput).toBeEditable({ timeout: 15000 });
+        await nameInput.clear();
+        await nameInput.fill(updatedName);
         const saveBtn = page.locator('button:has-text("Save"), button:has-text("Update")').first();
         await saveBtn.waitFor({ state: 'visible', timeout: 10000 });
         await saveBtn.click({ force: true });

@@ -761,13 +761,14 @@ export class PurchaseAPI extends BasePage {
       if (response.status() !== 422 || topUp === null) {
         throw new Error(`${label} failed: ${response.status()} - ${errText}`);
       }
+      const topUpAmount = topUp;
 
       const accountName = this.parseInsufficientCashAccountName(errText);
       const cashAccountId = await this.resolveCashAccountId(payload.cash_account_id, accountName);
       payload.cash_account_id = cashAccountId;
 
-      console.log(`[CASH_TOPUP] ${label}: insufficient balance (attempt ${attempt + 1}/${maxTopUpAttempts}) — topping up ${topUp}...`);
-      await this.seedCashBalanceAPI(topUp, cashAccountId);
+      console.log(`[CASH_TOPUP] ${label}: insufficient balance (attempt ${attempt + 1}/${maxTopUpAttempts}) — topping up ${topUpAmount}...`);
+      await this.seedCashBalanceAPI(topUpAmount, cashAccountId);
       await this.page.waitForTimeout(6000);
 
       response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers, timeout: 30000 });
