@@ -1,0 +1,19 @@
+06:29:37 [PERFORMANCE] API - Auth API Verification: 336.65ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/09/009340 (ID: 69c9bd98-8175-4227-a3e3-49380d370288)
+06:30:30 [INFO] Advancing inventory-adjustments "69c9bd98-8175-4227-a3e3-49380d370288"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1788935426422 (4785bd59-afd2-456b-8188-470208683e00) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:30:33 [PERFORMANCE] API - Auth API Verification: 305.84ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Provisioning 2 purchase bills for concurrent payment race...
+06:30:46 [INFO] Advancing bills "409db9c6-2753-4d0a-9174-845cad8bf596"...
+06:30:50 [INFO] Advancing bills "577aad29-a685-4d68-97eb-3f194135d7a0"...
+[BILLS APPROVED] Bill 1: BILL/2026/09/09/004074 (409db9c6-2753-4d0a-9174-845cad8bf596) | Bill 2: BILL/2026/09/09/004075 (577aad29-a685-4d68-97eb-3f194135d7a0)
+[RACE ATTACK] Firing 2 concurrent partial payment API calls simultaneously...
+[RESULT] 0/2 payment requests processed via concurrent threads.
+[AUDIT BALANCES] Bill 1 balance: 2000 | Bill 2 balance: 2000
+[PASS] Concurrent AP partial payments preserved sub-ledger balance integrity without negative drift.

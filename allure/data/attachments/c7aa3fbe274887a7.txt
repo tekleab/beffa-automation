@@ -1,0 +1,49 @@
+06:31:01 [PERFORMANCE] API - Auth API Verification: 325.25ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/09/009346 (ID: 78da3963-637c-4b66-aaab-58a9d28fe61b)
+06:31:12 [INFO] Advancing inventory-adjustments "78da3963-637c-4b66-aaab-58a9d28fe61b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1788935468911 (0751717f-4d76-4c3e-8498-5e945c0207c6) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/09/009347 (ID: 807bbdb9-d9bb-42cd-8ab6-fe618a4049ed)
+06:31:18 [INFO] Advancing inventory-adjustments "807bbdb9-d9bb-42cd-8ab6-fe618a4049ed"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1788935475695 (a180d283-a49d-4b4d-8e33-fc03c98a117d) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:31:21 [INFO] [STOCK_TOPUP] Injecting 70 units for item 0751717f-4d76-4c3e-8498-5e945c0207c6...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+06:31:22 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+06:31:22 [INFO] [STOCK_TOPUP] Injecting 70 units for item 0751717f-4d76-4c3e-8498-5e945c0207c6...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+06:31:23 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+06:31:23 [INFO] [STOCK_TOPUP] Injecting 70 units for item 0751717f-4d76-4c3e-8498-5e945c0207c6...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+06:31:24 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+[DateHelper] Resolved in-period date: 2026-09-09T00:00:00Z (day=9, ecYear=2019)
+06:31:28 [PERFORMANCE] API - Auth API Verification: 249.43ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+06:31:33 [INFO] Picking date: "Invoice Date" → target 2026-9-9
+06:31:35 [WARN] "Invoice Date" — target day 9 not found, picked early enabled: 1.
+06:31:35 [PERFORMANCE] UI - Pick Date: Invoice Date: 2160.67ms
+[SELECT-OPTION] Vendor (attempt 1): overlayVisible=true, count=21
+06:31:37 [PERFORMANCE] UI - Random Selection: Vendor: 2020.98ms
+[SELECT-OPTION] Accounts Payable (attempt 1): overlayVisible=true, count=21
+06:31:40 [PERFORMANCE] UI - Random Selection: Accounts Payable: 2282.12ms
+[CURRENCY] Selected via button: Birr
+[API PRE-CAPTURE] Using guaranteed-stock item "FIFO-Item-1788935468911" @ $100
+[ITEM MODAL] Clicking item option: "FIFO-Item-1788935468911"
+[ITEM MODAL] Item selected status: true | Button text: "FIFO-Item-1788935468911"
+[SELECT-OPTION] Warehouse (attempt 1): overlayVisible=true, count=4
+06:31:47 [PERFORMANCE] UI - Random Selection: Warehouse: 1863.10ms
+[SELECT-OPTION] Location (attempt 1): overlayVisible=true, count=4
+06:31:49 [PERFORMANCE] UI - Random Selection: Location: 1857.56ms
+[MODAL] Item branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+06:31:52 [PERFORMANCE] UI - Random Selection: G/L Account: 2002.49ms
+[MODAL] Filled Quantity: 2
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+06:31:55 [PERFORMANCE] UI - Random Selection: Tax: 1960.80ms
+[MODAL] Item line item added successfully
