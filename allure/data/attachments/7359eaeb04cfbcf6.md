@@ -1,0 +1,184 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/line-item-miscellaneous-audit.spec.ts >> Line Item & Miscellaneous Audit @sales @purchase @regression >> PAY-API-03: Partial payment → bill balance reduces by exact amount
+- Location: tests/cross-module/line-item-miscellaneous-audit.spec.ts:1567:9
+
+# Error details
+
+```
+Error: BUG: ERP returns 500 "Unable to create Payment" on approved bill partial payment. Invoice: adcf8a7a-5d1e-4f26-b967-807a371408c5. Error: Bill-Payment API failed: 500 - {
+	"code": 500,
+	"message": "Unable to create Payment"
+}
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e11]:
+      - heading "Welcome to, befa" [level=3] [ref=e12]
+      - paragraph [ref=e13]: Empower Your Finances, Simplify Your Success
+      - paragraph [ref=e14]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+    - generic [ref=e16]:
+      - heading "Login To Your Account" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - text: Not a member?
+        - link "Register" [ref=e19] [cursor=pointer]:
+          - /url: /users/register
+      - generic [ref=e21]:
+        - group [ref=e22]:
+          - generic [ref=e23]: Email *
+          - textbox "Email *" [ref=e25]:
+            - /placeholder: Enter your email
+        - group [ref=e26]:
+          - generic [ref=e27]: Password *
+          - generic [ref=e28]:
+            - textbox "Password *" [ref=e29]:
+              - /placeholder: Enter your password
+            - button "Show password" [ref=e31] [cursor=pointer]
+        - link "Forget Password?" [ref=e37] [cursor=pointer]:
+          - /url: forget-password
+        - button "Login" [ref=e39] [cursor=pointer]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  1487 |         await app.advanceDocumentAPI(bill.id, 'bills');
+  1488 | 
+  1489 |         const payment = await app.api.purchase.createBillPaymentAPI({
+  1490 |             amount: TOTAL, billId: bill.id, vendorId: purchaseMeta.vendorId,
+  1491 |         });
+  1492 |         await app.advanceDocumentAPI(payment.id, 'payments');
+  1493 | 
+  1494 |         // Wait for ERP to process the payment and update bill balance
+  1495 |         await page.waitForTimeout(5000);
+  1496 |         const billData = await app.api.purchase.getBillAPI(bill.id);
+  1497 | 
+  1498 |         // Derive remaining balance: prefer unpaid_amount, then compute from paid_amount, then status
+  1499 |         const rawUnpaid = billData.unpaid_amount;
+  1500 |         const rawPaid   = billData.paid_amount ?? billData.total_paid;
+  1501 |         const rawTotal  = parseFloat(billData.net_due ?? billData.amount ?? billData.total_amount ?? String(TOTAL));
+  1502 |         let remaining: number;
+  1503 | 
+  1504 |         if (rawUnpaid !== undefined && rawUnpaid !== null) {
+  1505 |             remaining = parseFloat(String(rawUnpaid));
+  1506 |         } else if (rawPaid !== undefined && rawPaid !== null) {
+  1507 |             remaining = Math.max(0, rawTotal - parseFloat(String(rawPaid)));
+  1508 |         } else if (['paid', 'fully_paid', 'closed'].includes(String(billData.status).toLowerCase())) {
+  1509 |             remaining = 0;
+  1510 |         } else {
+  1511 |             remaining = rawTotal; // conservatively: not yet updated
+  1512 |         }
+  1513 | 
+  1514 |         console.log(`[AUDIT] Bill $${TOTAL} | Paid $${rawPaid ?? 'n/a'} | Remaining: $${remaining} | Status: ${billData.status} | unpaid_amount: ${rawUnpaid}`);
+  1515 |         expect(remaining).toBeLessThan(1);
+  1516 |         console.log('[PASS] Full payment settles bill to zero');
+  1517 |     });
+  1518 | 
+  1519 | 
+  1520 |     test('PAY-API-02: Multi-bill payment → all bills settle to zero', async ({ page }) => {
+  1521 |         const app = new AppManager(page);
+  1522 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  1523 |         const AMT_A = 3000, AMT_B = 2000;
+  1524 | 
+  1525 |         const [billA, billB] = await Promise.all([
+  1526 |             app.api.purchase.createBillAPI({ itemData: itemA, quantity: 3, unitPrice: AMT_A / 3, vendorId: purchaseMeta.vendorId }),
+  1527 |             app.api.purchase.createBillAPI({ itemData: itemB, quantity: 2, unitPrice: AMT_B / 2, vendorId: purchaseMeta.vendorId }),
+  1528 |         ]);
+  1529 |         await Promise.all([
+  1530 |             app.advanceDocumentAPI(billA.id, 'bills'),
+  1531 |             app.advanceDocumentAPI(billB.id, 'bills'),
+  1532 |         ]);
+  1533 | 
+  1534 |         const payment = await app.api.purchase.createMultiBillPaymentAPI({
+  1535 |             amount: AMT_A + AMT_B,
+  1536 |             vendorId: purchaseMeta.vendorId,
+  1537 |             billPayments: [{ amount: AMT_A, bill_id: billA.id }, { amount: AMT_B, bill_id: billB.id }],
+  1538 |         });
+  1539 |         await app.advanceDocumentAPI(payment.id, 'payments');
+  1540 | 
+  1541 |         await page.waitForTimeout(5000);
+  1542 |         const [dataA, dataB] = await Promise.all([
+  1543 |             app.api.purchase.getBillAPI(billA.id),
+  1544 |             app.api.purchase.getBillAPI(billB.id),
+  1545 |         ]);
+  1546 | 
+  1547 |         const deriveRemaining = (d: any, amt: number) => {
+  1548 |             const rawUnpaid = d.unpaid_amount;
+  1549 |             const rawPaid = d.paid_amount ?? d.total_paid;
+  1550 |             const rawTotal = parseFloat(d.net_due ?? d.amount ?? d.total_amount ?? String(amt));
+  1551 |             if (rawUnpaid !== undefined && rawUnpaid !== null) return parseFloat(String(rawUnpaid));
+  1552 |             if (rawPaid !== undefined && rawPaid !== null) return Math.max(0, rawTotal - parseFloat(String(rawPaid)));
+  1553 |             if (['paid', 'fully_paid', 'closed'].includes(String(d.status).toLowerCase())) return 0;
+  1554 |             return rawTotal;
+  1555 |         };
+  1556 | 
+  1557 |         const remA = deriveRemaining(dataA, AMT_A);
+  1558 |         const remB = deriveRemaining(dataB, AMT_B);
+  1559 |         console.log(`[AUDIT] Bill A remaining: $${remA} (status=${dataA.status}, unpaid=${dataA.unpaid_amount}, paid=${dataA.paid_amount})`);
+  1560 |         console.log(`[AUDIT] Bill B remaining: $${remB} (status=${dataB.status}, unpaid=${dataB.unpaid_amount}, paid=${dataB.paid_amount})`);
+  1561 |         expect(remA).toBeLessThan(1);
+  1562 |         expect(remB).toBeLessThan(1);
+  1563 |         console.log('[PASS] Multi-bill payment settles all bills to zero');
+  1564 |     });
+  1565 | 
+  1566 | 
+  1567 |     test('PAY-API-03: Partial payment → bill balance reduces by exact amount', async ({ page }) => {
+  1568 |         const app = new AppManager(page);
+  1569 |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  1570 |         const TOTAL = 6000, PARTIAL = 2000;
+  1571 | 
+  1572 |         // Use a fresh isolated item to avoid location/stock depletion from earlier tests
+  1573 |         const freshItem = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
+  1574 | 
+  1575 |         const bill = await app.api.purchase.createBillAPI({
+  1576 |             itemData: freshItem, quantity: 2, unitPrice: TOTAL / 2,
+  1577 |             vendorId: purchaseMeta.vendorId, apAccountId: purchaseMeta.apAccountId,
+  1578 |         });
+  1579 |         await app.advanceDocumentAPI(bill.id, 'bills');
+  1580 | 
+  1581 |         let payment: { id: string } | null = null;
+  1582 |         try {
+  1583 |             payment = await app.api.purchase.createBillPaymentAPI({
+  1584 |                 amount: PARTIAL, billId: bill.id, vendorId: purchaseMeta.vendorId,
+  1585 |             });
+  1586 |         } catch (e: any) {
+> 1587 |             throw new Error(`BUG: ERP returns 500 "Unable to create Payment" on approved bill partial payment. Invoice: ${bill.id}. Error: ${e.message}`);
+       |                   ^ Error: BUG: ERP returns 500 "Unable to create Payment" on approved bill partial payment. Invoice: adcf8a7a-5d1e-4f26-b967-807a371408c5. Error: Bill-Payment API failed: 500 - {
+  1588 |         }
+  1589 |         await app.advanceDocumentAPI(payment.id, 'payments');
+  1590 | 
+  1591 |         await page.waitForTimeout(3000);
+  1592 |         const billData = await app.api.purchase.getBillAPI(bill.id);
+  1593 |         const remaining = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.net_due ?? '999');
+  1594 |         console.log(`[AUDIT] Bill $${TOTAL} | Paid $${PARTIAL} | Remaining $${remaining} | Expected $${TOTAL - PARTIAL}`);
+  1595 |         expect(remaining).toBeCloseTo(TOTAL - PARTIAL, 1);
+  1596 |         console.log('[PASS] Partial payment reduces bill balance correctly');
+  1597 |     });
+  1598 | });
+  1599 | 
+```

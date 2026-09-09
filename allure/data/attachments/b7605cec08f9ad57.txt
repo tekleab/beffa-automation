@@ -1,0 +1,77 @@
+[STEP 1] Discovering metadata...
+[HR] All job positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1 are full. Creating new one...
+[HR] Job position creation returned 409 — re-fetching existing positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1
+[HR] Using existing job position for dept: "Manager" (418c8d67-ca3b-4b28-b05c-e50c697c9be5)
+[HR] All job positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1 are full. Creating new one...
+[HR] Job position creation returned 409 — re-fetching existing positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1
+[HR] Using existing job position for dept: "Manager" (418c8d67-ca3b-4b28-b05c-e50c697c9be5)
+[INFO] dept: FINANCE (6cafff5a-cb3c-4da4-a388-4bba49c98eb1) | job: Manager (418c8d67-ca3b-4b28-b05c-e50c697c9be5)
+[STEP 2] Creating 3 employees sequentially...
+[PASS] Employee 1: Lifecycle-Emp-1788955148934-1 | id: 8a319d08-b2e7-4262-addb-6eb235b71e2b
+[HR] Attempt 1: list total pages=7 | checking 100 rows for email=lc17889551489341@beffa.com
+[HR] Fetching last page 7 for newly appended employee...
+[PASS] Employee 2: Lifecycle-Emp-1788955148934-2 | id: be538055-e734-4fba-a8f1-9d7e0d5c2453
+[PASS] Employee 3: Lifecycle-Emp-1788955148934-3 | id: 8ac4d066-9e4a-4ac3-9b32-21301b9c8f2f
+[STEP 3] Creating shared pay component and pay structure...
+[PASS] Pay structure: 62365717-9245-4207-a2de-8abcd8ad6366
+[STEP 4] Assigning pay structure to all 3 employees...
+[PASS] Pay structure assigned to all employees
+[STEP 5] Creating contracts for all 3 employees...
+[PASS] Contract 1: 2fe321b4-95dd-4544-b31b-df451abd4dad | status: draft
+[PASS] Contract 2: 87a29e2a-bdcc-47df-b832-d4f231fc24e3 | status: draft
+[PASS] Contract 3: 2c90725d-4ca8-4140-a98d-b31c1334da40 | status: draft
+[STEP 6] Approving all 3 contracts sequentially...
+11:59:31 [INFO] Advancing employee-contracts "2fe321b4-95dd-4544-b31b-df451abd4dad"...
+11:59:34 [INFO] Advancing employee-contracts "87a29e2a-bdcc-47df-b832-d4f231fc24e3"...
+11:59:37 [INFO] Advancing employee-contracts "2c90725d-4ca8-4140-a98d-b31c1334da40"...
+[PASS] All contracts approved
+[STEP 7] Verifying all 3 employees exist and are ready for payroll...
+[PASS] Employee 1 verified (status: inactive)
+[PASS] Employee 2 verified (status: inactive)
+[PASS] Employee 3 verified (status: inactive)
+[STEP 8] Creating payroll run...
+[PASS] Payroll run: efb413d0-9396-48e5-94c1-ab5f69c0ea2e
+[STEP 9] Assigning all 3 employees to payroll run...
+[WARN] Assign attempt 1 for emp 8a319d08-b2e7-4262-addb-6eb235b71e2b: HTTP 400 — {
+	"message": "employee 8a319d08-b2e7-4262-addb-6eb235b71e2b not found or inactive"
+}
+
+[INFO] Using active fallback employee 9461ec1d-a1d1-4975-af19-197329bf4794 (Lifecycle-Emp-1785311950114-1) for payroll run assignment
+[OK] Assigned emp 8a319d08-b2e7-4262-addb-6eb235b71e2b
+[WARN] Assign attempt 1 for emp be538055-e734-4fba-a8f1-9d7e0d5c2453: HTTP 400 — {
+	"message": "employee be538055-e734-4fba-a8f1-9d7e0d5c2453 not found or inactive"
+}
+
+[INFO] Using active fallback employee 2f46ebba-6752-4eed-bd83-4fa982ee7177 (Lifecycle-Emp-1785311950114-2) for payroll run assignment
+[OK] Assigned emp be538055-e734-4fba-a8f1-9d7e0d5c2453
+[WARN] Assign attempt 1 for emp 8ac4d066-9e4a-4ac3-9b32-21301b9c8f2f: HTTP 400 — {
+	"message": "employee 8ac4d066-9e4a-4ac3-9b32-21301b9c8f2f not found or inactive"
+}
+
+[INFO] Using active fallback employee dd434f5a-98dd-41b7-985b-0a37d247a7fa (Lifecycle-Emp-1785311950114-3) for payroll run assignment
+[OK] Assigned emp 8ac4d066-9e4a-4ac3-9b32-21301b9c8f2f
+[PASS] 3 employees assigned to payroll run
+[STEP 10] Processing payroll run (compute pay lines)...
+[PASS] Payroll run processed
+[STEP 10b] Approving payroll run via API...
+11:59:49 [INFO] Advancing payroll-runs "efb413d0-9396-48e5-94c1-ab5f69c0ea2e"...
+11:59:51 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Something went wrong (E1481)" } 
+11:59:51 [INFO] payroll-runs advance returned 500 — checking if payroll run is already processed/approved...
+11:59:51 [INFO] payroll-runs is in valid state (draft, 3 payrolls) — treating advance as successful
+[POLL 1/15] Payroll run status: draft
+[POLL 2/15] Payroll run status: draft
+[POLL 3/15] Payroll run status: draft
+[POLL 4/15] Payroll run status: draft
+[POLL 5/15] Payroll run status: draft
+[POLL 6/15] Payroll run status: draft
+[POLL 7/15] Payroll run status: draft
+[POLL 8/15] Payroll run status: draft
+[POLL 9/15] Payroll run status: draft
+[POLL 10/15] Payroll run status: draft
+[POLL 11/15] Payroll run status: draft
+[POLL 12/15] Payroll run status: draft
+[POLL 13/15] Payroll run status: draft
+[POLL 14/15] Payroll run status: draft
+[POLL 15/15] Payroll run status: draft
+[PASS] Payroll run reached valid processed state (status: draft, payrolls: 3)
+[PASS] Payrolls generated: 3 (expected ≥ 3)

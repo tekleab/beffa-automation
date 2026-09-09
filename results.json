@@ -1,59 +1,35 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 212,
+  "passed": 181,
+  "failed": 31,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 292,
-  "lastUpdated": "2026-09-09T11:28:42.953Z",
+  "passRate": 85.4,
+  "avgDurationMs": 18441,
+  "lastUpdated": "2026-09-09T12:13:52.750Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 181,
+      "failed": 31,
       "skipped": 0,
       "trend": [
+        82,
+        84,
+        86,
         88,
         90,
         92,
-        83.5,
-        100,
-        67.9,
-        100
+        85.4
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "759",
-      "commit": "2869292",
-      "trigger": "push (sanity)",
-      "duration": "0m 5s",
-      "passRate": 100,
-      "status": "success"
-    },
-    {
-      "run": "758",
-      "commit": "bbb2932",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "34m 25s",
-      "passRate": 59.9,
-      "status": "failed"
-    },
-    {
-      "run": "757",
-      "commit": "3f7f05a",
-      "trigger": "push (sanity)",
-      "duration": "0m 4s",
-      "passRate": 100,
-      "status": "success"
-    },
-    {
-      "run": "755",
+      "run": "761",
       "commit": "efd2ace",
       "trigger": "workflow_dispatch (regression)",
-      "duration": "72m 35s",
-      "passRate": 83.5,
+      "duration": "65m 9s",
+      "passRate": 85.4,
       "status": "success"
     },
     {
@@ -103,7 +79,112 @@
       "duration": "0m 6s",
       "passRate": 94.4,
       "status": "success"
+    },
+    {
+      "run": "745",
+      "commit": "58ac14b",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "61m 26s",
+      "passRate": 86.8,
+      "status": "success"
+    },
+    {
+      "run": "744",
+      "commit": "a10796b",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "59m 23s",
+      "passRate": 87.7,
+      "status": "success"
+    },
+    {
+      "run": "743",
+      "commit": "b307dc4",
+      "trigger": "push (sanity)",
+      "duration": "0m 3s",
+      "passRate": 94.4,
+      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"], input[placeholder*=\"name\" i], input[id*=\"name\" i]').first()",
+      "firstSeen": "2026-09-09T11:50:44.760Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: BUG #7: ERP unreceived_amount=$100 but invoice unit_price=$500. AR understated by $400. Invoice: INV/2026/09/09/004957 (d59ca6f5-6aa9-4645-bdf0-3a17d4c92563), Item: 78416495-07d4-4521-a3fc-ccd9",
+      "firstSeen": "2026-09-09T11:52:29.871Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "DTO Schema Verification: GET /bill/{id} returns valid DTO structure",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T11:53:53.007Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Negative DTO Guardrail: Non-existent Bill ID returns 404 Error DTO",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T11:54:00.994Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-09T11:54:13.820Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-09T11:54:43.041Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T11:55:01.860Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errT",
+      "firstSeen": "2026-09-09T11:55:07.829Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T11:55:38.006Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: PO split into multiple bills — total must never exceed PO quantity",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-09T11:55:43.215Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ]
 }
