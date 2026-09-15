@@ -1,0 +1,39 @@
+[DateHelper] _fromEnv: EC year 2018 → using 2025-09-15
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2019)
+06:30:57 [PERFORMANCE] API - Auth API Verification: 412.75ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009811 (ID: 39c955ce-53dd-4a52-8180-737ff442e1e7)
+06:31:16 [INFO] Advancing inventory-adjustments "39c955ce-53dd-4a52-8180-737ff442e1e7"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1789453872590 (a61c37f6-9cef-400e-9762-f9448f5465de) | method=FIFO | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:32:22 [INFO] Advancing purchase-orders "5b16b483-f7dc-40f1-a74d-24587c9033df"...
+06:32:26 [INFO] Advancing bills "fdca590b-8ebd-443b-bd5c-ab5720a85033"...
+[SETUP] Bill created and approved: BILL/2026/09/15/004141 (fdca590b-8ebd-443b-bd5c-ab5720a85033)
+06:32:33 [PERFORMANCE] API - Auth API Verification: 674.67ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=fdca590b-8ebd-443b-bd5c-ab5720a85033...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/09/15/004141
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 1800

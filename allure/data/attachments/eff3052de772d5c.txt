@@ -1,0 +1,20 @@
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2018)
+06:34:24 [PERFORMANCE] API - Auth API Verification: 486.06ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ADJ] quantity | qty=100 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009826 (ID: cf523745-38b7-4e40-a48d-34aea3a45c81)
+06:34:28 [INFO] Advancing inventory-adjustments "cf523745-38b7-4e40-a48d-34aea3a45c81"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 100...
+[SUCCESS] API Confirmed: Stock correctly reached 100.
+[FRESH ITEM] Created: FIFO-Item-1789454065421 (94ddcc99-8e1d-4430-9fcd-c05d62362e72) | method=FIFO | stock=100@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[STEP 1] Creating negative adjustment (-50) for: FIFO-Item-1789454065421 | Stock before: 100
+[ADJ] quantity | qty=-50 @ $100 | current=100 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009827 (ID: f82ca8f4-74dd-4041-9b6e-cb98d87bb270)
+[STEP 2] Adjustment created: ADJ/2026/09/15/009827 | Approving...
+06:34:32 [INFO] Advancing inventory-adjustments "f82ca8f4-74dd-4041-9b6e-cb98d87bb270"...
+[STEP 3] Verifying stock reduced correctly...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[AUDIT] Stock before: 100 | Adjustment: -50 | Expected: 50 | Final: 50
+[PASS] Negative adjustment applied correctly — stock reduced from 100 to 50.

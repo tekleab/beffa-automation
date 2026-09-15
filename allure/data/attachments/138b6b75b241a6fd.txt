@@ -1,0 +1,49 @@
+06:29:36 [PERFORMANCE] API - Auth API Verification: 291.79ms
+[AUTH] Session token and local storage injected successfully.
+06:29:39 [PERFORMANCE] API - Auth API Verification: 285.79ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating 3 fresh WAC items...
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009795 (ID: 5e8a32fb-0b16-427c-8748-48fdcb61850c)
+06:29:44 [INFO] Advancing inventory-adjustments "5e8a32fb-0b16-427c-8748-48fdcb61850c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1789453780900 (3732c6f3-a940-4661-a84c-f2ab1e05752e) | method=FIFO | stock=10@$50 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009796 (ID: 53d9bbc1-e007-4c8e-a558-5330c81753f0)
+06:29:51 [INFO] Advancing inventory-adjustments "53d9bbc1-e007-4c8e-a558-5330c81753f0"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1789453788421 (3d6befae-2e43-4089-a372-834d3d642a46) | method=FIFO | stock=10@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $120 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009799 (ID: d6cdb97d-9655-49a0-a4f0-f5a271f14750)
+06:29:58 [INFO] Advancing inventory-adjustments "d6cdb97d-9655-49a0-a4f0-f5a271f14750"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1789453795231 (94c2f76c-c26e-4452-a767-f726ab7c9e63) | method=FIFO | stock=10@$120 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM 1] FIFO-Item-1789453780900 | stock:10 | cost:$50
+[ITEM 2] FIFO-Item-1789453788421 | stock:10 | cost:$80
+[ITEM 3] FIFO-Item-1789453795231 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/09/15/004994 (c61b0756-417d-421a-bdcb-8a7fb410cee5)
+06:30:02 [INFO] Advancing invoices "c61b0756-417d-421a-bdcb-8a7fb410cee5"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] FIFO-Item-1789453780900 | before:10 → after:9 (exp:9)
+[ITEM 2] FIFO-Item-1789453788421 | before:10 → after:9 (exp:9)
+[ITEM 3] FIFO-Item-1789453795231 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales () | Dr:0 Cr:50
+[JE] Cash at Bank - CBE () | Dr:50 Cr:0
+[JE] Inventory () | Dr:0 Cr:50
+[JE] Sales () | Dr:0 Cr:80
+[JE] Cash at Bank - CBE () | Dr:80 Cr:0
+[JE] Inventory () | Dr:0 Cr:80
+[JE] Sales () | Dr:0 Cr:120
+[JE] Cash at Bank - CBE () | Dr:120 Cr:0
+[JE] Inventory () | Dr:0 Cr:120
+[JE] Accounts Receivable () | Dr:250 Cr:0
+[AUDIT] Total Dr: $500 | Total Cr: $500 | Expected COGS: $250
+[PASS] COGS journal balanced — Dr:$500 = Cr:$500
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced
