@@ -179,7 +179,7 @@ test.describe('Purchase GL & AP Ledger Audits @purchase @regression', () => {
         if (!accountMappingConfigured) {
             console.log(`[SKIP GL AUDIT] Account mapping not implemented — bill payment GL assertions skipped.`);
             // Still create and approve payment — verify bill balance decreased
-            const payment = await app.api.purchase.createBillPaymentAPI({ amount: BILL_AMOUNT, billId: bill.id, vendorId: meta.vendorId });
+            const payment = await app.api.purchase.createBillPaymentAPI({ amount: BILL_AMOUNT, billId: bill.id, vendorId: bill.vendorId || meta.vendorId });
             await app.advanceDocumentAPI(payment.id, 'payments');
             const billData = await app.api.purchase.getBillAPI(bill.id);
             const balance = parseFloat(billData.unpaid_amount ?? billData.balance ?? billData.amount_due ?? '-1');
@@ -188,7 +188,7 @@ test.describe('Purchase GL & AP Ledger Audits @purchase @regression', () => {
         }
 
         // Create and approve payment
-        const payment = await app.api.purchase.createBillPaymentAPI({ amount: BILL_AMOUNT, billId: bill.id, vendorId: meta.vendorId });
+        const payment = await app.api.purchase.createBillPaymentAPI({ amount: BILL_AMOUNT, billId: bill.id, vendorId: bill.vendorId || meta.vendorId });
         await app.advanceDocumentAPI(payment.id, 'payments');
         console.log(`[PAYMENT] ${payment.ref} (${payment.id}) approved | amount: ${BILL_AMOUNT}`);
 

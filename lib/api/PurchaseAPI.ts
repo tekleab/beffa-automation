@@ -349,7 +349,7 @@ export class PurchaseAPI extends BasePage {
   }
 
 
-  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string; poId?: string } = {}): Promise<{ success: boolean; ref: string; id: string; error?: string }> {
+  async createBillAPI(params: { itemData?: Record<string, any>; itemId?: string; quantity?: number; qty?: number; unitPrice?: number; vendorId?: string | null; apAccountId?: string | null; glAccountId?: string | null; discount_amount?: number; description?: string; poId?: string } = {}): Promise<{ success: boolean; ref: string; id: string; billId?: string; billNumber?: string; vendorId?: string; error?: string }> {
     const { itemData = {}, itemId = null, quantity = 10, qty = 10, unitPrice = 5000, vendorId = null, apAccountId = null, glAccountId = undefined, discount_amount = 0, description = null, poId = null } = params;
     const finalQty = quantity || qty;
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
@@ -476,7 +476,7 @@ export class PurchaseAPI extends BasePage {
 
     if (!response.ok()) throw new Error(`Bill API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
-    return { success: true, ref: json.invoice_number, id: json.id };
+    return { success: true, ref: json.invoice_number, id: json.id, billId: json.id, billNumber: json.invoice_number, vendorId: payload.vendor_id };
   }
   async createBillFromPoAPI(poId: string, poItems?: any[], apAccountId?: string | null): Promise<{ success: boolean; billNumber: string; billId: string; vendorId?: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
@@ -844,9 +844,17 @@ export class PurchaseAPI extends BasePage {
       allAccounts[0];
 
     // 2. Discover Currency
-    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
-    const currData = await safeJson(currResp, 'Currency Discovery');
-    const currency = currData.items?.[0] || currData.data?.[0];
+    let resolvedCurrencyId: string | undefined;
+    let meta: any = null;
+    try { meta = await this.discoverMetadataAPI(); } catch {}
+    resolvedCurrencyId = meta?.currencyId;
+
+    if (!resolvedCurrencyId) {
+      const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers }, 30000);
+      const currData = await safeJson(currResp, 'Currency Discovery');
+      const currency = Array.isArray(currData) ? currData[0] : (currData?.items?.[0] || currData?.data?.[0] || currData);
+      resolvedCurrencyId = currency?.id;
+    }
 
     let resolvedCashAccountId = data.cashAccountId || cashAccount?.id;
 
@@ -855,15 +863,34 @@ export class PurchaseAPI extends BasePage {
       resolvedCashAccountId = null;
     }
 
+    let resolvedVendorId = data.vendorId;
+    if (data.billId) {
+      try {
+        const billData = await this.getBillAPI(data.billId);
+        const billVendorId = billData?.vendor_id || billData?.vendor?.id;
+        if (billVendorId) {
+          resolvedVendorId = billVendorId;
+        }
+      } catch {}
+    }
+    if (!resolvedVendorId) {
+      resolvedVendorId = meta?.vendorId || process.env.BEFFA_VENDOR_ID;
+      if (!resolvedVendorId) {
+        const vResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=5&${params}`, { headers }, 30000);
+        const vData = await safeJson(vResp, 'Vendor Discovery');
+        resolvedVendorId = (vData?.items || vData?.data || [])[0]?.id;
+      }
+    }
+
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       amount: data.amount,
       cash_account_id: resolvedCashAccountId,
-      vendor_id: data.vendorId, // Tests usually supply this
+      vendor_id: resolvedVendorId,
       date: (data as any).date || _dateIso,
       payment_method: 'cash',
-      currency_id: currency?.id,
+      currency_id: resolvedCurrencyId,
       bill_payments: [{
         amount: data.amount,
         bill_id: data.billId
