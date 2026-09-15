@@ -1,0 +1,55 @@
+12:39:42 [PERFORMANCE] API - Auth API Verification: 290.82ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009962 (ID: c7295989-4c5b-41f9-8ae6-093069c91871)
+12:39:52 [INFO] Advancing inventory-adjustments "c7295989-4c5b-41f9-8ae6-093069c91871"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1789475989315 (15e3bc18-71e4-4f74-a7f0-b21380a13289) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009963 (ID: 90bc9e95-c418-4880-aa88-4ce9f7370ca7)
+12:39:58 [INFO] Advancing inventory-adjustments "90bc9e95-c418-4880-aa88-4ce9f7370ca7"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1789475995454 (cb3b1789-ab61-47d3-bde4-410cc805b431) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:40:00 [INFO] [STOCK_TOPUP] Injecting 70 units for item 15e3bc18-71e4-4f74-a7f0-b21380a13289...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+12:40:01 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+12:40:01 [INFO] [STOCK_TOPUP] Injecting 70 units for item 15e3bc18-71e4-4f74-a7f0-b21380a13289...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+12:40:02 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+12:40:02 [INFO] [STOCK_TOPUP] Injecting 70 units for item 15e3bc18-71e4-4f74-a7f0-b21380a13289...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+12:40:02 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2018)
+12:40:08 [PERFORMANCE] API - Auth API Verification: 215.60ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+12:40:15 [INFO] Picking date: "Invoice Date" → target 2026-9-15
+12:40:16 [PASS] "Invoice Date" set to day 5.
+12:40:17 [PERFORMANCE] UI - Pick Date: Invoice Date: 2265.56ms
+[SELECT-OPTION] Vendor (attempt 1): overlayVisible=true, count=20
+12:40:20 [PERFORMANCE] UI - Random Selection: Vendor: 3040.21ms
+[SELECT-OPTION] Accounts Payable (attempt 1): overlayVisible=true, count=2
+12:40:24 [PERFORMANCE] UI - Random Selection: Accounts Payable: 3575.07ms
+[CURRENCY] Selected via button: Birr
+[API PRE-CAPTURE] Using guaranteed-stock item "FIFO-Item-1789475989315" @ $100
+[ITEM MODAL] Clicking item option: "FIFO-Item-1789475989315"
+[ITEM MODAL] Item selected status: true | Button text: "FIFO-Item-1789475989315"
+[MODAL] Selected Warehouse option: "Default Warehouse"
+[MODAL] Selected Location option: "location2"
+[MODAL] Item branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+12:40:38 [PERFORMANCE] UI - Random Selection: G/L Account: 3008.78ms
+[MODAL] Filled Quantity: 2
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+12:40:41 [PERFORMANCE] UI - Random Selection: Tax: 2861.72ms
+[MODAL] Item line item added successfully
+[MODAL] Misc branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+12:40:46 [PERFORMANCE] UI - Random Selection: G/L Account: 2891.26ms
+[MODAL] Filled Miscellaneous Price: 500
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+12:40:50 [PERFORMANCE] UI - Random Selection: Tax: 2903.93ms
+[MODAL] Miscellaneous line item added successfully
+[AUDIT] 45 lines in Bill form (table rows: 45, alt: 4)

@@ -1,0 +1,40 @@
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2018)
+12:31:20 [PERFORMANCE] API - Auth API Verification: 247.55ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/15/009923 (ID: cdbc7754-1fa7-4f9f-89ac-a320046d76e1)
+12:31:26 [INFO] Advancing inventory-adjustments "cdbc7754-1fa7-4f9f-89ac-a320046d76e1"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1789475482333 (76cf85f0-95f6-4d54-b4f1-0b8ed267bc83) | method=FIFO | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] FIFO-Item-1789475482333 | stock:20
+12:31:40 [INFO] Advancing bills "82e812de-c95f-4bbd-ac91-16c62b681f20"...
+[BILL] BILL/2026/09/15/004177 (82e812de-c95f-4bbd-ac91-16c62b681f20) approved | amount: 4000
+
+===================================================================
+  AP GL AUDIT — Bill Approval
+  Ref: BILL/2026/09/15/004177 | ID: 82e812de-c95f-4bbd-ac91-16c62b681f20
+===================================================================
+  | Account                              |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────
+  | Accounts Payable                     |      4000.00 |            — |
+  | Cost of Others                       |            — |      4000.00 |
+  | Inventory                            |      4000.00 |            — |
+  | Accounts Payable                     |            — |      4000.00 |
+  ───────────────────────────────────────────────────────────────────
+  | TOTAL                                |      8000.00 |      8000.00 |
+  | ✓ BALANCED (Dr = Cr)                                                |
+  ───────────────────────────────────────────────────────────────────
+
+
+  ╔════════════════════════════════════════════════════════════════════╗
+  ║ ⚠️  GL AUDIT SKIPPED — Account Mapping NOT Implemented Yet        ║
+  ╠════════════════════════════════════════════════════════════════════╣
+  ║  Bill Ref       : BILL/2026/09/15/004177                                      ║
+  ║  Bill Amount    : $4000.00                                                    ║
+  ║  Journal Entries: 4                                                           ║
+  ║  Reason         : AP/Expense/Inventory GL account mapping not configured.    ║
+  ║  Action         : Configure account mapping to enable full GL assertions.    ║
+  ╚════════════════════════════════════════════════════════════════════╝
+
+[SKIP GL AUDIT] Bill GL journal assertions skipped — account mapping not yet implemented.
