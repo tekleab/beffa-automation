@@ -337,12 +337,12 @@ jobs:
         git add scripts/results.json scripts/results-accumulated.json
         git diff --staged --quiet && exit 0
         git commit -m "chore: update results.json from CI run [skip ci]"
-        # Pull remote, resolving conflicts on auto-generated files by keeping ours
-        git fetch origin main
-        git rebase origin/main -X ours || (
+        # Stash or clean any untracked/unstaged test artifacts before rebasing
+        git stash --include-untracked || true
+        git pull --rebase -X ours origin main || (
           git checkout --ours scripts/results.json scripts/results-accumulated.json 2>/dev/null || true
           git add scripts/results.json scripts/results-accumulated.json
-          git rebase --continue
+          git -c core.editor=true rebase --continue || git rebase --abort || true
         )
         git push origin HEAD:main
 
