@@ -368,49 +368,64 @@ export class PurchaseAPI extends BasePage {
       try { return JSON.parse(text); } catch (e) { throw new Error(`${label} invalid JSON: ${text.substring(0, 150)}`); }
     };
 
+    // Use cached metadata to avoid firing 4x N GET requests under concurrent load
+    let meta: any = null;
+    try {
+      meta = await this.discoverMetadataAPI();
+    } catch { /* fallback to direct discovery if needed */ }
+
     // 1. Discover Vendor - always use company-scoped discovery (never trust hardcoded UUIDs)
-    let resolvedVendorId = vendorId;
+    let resolvedVendorId = vendorId || meta?.vendorId || process.env.BEFFA_VENDOR_ID || '';
     if (!resolvedVendorId) {
-      // Use same pattern as createPurchaseOrderAPI which works reliably
-      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=10&${qs}`, { headers });
+      const vendorResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=5&${qs}`, { headers }, 30000);
       const vendorData = await safeJson(vendorResp, 'Vendor Discovery');
-      const vendor = vendorData.items?.[0] || vendorData.data?.[0];
-      if (!vendor) throw new Error('Bill Discovery Failed: No vendors found in current company.');
-      resolvedVendorId = vendor.id;
+      const vendor = vendorData?.items?.[0] || vendorData?.data?.[0];
+      resolvedVendorId = vendor?.id || process.env.BEFFA_VENDOR_ID || '';
+      if (!resolvedVendorId) throw new Error('Bill Discovery Failed: No vendors found in current company.');
     }
 
     // 2. Discover Accounts (AP + GL)
-    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-    const acctData = await safeJson(acctResp, 'Accounts Discovery');
-    const allAccounts = acctData.items || acctData.data || [];
+    let resolvedApAccountId = apAccountId || meta?.apAccountId;
+    let resolvedGlAccountId = glAccountId !== undefined ? glAccountId : meta?.apAccountId;
 
-    // Improved strict AP discovery
-    const _typeOf = (a: any) => {
-      if (typeof a.type === 'string') return a.type.toLowerCase();
-      if (a.type?.name && typeof a.type.name === 'string') return a.type.name.toLowerCase();
-      if (typeof a.account_type === 'string') return a.account_type.toLowerCase();
-      if (a.account_type?.name && typeof a.account_type.name === 'string') return a.account_type.name.toLowerCase();
-      return '';
-    };
-    const discoveredAp =
-      allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
-      allAccounts.find((a: any) => _typeOf(a).includes('payable')) ||
-      allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
-      allAccounts.find((a: any) => _typeOf(a).includes('liability')) ||
-      allAccounts[0];
+    if (!resolvedApAccountId || !resolvedGlAccountId) {
+      const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers }, 30000);
+      const acctData = await safeJson(acctResp, 'Accounts Discovery');
+      const allAccounts = acctData.items || acctData.data || [];
 
-    const resolvedGlAccount = glAccountId !== undefined ? { id: glAccountId } : (allAccounts.find((a: any) => _typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0]);
+      // Improved strict AP discovery
+      const _typeOf = (a: any) => {
+        if (typeof a.type === 'string') return a.type.toLowerCase();
+        if (a.type?.name && typeof a.type.name === 'string') return a.type.name.toLowerCase();
+        if (typeof a.account_type === 'string') return a.account_type.toLowerCase();
+        if (a.account_type?.name && typeof a.account_type.name === 'string') return a.account_type.name.toLowerCase();
+        return '';
+      };
+      const discoveredAp =
+        allAccounts.find((a: any) => a.name?.toLowerCase().includes('accounts payable')) ||
+        allAccounts.find((a: any) => _typeOf(a).includes('payable')) ||
+        allAccounts.find((a: any) => a.name?.toLowerCase().includes('payable')) ||
+        allAccounts.find((a: any) => _typeOf(a).includes('liability')) ||
+        allAccounts[0];
+
+      resolvedApAccountId = resolvedApAccountId || discoveredAp?.id;
+      resolvedGlAccountId = resolvedGlAccountId || (allAccounts.find((a: any) => _typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0])?.id;
+    }
 
     // 3. Discover Currency
-    const currResp = await this.safeGet(`${apiBase}/currency?${qs}`, { headers });
-    const currData = await safeJson(currResp, 'Currency Discovery');
-    const currency = currData.items?.[0] || currData.data?.[0];
+    let resolvedCurrencyId = meta?.currencyId;
+    if (!resolvedCurrencyId) {
+      const currResp = await this.safeGet(`${apiBase}/currency?${qs}`, { headers }, 30000);
+      const currData = await safeJson(currResp, 'Currency Discovery');
+      const currency = currData.items?.[0] || currData.data?.[0];
+      resolvedCurrencyId = currency?.id;
+    }
 
     // 4. Discover Locations if missing
-    let locationId = itemData.locationId;
-    let warehouseId = itemData.warehouseId;
+    let locationId = itemData.locationId || meta?.locationId;
+    let warehouseId = itemData.warehouseId || meta?.warehouseId;
     if (!locationId || !warehouseId) {
-      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${qs}`, { headers });
+      const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=10&${qs}`, { headers }, 30000);
       const locData = await safeJson(locResp, 'Location Discovery');
       const firstLoc = (locData.items || locData.data || [])[0];
       if (firstLoc) {
@@ -422,13 +437,13 @@ export class PurchaseAPI extends BasePage {
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
-      accounts_payable_id: apAccountId || discoveredAp?.id,
-      currency_id: currency?.id,
+      accounts_payable_id: resolvedApAccountId,
+      currency_id: resolvedCurrencyId,
       invoice_date: (params as any).invoice_date || _dateIso,
       due_date: (params as any).due_date || _dateIso,
       items: [{
         item_id: itemData.itemId || itemData.id,
-        general_ledger_account_id: resolvedGlAccount?.id || null,
+        general_ledger_account_id: resolvedGlAccountId || null,
         location_id: locationId,
         quantity: finalQty,
         tax_id: itemData.taxId || null,

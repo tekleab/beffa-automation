@@ -429,7 +429,7 @@ ${curlCmd}
   /**
    * Resilient GET with exponential backoff for 500/503/socket-hang-up.
    */
-  async safeGet(url: string, options: { headers: any }, timeoutMs = 15000): Promise<any> {
+  async safeGet(url: string, options: { headers: any }, timeoutMs = 30000): Promise<any> {
     let lastError: any = null;
     const startTime = performance.now();
     // Use context-level request when page is on about:blank — page.request fails with status 0
@@ -472,11 +472,11 @@ ${curlCmd}
           err.message?.includes('ECONNRESET') ||
           err.message?.includes('ECONNREFUSED') ||
           err.message?.includes('Target page') ||
-          err.message?.includes('[TIMEOUT]')
+          err.message?.toLowerCase().includes('timeout')
         ) {
           const backoff = attempt * attempt * 1500;
           Logger.warn(`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.message.split('\n')[0])}. Retry ${attempt}/4 in ${backoff}ms...`);
-          lastError = { status: err.message?.includes('[TIMEOUT]') ? 408 : 0, text: err.message };
+          lastError = { status: err.message?.toLowerCase().includes('timeout') ? 408 : 0, text: err.message };
           await this.page.waitForTimeout(backoff);
           continue;
         }

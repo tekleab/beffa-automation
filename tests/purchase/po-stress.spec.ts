@@ -99,7 +99,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
         try {
             const bill2 = await app.api.purchase.createBillFromPoAPI(po.poId, po.poItems);
             await app.advanceDocumentAPI(bill2.billId, 'bills');
-            expect(false, `BUG: Double-billing allowed! PO ${po.poNumber} (${po.id}) billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate AP liability created.`).toBe(true);
+            expect(false, `BUG: Double-billing allowed! PO ${po.poNumber} (${po.poId}) billed twice: ${bill1.billNumber} + ${bill2.billNumber}. Duplicate AP liability created.`).toBe(true);
             Logger.fail(`Double-billing bug confirmed on PO ${po.poNumber}`);
         } catch (err: any) {
             if (err.message.includes('[CRITICAL_LOGIC_BUG]')) Logger.fail(err.message);
@@ -268,7 +268,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
         const billStatus = (billData.status ?? billData.current_approval_step?.status_label ?? '').toLowerCase();
         console.log(`[AUDIT] Bill ${bill.billNumber} status after PO cancel: ${billStatus}`);
 
-        expect(billStatus, `BUG: Bill ${bill.billNumber} (${bill.id}): Cancelling source PO ${po.poNumber} (${po.id}) corrupted bill status to "${billStatus}"`).toBe('approved');
+        expect(billStatus, `BUG: Bill ${bill.billNumber} (${bill.billId}): Cancelling source PO ${po.poNumber} (${po.poId}) corrupted bill status to "${billStatus}"`).toBe('approved');
         if (billStatus !== 'approved') Logger.fail(`Bill status corruption: expected approved, got ${billStatus}`);
         expect(billStatus).toBe('approved');
         console.log(`[PASS] Bill ${bill.billNumber} integrity maintained after PO ${po.poNumber} cancel attempt.`);
