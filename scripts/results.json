@@ -1,29 +1,37 @@
 {
-  "total": 212,
-  "passed": 182,
-  "failed": 30,
+  "total": 18,
+  "passed": 18,
+  "failed": 0,
   "skipped": 0,
-  "passRate": 85.8,
-  "avgDurationMs": 16390,
-  "lastUpdated": "2026-09-15T06:48:04.992Z",
+  "passRate": 100,
+  "avgDurationMs": 378,
+  "lastUpdated": "2026-09-15T12:24:54.991Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 182,
-      "failed": 30,
+      "passed": 18,
+      "failed": 0,
       "skipped": 0,
       "trend": [
-        84,
         86,
         88,
         90,
         92,
         85.4,
-        85.8
+        85.8,
+        100
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "764",
+      "commit": "b5c9325",
+      "trigger": "push (sanity)",
+      "duration": "0m 6s",
+      "passRate": 100,
+      "status": "success"
+    },
     {
       "run": "762",
       "commit": "d492bba",
@@ -95,96 +103,7 @@
       "duration": "61m 26s",
       "passRate": 86.8,
       "status": "success"
-    },
-    {
-      "run": "744",
-      "commit": "a10796b",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "59m 23s",
-      "passRate": 87.7,
-      "status": "success"
     }
   ],
-  "criticalBlockers": [
-    {
-      "severity": "critical",
-      "title": "Validate TIN, create customer, edit, remove",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"], input[placeholder*=\"name\" i], input[id*=\"name\" i]').first()",
-      "firstSeen": "2026-09-15T06:27:54.962Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
-      "error": "Error: BUG #7: ERP unreceived_amount=$100 but invoice unit_price=$500. AR understated by $400. Invoice: INV/2026/09/15/004991 (ef0f16a7-a773-4572-b6f1-b94edd061e66), Item: 999cd894-6d7c-44cc-afa6-4274",
-      "firstSeen": "2026-09-15T06:29:27.683Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Approved bill must debit Expense/Inventory and credit AP",
-      "error": "Error: Vendor Discovery HTTP 0: apiRequestContext.get: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/vendors?page=1&pageSize=10&year=2018&period=yearly&calendar=ec\u001b",
-      "firstSeen": "2026-09-15T06:30:55.761Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
-      "error": "Error: Bill-Payment API failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"validation error on field \\\"_body\\\": invalid UUID length: 0\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = thi",
-      "firstSeen": "2026-09-15T06:31:07.452Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
-      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errTex",
-      "firstSeen": "2026-09-15T06:32:18.507Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI: Bills Index page (/payables/bills) must resolve data grid without error states",
-      "error": "Error: Bills index page should not display error alert\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceive",
-      "firstSeen": "2026-09-15T06:32:37.788Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-15T06:32:41.846Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |       const topUp = this.parseInsufficientCashTopUp(errT",
-      "firstSeen": "2026-09-15T06:32:44.435Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-15T06:33:23.349Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
-      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
-      "firstSeen": "2026-09-15T06:33:39.857Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    }
-  ]
+  "criticalBlockers": []
 }
