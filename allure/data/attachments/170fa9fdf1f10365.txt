@@ -1,0 +1,18 @@
+
+=======================================================
+  [RECEIPT API] 2. Guardrail: Empty/Invalid Payload Test 
+=======================================================
+[ATTACK PAYLOAD] POST /api/receipts with empty/null fields: {"customer_id":null,"amount":0,"cash_account_id":null}
+[HTTP RESPONSE] Status Code: 500
+
+  ╔════════════════════════════════════════════════════════════════════════╗
+  ║ 🚨 BACKEND DEFECT DETECTED [BDEV-1272]                                ║
+  ╠════════════════════════════════════════════════════════════════════════╣
+  ║ Defect Title   : Unhandled HTTP 500 on Receipt Creation with Empt    ║
+  ║ Endpoint       : POST POST /api/...                                  ║
+  ║ Status Code    : HTTP 500 (Expected: HTTP 422 Unprocessable Entity)  ║
+  ║ Root Cause     : Backend crashed with unhandled 500 instead of in    ║
+  ║ Jira Ticket    : https://bmtechnology.atlassian.net/browse/BDEV-1    ║
+  ║ Response Snippet: {"code":500,"message":"Internal Server Error"}      ║
+  ╚════════════════════════════════════════════════════════════════════════╝
+

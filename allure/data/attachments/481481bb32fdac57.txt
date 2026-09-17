@@ -1,0 +1,57 @@
+[DateHelper] Resolved in-period date: 2026-09-15T00:00:00Z (day=15, ecYear=2018)
+06:09:30 [PERFORMANCE] API - Auth API Verification: 257.58ms
+[AUTH] Session token and local storage injected successfully.
+06:09:35 [PERFORMANCE] API - Auth API Verification: 294.46ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating item with exactly 1 unit of stock...
+[OK] Item created: ZERO-STOCK-1789625375434 (ID: 8e3fc5a9-eb14-4109-b1c4-2e82d5e78f0f)
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 1...
+[SUCCESS] API Confirmed: Stock correctly reached 1.
+[STEP 2] Selling the only 1 unit to drain stock to zero...
+06:09:37 [INFO] Advancing invoices "21dfde16-752a-4d96-8f20-6384afddfa43"...
+[ACTION] API Polling: Waiting for stock at location GLOBAL to hit 0...
+[SUCCESS] API Confirmed: Stock correctly reached 0.
+[OK] Stock is now 0.
+[ATTACK] Attempting to sell 1 more unit from zero stock...
+[STOCK_TOPUP] Invoice creation: insufficient stock (attempt 1/3) — available=0, required=1, injecting 1...
+06:09:42 [INFO] [STOCK_TOPUP] Injecting 21 units for item 8e3fc5a9-eb14-4109-b1c4-2e82d5e78f0f...
+[ADJ] quantity | qty=21 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/17/010053 (ID: cd4c7533-90f6-4498-87bf-9d56db03df73)
+06:09:42 [INFO] Advancing inventory-adjustments "cd4c7533-90f6-4498-87bf-9d56db03df73"...
+06:09:47 [INFO] [STOCK_TOPUP] Injected 21 units for item 8e3fc5a9-eb14-4109-b1c4-2e82d5e78f0f (adj ADJ/2026/09/17/010053)
+06:09:47 [INFO] Advancing invoices "bd037f39-f551-4bd6-8845-1c0d286ac4fa"...
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║        ZERO-STOCK GUARDRAIL — TEST SUMMARY               ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : ZERO-STOCK-1789625375434               ║
+  ║  Item ID      : 8e3fc5a9-eb14-4109-b1c4-2e82d5e78f0f   ║
+  ║  Step 1       : Created with qty=1, sold 1 → stock=0       ║
+  ║  Attack       : POST /invoices qty=1 against stock=0       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : ACCEPTED ✕ — VULNERABILITY CONFIRMED  ║
+  ║  Oversell Ref : INV/2026/09/17/005072                    ║
+  ║  Final stock  : 20                                     ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : Negative stock corrupts COGS and inventory GL  ║
+  ║  Fix     : Reject invoice if available qty < ordered qty   ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Zero-Stock Oversell Guardrail                                           │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ ZERO-STOCK-1789625375434             │
+  │ Item ID                          │ 8e3fc5a9-eb14-4109-b1c4-2e82d5e78f0… │
+  │ Initial Stock                    │ 1 unit                               │
+  │ Step 2: Sold                     │ 1 unit → stock drained to 0          │
+  │ Attack: Invoice Qty              │ 1 unit (against stock=0)             │
+  │ Oversell Invoice Ref             │ INV/2026/09/17/005072                │
+  │ Final Stock                      │ 20 units                             │
+  │ Block Reason                     │ Invoice created at zero stock but s… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✗ FAIL — VULNERABILITY — negative s… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[WARN] Invoice created at zero stock but stock did not go negative (20). Monitor.

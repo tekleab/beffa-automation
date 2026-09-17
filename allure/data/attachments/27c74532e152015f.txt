@@ -1,0 +1,30 @@
+06:03:09 [PERFORMANCE] API - Auth API Verification: 273.67ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/17/010011 (ID: df9948d1-e6c5-48b2-81cc-33fd4033713b)
+06:03:13 [INFO] Advancing inventory-adjustments "df9948d1-e6c5-48b2-81cc-33fd4033713b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: WAC-Item-1789624990809 (d7707f86-aef1-49e1-8857-afb6e36fc884) | method=WAC | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[OK] Created fresh item: "WAC-Item-1789624990809" | Stock: 20
+06:03:16 [INFO] Advancing sales-orders "152bdfbd-a355-4df6-8c0f-7d6792f1269a"...
+[OK] Sales Order SO/2026/09/17/001414 approved via API
+06:03:19 [INFO] Advancing invoices "467a46da-59bd-4844-9776-8ef3fd7c3f6c"...
+[OK] Invoice INV/2026/09/17/005054 approved via API
+[INFO] Document Setup Complete: INV/2026/09/17/005054 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT PRE-FLIGHT] Invoice outstanding=102 | Requested receipt amount=102
+[RECEIPT] amount=102 | invoice=467a46da... | year=2018
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/17/001455
+[OK] Receipt created via API: RCPT/2026/09/17/001455
+[STEP] Phase 3: Approval flow
+06:03:26 [INFO] Advancing receipts "0fa83e72-eb5d-4809-ae73-f2c4563a0f3e"...
+06:03:28 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+06:03:28 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/09/17/001455 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/09/17/001455 verified
