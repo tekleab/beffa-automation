@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
-  "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 294,
-  "lastUpdated": "2026-09-18T08:33:11.827Z",
+  "total": 212,
+  "passed": 129,
+  "failed": 58,
+  "skipped": 25,
+  "passRate": 60.8,
+  "avgDurationMs": 8934,
+  "lastUpdated": "2026-09-18T08:47:22.156Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
-      "skipped": 0,
+      "passed": 129,
+      "failed": 58,
+      "skipped": 25,
       "trend": [
-        92,
         85.4,
         85.8,
         100,
         84.9,
         84.9,
-        100
+        100,
+        69
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "768",
+      "commit": "a0cbe63",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "31m 34s",
+      "passRate": 60.8,
+      "status": "failed"
+    },
     {
       "run": "767",
       "commit": "bea32bc",
@@ -95,15 +103,554 @@
       "duration": "64m 57s",
       "passRate": 90.1,
       "status": "success"
-    },
-    {
-      "run": "748",
-      "commit": "9ab6b63",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "66m 48s",
-      "passRate": 91,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:35:53.822Z",
+      "occurrences": 2,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"], input[placeholder*=\"name\" i], input[id*=\"name\" i]').first()",
+      "firstSeen": "2026-09-18T08:35:53.755Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:35:55.987Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:18.880Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:34.903Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must reject invoicing for more units than the approved SO",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:36.736Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must reject injected price/amount overrides during SO conversion",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:42.968Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:49.660Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:51.398Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-01-21 falls in a closed or missin\n\n   at ../lib/base-page.ts:235\n\n  233 |             }\n  234 |           }\n>",
+      "firstSeen": "2026-09-18T08:36:56.177Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "file": "tests/sales/customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Full Invoice, Receipt Creation, and Approval Workflow",
+      "file": "tests/sales/receipt-api-standalone.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Create fresh invoice via API, then create receipt and link it",
+      "file": "tests/sales/receipt-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "file": "tests/sales/sales-customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Validate TIN, create customer, edit, remove",
+      "file": "tests/sales/customer.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI Audit: Customer profile shows zero balance after full payment",
+      "file": "tests/sales/sales-customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject invoicing for more units than the approved SO",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject injected price/amount overrides during SO conversion",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must prevent double-dip overpayments across multi-link receipts",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Multi-item invoice deducts stock and posts correct COGS journal entries",
+      "file": "tests/sales/so-cogs.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Full cycle GL — AR debited on invoice, cleared on receipt",
+      "file": "tests/sales/so-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Credit note (void) must reverse AR debit from original invoice",
+      "file": "tests/sales/so-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject Invoicing for more units than the approved SO",
+      "file": "tests/sales/so-guardrails.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must prevent receipts against a voided invoice",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial SO release correctly tracks remaining unreleased quantity",
+      "file": "tests/sales/so-partial-release.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Invoice with tax must credit tax account in journal entries",
+      "file": "tests/sales/so-tax-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "DTO Schema Verification: GET /bill/{id} returns valid DTO structure",
+      "file": "tests/purchase/bill-dto-contract.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Negative DTO Guardrail: Non-existent Bill ID returns 404 Error DTO",
+      "file": "tests/purchase/bill-dto-contract.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Approved bill must debit Expense/Inventory and credit AP",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Bill reversal must post mirror journal entries (clear AP)",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI: Bills Index page (/payables/bills) must resolve data grid without error states",
+      "file": "tests/purchase/bill-index-fetching.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "file": "tests/purchase/bill-ui.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "file": "tests/purchase/po-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject zero and negative Bill amounts",
+      "file": "tests/purchase/po-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must enforce mandatory GL account selection for standalone bills",
+      "file": "tests/purchase/po-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: PO split into multiple bills — total must never exceed PO quantity",
+      "file": "tests/purchase/po-split-bill.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
+      "file": "tests/purchase/po-partial-release.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Approved bill must post a debit to Accounts Payable",
+      "file": "tests/purchase/procurement-accounting-logic.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial billing sequence matching exact PO quantity",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Vendor outstanding balance increases after bill approval",
+      "file": "tests/purchase/procurement-accounting-logic.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject zero-quantity adjustments",
+      "file": "tests/inventory/inv-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
+      "file": "tests/inventory/inv-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "TC-05: Move order exceeding available stock must be rejected",
+      "file": "tests/inventory/inv-logic.spec.ts",
+      "category": "ENV_CONFIG",
+      "confidence": "HIGH",
+      "reasoning": "Auth/token failure during setup",
+      "suggestedAction": "Check BEFFA_USER/PASS env vars"
+    },
+    {
+      "testTitle": "TC-01: Source stock must decrease by exact transfer quantity",
+      "file": "tests/inventory/inv-logic.spec.ts",
+      "category": "ENV_CONFIG",
+      "confidence": "HIGH",
+      "reasoning": "Auth/token failure during setup",
+      "suggestedAction": "Check BEFFA_USER/PASS env vars"
+    },
+    {
+      "testTitle": "TC-03: Total stock conservation — sum across locations unchanged",
+      "file": "tests/inventory/inv-logic.spec.ts",
+      "category": "ENV_CONFIG",
+      "confidence": "HIGH",
+      "reasoning": "Auth/token failure during setup",
+      "suggestedAction": "Check BEFFA_USER/PASS env vars"
+    },
+    {
+      "testTitle": "Guardrail: System must reject overselling beyond available stock",
+      "file": "tests/inventory/inv-management.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "file": "tests/hr/hr-lifecycle.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-10: Add Project button navigates to /projects/new",
+      "file": "tests/project/project-ui-form.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI-08: Project created via API appears in the list",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Sales Invoice API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Purchase Bill API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI-09: Clicking project row navigates to detail view",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification",
+      "file": "tests/cross-module/order-to-cash-e2e.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification",
+      "file": "tests/cross-module/procure-to-pay-e2e.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PO-to-Bill: Loading & Data Resolution State",
+      "file": "tests/cross-module/query-boundary-states.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "SO-to-Invoice: Empty State Boundary (Fully-Released SO)",
+      "file": "tests/cross-module/query-boundary-states.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    }
+  ]
 }
