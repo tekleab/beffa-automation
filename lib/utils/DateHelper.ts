@@ -88,7 +88,6 @@ export class DateHelper {
         'Content-Type': 'application/json'
       };
 
-      const now = new Date();
       const year = baseYear;
       const qs = `year=${year}&period=${period}&calendar=${calendar}`;
 
@@ -122,34 +121,45 @@ export class DateHelper {
 
         if (probeResp) {
           const errText = await probeResp.text().catch(() => '');
-          // Parse date bounds from error response: supports both MM/DD/YYYY and DD/MM/YYYY formats.
+          // Parse date bounds from error response: supports DD/MM/YYYY and MM/DD/YYYY formats
           const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
           if (match) {
-            const [, val1_1, val1_2, y1, val2_1, val2_2, y2] = match;
-            let m1 = parseInt(val1_1, 10);
-            let d1 = parseInt(val1_2, 10);
-            let m2 = parseInt(val2_1, 10);
-            let d2 = parseInt(val2_2, 10);
+            const [, p1a, p1b, y1, p2a, p2b, y2] = match;
+            let m1 = parseInt(p1a, 10);
+            let d1 = parseInt(p1b, 10);
+            let m2 = parseInt(p2a, 10);
+            let d2 = parseInt(p2b, 10);
 
-            // If the parsed month is > 12, it must be DD/MM/YYYY format
-            if (m1 > 12 || m2 > 12) {
-              m1 = parseInt(val1_2, 10);
-              d1 = parseInt(val1_1, 10);
-              m2 = parseInt(val2_2, 10);
-              d2 = parseInt(val2_1, 10);
+            // In DD/MM/YYYY error messages (e.g. 07/08/2025 = 07 Aug 2025, 07/07/2026 = 07 Jul 2026):
+            // p1a is Day (07), p1b is Month (08). Swap if p1a <= 31 and p1b <= 12 to treat as DD/MM/YYYY.
+            let periodStart: Date;
+            let periodEnd: Date;
+
+            // Try DD/MM/YYYY format first (standard ERP format)
+            const date1_ddmm = new Date(`${y1}-${String(p1b).padStart(2, '0')}-${String(p1a).padStart(2, '0')}T00:00:00Z`);
+            const date2_ddmm = new Date(`${y2}-${String(p2b).padStart(2, '0')}-${String(p2a).padStart(2, '0')}T00:00:00Z`);
+
+            if (!isNaN(date1_ddmm.getTime()) && !isNaN(date2_ddmm.getTime()) && date1_ddmm <= date2_ddmm) {
+              periodStart = date1_ddmm;
+              periodEnd = date2_ddmm;
+            } else {
+              periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
+              periodEnd = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
             }
 
-            const periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
-            const periodEnd   = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
+            const now = new Date();
+            let useDate: Date;
 
-            // Ensure date is strictly within the open EC fiscal year (EC 2019 starts Sep 11, 2026 GC)
-            let useDate: Date = new Date('2026-09-15T00:00:00Z');
-            if (now >= new Date('2026-09-11T00:00:00Z') && now <= periodEnd) {
+            if (now >= periodStart && now <= periodEnd) {
               useDate = now;
+            } else {
+              // Pick midpoint of open period to guarantee it's strictly within open bounds
+              const midMs = periodStart.getTime() + Math.floor((periodEnd.getTime() - periodStart.getTime()) / 2);
+              useDate = new Date(midMs);
             }
             return DateHelper._fromDate(useDate, year);
           } else if (probeResp.status() === 200 || probeResp.status() === 201) {
-            return DateHelper._fromDate(now >= new Date('2026-09-11T00:00:00Z') ? now : new Date('2026-09-15T00:00:00Z'), year);
+            return DateHelper._fromDate(new Date(), year);
           }
         }
       }
@@ -162,36 +172,17 @@ export class DateHelper {
   private static _fromEnv(): ResolvedDate | null {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
     const ecYear = baseYear;
-    // EC year N: Sep 11 of GC year N+7 to Sep 10 of GC year N+8
-    const gcYear = ecYear + 7;
-    const periodStart = new Date(`${gcYear}-09-11T00:00:00Z`);
-    const periodEnd   = new Date(`${gcYear + 1}-09-10T00:00:00Z`);
-
-    const safeDate = new Date(`${gcYear}-09-15T00:00:00Z`);
     const now = new Date();
-    let useDate: Date;
-    if (now >= periodStart && now <= periodEnd) {
-      useDate = now;
-    } else {
-      useDate = safeDate >= periodStart && safeDate <= periodEnd ? safeDate : periodStart;
-    }
-    console.log(`[DateHelper] _fromEnv: EC year ${ecYear} → using ${useDate.toISOString().slice(0, 10)}`);
-    return DateHelper._fromDate(useDate, ecYear);
+    return DateHelper._fromDate(now, ecYear);
   }
 
   // ── Strategy 3: today ────────────────────────────────────────────────────────
   private static _today(): ResolvedDate {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
-    const now = new Date();
-    return DateHelper._fromDate(now >= new Date('2026-09-11T00:00:00Z') ? now : new Date('2026-09-15T00:00:00Z'), baseYear);
+    return DateHelper._fromDate(new Date(), baseYear);
   }
 
   private static _fromDate(d: Date, ecYear: number): ResolvedDate {
-    // Hard check: Ensure GC date is within active EC 2019 (Sep 11, 2026 onwards)
-    if (d < new Date('2026-09-11T00:00:00Z')) {
-      d = new Date('2026-09-15T00:00:00Z');
-      ecYear = 2019;
-    }
     const yyyy = d.getUTCFullYear();
     const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
     const dd = String(d.getUTCDate()).padStart(2, '0');
