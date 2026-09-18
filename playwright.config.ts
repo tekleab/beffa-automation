@@ -36,6 +36,7 @@ export default defineConfig({
     ['./reporters/module-counter.ts'], // Enhanced module tracking for full test runs
     ['./reporters/dashboard.ts'],
     ['./reporters/summary.ts'],
+    ['./reporters/failure-analyzer.ts'],
     ['html', { open: 'never' }],
     ['json', { outputFile: 'playwright-results.json' }],
     [

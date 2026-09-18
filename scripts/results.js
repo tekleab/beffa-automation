@@ -141,6 +141,17 @@ results.last10Runs.unshift({
 });
 results.last10Runs = results.last10Runs.slice(0, 10);
 
+// ── AI Failure Analysis ─────────────────────────────────────────────────────
+const aiAnalysisPath = path.join(__dirname, '..', 'test-results', 'ai-failure-analysis.json');
+if (fs.existsSync(aiAnalysisPath)) {
+  try {
+    results.aiAnalysis = JSON.parse(fs.readFileSync(aiAnalysisPath, 'utf-8'));
+    console.log(`[SUCCESS] AI analysis loaded: ${results.aiAnalysis.length} classified failures`);
+  } catch (e) {
+    console.log('[WARN] Failed to load ai-failure-analysis.json:', e.message);
+  }
+}
+
 fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
 console.log(`[SUCCESS] results.json → ${outputPath}`);
 
