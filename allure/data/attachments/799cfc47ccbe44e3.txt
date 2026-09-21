@@ -1,0 +1,69 @@
+[STEP 1] Discovering metadata...
+[HR] All job positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1 are full. Creating new one...
+[HR] Job position creation returned 409 — re-fetching existing positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1
+[HR] Using existing job position for dept: "Manager" (418c8d67-ca3b-4b28-b05c-e50c697c9be5)
+[HR] All job positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1 are full. Creating new one...
+[HR] Job position creation returned 409 — re-fetching existing positions for dept 6cafff5a-cb3c-4da4-a388-4bba49c98eb1
+[HR] Using existing job position for dept: "Manager" (418c8d67-ca3b-4b28-b05c-e50c697c9be5)
+[INFO] dept: FINANCE (6cafff5a-cb3c-4da4-a388-4bba49c98eb1) | job: Manager (418c8d67-ca3b-4b28-b05c-e50c697c9be5)
+[STEP 2] Creating 3 employees sequentially...
+[PASS] Employee 1: Lifecycle-Emp-1789981883091-1 | id: cf2fc6a6-05e2-4ea8-b912-5ea5e5239623
+[HR] Attempt 1: list total pages=7 | checking 100 rows for email=lc17899818830911@beffa.com
+[HR] Fetching last page 7 for newly appended employee...
+[PASS] Employee 2: Lifecycle-Emp-1789981883091-2 | id: a7f72561-9c37-4f26-abcb-7477f1f60f19
+[PASS] Employee 3: Lifecycle-Emp-1789981883091-3 | id: 655fdc3c-72e8-4e02-93eb-b87140abc5b3
+[STEP 3] Creating shared pay component and pay structure...
+[PASS] Pay structure: a71b965d-0701-49bf-9757-34ca71817cd0
+[STEP 4] Assigning pay structure to all 3 employees...
+[PASS] Pay structure assigned to all employees
+[STEP 5] Creating contracts for all 3 employees...
+[WARN] Contract attempt 1 failed for emp cf2fc6a6-05e2-4ea8-b912-5ea5e5239623: 422 — {
+	"code": 422,
+	"details": {
+		"start_date": [
+			"The selected date is not within an open or re-opened fiscal period."
+		]
+	},
+	"message": "Validation error when creating employee contract"
+}
+ — checking if created anyway...
+[WARN] Contract attempt 2 failed for emp cf2fc6a6-05e2-4ea8-b912-5ea5e5239623: 422 — {
+	"code": 422,
+	"details": {
+		"start_date": [
+			"The selected date is not within an open or re-opened fiscal period."
+		]
+	},
+	"message": "Validation error when creating employee contract"
+}
+ — checking if created anyway...
+[WARN] Contract attempt 3 failed for emp cf2fc6a6-05e2-4ea8-b912-5ea5e5239623: 422 — {
+	"code": 422,
+	"details": {
+		"start_date": [
+			"The selected date is not within an open or re-opened fiscal period."
+		]
+	},
+	"message": "Validation error when creating employee contract"
+}
+ — checking if created anyway...
+[WARN] Contract attempt 4 failed for emp cf2fc6a6-05e2-4ea8-b912-5ea5e5239623: 422 — {
+	"code": 422,
+	"details": {
+		"start_date": [
+			"The selected date is not within an open or re-opened fiscal period."
+		]
+	},
+	"message": "Validation error when creating employee contract"
+}
+ — checking if created anyway...
+[WARN] Contract attempt 5 failed for emp cf2fc6a6-05e2-4ea8-b912-5ea5e5239623: 422 — {
+	"code": 422,
+	"details": {
+		"start_date": [
+			"The selected date is not within an open or re-opened fiscal period."
+		]
+	},
+	"message": "Validation error when creating employee contract"
+}
+ — checking if created anyway...
