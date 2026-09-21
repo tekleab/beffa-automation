@@ -1,0 +1,272 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/line-item-miscellaneous-audit.spec.ts >> Line Item & Miscellaneous Audit @sales @purchase @regression >> PAY-API-02: Multi-bill payment → all bills settle to zero
+- Location: tests/cross-module/line-item-miscellaneous-audit.spec.ts:1520:9
+
+# Error details
+
+```
+Error: Multi-bill payment failed: 500 - {
+	"code": 500,
+	"message": "Unable to create Payment"
+}
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e12]:
+      - heading "Welcome to, befa" [level=3] [ref=e13]
+      - paragraph [ref=e14]: Empower Your Finances, Simplify Your Success
+      - paragraph [ref=e15]: From meticulous bookkeeping to seamless inventory control, we've got your back.
+    - generic [ref=e17]:
+      - heading "Login To Your Account" [level=2] [ref=e18]
+      - generic [ref=e19]:
+        - text: Not a member?
+        - link "Register" [ref=e20] [cursor=pointer]:
+          - /url: /users/register
+      - generic [ref=e22]:
+        - group [ref=e23]:
+          - generic [ref=e24]: Email *
+          - textbox "Email *" [ref=e26]:
+            - /placeholder: Enter your email
+        - group [ref=e27]:
+          - generic [ref=e28]: Password *
+          - generic [ref=e29]:
+            - textbox "Password *" [ref=e30]:
+              - /placeholder: Enter your password
+            - button "Show password" [ref=e32] [cursor=pointer]
+        - link "Forget Password?" [ref=e38] [cursor=pointer]:
+          - /url: forget-password
+        - button "Login" [ref=e40] [cursor=pointer]
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
+
+# Test source
+
+```ts
+  677 | 
+  678 |     // 1. Resolve Vendor ID from Name or ID
+  679 |     let vendorId = vendorName;
+  680 |     const vendResp = await this.safeGet(`${apiBase}/vendors?page=1&pageSize=100&${params}`, { headers });
+  681 |     const vendData = await safeJson(vendResp);
+  682 |     const vendors = Array.isArray(vendData) ? vendData : (vendData?.items || vendData?.data || []);
+  683 |     const vendor = vendors.find((v: any) => v.id === vendorName || v.name?.toLowerCase() === vendorName.toLowerCase());
+  684 |     if (vendor) {
+  685 |       vendorId = vendor.id;
+  686 |     }
+  687 | 
+  688 |     // 2. Poll Vendor Bills Ledger — try direct bill lookup first, then paginate
+  689 | 
+  690 |     const findInPages = async (): Promise<boolean> => {
+  691 |       // Fast path: direct bill lookup by ID (billNumber may be a ref, not UUID — try both)
+  692 |       const directResp = await this.safeGet(
+  693 |         `${apiBase}/bills?search=${encodeURIComponent(billNumber)}&pageSize=20&${params}`,
+  694 |         { headers }
+  695 |       );
+  696 |       if (directResp && directResp.ok()) {
+  697 |         const directData = await safeJson(directResp);
+  698 |         const directBills: any[] = directData ? (Array.isArray(directData) ? directData : (directData.data || directData.items || [])) : [];
+  699 |         const cleanTarget = billNumber.trim().toLowerCase();
+  700 |         const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
+  701 |         const directFound = directBills.find((b: any) => {
+  702 |           const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
+  703 |           return refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget);
+  704 |         });
+  705 |         if (directFound) return true;
+  706 |       }
+  707 | 
+  708 |       let page = 1;
+  709 |       const pageSize = 100;
+  710 |       while (true) {
+  711 |         let billResp = await this.safeGet(
+  712 |           `${apiBase}/bills?vendor_id=${vendorId}&page=${page}&pageSize=${pageSize}&${params}`,
+  713 |           { headers }
+  714 |         );
+  715 |         let billData = await safeJson(billResp);
+  716 | 
+  717 |         if (!billData || (!Array.isArray(billData) && !billData.data && !billData.items && !billData.bills)) {
+  718 |           billResp = await this.safeGet(
+  719 |             `${apiBase}/bills?page=${page}&pageSize=${pageSize}&${params}`,
+  720 |             { headers }
+  721 |           );
+  722 |           billData = await safeJson(billResp);
+  723 |         }
+  724 | 
+  725 |         if (!billData) return false;
+  726 | 
+  727 |         const bills: any[] = Array.isArray(billData)
+  728 |           ? billData
+  729 |           : (billData.data || billData.items || billData.bills || []);
+  730 | 
+  731 |         const cleanTarget = billNumber.trim().toLowerCase();
+  732 |         const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
+  733 | 
+  734 |         const found = bills.find((b: any) => {
+  735 |           const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
+  736 |           const bVendorId = b.vendor_id || b.vendor?.id || '';
+  737 |           const vendorMatch = !bVendorId || bVendorId === vendorId;
+  738 |           return vendorMatch && (refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget));
+  739 |         });
+  740 |         if (found) return true;
+  741 | 
+  742 |         // Stop if this is the last page
+  743 |         const total = billData.total ?? billData.count ?? billData.meta?.total ?? null;
+  744 |         if (bills.length < pageSize || (total !== null && page * pageSize >= total)) break;
+  745 |         page++;
+  746 |       }
+  747 |       return false;
+  748 |     };
+  749 | 
+  750 |     for (let i = 0; i < 8; i++) {
+  751 |       const found = await findInPages();
+  752 |       if (found) {
+  753 |         console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
+  754 |         return true;
+  755 |       }
+  756 | 
+  757 |       await this.page.waitForTimeout(2000);
+  758 |     }
+  759 | 
+  760 |     throw new Error(`[ERROR] API Verification Failed: Bill ${billNumber} never appeared in "${vendorName}" ledger.`);
+  761 |   }
+  762 | 
+  763 |   private async postPaymentWithCashTopUp(
+  764 |     apiBase: string,
+  765 |     params: string,
+  766 |     headers: Record<string, string>,
+  767 |     payload: Record<string, any>,
+  768 |     label: string
+  769 |   ): Promise<any> {
+  770 |     const maxTopUpAttempts = 5;
+  771 |     let response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers, timeout: 30000 });
+  772 | 
+  773 |     for (let attempt = 0; !response.ok() && attempt < maxTopUpAttempts; attempt++) {
+  774 |       const errText = await response.text();
+  775 |       const topUp = this.parseInsufficientCashTopUp(errText);
+  776 |       if (response.status() !== 422 || topUp === null) {
+> 777 |         throw new Error(`${label} failed: ${response.status()} - ${errText}`);
+      |               ^ Error: Multi-bill payment failed: 500 - {
+  778 |       }
+  779 |       const topUpAmount = topUp;
+  780 | 
+  781 |       const accountName = this.parseInsufficientCashAccountName(errText);
+  782 |       const cashAccountId = await this.resolveCashAccountId(payload.cash_account_id, accountName);
+  783 |       payload.cash_account_id = cashAccountId;
+  784 | 
+  785 |       console.log(`[CASH_TOPUP] ${label}: insufficient balance (attempt ${attempt + 1}/${maxTopUpAttempts}) — topping up ${topUpAmount}...`);
+  786 |       await this.seedCashBalanceAPI(topUpAmount, cashAccountId);
+  787 |       await this.page.waitForTimeout(6000);
+  788 | 
+  789 |       response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers, timeout: 30000 });
+  790 |     }
+  791 | 
+  792 |     if (response.ok()) return response.json();
+  793 |     throw new Error(`${label} failed after ${maxTopUpAttempts} cash top-up attempts: ${response.status()} - ${await response.text()}`);
+  794 |   }
+  795 | 
+  796 |   private parseInsufficientCashAccountName(errorText: string): string | null {
+  797 |     const match = errorText.match(/account\s+([^:]+):\s*available/i);
+  798 |     return match ? match[1].trim() : null;
+  799 |   }
+  800 | 
+  801 |   private async resolveCashAccountId(preferredId?: string, accountName?: string | null): Promise<string> {
+  802 |     const accounts = await this.getAllAccountsAPI();
+  803 |     if (accountName) {
+  804 |       const byName = accounts.find((a: any) => a.name === accountName);
+  805 |       if (byName) return byName.id;
+  806 |     }
+  807 |     if (preferredId && accounts.some((a: any) => a.id === preferredId)) return preferredId;
+  808 |     const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+  809 |     const cashAccount =
+  810 |       accounts.find((a: any) => (typeOf(a).includes('cash') || typeOf(a).includes('bank')) && parseFloat(a.balance || '0') >= 0) ||
+  811 |       accounts.find((a: any) => typeOf(a).includes('cash') || typeOf(a).includes('bank')) ||
+  812 |       accounts[0];
+  813 |     return cashAccount?.id;
+  814 |   }
+  815 | 
+  816 |   async createBillPaymentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref: string; id: string }> {
+  817 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  818 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  819 |     const token = await this._getAuthToken();
+  820 |     const company = process.env.BEFFA_COMPANY as string;
+  821 |     const year = process.env.BEFFA_YEAR || '2019';
+  822 |     const period = process.env.BEFFA_PERIOD || 'yearly';
+  823 |     const calendar = process.env.BEFFA_CALENDAR || 'ec';
+  824 |     const params = `year=${year}&period=${period}&calendar=${calendar}`;
+  825 |     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+  826 | 
+  827 |     const safeJson = async (resp: any, label: string) => {
+  828 |       const text = await resp.text();
+  829 |       if (!resp.ok()) throw new Error(`${label} HTTP ${resp.status()}: ${text.substring(0, 200)}`);
+  830 |       try { return JSON.parse(text); } catch (e) { throw new Error(`${label} invalid JSON: ${text.substring(0, 150)}`); }
+  831 |     };
+  832 | 
+  833 |     // 1. Discover Accounts
+  834 |     const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+  835 |     const acctData = await safeJson(acctResp, 'Accounts Discovery');
+  836 |     const allAccounts = acctData.items || acctData.data || [];
+  837 |     const cashAccount =
+  838 |       allAccounts.find((a: any) => a.name?.toLowerCase().includes('bank') && parseFloat(a.balance || '0') > 0) ||
+  839 |       allAccounts.find((a: any) => a.name?.toLowerCase().includes('cbe')) ||
+  840 |       allAccounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
+  841 |       allAccounts.find((a: any) => (a.account_id || a.code || a.account_code) === '1002') ||
+  842 |       allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('bank')) ||
+  843 |       allAccounts.find((a: any) => (a.type || a.account_type || '').toLowerCase().includes('cash')) ||
+  844 |       allAccounts[0];
+  845 | 
+  846 |     // 2. Discover Currency
+  847 |     let resolvedCurrencyId: string | undefined;
+  848 |     let meta: any = null;
+  849 |     try { meta = await this.discoverMetadataAPI(); } catch {}
+  850 |     resolvedCurrencyId = meta?.currencyId;
+  851 | 
+  852 |     if (!resolvedCurrencyId) {
+  853 |       const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers }, 30000);
+  854 |       const currData = await safeJson(currResp, 'Currency Discovery');
+  855 |       const currency = Array.isArray(currData) ? currData[0] : (currData?.items?.[0] || currData?.data?.[0] || currData);
+  856 |       resolvedCurrencyId = currency?.id;
+  857 |     }
+  858 | 
+  859 |     let resolvedCashAccountId = data.cashAccountId || cashAccount?.id;
+  860 | 
+  861 |     // In test we sometimes explicitly pass null to trigger validation error
+  862 |     if ('cashAccountId' in data && data.cashAccountId === null) {
+  863 |       resolvedCashAccountId = null;
+  864 |     }
+  865 | 
+  866 |     let resolvedVendorId = data.vendorId;
+  867 |     if (data.billId) {
+  868 |       try {
+  869 |         const billData = await this.getBillAPI(data.billId);
+  870 |         const billVendorId = billData?.vendor_id || billData?.vendor?.id;
+  871 |         if (billVendorId) {
+  872 |           resolvedVendorId = billVendorId;
+  873 |         }
+  874 |       } catch {}
+  875 |     }
+  876 |     if (!resolvedVendorId) {
+  877 |       resolvedVendorId = meta?.vendorId || process.env.BEFFA_VENDOR_ID;
+```

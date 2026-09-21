@@ -1,0 +1,41 @@
+[DateHelper] ✓ Year 2019: today (2026-09-21T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-21T00:00:00Z (day=21, ecYear=2019)
+09:56:54 [PERFORMANCE] API - Auth API Verification: 321.90ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/21/010414 (ID: da2aeddc-e0b2-4996-b432-3188ac2eefa0)
+09:57:08 [INFO] Advancing inventory-adjustments "da2aeddc-e0b2-4996-b432-3188ac2eefa0"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1789984624022 (56c76c55-9d0d-4f3b-9849-67ae3d12b9c7) | method=FIFO | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:57:21 [INFO] Advancing purchase-orders "5b082e99-1bd3-4b91-9dcf-7a85be68df82"...
+09:57:23 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+09:57:23 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+09:57:28 [INFO] Advancing bills "b63e0c9a-d3a0-425c-b108-f5ac9057d49f"...
+[SETUP] Bill created and approved: BILL/2026/09/21/004255 (b63e0c9a-d3a0-425c-b108-f5ac9057d49f)
+09:57:33 [PERFORMANCE] API - Auth API Verification: 369.10ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=b63e0c9a-d3a0-425c-b108-f5ac9057d49f...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/09/21/004255
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 0
