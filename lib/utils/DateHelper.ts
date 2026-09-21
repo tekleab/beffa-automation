@@ -3,7 +3,11 @@
  *
  * Strategy:
  *   1. POST a minimal PO with a sentinel date (2000-01-01) → ERP returns 422 with
- *      "between DD/MM/YYYY and DD/MM/YYYY" → parse period start → use that date.
+ *      "between DD/MM/YYYY and DD/MM/YYYY" → parse the open period bounds.
+ *      - If today (now) is inside those bounds → use today (open monthly GL period).
+ *      - If today is AFTER periodEnd (e.g. running tests in Sep 2026 but period ends
+ *        Jul 2026) → use periodEnd - 30 days to stay within yearly bounds AND land
+ *        in a recently-open monthly GL period (avoids mid-year closed months).
  *   2. Fallback: derive from BEFFA_YEAR env (EC year N starts ~Aug 7 of GC year N+7).
  *   3. Last resort: today.
  *
@@ -27,10 +31,12 @@ export class DateHelper {
 
   static async resolve(page: Page): Promise<ResolvedDate> {
     if (_cached) return _cached;
-    const now = new Date();
-    const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
-    const result = DateHelper._fromDate(now, baseYear);
+    const result = await DateHelper._probeAPI(page)
+      ?? DateHelper._fromEnv()
+      ?? DateHelper._today();
     _cached = result;
+    // Write resolved year back to env so all existing process.env.BEFFA_YEAR
+    // references across API files automatically use the correct fiscal year.
     process.env.BEFFA_YEAR = String(result.ecYear);
     console.log(`[DateHelper] Resolved in-period date: ${result.iso} (day=${result.dayNumber}, ecYear=${result.ecYear})`);
     return result;
@@ -149,11 +155,14 @@ export class DateHelper {
             let useDate: Date;
 
             if (now >= periodStart && now <= periodEnd) {
+              // Today is within the open period — use it (aligns with open monthly GL period)
               useDate = now;
             } else {
-              // Pick midpoint of open period to guarantee it's strictly within open bounds
-              const midMs = periodStart.getTime() + Math.floor((periodEnd.getTime() - periodStart.getTime()) / 2);
-              useDate = new Date(midMs);
+              // Today is outside period (e.g. tests run after fiscal rollover before DB updated).
+              // Use periodEnd - 30 days: stays within yearly bounds AND lands in a recently-open
+              // monthly GL period (avoids mid-period closed months that the midpoint could hit).
+              const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+              useDate = new Date(periodEnd.getTime() - thirtyDays);
             }
             return DateHelper._fromDate(useDate, year);
           } else if (probeResp.status() === 200 || probeResp.status() === 201) {
