@@ -1,0 +1,35 @@
+08:17:19 [PERFORMANCE] API - Auth API Verification: 543.71ms
+[AUTH] Session token and local storage injected successfully.
+08:17:27 [WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2018&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/21/010256 (ID: 09b91a36-a885-4c6c-8d01-475c19f9f41e)
+08:17:48 [INFO] Advancing inventory-adjustments "09b91a36-a885-4c6c-8d01-475c19f9f41e"...
+08:18:06 [WARN] Transient network drop/socket hang up on advance attempt 1/4: apiRequestContext.patch: socket hang up Call log:   - → PATCH http://168.119.175.142:8001/api/inventory-adjustments/09b91a36-a885-4c6c-8d01-475c19f9f41e/advance?year=2018&period=yearly&calendar=ec     - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36     - accept: */*     - accept-encoding: gzip,deflate,br     - x-company: BM Tech     - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc5MDA2NTAzOSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3OTAwNjUwMzl9.ZnwK0T1zvjaZCaPMuijvmIuhPq2hAfFwnDo1yJhE9W8     - Content-Type: application/json     - x-role: IT Administrator / User Manager     - content-length: 55     - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc5MDA2NTAzOSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3OTAwNjUwMzl9.ZnwK0T1zvjaZCaPMuijvmIuhPq2hAfFwnDo1yJhE9W8; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc5MDA2NTAzOSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3OTAwNjUwMzl9.ZnwK0T1zvjaZCaPMuijvmIuhPq2hAfFwnDo1yJhE9W8 . Retrying in 2s...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1789978666054 (41a28f19-c753-4837-872f-79cf753d73a4) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:18:12 [PERFORMANCE] API - Auth API Verification: 511.33ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

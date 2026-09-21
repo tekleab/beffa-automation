@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 212,
+  "passed": 180,
+  "failed": 32,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 248,
-  "lastUpdated": "2026-09-21T08:10:47.851Z",
+  "passRate": 84.9,
+  "avgDurationMs": 15718,
+  "lastUpdated": "2026-09-21T08:33:52.485Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 180,
+      "failed": 32,
       "skipped": 0,
       "trend": [
-        85.8,
         100,
         84.9,
         84.9,
         100,
         69,
-        100
+        100,
+        84.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "770",
+      "commit": "ad15676",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "55m 32s",
+      "passRate": 84.9,
+      "status": "success"
+    },
     {
       "run": "769",
       "commit": "d685fc1",
@@ -95,15 +103,346 @@
       "duration": "0m 0s",
       "passRate": 0,
       "status": "unknown"
-    },
-    {
-      "run": "750",
-      "commit": "05f99b3",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "65m 51s",
-      "passRate": 90.6,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"], input[placeholder*=\"name\" i], input[id*=\"name\" i]').first()",
+      "firstSeen": "2026-09-21T08:13:35.290Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: BUG #7: ERP unreceived_amount=$100 but invoice unit_price=$500. AR understated by $400. Invoice: INV/2026/09/21/005169 (37e2eab7-a65f-407c-bd58-344b184ac6d6), Item: 86903c76-0065-45ca-8e70-486a",
+      "firstSeen": "2026-09-21T08:14:53.430Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "DTO Schema Verification: GET /bill/{id} returns valid DTO structure",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-21T08:16:14.603Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Negative DTO Guardrail: Non-existent Bill ID returns 404 Error DTO",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-21T08:16:17.436Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:777\n\n  775 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-21T08:16:23.405Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:777\n\n  775 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-21T08:16:43.769Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-21T08:16:52.605Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: Item Creation API Failed: apiRequestContext.post: socket hang up\n\n   at ../lib/api/InventoryAPI.ts:142\n\n  140 |         resp = await this.page.request.post(`${apiBase}/inventory-items?${params}",
+      "firstSeen": "2026-09-21T08:17:03.253Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce mandatory GL account selection for standalone bills",
+      "error": "Error: [VULNERABILITY] System accepted Bill without a GL Account. This breaks accounting ledger sync.\n\n  102 |         try {\n  103 |             await app.api.purchase.createBillAPI({ itemData: item, ",
+      "firstSeen": "2026-09-21T08:17:47.642Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"po_date\": [\n\t\t\t\"Purchase order date is not within the current period: between 07/08/2025 and 07/07/2026\"\n\t\t]\n\t},\n\t\"message\": \"Vali",
+      "firstSeen": "2026-09-21T08:17:48.235Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Validate TIN, create customer, edit, remove",
+      "file": "tests/sales/customer.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "DTO Schema Verification: GET /bill/{id} returns valid DTO structure",
+      "file": "tests/purchase/bill-dto-contract.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Negative DTO Guardrail: Non-existent Bill ID returns 404 Error DTO",
+      "file": "tests/purchase/bill-dto-contract.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "file": "tests/purchase/po-accounting.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "file": "tests/purchase/bill-ui.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Guardrail: System must enforce mandatory GL account selection for standalone bills",
+      "file": "tests/purchase/po-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
+      "file": "tests/purchase/po-partial-release.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: PO split into multiple bills — total must never exceed PO quantity",
+      "file": "tests/purchase/po-split-bill.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial billing sequence matching exact PO quantity",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-10: Add Project button navigates to /projects/new",
+      "file": "tests/project/project-ui-form.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI-08: Project created via API appears in the list",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-09: Clicking project row navigates to detail view",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-01: Single bill payment → bill balance settles to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification",
+      "file": "tests/cross-module/order-to-cash-e2e.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification",
+      "file": "tests/cross-module/procure-to-pay-e2e.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PO-to-Bill: Loading & Data Resolution State",
+      "file": "tests/cross-module/query-boundary-states.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PAY-API-03: Partial payment → bill balance reduces by exact amount",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-01: Add inventory Line Item via modal → Invoice created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-API-04: Multi-line PO → grand total = sum of lines",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    }
+  ]
 }
