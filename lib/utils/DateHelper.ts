@@ -27,12 +27,10 @@ export class DateHelper {
 
   static async resolve(page: Page): Promise<ResolvedDate> {
     if (_cached) return _cached;
-    const result = await DateHelper._probeAPI(page)
-      ?? DateHelper._fromEnv()
-      ?? DateHelper._today();
+    const now = new Date();
+    const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
+    const result = DateHelper._fromDate(now, baseYear);
     _cached = result;
-    // Write resolved year back to env so all existing process.env.BEFFA_YEAR
-    // references across API files automatically use the correct fiscal year.
     process.env.BEFFA_YEAR = String(result.ecYear);
     console.log(`[DateHelper] Resolved in-period date: ${result.iso} (day=${result.dayNumber}, ecYear=${result.ecYear})`);
     return result;
