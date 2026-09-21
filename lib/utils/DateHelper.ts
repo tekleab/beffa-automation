@@ -1,18 +1,20 @@
 /**
  * DateHelper — resolves a valid in-period date by probing the ERP API.
  *
- * Strategy:
- *   1. POST a minimal PO with a sentinel date (2000-01-01) → ERP returns 422 with
- *      "between DD/MM/YYYY and DD/MM/YYYY" → parse the open period bounds.
- *      - If today (now) is inside those bounds → use today (open monthly GL period).
- *      - If today is AFTER periodEnd (e.g. running tests in Sep 2026 but period ends
- *        Jul 2026) → use periodEnd - 30 days to stay within yearly bounds AND land
- *        in a recently-open monthly GL period (avoids mid-year closed months).
- *   2. Fallback: derive from BEFFA_YEAR env (EC year N starts ~Aug 7 of GC year N+7).
- *   3. Last resort: today.
+ * Strategy (multi-year flexible probe):
+ *   1. POST a PO with po_date = TODAY across years [BEFFA_YEAR, +1, -1, +2, -2].
+ *      - If the year's open period contains today → today is accepted (only po_items
+ *        validation fires, no period error) → use today for that year.
+ *        Today's date guarantees the monthly GL posting period is also open.
+ *      - If period error fires → today is outside that year's period → try next year.
+ *   2. If no year accepts today (edge case: fiscal gap between years):
+ *      Probe with sentinel date 2000-01-01 on BEFFA_YEAR to get open bounds,
+ *      then walk back from periodEnd in 30-day steps until a valid date is found
+ *      (handles partially-closed monthly GL periods within the fiscal year).
+ *   3. Fallback: today with BEFFA_YEAR (last resort, no API available).
  *
- * The probe is cheap (one failed POST, no document created) and self-healing —
- * it always returns a date the ERP will accept regardless of when the period rolls.
+ * The probe is cheap (one failed POST per year, no document created) and
+ * self-healing — it automatically follows fiscal year rollovers.
  */
 
 import { Page } from '@playwright/test';
@@ -42,12 +44,11 @@ export class DateHelper {
     return result;
   }
 
-  // ── Strategy 1: probe API with sentinel date, parse period bounds from 422 ──
-  // Probes the target BEFFA_YEAR directly to ensure we remain strictly within open fiscal bounds.
+  // ── Strategy 1: multi-year flexible probe ─────────────────────────────────
   private static async _probeAPI(page: Page): Promise<ResolvedDate | null> {
     try {
       let base = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
-        .replace(/['"+ ]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+        .replace(/['\"+ ]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
       if (!base.startsWith('http')) base = 'http://' + base;
       if (!base.endsWith('/api')) base += '/api';
 
@@ -56,6 +57,7 @@ export class DateHelper {
       const company  = process.env.BEFFA_COMPANY  || '';
       const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
 
+      // ── Resolve auth token ──────────────────────────────────────────────
       const token = await page.evaluate(() => {
         for (const k of ['token', 'auth-token', 'jwt', 'access_token']) {
           const v = localStorage.getItem(k);
@@ -68,7 +70,6 @@ export class DateHelper {
         return null;
       }).catch(() => null);
 
-      // If localStorage is empty (blank page / API-only test), try a login probe
       let resolvedToken = token;
       if (!resolvedToken) {
         try {
@@ -92,13 +93,12 @@ export class DateHelper {
         'Content-Type': 'application/json'
       };
 
-      const year = baseYear;
-      const qs = `year=${year}&period=${period}&calendar=${calendar}`;
-
+      // ── Discover vendor / account / currency IDs (use baseYear for lookup) ──
+      const baseQs = `year=${baseYear}&period=${period}&calendar=${calendar}`;
       const [vendorResp, acctResp, currResp] = await Promise.all([
-        page.request.get(`${base}/vendors?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
-        page.request.get(`${base}/accounts?page=1&pageSize=1&${qs}`, { headers }).catch(() => null),
-        page.request.get(`${base}/currency?${qs}`, { headers }).catch(() => null),
+        page.request.get(`${base}/vendors?page=1&pageSize=1&${baseQs}`, { headers }).catch(() => null),
+        page.request.get(`${base}/accounts?page=1&pageSize=1&${baseQs}`, { headers }).catch(() => null),
+        page.request.get(`${base}/currency?${baseQs}`, { headers }).catch(() => null),
       ]);
 
       const vendorData = await vendorResp?.json().catch(() => ({})) as any;
@@ -109,65 +109,101 @@ export class DateHelper {
       const acctId   = acctData?.data?.[0]?.id   ?? acctData?.items?.[0]?.id;
       const currId   = currData?.data?.[0]?.id   ?? currData?.items?.[0]?.id;
 
-      if (vendorId && acctId && currId) {
-        // POST with sentinel date far in the past — guaranteed out of period → 422 with bounds
-        const probeResp = await page.request.post(`${base}/purchase-orders?${qs}`, {
+      if (!vendorId || !acctId || !currId) return null;
+
+      const now = new Date();
+      const nowIso = DateHelper._toIso(now);
+
+      // ── Phase 1: probe with TODAY across multiple EC years ────────────────
+      // Try baseYear first, then ±1, ±2 to handle fiscal year rollovers.
+      const yearsToTry = [baseYear, baseYear + 1, baseYear - 1, baseYear + 2, baseYear - 2];
+
+      for (const year of yearsToTry) {
+        const qs = `year=${year}&period=${period}&calendar=${calendar}`;
+        const probe = await page.request.post(`${base}/purchase-orders?${qs}`, {
           headers,
           data: {
             vendor_id: vendorId,
             accounts_payable_id: acctId,
             currency_id: currId,
-            po_date: '2000-01-01T00:00:00Z',
+            po_date: nowIso,
             purchase_type_id: 4,
             po_items: []
           }
         }).catch(() => null);
 
-        if (probeResp) {
-          const errText = await probeResp.text().catch(() => '');
-          // Parse date bounds from error response: supports DD/MM/YYYY and MM/DD/YYYY formats
-          const match = errText.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
-          if (match) {
-            const [, p1a, p1b, y1, p2a, p2b, y2] = match;
-            let m1 = parseInt(p1a, 10);
-            let d1 = parseInt(p1b, 10);
-            let m2 = parseInt(p2a, 10);
-            let d2 = parseInt(p2b, 10);
+        if (!probe) continue;
+        const text = await probe.text().catch(() => '');
 
-            // In DD/MM/YYYY error messages (e.g. 07/08/2025 = 07 Aug 2025, 07/07/2026 = 07 Jul 2026):
-            // p1a is Day (07), p1b is Month (08). Swap if p1a <= 31 and p1b <= 12 to treat as DD/MM/YYYY.
-            let periodStart: Date;
-            let periodEnd: Date;
+        // If the response does NOT contain a period error for po_date,
+        // today is within this year's open fiscal period → use it.
+        // (Only po_items error fires when date is valid.)
+        if (!text.includes('not within the current period') && !text.includes('current period')) {
+          console.log(`[DateHelper] ✓ Year ${year}: today (${nowIso}) is within open fiscal period`);
+          return DateHelper._fromDate(now, year);
+        }
 
-            // Try DD/MM/YYYY format first (standard ERP format)
-            const date1_ddmm = new Date(`${y1}-${String(p1b).padStart(2, '0')}-${String(p1a).padStart(2, '0')}T00:00:00Z`);
-            const date2_ddmm = new Date(`${y2}-${String(p2b).padStart(2, '0')}-${String(p2a).padStart(2, '0')}T00:00:00Z`);
+        // Period error fired → today is outside this year's period → try next year
+        const match = text.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
+        const bounds = match ? `${match[0]}` : '(bounds unparseable)';
+        console.log(`[DateHelper] Year ${year}: today is outside period ${bounds} — trying next year...`);
+      }
 
-            if (!isNaN(date1_ddmm.getTime()) && !isNaN(date2_ddmm.getTime()) && date1_ddmm <= date2_ddmm) {
-              periodStart = date1_ddmm;
-              periodEnd = date2_ddmm;
-            } else {
-              periodStart = new Date(`${y1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}T00:00:00Z`);
-              periodEnd = new Date(`${y2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}T00:00:00Z`);
+      // ── Phase 2: no year accepted today — fiscal gap scenario ────────────
+      // Use sentinel probe on baseYear to get its period bounds, then walk back
+      // from periodEnd in 30-day steps to find a date the GL will accept.
+      console.log(`[DateHelper] ⚠ No year accepts today. Using sentinel probe to find best date within known period...`);
+
+      const sentinelQs = `year=${baseYear}&period=${period}&calendar=${calendar}`;
+      const sentinelProbe = await page.request.post(`${base}/purchase-orders?${sentinelQs}`, {
+        headers,
+        data: {
+          vendor_id: vendorId,
+          accounts_payable_id: acctId,
+          currency_id: currId,
+          po_date: '2000-01-01T00:00:00Z',
+          purchase_type_id: 4,
+          po_items: []
+        }
+      }).catch(() => null);
+
+      if (sentinelProbe) {
+        const sentinelText = await sentinelProbe.text().catch(() => '');
+        const periodEnd = DateHelper._parsePeriodEnd(sentinelText);
+
+        if (periodEnd) {
+          // Walk back from periodEnd in 30-day steps — pick the first date that
+          // the ERP doesn't reject for period reasons (stops at periodStart).
+          const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+          for (let offset = 30; offset <= 330; offset += 30) {
+            const candidate = new Date(periodEnd.getTime() - offset * 24 * 60 * 60 * 1000);
+            const candidateIso = DateHelper._toIso(candidate);
+            const candidateQs = `year=${baseYear}&period=${period}&calendar=${calendar}`;
+            const candidateProbe = await page.request.post(`${base}/purchase-orders?${candidateQs}`, {
+              headers,
+              data: {
+                vendor_id: vendorId,
+                accounts_payable_id: acctId,
+                currency_id: currId,
+                po_date: candidateIso,
+                purchase_type_id: 4,
+                po_items: []
+              }
+            }).catch(() => null);
+
+            if (candidateProbe) {
+              const cText = await candidateProbe.text().catch(() => '');
+              if (!cText.includes('not within the current period') && !cText.includes('current period')) {
+                console.log(`[DateHelper] ✓ Fallback date found: ${candidateIso} (periodEnd - ${offset}d, year=${baseYear})`);
+                return DateHelper._fromDate(candidate, baseYear);
+              }
             }
-
-            const now = new Date();
-            let useDate: Date;
-
-            if (now >= periodStart && now <= periodEnd) {
-              // Today is within the open period — use it (aligns with open monthly GL period)
-              useDate = now;
-            } else {
-              // Today is outside period (e.g. tests run after fiscal rollover before DB updated).
-              // Use periodEnd - 30 days: stays within yearly bounds AND lands in a recently-open
-              // monthly GL period (avoids mid-period closed months that the midpoint could hit).
-              const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-              useDate = new Date(periodEnd.getTime() - thirtyDays);
-            }
-            return DateHelper._fromDate(useDate, year);
-          } else if (probeResp.status() === 200 || probeResp.status() === 201) {
-            return DateHelper._fromDate(new Date(), year);
           }
+
+          // Absolute last resort: use periodEnd - 30d even if not confirmed
+          const fallback = new Date(periodEnd.getTime() - thirtyDays);
+          console.log(`[DateHelper] ⚠ Using unconfirmed fallback: ${DateHelper._toIso(fallback)}`);
+          return DateHelper._fromDate(fallback, baseYear);
         }
       }
 
@@ -175,15 +211,34 @@ export class DateHelper {
     } catch { return null; }
   }
 
-  // ── Strategy 2: derive strictly from BEFFA_YEAR ─────────────────────────────────
-  private static _fromEnv(): ResolvedDate | null {
-    const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
-    const ecYear = baseYear;
-    const now = new Date();
-    return DateHelper._fromDate(now, ecYear);
+  // ── Parse "between DD/MM/YYYY and DD/MM/YYYY" → return the end date ──────
+  private static _parsePeriodEnd(text: string): Date | null {
+    const match = text.match(/between\s+(\d{2})\/(\d{2})\/(\d{4})\s+and\s+(\d{2})\/(\d{2})\/(\d{4})/i);
+    if (!match) return null;
+    const [, , , , p2a, p2b, y2] = match;
+    // DD/MM/YYYY format: p2a = day, p2b = month
+    const ddmm = new Date(`${y2}-${String(p2b).padStart(2, '0')}-${String(p2a).padStart(2, '0')}T00:00:00Z`);
+    if (!isNaN(ddmm.getTime())) return ddmm;
+    // MM/DD/YYYY fallback
+    const mmdd = new Date(`${y2}-${String(p2a).padStart(2, '0')}-${String(p2b).padStart(2, '0')}T00:00:00Z`);
+    return isNaN(mmdd.getTime()) ? null : mmdd;
   }
 
-  // ── Strategy 3: today ────────────────────────────────────────────────────────
+  // ── Format a Date as YYYY-MM-DDT00:00:00Z ────────────────────────────────
+  private static _toIso(d: Date): string {
+    const yyyy = d.getUTCFullYear();
+    const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(d.getUTCDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}T00:00:00Z`;
+  }
+
+  // ── Strategy 2: derive from BEFFA_YEAR env ────────────────────────────────
+  private static _fromEnv(): ResolvedDate | null {
+    const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
+    return DateHelper._fromDate(new Date(), baseYear);
+  }
+
+  // ── Strategy 3: today (last resort) ──────────────────────────────────────
   private static _today(): ResolvedDate {
     const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
     return DateHelper._fromDate(new Date(), baseYear);
