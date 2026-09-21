@@ -1,0 +1,51 @@
+[DateHelper] ✓ Year 2019: today (2026-09-21T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-21T00:00:00Z (day=21, ecYear=2019)
+10:46:27 [PERFORMANCE] API - Auth API Verification: 302.85ms
+[AUTH] Session token and local storage injected successfully.
+10:46:35 [WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=300&year=2019&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+10:46:59 [WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=50&year=2019&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/21/010533 (ID: a9c217e2-d4b6-4e7b-87f7-e5b41102de05)
+10:47:02 [INFO] Advancing inventory-adjustments "a9c217e2-d4b6-4e7b-87f7-e5b41102de05"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1789987609893 (2aea0daf-6711-417f-8ae9-670e1a23608b) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/21/010534 (ID: 544210d1-5e3e-4e7e-8229-3dc509757988)
+10:47:12 [INFO] Advancing inventory-adjustments "544210d1-5e3e-4e7e-8229-3dc509757988"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1789987627841 (f5470afb-f47f-42bc-ae27-22e22fefc540) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+10:47:16 [INFO] [STOCK_TOPUP] Injecting 70 units for item 2aea0daf-6711-417f-8ae9-670e1a23608b...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+10:47:17 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+10:47:17 [INFO] [STOCK_TOPUP] Injecting 70 units for item 2aea0daf-6711-417f-8ae9-670e1a23608b...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+10:47:18 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+10:47:18 [INFO] [STOCK_TOPUP] Injecting 70 units for item 2aea0daf-6711-417f-8ae9-670e1a23608b...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+10:47:19 [WARN] [STOCK_TOPUP] Adjustment creation failed: {  "code": 422,  "details": {   "location_id": [    "Item doesn't exist in given location."   ]  },  "message": "Validation error when creating inventory adjustment" } 
+[DateHelper] ✓ Year 2019: today (2026-09-21T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-21T00:00:00Z (day=21, ecYear=2019)
+10:47:25 [PERFORMANCE] API - Auth API Verification: 280.70ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+10:47:30 [INFO] Picking date: "Invoice Date" → target 2026-9-21
+10:47:32 [PASS] "Invoice Date" set to day 11.
+10:47:32 [PERFORMANCE] UI - Pick Date: Invoice Date: 2115.17ms
+10:47:32 [INFO] Picking date: "Due Date" → target 2026-9-21
+10:47:33 [PASS] "Due Date" set to day 11.
+10:47:34 [PERFORMANCE] UI - Pick Date: Due Date: 1879.48ms
+[SELECT-OPTION] Customer (attempt 1): overlayVisible=true, count=20
+10:47:37 [PERFORMANCE] UI - Random Selection: Customer: 2714.47ms
+[SELECT-OPTION] Accounts Receivable (attempt 1): overlayVisible=true, count=2
+10:47:40 [PERFORMANCE] UI - Random Selection: Accounts Receivable: 2567.88ms
+[CURRENCY] Selected via button: Birr
+[MODAL] Misc branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+10:47:44 [PERFORMANCE] UI - Random Selection: G/L Account: 2607.77ms
+[MODAL] Filled Miscellaneous Price: 1500
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+10:47:47 [PERFORMANCE] UI - Random Selection: Tax: 2560.18ms
+[MODAL] Miscellaneous line item added successfully
+[PASS] Invoice with miscellaneous line created

@@ -1,0 +1,39 @@
+[DateHelper] ✓ Year 2019: today (2026-09-21T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-21T00:00:00Z (day=21, ecYear=2019)
+10:40:34 [PERFORMANCE] API - Auth API Verification: 341.95ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/21/010510 (ID: 6448fc3a-0951-4830-b5e0-32be06d128b5)
+10:40:40 [INFO] Advancing inventory-adjustments "6448fc3a-0951-4830-b5e0-32be06d128b5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1789987236515 (596de450-1e50-4bf1-8547-772126b56a66) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+
+========== PO SPLIT BILL SETUP ==========
+[ITEM]  FIFO-Item-1789987236515 | Stock: 20
+[PLAN]  PO: 10 | Batch1: 4 | Batch2: 6 | Over: 1
+=========================================
+
+[STEP 1] Creating & approving PO for 10 units...
+10:41:10 [INFO] Advancing purchase-orders "c3e73dbb-7930-4b4d-ae6d-1f4a4de4f6a3"...
+[OK] PO PO/2026/09/21/002611 approved (ID: c3e73dbb-7930-4b4d-ae6d-1f4a4de4f6a3)
+[STEP 2] Receiving Batch 1: 4 units...
+10:41:13 [INFO] Advancing bills "ba327538-d084-49ce-8661-77bb1bd59513"...
+[OK] Batch 1 bill BILL/2026/09/21/004299 approved.
+[STEP 3] Receiving Batch 2: 6 units...
+10:41:19 [INFO] Advancing bills "6a7d71e3-156c-4601-b478-9a53e45350d7"...
+[OK] Batch 2 bill BILL/2026/09/21/004300 approved.
+[STEP 4] Verifying stock added correctly (10 units total)...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+
+========== SPLIT BILL STOCK AUDIT ==========
+[DOCUMENT] PO    : PO/2026/09/21/002611 (c3e73dbb-7930-4b4d-ae6d-1f4a4de4f6a3)
+[DOCUMENT] Bill1 : BILL/2026/09/21/004299 (ba327538-d084-49ce-8661-77bb1bd59513) — 4 units
+[DOCUMENT] Bill2 : BILL/2026/09/21/004300 (6a7d71e3-156c-4601-b478-9a53e45350d7) — 6 units
+[STOCK] Before: 20 | After: 30 | Expected: 30
+=============================================
+
+[STEP 5] Attempting over-receive (1 unit beyond fully received PO)...
+[PASS] Over-receive correctly rejected at bill creation (HTTP 422).
+[PASS] Split bill audit complete: 4 + 6 = 10 units received correctly.
