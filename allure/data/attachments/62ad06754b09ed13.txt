@@ -1,0 +1,44 @@
+13:53:57 [PERFORMANCE] API - Auth API Verification: 99696.05ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/22/011129 (ID: a1789ebf-05da-4dbe-8365-775da8febbe4)
+13:54:18 [INFO] Advancing inventory-adjustments "a1789ebf-05da-4dbe-8365-775da8febbe4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790085254415 (c28431bc-d36d-4fed-9ad5-aec4ea079471) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/22/011130 (ID: 39c84eaf-4b44-42e8-8d39-10a877ab80c0)
+13:54:26 [INFO] Advancing inventory-adjustments "39c84eaf-4b44-42e8-8d39-10a877ab80c0"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790085262986 (debb7efc-8c0f-4d83-8ab7-bb09586b4649) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] ✓ Year 2019: today (2026-09-22T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-22T00:00:00Z (day=22, ecYear=2019)
+13:54:39 [PERFORMANCE] API - Auth API Verification: 142127.02ms
+[AUTH] Session token and local storage injected successfully.
+13:54:40 [PERFORMANCE] API - Auth API Verification: 142395.27ms
+[AUTH] Session token and local storage injected successfully.
+13:54:43 [INFO] Picking date: "Purchase Order Date" → target 2026-9-22
+13:54:45 [PASS] "Purchase Order Date" set to day 12.
+13:54:46 [PERFORMANCE] UI - Pick Date: Purchase Order Date: 2335.96ms
+[SELECT-OPTION] Vendor (attempt 1): overlayVisible=true, count=20
+13:54:48 [PERFORMANCE] UI - Random Selection: Vendor: 2754.73ms
+[SELECT-OPTION] Accounts Payable (attempt 1): overlayVisible=true, count=2
+13:54:51 [PERFORMANCE] UI - Random Selection: Accounts Payable: 2757.53ms
+[SELECT-OPTION] Purchase Type (attempt 1): overlayVisible=true, count=12
+13:54:54 [PERFORMANCE] UI - Random Selection: Purchase Type: 2634.56ms
+[API PRE-CAPTURE] Using guaranteed-stock item "FIFO-Item-1790085254415" @ $100
+[ITEM MODAL] Clicking item option: "FIFO-Item-1790085254415"
+[ITEM MODAL] Item selected status: true | Button text: "FIFO-Item-1790085254415"
+[MODAL] Selected Warehouse option: "Default Warehouse"
+[MODAL] Selected Location option: "location2"
+[MODAL] Item branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+13:55:08 [PERFORMANCE] UI - Random Selection: G/L Account: 2890.85ms
+[MODAL] Filled Quantity: 5
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+13:55:12 [PERFORMANCE] UI - Random Selection: Tax: 2788.72ms
+[MODAL] Item line item added successfully
+[OK] Inventory line item added to PO
+13:55:14 [INFO] Advancing purchase-orders "dcbd3755-570d-41f7-a352-32b3922336e0"...
+[PASS] PO with inventory line item created and approved

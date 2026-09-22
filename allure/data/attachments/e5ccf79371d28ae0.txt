@@ -1,0 +1,23 @@
+13:45:56 [PERFORMANCE] API - Auth API Verification: 127620.33ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/22/011102 (ID: 9fb885d8-be8f-4474-8f58-3674fb913ff4)
+13:46:19 [INFO] Advancing inventory-adjustments "9fb885d8-be8f-4474-8f58-3674fb913ff4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790084775133 (3ea282d4-78a3-49f9-bfbd-ce8aa9db028f) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+13:46:22 [PERFORMANCE] API - Auth API Verification: 152945.15ms
+[AUTH] Session token and local storage injected successfully.
+13:46:22 [PERFORMANCE] API - Auth API Verification: 153263.41ms
+[AUTH] Session token and local storage injected successfully.
+[ATTACK] Attempting to create Bill with negative quantity (-10)...
+[PASS] Negative quantity blocked. Error: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.quantity": [
+			"quantity should be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

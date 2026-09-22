@@ -1,29 +1,37 @@
 {
   "total": 212,
-  "passed": 191,
-  "failed": 20,
-  "skipped": 1,
-  "passRate": 90.1,
-  "avgDurationMs": 21493,
-  "lastUpdated": "2026-09-22T13:10:05.494Z",
+  "passed": 181,
+  "failed": 31,
+  "skipped": 0,
+  "passRate": 85.4,
+  "avgDurationMs": 17606,
+  "lastUpdated": "2026-09-22T14:00:16.737Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 191,
-      "failed": 20,
-      "skipped": 1,
+      "passed": 181,
+      "failed": 31,
+      "skipped": 0,
       "trend": [
-        89.6,
         100,
         100,
         91,
         100,
         100,
-        90.5
+        90.5,
+        85.4
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "791",
+      "commit": "26f2110",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "62m 12s",
+      "passRate": 85.4,
+      "status": "success"
+    },
     {
       "run": "789",
       "commit": "78eef46",
@@ -95,46 +103,30 @@
       "duration": "0m 4s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "778",
-      "commit": "7883a96",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "73m 3s",
-      "passRate": 89.2,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
-      "severity": "critical",
-      "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://168.119.175.142:4173/u",
-      "firstSeen": "2026-09-22T12:49:44.273Z",
+      "severity": "medium",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScri",
+      "firstSeen": "2026-09-22T13:42:15.565Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
-      "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://168.119.175.142:4173/u",
-      "firstSeen": "2026-09-22T12:49:47.918Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: System must prevent receipts against a voided invoice",
-      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://168.119.175.142:4173/u",
-      "firstSeen": "2026-09-22T12:49:55.142Z",
+      "severity": "medium",
+      "title": "Forensic Audit: Invoice Void & Stock Restoration",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScri",
+      "firstSeen": "2026-09-22T13:42:32.538Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
-      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errText);",
-      "firstSeen": "2026-09-22T12:52:08.027Z",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-22T13:44:12.623Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,75 +134,75 @@
       "severity": "critical",
       "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
       "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
-      "firstSeen": "2026-09-22T12:52:40.605Z",
+      "firstSeen": "2026-09-22T13:44:41.872Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "critical",
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [ERROR] API Verification Failed: Bill BILL/2026/09/22/004497 never appeared in \"Manenderas\" ledger.\n\n   at ../lib/api/PurchaseAPI.ts:762\n\n  760 |     }\n  761 |\n> 762 |     throw new Error(`[ERR",
+      "firstSeen": "2026-09-22T13:45:25.842Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
       "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errT",
-      "firstSeen": "2026-09-22T12:53:29.654Z",
+      "error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScri",
+      "firstSeen": "2026-09-22T13:45:26.713Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
-      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/22/004471 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
-      "firstSeen": "2026-09-22T12:54:32.898Z",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/22/004502 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
+      "firstSeen": "2026-09-22T13:47:10.192Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
-      "error": "Error: Item Creation API Failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"Invalid location ID\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:171\n\n  169 |         continue;\n  170 |       }\n> 171 |       throw new Err",
-      "firstSeen": "2026-09-22T12:55:34.447Z",
+      "title": "Create: New inventory item is created and visible in the system",
+      "error": "Error: Item Creation API Failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"default_location_id\": [\n\t\t\t\"Location is required.\"\n\t\t]\n\t},\n\t\"message\": \"Validation error when creating Inventory Item.\"\n}\n\n\n   a",
+      "firstSeen": "2026-09-22T13:49:17.016Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
-      "severity": "high",
-      "title": "TC-01: Source stock must decrease by exact transfer quantity",
-      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test ended.\n\n   at ../lib/base-page.ts:480\n\n  478 |           Logger.warn(`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.",
-      "firstSeen": "2026-09-22T12:56:01.733Z",
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-09-22T13:50:33.220Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "TC-02: Destination stock must increase by exact transfer quantity",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  108 |         const finalDest = awa",
-      "firstSeen": "2026-09-22T12:58:18.324Z",
+      "title": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  101 |             }\n  102 | ",
+      "firstSeen": "2026-09-22T13:50:47.661Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
   ],
   "aiAnalysis": [
     {
-      "testTitle": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
-      "file": "tests/sales/so-integrity.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
+      "testTitle": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "Guardrail: System must mathematically reject discounts exceeding invoice value",
-      "file": "tests/sales/so-integrity.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "Guardrail: System must prevent receipts against a voided invoice",
-      "file": "tests/sales/so-integrity.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
+      "testTitle": "Forensic Audit: Invoice Void & Stock Restoration",
+      "file": "tests/sales/so-credit-note.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
     },
     {
       "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
@@ -245,32 +237,8 @@
       "suggestedAction": "Log as known bug, skip in CI"
     },
     {
-      "testTitle": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
-      "file": "tests/inventory/inv-integrity.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
       "testTitle": "Create: New inventory item is created and visible in the system",
       "file": "tests/inventory/inv-management.spec.ts",
-      "category": "INFRA_FLAKE",
-      "confidence": "HIGH",
-      "reasoning": "Network/browser infrastructure error detected",
-      "suggestedAction": "Retry or check ERP server health"
-    },
-    {
-      "testTitle": "TC-03: Total stock conservation — sum across locations unchanged",
-      "file": "tests/inventory/inv-logic.spec.ts",
-      "category": "INFRA_FLAKE",
-      "confidence": "HIGH",
-      "reasoning": "Network/browser infrastructure error detected",
-      "suggestedAction": "Retry or check ERP server health"
-    },
-    {
-      "testTitle": "TC-01: Source stock must decrease by exact transfer quantity",
-      "file": "tests/inventory/inv-logic.spec.ts",
       "category": "INFRA_FLAKE",
       "confidence": "HIGH",
       "reasoning": "Network/browser infrastructure error detected",
@@ -285,8 +253,16 @@
       "suggestedAction": "Log as known bug, skip in CI"
     },
     {
-      "testTitle": "TC-02: Destination stock must increase by exact transfer quantity",
-      "file": "tests/inventory/inv-logic.spec.ts",
+      "testTitle": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "file": "tests/purchase/bill-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "file": "tests/hr/hr-lifecycle.spec.ts",
       "category": "TEST_CODE",
       "confidence": "MEDIUM",
       "reasoning": "Playwright assertion or locator failure",
@@ -301,12 +277,60 @@
       "suggestedAction": "Review selector or assertion value"
     },
     {
-      "testTitle": "UI: Payroll Runs page must load and display run records or empty state",
-      "file": "tests/hr/hr-payroll.spec.ts",
-      "category": "INFRA_FLAKE",
-      "confidence": "HIGH",
-      "reasoning": "Network/browser infrastructure error detected",
-      "suggestedAction": "Retry or check ERP server health"
+      "testTitle": "UI-02: Filter pills (Workspace, Workflow, Status, Budget) are visible",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-03: Sort and View buttons are visible in toolbar",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-04: Advanced filters and Command filters links are present",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-05: Add Project button and Export button are visible",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-06: Search input is present and accepts text",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-07: Pagination shows rows-per-page and page count",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-01: Projects list page loads with all key table columns",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
     },
     {
       "testTitle": "UI-08: Project created via API appears in the list",
@@ -325,6 +349,70 @@
       "suggestedAction": "Review selector or assertion value"
     },
     {
+      "testTitle": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "INV-API-04: Multi-line invoice → grand total = sum of lines",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-01: Add inventory Line Item via modal → Invoice created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "RCT-UI-01: Receipt UI — create standalone receipt with line item and verify",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "RCT-API-02: Receipt partial payment → invoice Amount Due reduces by exact amount",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
       "testTitle": "PAY-API-03: Partial payment → bill balance reduces by exact amount",
       "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
       "category": "KNOWN_BUG",
@@ -333,7 +421,7 @@
       "suggestedAction": "Log as known bug, skip in CI"
     },
     {
-      "testTitle": "RCT-UI-01: Receipt UI — create standalone receipt with line item and verify",
+      "testTitle": "RCT-API-03: Receipt full payment → invoice Amount Due = 0",
       "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
