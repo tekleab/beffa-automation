@@ -102,8 +102,9 @@ test.describe('Location Transfer (Move Order) Audits @inventory @regression', ()
         const qty = 5;
         const expectedDest = destStockBefore + qty;
 
-        const destDetails = await app.api.inventory.getItemDetailsAPI(item.itemId, destLocationId);
-        const finalDest = destDetails?.currentStock ?? 0;
+        // Poll destination until stock propagates — the move order credits destination
+        // asynchronously after debiting the source, so we must wait rather than snapshot immediately.
+        const finalDest = await app.api.inventory.pollStockAPI(item.itemId, expectedDest, destLocationId);
         console.log(`[TC-02] Dest: ${destStockBefore} → ${finalDest} (expected: ${expectedDest})`);
         expect(finalDest).toBe(expectedDest);
 
