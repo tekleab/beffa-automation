@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
-  "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 297,
-  "lastUpdated": "2026-09-22T12:36:43.859Z",
+  "total": 212,
+  "passed": 191,
+  "failed": 20,
+  "skipped": 1,
+  "passRate": 90.1,
+  "avgDurationMs": 21493,
+  "lastUpdated": "2026-09-22T13:10:05.494Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
-      "skipped": 0,
+      "passed": 191,
+      "failed": 20,
+      "skipped": 1,
       "trend": [
-        100,
         89.6,
         100,
         100,
         91,
         100,
-        100
+        100,
+        90.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "789",
+      "commit": "78eef46",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "75m 56s",
+      "passRate": 90.1,
+      "status": "success"
+    },
     {
       "run": "788",
       "commit": "343ef07",
@@ -95,15 +103,250 @@
       "duration": "73m 3s",
       "passRate": 89.2,
       "status": "success"
-    },
-    {
-      "run": "777",
-      "commit": "b761e90",
-      "trigger": "push (sanity)",
-      "duration": "0m 5s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://168.119.175.142:4173/u",
+      "firstSeen": "2026-09-22T12:49:44.273Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://168.119.175.142:4173/u",
+      "firstSeen": "2026-09-22T12:49:47.918Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must prevent receipts against a voided invoice",
+      "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Email *' }) to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://168.119.175.142:4173/u",
+      "firstSeen": "2026-09-22T12:49:55.142Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Internal Server Error\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errText);",
+      "firstSeen": "2026-09-22T12:52:08.027Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-22T12:52:40.605Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errT",
+      "firstSeen": "2026-09-22T12:53:29.654Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/22/004471 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
+      "firstSeen": "2026-09-22T12:54:32.898Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
+      "error": "Error: Item Creation API Failed: 400 - {\n\t\"code\": 400,\n\t\"message\": \"Invalid location ID\"\n}\n\n\n   at ../lib/api/InventoryAPI.ts:171\n\n  169 |         continue;\n  170 |       }\n> 171 |       throw new Err",
+      "firstSeen": "2026-09-22T12:55:34.447Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "high",
+      "title": "TC-01: Source stock must decrease by exact transfer quantity",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m Error: page.waitForTimeout: Test ended.\n\n   at ../lib/base-page.ts:480\n\n  478 |           Logger.warn(`GET ${Logger.sanitize(url)} → ${Logger.sanitize(err.",
+      "firstSeen": "2026-09-22T12:56:01.733Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "TC-02: Destination stock must increase by exact transfer quantity",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  108 |         const finalDest = awa",
+      "firstSeen": "2026-09-22T12:58:18.324Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: System must prevent receipts against a voided invoice",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "file": "tests/purchase/po-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Audit: Negative stock adjustment must correctly reduce stock and apply GL impact",
+      "file": "tests/inventory/inv-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Create: New inventory item is created and visible in the system",
+      "file": "tests/inventory/inv-management.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "TC-03: Total stock conservation — sum across locations unchanged",
+      "file": "tests/inventory/inv-logic.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "TC-01: Source stock must decrease by exact transfer quantity",
+      "file": "tests/inventory/inv-logic.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "TC-02: Destination stock must increase by exact transfer quantity",
+      "file": "tests/inventory/inv-logic.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI: Payroll Runs page must load and display run records or empty state",
+      "file": "tests/hr/hr-payroll.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "UI-08: Project created via API appears in the list",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-09: Clicking project row navigates to detail view",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-03: Partial payment → bill balance reduces by exact amount",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "RCT-UI-01: Receipt UI — create standalone receipt with line item and verify",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification",
+      "file": "tests/cross-module/procure-to-pay-e2e.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    }
+  ]
 }
