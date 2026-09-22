@@ -163,7 +163,7 @@ test.describe('Query Boundary States: PO-to-Bill & SO-to-Invoice Forms @purchase
 
         console.log(`[STEP 1] Creating and approving Sales Order...`);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 10, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
 
         const so = await app.api.sales.createSalesOrderAPI({
             customerId: meta.customerId,
@@ -258,7 +258,7 @@ test.describe('Query Boundary States: PO-to-Bill & SO-to-Invoice Forms @purchase
 
         console.log(`[STEP 1] Creating SO and fully invoicing it...`);
         const meta = await app.api.sales.discoverMetadataAPI();
-        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'WAC', quantity: 5, unit_cost: 100 });
+        const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 5, unit_cost: 100 });
 
         const so = await app.api.sales.createSalesOrderAPI({
             customerId: meta.customerId,

@@ -133,21 +133,37 @@ export class InventoryAPI extends BasePage {
         quantity: typeof data === 'string' ? 0 : (data.quantity || 0)
     };
 
-    // Retry up to 3x for 500/503 (transient backend errors) and re-auth on 401
+    // Retry up to 3x for 500/503, connection resets, and invalid location self-healing
     for (let attempt = 1; attempt <= 3; attempt++) {
       let resp: any;
       try {
         resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload, timeout: 30000 });
       } catch (err: any) {
+        if (attempt < 3) {
+          console.warn(`[WARN] Item Creation API connection error on attempt ${attempt} (${err.message}). Retrying in ${attempt * 1000}ms...`);
+          await new Promise(r => setTimeout(r, attempt * 1000));
+          continue;
+        }
         throw new Error(`Item Creation API Failed: ${err.message?.split('\n')[0] || 'network error'}`);
       }
       if (resp.ok()) {
         const json = await resp.json();
         const cost = typeof data === 'string' ? 1 : (data.unit_cost || 1);
         const sellPrice = typeof data === 'string' ? 1 : (data.selling_price || data.unit_cost || 1);
-        return { itemName: json.name, id: json.id, itemId: json.id, locationId: locId, warehouseId, unitCost: cost, sellingPrice: sellPrice };
+        return { itemName: json.name, id: json.id, itemId: json.id, locationId: payload.default_location_id || locId, warehouseId: payload.default_warehouse_id || warehouseId, unitCost: cost, sellingPrice: sellPrice };
       }
       const status = resp.status();
+      const text = await resp.text();
+      if (status === 400 && text.includes('Invalid location ID') && attempt < 3) {
+        console.warn(`[WARN] Item Creation API failed with "Invalid location ID". Refreshing location metadata for attempt ${attempt + 1}...`);
+        try {
+          const freshLoc = await this.ensureDefaultLocationAPI();
+          payload.default_location_id = freshLoc.locationId;
+          payload.default_warehouse_id = freshLoc.warehouseId;
+        } catch {}
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+        continue;
+      }
       if (status === 401) {
         const loginResp = await this.page.request.post(`${apiBase}/users/login?${params}&month=6`, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
@@ -168,7 +184,7 @@ export class InventoryAPI extends BasePage {
         await this.page.waitForTimeout(attempt * 2000);
         continue;
       }
-      throw new Error(`Item Creation API Failed: ${status} - ${await resp.text()}`);
+      throw new Error(`Item Creation API Failed: ${status} - ${text}`);
     }
     throw new Error('Item Creation API Failed: exhausted retries');
   }
@@ -192,10 +208,11 @@ export class InventoryAPI extends BasePage {
     if (locResp.ok()) {
       const locJson = await locResp.json();
       const locs = locJson.items || locJson.data || [];
-      const loc = locs[0];
-      if (loc?.id) {
-        const warehouseId = await this.resolveWarehouseIdFromLocation(loc);
-        if (warehouseId) return { locationId: loc.id, warehouseId };
+      for (const loc of locs) {
+        if (loc?.id) {
+          const warehouseId = await this.resolveWarehouseIdFromLocation(loc);
+          if (warehouseId) return { locationId: loc.id, warehouseId };
+        }
       }
     }
 
@@ -725,7 +742,8 @@ export class InventoryAPI extends BasePage {
     }
 
     const ts = Date.now();
-    const name = opts.name || `${opts.cost_method_code}-Item-${ts}`;
+    const costMethod = opts.cost_method_code || 'FIFO';
+    const name = opts.name || `${costMethod}-Item-${ts}`;
 
     // Create item with quantity=0 so the ERP has no pre-existing stock to conflict with.
     // Stock is injected via an approved adjustment with explicit current_quantity=0 and
@@ -733,9 +751,9 @@ export class InventoryAPI extends BasePage {
     // AND passes the ERP's quantity-consistency check.
     const item = await this.createInventoryItemAPI({
       name,
-      item_id: `ITM-${opts.cost_method_code}-${ts.toString().slice(-9)}`,
+      item_id: `ITM-${costMethod}-${ts.toString().slice(-9)}`,
       part_number: `PN-${ts.toString().slice(-7)}`,
-      cost_method_code: opts.cost_method_code,
+      cost_method_code: costMethod,
       quantity: 0,
       unit_cost: opts.unit_cost,
       default_location_id: locationId,

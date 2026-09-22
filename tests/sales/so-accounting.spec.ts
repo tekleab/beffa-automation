@@ -153,7 +153,7 @@ test.describe('Accounting & Ledger Flow Logic Audits @sales @regression', () => 
 
         console.log(`[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...`);
         try {
-            const rct2 = await app.api.sales.createInvoiceReceiptAPI({ amount: 80, customerId: meta.customerId, invoiceId: inv.id });
+            const rct2 = await app.api.sales.createInvoiceReceiptAPI({ amount: 80, customerId: meta.customerId, invoiceId: inv.id, skipAdjustment: true });
             await app.advanceDocumentAPI(rct2.id, 'receipts');
             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);
             if (Number(finalInv.unreceived_amount) < 0) {

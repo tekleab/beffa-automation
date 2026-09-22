@@ -602,8 +602,11 @@ export class SalesAPI extends BasePage {
         }
         const outstanding = parseFloat(invoiceData.unreceived_amount ?? invoiceData.balance ?? invoiceData.outstanding_balance ?? '-1');
         console.log(`[RECEIPT PRE-FLIGHT] Invoice outstanding=${outstanding} | Requested receipt amount=${finalAmount}`);
-        if (outstanding >= 0 && outstanding < finalAmount) {
-          // [KNOWN_BUG #7] ERP's unreceived_amount is computed from WAC unit_cost not unit_price.
+        const totalAmount = parseFloat(invoiceData.total_amount ?? invoiceData.net_due ?? '0');
+        const paidAmount = parseFloat(invoiceData.paid_amount ?? invoiceData.received_amount ?? '0');
+        const isWacBug = paidAmount === 0 && totalAmount > 0 && outstanding > 0 && outstanding < totalAmount;
+        if (!data.skipAdjustment && isWacBug && outstanding < finalAmount) {
+          // [KNOWN_BUG #7] ERP's unreceived_amount is computed from WAC unit_cost not unit_price when using WAC items.
           // This causes the receipt to be created for a lower amount than the invoice selling price.
           console.log(`[KNOWN_BUG #7] Invoice ${data.invoiceId} unreceived_amount ($${outstanding}) < requested amount ($${finalAmount}). ERP computes outstanding at WAC cost not selling price. Adjusting receipt to $${outstanding}.`);
           finalAmount = outstanding;
@@ -613,7 +616,7 @@ export class SalesAPI extends BasePage {
       console.warn(`[WARN] Could not verify invoice status: ${error}`);
     }
 
-    if (finalAmount <= 0) {
+    if (!data.skipAdjustment && finalAmount <= 0) {
       console.log(`[RECEIPT PRE-FLIGHT] Invoice ${data.invoiceId} is already fully paid/cleared.`);
       return { success: true, ref: `PAID-${data.invoiceId.substring(0, 8)}`, id: data.invoiceId };
     }
@@ -719,20 +722,22 @@ export class SalesAPI extends BasePage {
         lastError = `Attempt ${attempt}: HTTP ${response.status()} - ${errorText}`;
         console.warn(`[WARN] Receipt creation failed on attempt ${attempt}: ${lastError}`);
 
-        // If it's a 422 validation error, check if outstanding balance can be extracted and retried
+        // If it's a 422 validation error, check if outstanding balance can be extracted and retried (unless test requested skipAdjustment)
         if (response.status() === 422) {
-          const match = errorText.match(/outstanding balance is ([\d\.]+) but/i);
-          if (match) {
-            const actualBalance = parseFloat(match[1]);
-            if (actualBalance > 0 && actualBalance !== payload.amount) {
-              console.log(`[RECEIPT AUTO-RECOVER] Re-submitting receipt with actual outstanding balance ${actualBalance}...`);
-              payload.amount = actualBalance;
-              payload.invoice_receipts[0].amount = actualBalance;
-              payload.receipt_items[0].amount = actualBalance;
-              payload.receipt_items[0].unit_price = actualBalance;
-              continue;
-            } else if (actualBalance <= 0) {
-              return { success: true, ref: `PAID-${data.invoiceId.substring(0, 8)}`, id: data.invoiceId };
+          if (!data.skipAdjustment) {
+            const match = errorText.match(/outstanding balance is ([\d\.]+) but/i);
+            if (match) {
+              const actualBalance = parseFloat(match[1]);
+              if (actualBalance > 0 && actualBalance !== payload.amount) {
+                console.log(`[RECEIPT AUTO-RECOVER] Re-submitting receipt with actual outstanding balance ${actualBalance}...`);
+                payload.amount = actualBalance;
+                payload.invoice_receipts[0].amount = actualBalance;
+                payload.receipt_items[0].amount = actualBalance;
+                payload.receipt_items[0].unit_price = actualBalance;
+                continue;
+              } else if (actualBalance <= 0) {
+                return { success: true, ref: `PAID-${data.invoiceId.substring(0, 8)}`, id: data.invoiceId };
+              }
             }
           }
           throw new Error(`Validation Error (422): ${errorText}`);

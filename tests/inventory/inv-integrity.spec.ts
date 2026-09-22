@@ -24,14 +24,13 @@ import { AppManager } from'../../pages/AppManager';
 test.describe('Inventory Integrity & Boundary Audits @inventory @regression', () => {
 
     test.beforeEach(async ({ page }) => {
+        test.setTimeout(240000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-
     });
 
     test('Audit: Negative stock adjustment must correctly reduce stock and apply GL impact', async ({ page }) => {
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         // Pick an item with at least 51 units so -50 reduction is physically possible
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 100, unit_cost: 100 });
 

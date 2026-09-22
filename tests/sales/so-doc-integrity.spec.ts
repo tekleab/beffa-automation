@@ -60,7 +60,7 @@ test.describe('Sales Document Integrity Guardrails @sales @full', () => {
 
         console.log(`[ATTACK] Attempting second receipt on fully paid invoice...`);
         try {
-            const rct2 = await app.api.sales.createInvoiceReceiptAPI({ invoiceId: inv.id, customerId: meta.customerId, amount: actualDue });
+            const rct2 = await app.api.sales.createInvoiceReceiptAPI({ invoiceId: inv.id, customerId: meta.customerId, amount: actualDue, skipAdjustment: true });
             await app.advanceDocumentAPI(rct2.id, 'receipts');
 
             const finalInv = await app.api.sales.getInvoiceAPI(inv.id);

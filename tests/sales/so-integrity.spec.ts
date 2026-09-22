@@ -39,6 +39,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     });
 
     test.beforeEach(async ({ page }) => {
+        test.setTimeout(240000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
     });

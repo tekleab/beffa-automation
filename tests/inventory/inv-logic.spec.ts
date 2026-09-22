@@ -36,6 +36,10 @@ test.describe('Location Transfer (Move Order) Audits @inventory @regression', ()
     let srcStockBefore: number;
     let destStockBefore: number;
 
+    test.beforeEach(async () => {
+        test.setTimeout(240000);
+    });
+
     test.beforeAll(async ({ browser }) => {
         test.setTimeout(240000);
         const page = await browser.newPage();

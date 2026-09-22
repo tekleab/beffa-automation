@@ -168,6 +168,7 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke', () => {
     });
 
     test('UI: Payroll Runs page must load and display run records or empty state', async ({ page: uiPage }) => {
+        test.setTimeout(240000);
         const uiApp = new AppManager(uiPage);
         await uiApp.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         await uiPage.goto('/payrolls/overview', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});

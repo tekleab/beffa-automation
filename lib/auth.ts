@@ -74,6 +74,38 @@ export class AuthManager extends BasePage {
       return;
     }
 
+    // Fast-path 2: If playwright/.auth/user.json exists on disk, inject it into context and page instantly
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
+      if (fs.existsSync(authFile)) {
+        const authData = JSON.parse(fs.readFileSync(authFile, 'utf8'));
+        if (authData.cookies?.length) {
+          await this.page.context().addCookies(authData.cookies).catch(() => {});
+        }
+        const origin = authData.origins?.[0];
+        if (origin?.localStorage?.length) {
+          await this.page.addInitScript((items: any[]) => {
+            for (const item of items) {
+              try { localStorage.setItem(item.name, item.value); } catch {}
+            }
+          }, origin.localStorage);
+          await this.page.evaluate((items: any[]) => {
+            for (const item of items) {
+              try { localStorage.setItem(item.name, item.value); } catch {}
+            }
+          }, origin.localStorage).catch(() => {});
+          const token = origin.localStorage.find((i: any) => i.name === 'auth-token')?.value || origin.localStorage.find((i: any) => i.name === 'token')?.value;
+          if (token) this.cachedToken = token;
+          console.log('[AUTH] Injected session from user.json storage file.');
+          return;
+        }
+      }
+    } catch (e: any) {
+      console.warn(`[WARN] Could not restore session from storage file: ${e.message}`);
+    }
+
     // Resolve the correct fiscal year BEFORE any API call so process.env.BEFFA_YEAR
     // is accurate for all subsequent query strings in this worker.
     try {
@@ -88,7 +120,7 @@ export class AuthManager extends BasePage {
       const calendar = process.env.BEFFA_CALENDAR || 'ec';
       const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
       let response: any;
-      for (let attempt = 1; attempt <= 2; attempt++) {
+      for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           response = await this.page.request.post(loginUrl, {
             data: { email: cleanEmail, password: cleanPass },
@@ -97,7 +129,7 @@ export class AuthManager extends BasePage {
           });
           if (response.ok()) break;
         } catch (err: any) {
-          if (attempt === 2) throw err;
+          if (attempt === 3) throw err;
           await this.page.waitForTimeout(1000);
         }
       }
@@ -112,47 +144,65 @@ export class AuthManager extends BasePage {
       if (!token) throw new Error('No token returned from API');
       this.cachedToken = token;
 
-      // 2. Head to the Login page to settle the domain context
-      await this.page.goto('/users/login', { waitUntil: 'commit', timeout: 30000 }).catch(async () => {
-        await this.page.goto('/users/login', { waitUntil: 'domcontentloaded', timeout: 30000 });
-      });
+      // 2. Inject localStorage via addInitScript so all future navigations are authenticated
+      const resolvedYear = process.env.BEFFA_YEAR || year;
+      await this.page.addInitScript(({ jwt, exp, company, yr }: any) => {
+        try {
+          localStorage.setItem('auth-token', jwt);
+          localStorage.setItem('token', jwt);
+          localStorage.setItem('token-expiration', JSON.stringify({ authTokenExpirationTime: exp }));
+          localStorage.setItem('selectedYear', yr);
+          localStorage.setItem('calendar', 'EC');
+          localStorage.setItem('period', 'yearly');
+          localStorage.setItem('selected-role', 'IT Administrator / User Manager');
+          localStorage.setItem('currentCompany', company);
+          localStorage.setItem('lastUserActivity', new Date().toISOString());
+        } catch {}
+      }, { jwt: token, exp: expiry, company: companyName, yr: resolvedYear });
 
-      // 3. Inject the EXACT keys the frontend requires to "wake up" authenticated
-      await this.page.evaluate(({ jwt, exp, company, year }: { jwt: string; exp: string; company: string; year: string }) => {
-        localStorage.setItem('auth-token', jwt);
-        localStorage.setItem('token', jwt); // fallback
-
-        // The UI expects a serialized JSON object for expiration
-        const tokenExp = JSON.stringify({ authTokenExpirationTime: exp });
-        localStorage.setItem('token-expiration', tokenExp);
-
-        // Crucial Fiscal & Role Metadata
-        localStorage.setItem('selectedYear', year);
-        localStorage.setItem('calendar', 'EC');
-        localStorage.setItem('period', 'yearly');
-        localStorage.setItem('selected-role', 'IT Administrator / User Manager');
-        localStorage.setItem('currentCompany', company);
-
-        localStorage.setItem('lastUserActivity', new Date().toISOString());
-      }, { jwt: token, exp: expiry, company: companyName, year: process.env.BEFFA_YEAR || year });
-
-      // 4. Set HTTP cookies for backend persistence
-      const domain = new URL(this.page.url()).hostname;
+      // 3. Set HTTP cookies for backend persistence
+      let domain = 'localhost';
+      try {
+        const pageUrl = this.page.url();
+        domain = pageUrl && !pageUrl.startsWith('about:') ? new URL(pageUrl).hostname : new URL(process.env.BASE_URL || 'http://localhost:4173').hostname;
+      } catch {
+        domain = 'localhost';
+      }
       await this.page.context().addCookies([
         { name: 'token', value: token, domain: domain, path: '/' },
         { name: 'auth-token', value: token, domain: domain, path: '/' }
       ]);
 
+      // 4. If already on a web page, populate localStorage directly
+      await this.page.evaluate(({ jwt, exp, company, yr }: any) => {
+        try {
+          localStorage.setItem('auth-token', jwt);
+          localStorage.setItem('token', jwt);
+          localStorage.setItem('token-expiration', JSON.stringify({ authTokenExpirationTime: exp }));
+          localStorage.setItem('selectedYear', yr);
+          localStorage.setItem('calendar', 'EC');
+          localStorage.setItem('period', 'yearly');
+          localStorage.setItem('selected-role', 'IT Administrator / User Manager');
+          localStorage.setItem('currentCompany', company);
+          localStorage.setItem('lastUserActivity', new Date().toISOString());
+        } catch {}
+      }, { jwt: token, exp: expiry, company: companyName, yr: resolvedYear }).catch(() => {});
+
       console.log('[AUTH] Session token and local storage injected successfully.');
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
-      await this.page.goto('/users/login', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-      await this.emailInput.waitFor({ state: 'visible', timeout: 15000 });
-      await this.emailInput.fill(cleanEmail);
-      await this.passwordInput.fill(cleanPass);
-      await expect(this.loginBtn).toBeEnabled({ timeout: 15000 });
-      await this.loginBtn.click();
-      await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 30000 });
+      try {
+        await this.page.goto('/users/login', { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await this.emailInput.waitFor({ state: 'visible', timeout: 15000 });
+        await this.emailInput.fill(cleanEmail);
+        await this.passwordInput.fill(cleanPass);
+        await expect(this.loginBtn).toBeEnabled({ timeout: 15000 });
+        await this.loginBtn.click();
+        await this.page.waitForURL(url => !url.href.includes('/users/login'), { timeout: 30000 });
+      } catch (uiErr: any) {
+        console.warn(`[WARN] UI Login also failed: ${uiErr.message}`);
+        throw error;
+      }
     }
   }
 

@@ -101,31 +101,37 @@ export default defineConfig({
       name: 'Sales',
       testMatch: '**/sales/*.spec.ts',
       dependencies: ['setup'],
+      use: { storageState: path.resolve(__dirname, 'playwright/.auth/user.json') },
     },
     {
       name: 'Purchase',
       testMatch: '**/purchase/*.spec.ts',
       dependencies: ['setup'],
+      use: { storageState: path.resolve(__dirname, 'playwright/.auth/user.json') },
     },
     {
       name: 'Inventory',
       testMatch: '**/inventory/*.spec.ts',
       dependencies: ['setup'],
+      use: { storageState: path.resolve(__dirname, 'playwright/.auth/user.json') },
     },
     {
       name: 'HR',
       testMatch: '**/hr/*.spec.ts',
       dependencies: ['setup'],
+      use: { storageState: path.resolve(__dirname, 'playwright/.auth/user.json') },
     },
     {
       name: 'Project-Management',
       testMatch: '**/project/*.spec.ts',
       dependencies: ['setup'],
+      use: { storageState: path.resolve(__dirname, 'playwright/.auth/user.json') },
     },
     {
       name: 'Cross-Module',
       testMatch: '**/cross-module/*.spec.ts',
       dependencies: ['setup'],
+      use: { storageState: path.resolve(__dirname, 'playwright/.auth/user.json') },
     },
   ],
 
