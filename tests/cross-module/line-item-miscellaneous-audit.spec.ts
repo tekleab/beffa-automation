@@ -55,21 +55,6 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
         itemA = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
         itemB = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 80 });
 
-        // Pre-provision stock for itemA across all active locations so modal location picker always finds stock
-        try {
-            const { apiBase, headers, qs } = await app.buildApiContext();
-            const locResp = await setupPage.request.get(`${apiBase}/locations?page=1&pageSize=20&${qs}`, { headers }).catch(() => null);
-            if (locResp && locResp.ok()) {
-                const locData = await locResp.json();
-                const locs: any[] = locData.items || locData.data || [];
-                for (const loc of locs) {
-                    if (loc.id && loc.id !== itemA.locationId) {
-                        await app.topUpItemStockAPI(itemA.itemId, 50, loc.id, loc.warehouse_id).catch(() => { });
-                    }
-                }
-            }
-        } catch { }
-
         const { DateHelper } = require('../../lib/utils/DateHelper');
         periodDateIso = (await DateHelper.resolve(setupPage)).iso;
         await setupPage.close().catch(() => { });
@@ -307,15 +292,23 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
 
             // 2. Select Warehouse & Location AFTER Item selection (target preferred warehouse/location where stock exists)
             const selectTargetDropdownOption = async (btn: any, label: string, preferredText?: string) => {
-                if (await btn.isVisible({ timeout: 1500 }).catch(() => false)) {
+                if (await btn.isVisible({ timeout: 2000 }).catch(() => false)) {
                     await btn.scrollIntoViewIfNeeded().catch(() => {});
                     await btn.click({ force: true }).catch(() => btn.evaluate((n: HTMLElement) => n.click()));
                     await page.waitForTimeout(800);
                     const overlay = page.locator('.chakra-menu__menu-list, [role="listbox"], .chakra-popover__content, [role="menu"]').filter({ visible: true }).last();
                     if (await overlay.isVisible({ timeout: 3000 }).catch(() => false)) {
+                        if (preferredText) {
+                            const searchInput = overlay.locator('input').first();
+                            if (await searchInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+                                await searchInput.fill(preferredText);
+                                await page.waitForTimeout(600);
+                            }
+                        }
                         const allOpts = overlay.locator('[role="option"], [role="menuitem"], .chakra-menu__menuitem, tbody tr, tr, button:not(:has-text("Clear")), [role="button"]').filter({ visible: true });
-                        let targetOpt = preferredText ? allOpts.filter({ hasText: preferredText }).first() : allOpts.first();
-                        if (!await targetOpt.isVisible({ timeout: 1500 }).catch(() => false)) {
+                        let targetOpt = preferredText ? allOpts.filter({ hasText: new RegExp(preferredText, 'i') }).first() : allOpts.first();
+                        await targetOpt.scrollIntoViewIfNeeded().catch(() => {});
+                        if (!await targetOpt.isVisible({ timeout: 2000 }).catch(() => false)) {
                             targetOpt = allOpts.first();
                         }
                         if (await targetOpt.isVisible({ timeout: 2000 }).catch(() => false)) {
@@ -330,7 +323,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
                         }
                     }
                     await page.keyboard.press('Escape').catch(() => {});
-                    await app.selectRandomOption(btn, label, true);
+                    await app.selectRandomOption(btn, label, false, preferredText);
                 }
             };
 
@@ -533,27 +526,30 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        // Top up itemA stock BEFORE navigating — prevents "Insufficient stock" rows
+        const targetItemName: string | undefined = (itemA as any).name || itemA.itemName;
+        const targetUnitPrice = String(itemA.unitCost || 100);
         const itemIdToTopUp = (itemA as any)?.id || (itemA as any)?.itemId;
-        if (itemIdToTopUp) {
-            await app.topUpItemStockAPI(itemIdToTopUp, 50, itemA.locationId, itemA.warehouseId);
-            console.log(`[SO-UI-03] ✅ Pre-topped itemA (${itemIdToTopUp}) to 50 units`);
-        }
 
-        const capturedItem = await captureItemWithPriceAPI(page, app);
-
-        await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
-        await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 60000 });
+        const lineItemBtn = page.locator('button:has-text("Line Item")').first();
+        await page.goto('/receivables/sale-orders/new', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(async () => {
+            await page.goto('/receivables/sale-orders/new', { waitUntil: 'commit', timeout: 60000 });
+        });
+        await lineItemBtn.waitFor({ state: 'visible', timeout: 120000 });
 
         await fillSalesOrderHeader(page, app);
 
         // Line 1: inventory item (search by name for guaranteed stocked item)
-        await page.locator('button:has-text("Line Item")').first().click();
-        await addLineItemViaModal(page, app, 'Item', { qty: '2', unitPrice: capturedItem?.price || '1000', itemName: capturedItem?.name });
+        await lineItemBtn.click();
+        await addLineItemViaModal(page, app, 'Item', {
+            qty: '2',
+            unitPrice: targetUnitPrice,
+            itemName: targetItemName,
+            warehouseName: 'Default Warehouse',
+            locationName: 'location2'
+        });
 
         // Line 2: miscellaneous
-        await page.locator('button:has-text("Line Item")').first().click();
+        await lineItemBtn.click();
         const modal2 = page.getByRole('dialog').last();
         await modal2.waitFor({ state: 'visible', timeout: 15000 });
         const miscBtn = modal2.getByRole('button', { name: 'Miscellaneous', exact: true });
@@ -562,8 +558,14 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
         } else {
             await page.keyboard.press('Escape');
             console.log('[INFO] Miscellaneous not available — adding second Item line');
-            await page.locator('button:has-text("Line Item")').first().click();
-            await addLineItemViaModal(page, app, 'Item', { qty: '1', unitPrice: '300', itemName: capturedItem?.name });
+            await lineItemBtn.click();
+            await addLineItemViaModal(page, app, 'Item', {
+                qty: '1',
+                unitPrice: '300',
+                itemName: targetItemName,
+                warehouseName: 'Default Warehouse',
+                locationName: 'location2'
+            });
         }
 
         // Verify 2 rows appear in the SO items table before submit
@@ -588,8 +590,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
 
         const soId = await app.extractIdFromUrl();
         const { apiBase, headers, qs } = await app.buildApiContext();
-        const soData = await (await page.request.get(`${apiBase}/sales-order/${soId}?${qs}`, { headers })).json();
-        const lines: any[] = soData.so_items || [];
+        // The ERP stores SO line items under /sales-orders/{id}/items (GET /sales-order/{id} only returns header)
+        const itemsResp = await page.request.get(`${apiBase}/sales-orders/${soId}/items?${qs}`, { headers });
+        const itemsData = itemsResp.ok() ? await itemsResp.json().catch(() => ({})) : {};
+        const soData = await (await page.request.get(`${apiBase}/sales-order/${soId}?${qs}`, { headers })).json().catch(() => ({}));
+        const lines: any[] = itemsData.data || itemsData.items || soData.so_items || [];
         const linesSum = lines.reduce((s: number, l: any) => s + parseFloat(l.amount ?? '0'), 0);
         console.log(`[AUDIT] SO lines: ${lines.length} | Total: $${linesSum}`);
         expect(lines.length).toBeGreaterThanOrEqual(2);

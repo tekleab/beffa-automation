@@ -70,6 +70,7 @@ export default defineConfig({
       args: [
         '--start-maximized',
         '--force-device-scale-factor=0.75',
+        '--disk-cache-dir=/tmp/playwright-chrome-cache',
       ],
     },
 

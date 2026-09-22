@@ -388,7 +388,7 @@ export class PurchaseAPI extends BasePage {
     let resolvedApAccountId = apAccountId || meta?.apAccountId;
     let resolvedGlAccountId = glAccountId !== undefined ? glAccountId : meta?.apAccountId;
 
-    if (!resolvedApAccountId || !resolvedGlAccountId) {
+    if (!resolvedApAccountId || (glAccountId === undefined && !resolvedGlAccountId)) {
       const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers }, 30000);
       const acctData = await safeJson(acctResp, 'Accounts Discovery');
       const allAccounts = acctData.items || acctData.data || [];
@@ -409,7 +409,9 @@ export class PurchaseAPI extends BasePage {
         allAccounts[0];
 
       resolvedApAccountId = resolvedApAccountId || discoveredAp?.id;
-      resolvedGlAccountId = resolvedGlAccountId || (allAccounts.find((a: any) => _typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0])?.id;
+      if (glAccountId === undefined) {
+        resolvedGlAccountId = resolvedGlAccountId || (allAccounts.find((a: any) => _typeOf(a).includes('expense')) || allAccounts[1] || allAccounts[0])?.id;
+      }
     }
 
     // 3. Discover Currency
