@@ -1,0 +1,28 @@
+05:59:27 [PERFORMANCE] API - Auth API Verification: 339.50ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/22/010602 (ID: 6440825a-4682-4a71-923e-c79b44feddb1)
+05:59:33 [INFO] Advancing inventory-adjustments "6440825a-4682-4a71-923e-c79b44feddb1"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790056770269 (9cc0942b-e456-4564-8156-30ffab4f674b) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+05:59:36 [PERFORMANCE] API - Auth API Verification: 318.62ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+05:59:38 [INFO] Advancing invoices "62c5e6ad-d21f-4ef3-a423-d4d88ed7c10b"...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔴 BUG #7 — AR Outstanding Balance Understatement
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Invoice ID        : 62c5e6ad-d21f-4ef3-a423-d4d88ed7c10b
+   Invoice Ref       : INV/2026/09/22/005280
+   Item ID           : 9cc0942b-e456-4564-8156-30ffab4f674b
+   Item unit_cost    : $100   ← ERP uses THIS for AR
+   Invoice unit_price : $500   ← should be used for AR
+   ERP unreceived_amount: $100
+   Expected AR balance  : $500
+   ❌ AR UNDERSTATED BY: $400 (80.0%)
+   Impact: Customer pays $100 — ERP marks $500 invoice FULLY SETTLED
+   Revenue lost per transaction: $400
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

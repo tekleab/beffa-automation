@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
-  "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 291,
-  "lastUpdated": "2026-09-22T05:55:41.487Z",
+  "total": 212,
+  "passed": 189,
+  "failed": 22,
+  "skipped": 1,
+  "passRate": 89.2,
+  "avgDurationMs": 20677,
+  "lastUpdated": "2026-09-22T06:19:04.897Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
-      "skipped": 0,
+      "passed": 189,
+      "failed": 22,
+      "skipped": 1,
       "trend": [
-        100,
         64.7,
         100,
         90.3,
         100,
         90.6,
-        100
+        100,
+        89.6
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "778",
+      "commit": "7883a96",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "73m 3s",
+      "passRate": 89.2,
+      "status": "success"
+    },
     {
       "run": "777",
       "commit": "b761e90",
@@ -95,15 +103,266 @@
       "duration": "0m 4s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "768",
-      "commit": "a0cbe63",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "31m 34s",
-      "passRate": 60.8,
-      "status": "failed"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id, input[name=\"name\"]:not([placeholder*=\"Search\" i]), input[placeholder=\"Customer ",
+      "firstSeen": "2026-09-22T05:57:38.932Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "error": "Error: BUG #7: ERP unreceived_amount=$100 but invoice unit_price=$500. AR understated by $400. Invoice: INV/2026/09/22/005280 (62c5e6ad-d21f-4ef3-a423-d4d88ed7c10b), Item: 9cc0942b-e456-4564-8156-30ff",
+      "firstSeen": "2026-09-22T05:59:26.943Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  37 |     });\n  38 |\n> 39 |     test.beforeEach(async ({ page }) => {\n     |          ^\n  40 |         const app = new Ap",
+      "firstSeen": "2026-09-22T06:00:20.596Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  37 |     });\n  38 |\n> 39 |     test.beforeEach(async ({ page }) => {\n     |          ^\n  40 |         const app = new Ap",
+      "firstSeen": "2026-09-22T06:00:20.770Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must prevent receipts against a voided invoice",
+      "error": "\u001b[31mTest timeout of 120000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  37 |     });\n  38 |\n> 39 |     test.beforeEach(async ({ page }) => {\n     |          ^\n  40 |         const app = new Ap",
+      "firstSeen": "2026-09-22T06:00:29.608Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-22T06:02:48.211Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill API Creation Failed: 408 - [TIMEOUT] Create Bill exceeded 30000ms — backend may be deadlocked\n\n   at ../lib/api/PurchaseAPI.ts:479\n\n  477 |     }\n  478 |\n> 479 |     if (!response.ok()) th",
+      "firstSeen": "2026-09-22T06:02:55.838Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI: Bills Index page (/payables/bills) must resolve data grid without error states",
+      "error": "Error: Bills index page should not display error alert\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceive",
+      "firstSeen": "2026-09-22T06:04:27.316Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errT",
+      "firstSeen": "2026-09-22T06:04:51.221Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/22/004331 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
+      "firstSeen": "2026-09-22T06:06:11.550Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Validate TIN, create customer, edit, remove",
+      "file": "tests/sales/customer.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: Invoice balance must correctly restore after receipt reversal",
+      "file": "tests/sales/so-accounting.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Guardrail: System must mathematically reject discounts exceeding invoice value",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Guardrail: System must reject zero, negative, and fractional receipt amounts",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Guardrail: System must prevent receipts against a voided invoice",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI: Bills Index page (/payables/bills) must resolve data grid without error states",
+      "file": "tests/purchase/bill-index-fetching.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "file": "tests/purchase/po-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-08: Project created via API appears in the list",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-09: Clicking project row navigates to detail view",
+      "file": "tests/project/project-ui-list.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI: Payroll Runs page must load and display run records or empty state",
+      "file": "tests/hr/hr-payroll.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-01: Single bill payment → bill balance settles to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification",
+      "file": "tests/cross-module/order-to-cash-e2e.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "PAY-API-03: Partial payment → bill balance reduces by exact amount",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification",
+      "file": "tests/cross-module/procure-to-pay-e2e.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    }
+  ]
 }
