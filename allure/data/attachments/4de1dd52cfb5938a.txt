@@ -1,0 +1,85 @@
+10:33:21 [PERFORMANCE] API - Auth API Verification: 390.96ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/22/010775 (ID: 8e36f60a-c2a6-4f24-a250-c988b5c42296)
+10:33:28 [INFO] Advancing inventory-adjustments "8e36f60a-c2a6-4f24-a250-c988b5c42296"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790073204646 (7a45fe75-a150-404b-9d6d-ea0869c9d3cb) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] FIFO-Item-1790073204646 | stock:20
+10:33:32 [INFO] Advancing invoices "4610b6cf-2411-4bd8-9722-151dcdbf415a"...
+[INVOICE JOURNAL] INV/2026/09/22/005346 (4 entries)
+  Sales () Dr:0 Cr:100
+  Cash at Bank - CBE () Dr:100 Cr:0
+  Inventory () Dr:0 Cr:100
+  Accounts Receivable () Dr:100 Cr:0
+[PASS] AR debited $100 on INV/2026/09/22/005346
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=4610b6cf... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/22/001557
+10:33:42 [INFO] Advancing receipts "54d07832-1ec0-47b0-babf-23292c5c2750"...
+[RECEIPT] RCPT/2026/09/22/001557 approved
+[STEP] Reversing receipt RCPT/2026/09/22/001557...
+[PASS] Receipt RCPT/2026/09/22/001557 reversed
+[STEP] Voiding invoice INV/2026/09/22/005346...
+[VOID] Invoice 4610b6cf-2411-4bd8-9722-151dcdbf415a voided → status=draft (no separate credit note; sales_journal cleared)
+[VOID] id=4610b6cf-2411-4bd8-9722-151dcdbf415a ref=INV/2026/09/22/005346 status=draft
+[VOID JOURNAL] original invoice after void (4 entries)
+   Dr:0 Cr:100
+   Dr:100 Cr:0
+   Dr:0 Cr:100
+   Dr:100 Cr:0
+[PASS] Void confirmed: mirror entries present, net AR = 0.00 (balanced) for INV/2026/09/22/005346
+
+===============================================================================================
+  GL AUDIT REPORT — BEFFA ERP  |  Company: BM Tech  |  2026-09-22T10:34:01.845Z
+===============================================================================================
+
+  ▶ 1. Invoice (AR Debit — Pre-Void) [APPROVED]
+    Ref: INV/2026/09/22/005346
+    ID : 4610b6cf-2411-4bd8-9722-151dcdbf415a
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Sales                                |                              |            — |       100.00 |
+  | Cash at Bank - CBE                   |                              |       100.00 |            — |
+  | Inventory                            |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 2. Receipt (AR Cleared)
+    Ref: RCPT/2026/09/22/001557
+    ID : 54d07832-1ec0-47b0-babf-23292c5c2750
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 3. Receipt Reversal
+    Ref: RCPT/2026/09/22/001557
+    ID : 54d07832-1ec0-47b0-babf-23292c5c2750
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | (no posted entries — GL cleared)                                                                  |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 4. Invoice After Void (GL Cleared) [DRAFT]
+    Ref: INV/2026/09/22/005346
+    ID : 4610b6cf-2411-4bd8-9722-151dcdbf415a
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  |                                      |                              |            — |       100.00 |
+  |                                      |                              |       100.00 |            — |
+  |                                      |                              |            — |       100.00 |
+  |                                      |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
