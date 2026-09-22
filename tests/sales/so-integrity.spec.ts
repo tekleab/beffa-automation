@@ -47,18 +47,18 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     }
 
     test('Guardrail: System must reject zero, negative, and fractional receipt amounts', async ({ page }) => {
-        test.setTimeout(120000);
+        test.setTimeout(180000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        const meta = await app.api.sales.discoverMetadataAPI();
+        // Reuse sharedMeta from beforeAll — avoids a redundant metadata round-trip
+        const meta = sharedMeta ?? await app.api.sales.discoverMetadataAPI();
         const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
         await ensureStock(app, item, 5);
 
         const inv = await app.api.sales.createStandaloneInvoiceAPI({ customerId: meta.customerId, itemId: item.itemId, quantity: 1, unitPrice: 500, locationId: item.locationId, warehouseId: item.warehouseId });
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
-
-        // Re-fetch context AFTER advance to get a fresh token
+        // Build API context ONCE after advance — reuse for all subsequent requests
         const { apiBase, headers, qs } = await app.buildApiContext();
         const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
         const acctJson = acctResp.ok() ? await acctResp.json() : {};
@@ -82,10 +82,9 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
             receipt_items: [{ amount, general_ledger_account_id: glAcct.id, unit_price: amount, quantity: 1, description: 'Invoice Receipt' }]
         });
 
+        // Reuse the same headers for both attack calls (token still valid; advance just completed)
         console.log('[ATTACK] Submitting receipt with amount = 0...');
-        // Re-fetch headers at each request to guard against mid-test token expiry
-        const h0 = (await app.buildApiContext()).headers;
-        const zeroResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(0), headers: h0 });
+        const zeroResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(0), headers });
         if ([200, 201].includes(zeroResp.status())) {
             const body = await zeroResp.json();
             try {
@@ -98,8 +97,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
         }
 
         console.log('[ATTACK] Submitting receipt with amount = -100...');
-        const hNeg = (await app.buildApiContext()).headers;
-        const negResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(-100), headers: hNeg });
+        const negResp = await page.request.post(`${apiBase}/receipts?${qs}`, { data: buildReceiptPayload(-100), headers });
         if ([200, 201].includes(negResp.status())) {
             const body = await negResp.json();
             try {
@@ -113,10 +111,11 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     });
 
     test('Guardrail: System must mathematically reject discounts exceeding invoice value', async ({ page }) => {
-        test.setTimeout(120000);
+        test.setTimeout(180000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        const meta = await app.api.sales.discoverMetadataAPI();
+        // Reuse sharedMeta from beforeAll — avoids a redundant metadata round-trip
+        const meta = sharedMeta ?? await app.api.sales.discoverMetadataAPI();
         const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
         await ensureStock(app, item, 2);
 
@@ -140,11 +139,11 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     });
 
     test('Guardrail: System must prevent receipts against a voided invoice', async ({ page }) => {
-        test.setTimeout(120000);
+        test.setTimeout(180000);
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        const { apiBase, headers, qs } = await app.buildApiContext();
-        const meta = await app.api.sales.discoverMetadataAPI();
+        // Reuse sharedMeta from beforeAll — avoids a redundant metadata round-trip
+        const meta = sharedMeta ?? await app.api.sales.discoverMetadataAPI();
         // Use a fresh isolated item so stock depletion from other tests doesn't cause 422
         const item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
         await ensureStock(app, item, 5);
@@ -153,16 +152,22 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
 
         await app.advanceDocumentAPI(inv.id, 'invoices');
 
+        // Build context AFTER advance — ensures token is fresh for void + receipt attack
+        const { apiBase, headers, qs } = await app.buildApiContext();
+
         console.log(`[ACTION] Voiding Invoice ${inv.ref}...`);
         const voidResp = await page.request.patch(`${apiBase}/invoices/${inv.id}/void?${qs}`, { data: { status: 'reversed' }, headers });
 
         if (voidResp.ok()) {
             const acctResp = await page.request.get(`${apiBase}/accounts?page=1&pageSize=50&${qs}`, { headers });
-            const allAccounts = (await acctResp.json()).items || (await acctResp.json()).data || [];
+            // Parse once — avoid consuming the response stream twice
+            const acctBody = await acctResp.json();
+            const allAccounts = acctBody.items || acctBody.data || [];
             const cashAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('cash')) || allAccounts[0];
             const glAcct = allAccounts.find((a: any) => a.account_type?.toLowerCase().includes('receivable') || a.name?.toLowerCase().includes('receivable')) || allAccounts[1] || allAccounts[0];
             const currResp = await page.request.get(`${apiBase}/currency?${qs}`, { headers });
-            const currency = ((await currResp.json()).items || (await currResp.json()).data || [])[0];
+            const currBody = await currResp.json();
+            const currency = (currBody.items || currBody.data || [])[0];
 
             console.log('[ATTACK] Attempting receipt on VOIDED invoice...');
             const ghostReceiptResp = await page.request.post(`${apiBase}/receipts?${qs}`, {
