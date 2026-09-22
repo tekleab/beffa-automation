@@ -87,14 +87,23 @@ export class AuthManager extends BasePage {
       const period = process.env.BEFFA_PERIOD || 'yearly';
       const calendar = process.env.BEFFA_CALENDAR || 'ec';
       const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
-      await this.startTacticalTimer();
-      const response = await this.page.request.post(loginUrl, {
-        data: { email: cleanEmail, password: cleanPass },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      let response: any;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          response = await this.page.request.post(loginUrl, {
+            data: { email: cleanEmail, password: cleanPass },
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 20000
+          });
+          if (response.ok()) break;
+        } catch (err: any) {
+          if (attempt === 2) throw err;
+          await this.page.waitForTimeout(1000);
+        }
+      }
       await this.stopTacticalTimer('Auth API Verification', 'API');
 
-      if (!response.ok()) throw new Error(`API Login Failed: ${response.status()}`);
+      if (!response || !response.ok()) throw new Error(`API Login Failed: ${response?.status?.() ?? 'no response'}`);
 
       const session = await response.json();
       const token = session.auth_token;
@@ -104,7 +113,9 @@ export class AuthManager extends BasePage {
       this.cachedToken = token;
 
       // 2. Head to the Login page to settle the domain context
-      await this.page.goto('/users/login', { waitUntil: 'commit' });
+      await this.page.goto('/users/login', { waitUntil: 'commit', timeout: 30000 }).catch(async () => {
+        await this.page.goto('/users/login', { waitUntil: 'domcontentloaded', timeout: 30000 });
+      });
 
       // 3. Inject the EXACT keys the frontend requires to "wake up" authenticated
       await this.page.evaluate(({ jwt, exp, company, year }: { jwt: string; exp: string; company: string; year: string }) => {
@@ -135,7 +146,7 @@ export class AuthManager extends BasePage {
       console.log('[AUTH] Session token and local storage injected successfully.');
     } catch (error: any) {
       console.log(`[WARN] API Login failed (${error.message}). Falling back to UI Login...`);
-      await this.page.goto('/users/login');
+      await this.page.goto('/users/login', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
       await this.emailInput.waitFor({ state: 'visible', timeout: 15000 });
       await this.emailInput.fill(cleanEmail);
       await this.passwordInput.fill(cleanPass);

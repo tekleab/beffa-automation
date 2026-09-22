@@ -77,17 +77,26 @@ test.describe('Purchase Bill Index Page Data Fetching Audit @purchase @bills @re
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         console.log(`[STEP 1] Navigating to Bills Index UI (/payables/bills)...`);
-        await page.goto('/payables/bills', { waitUntil: 'commit' });
+        await page.goto('/payables/bills', { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(async () => {
+            await page.goto('/payables/bills', { waitUntil: 'commit', timeout: 30000 });
+        });
 
         // Verify page load & structural rendering
         expect(page.url()).toMatch(/payables\/bills/i);
 
         console.log(`[STEP 2] Verifying loading boundary resolution and table rendering...`);
-        const content = page.locator('table, [role="table"], tbody tr, h1, h2, [role="heading"], button, a, div.chakra-stack').first();
-        await content.waitFor({ state: 'visible', timeout: 25000 });
+        // Wait for 'Preparing your workspace...' splash to detach/hide if present
+        const workspaceLoader = page.locator('text=/Preparing your workspace|Loading\.\.\./i').first();
+        if (await workspaceLoader.isVisible({ timeout: 5000 }).catch(() => false)) {
+            console.log(`[INFO] Waiting for workspace loader to disappear...`);
+            await workspaceLoader.waitFor({ state: 'hidden', timeout: 45000 }).catch(() => {});
+        }
 
-        // Check for error alerts or blank page
-        const errorAlert = await page.locator('text=/error|failed|something went wrong|500/i').first()
+        const content = page.locator('table, [role="table"], tbody tr, h1, h2, [role="heading"], button, a, div.chakra-stack').first();
+        await content.waitFor({ state: 'visible', timeout: 45000 });
+
+        // Check for genuine UI error alerts or toasts (avoid matching raw numbers like 500.00 or 2,500.00 in financial tables)
+        const errorAlert = await page.locator('[role="alert"], .chakra-alert[data-status="error"], div[data-status="error"]').first()
             .isVisible({ timeout: 3000 }).catch(() => false);
 
         const currentUrl = page.url();

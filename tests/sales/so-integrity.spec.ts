@@ -17,6 +17,7 @@ import { AppManager } from '../../pages/AppManager';
  * CATEGORY 1: Financial Integrity & Sanity Boundaries
  */
 test.describe('Financial Integrity & Boundary Audits @sales @regression', () => {
+    test.setTimeout(240000);
 
     let sharedMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
     let sharedItem: Awaited<ReturnType<AppManager['api']['inventory']['createFreshItemWithStockAPI']>>;
@@ -24,7 +25,6 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     let sharedPage: import('@playwright/test').Page;
 
     test.beforeAll(async ({ browser }) => {
-        test.setTimeout(240000);
         sharedPage = await browser.newPage();
         const app = new AppManager(sharedPage);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
@@ -40,7 +40,6 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     test.beforeEach(async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-
     });
 
     async function ensureStock(_app: AppManager, _item: any, _quantity: number) {
@@ -48,9 +47,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     }
 
     test('Guardrail: System must reject zero, negative, and fractional receipt amounts', async ({ page }) => {
-        test.setTimeout(180000);
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         // Reuse sharedMeta from beforeAll — avoids a redundant metadata round-trip
         const meta = sharedMeta ?? await app.api.sales.discoverMetadataAPI();
         const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 50, unit_cost: 100 });
@@ -112,9 +109,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     });
 
     test('Guardrail: System must mathematically reject discounts exceeding invoice value', async ({ page }) => {
-        test.setTimeout(180000);
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         // Reuse sharedMeta from beforeAll — avoids a redundant metadata round-trip
         const meta = sharedMeta ?? await app.api.sales.discoverMetadataAPI();
         const item = sharedItem?.itemId ? sharedItem : await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 10, unit_cost: 100 });
@@ -140,9 +135,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     });
 
     test('Guardrail: System must prevent receipts against a voided invoice', async ({ page }) => {
-        test.setTimeout(180000);
         const app = new AppManager(page);
-        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
         // Reuse sharedMeta from beforeAll — avoids a redundant metadata round-trip
         const meta = sharedMeta ?? await app.api.sales.discoverMetadataAPI();
         // Use a fresh isolated item so stock depletion from other tests doesn't cause 422

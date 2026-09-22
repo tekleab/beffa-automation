@@ -921,12 +921,7 @@ export class PurchaseAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-    const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
-    const acctData = await acctResp.json();
-    const allAccounts = acctData.items || acctData.data || [];
-    const cashAccount = allAccounts.find((a: any) =>
-      (a.type || a.account_type || '').toLowerCase().includes('cash') || (a.type || a.account_type || '').toLowerCase().includes('bank')
-    ) || allAccounts[0];
+    const cashAccountId = await this.resolveCashAccountId(data.cashAccountId);
 
     const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
     const currData = await currResp.json();
@@ -936,7 +931,7 @@ export class PurchaseAPI extends BasePage {
     const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       amount: data.amount,
-      cash_account_id: data.cashAccountId || cashAccount?.id,
+      cash_account_id: cashAccountId,
       vendor_id: data.vendorId,
       date: _dateIso,
       payment_method: 'cash',
