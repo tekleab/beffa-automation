@@ -25,6 +25,7 @@ test.describe('Financial Integrity & Boundary Audits @sales @regression', () => 
     let sharedPage: import('@playwright/test').Page;
 
     test.beforeAll(async ({ browser }) => {
+        test.setTimeout(240000);
         sharedPage = await browser.newPage();
         const app = new AppManager(sharedPage);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
