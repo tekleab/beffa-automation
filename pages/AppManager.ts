@@ -1,4 +1,6 @@
 import { Page } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AuthManager } from '../lib/auth';
 import { BasePage } from '../lib/base-page';
 import { SalesAPI } from '../lib/api/SalesAPI';
@@ -48,6 +50,30 @@ export class AppManager {
 
   constructor(page: Page) {
     this.page = page;
+
+    // Fast-path: Intercept large static bundle assets and fulfill from local cache
+    const cacheDir = path.resolve(__dirname, '../.cache/assets');
+    if (fs.existsSync(cacheDir)) {
+      this.page.route('**/assets/*', (route) => {
+        const url = route.request().url();
+        const filename = url.split('/').pop()?.split('?')[0];
+        if (filename) {
+          const local = path.join(cacheDir, filename);
+          if (fs.existsSync(local)) {
+            const ext = path.extname(filename).toLowerCase();
+            const ct = ext === '.js' ? 'text/javascript'
+              : ext === '.css' ? 'text/css'
+              : ext === '.png' ? 'image/png'
+              : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
+              : ext === '.ttf' ? 'font/ttf'
+              : ext === '.woff2' ? 'font/woff2'
+              : 'application/octet-stream';
+            return route.fulfill({ path: local, contentType: `${ct}; charset=utf-8` }).catch(() => {});
+          }
+        }
+        return route.continue().catch(() => {});
+      }).catch(() => {});
+    }
 
     // Login selectors
     this.emailInput = page.getByRole('textbox', { name: 'Email *' });

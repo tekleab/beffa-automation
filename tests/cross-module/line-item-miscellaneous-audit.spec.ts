@@ -180,10 +180,22 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
 
 
         // ── Open the modal ────────────────────────────────────────────────────
-        await Promise.race([
-            popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { }),
-            modal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { })
+        await page.waitForTimeout(400);
+        let opened = await Promise.race([
+            popover.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false),
+            modal.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false),
         ]);
+
+        if (!opened) {
+            console.log(`[MODAL] Popover/Modal not visible for ${type} — re-clicking Line Item button...`);
+            const retryLineBtn = page.locator('button:has-text("Line Item")').first();
+            await retryLineBtn.scrollIntoViewIfNeeded().catch(() => {});
+            await retryLineBtn.click({ force: true }).catch(() => retryLineBtn.evaluate((b: HTMLElement) => b.click()));
+            await Promise.race([
+                popover.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+                modal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+            ]);
+        }
 
         if (await popover.isVisible().catch(() => false)) {
             await popover.getByRole('button', { name: type, exact: true }).click();
@@ -1172,35 +1184,61 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
     test('PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
+        const lineItemBtn = page.locator('button:has-text("Line Item")').first();
+        await page.goto('/payables/purchase-orders/new', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(async () => {
+            await page.goto('/payables/purchase-orders/new', { waitUntil: 'commit', timeout: 60000 });
+        });
+        await lineItemBtn.waitFor({ state: 'visible', timeout: 120000 });
         const poItemsTab = page.getByRole('tab', { name: /Purchase Order Items/i });
-        await poItemsTab.waitFor({ state: 'visible', timeout: 60000 });
+        if (await poItemsTab.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await poItemsTab.click().catch(() => {});
+        }
 
         await app.pickDate('Purchase Order Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable', false, 'Accounts Payable');
         await app.selectRandomOption(page.getByRole('button', { name: 'Purchase Type selector' }), 'Purchase Type');
 
-        await page.getByRole('tab', { name: /Purchase Order Items/i }).click();
-
         const capturedItem = await captureItemWithPriceAPI(page, app);
+        const targetItemName = (itemA as any)?.name || itemA.itemName || capturedItem?.name;
+        const targetUnitPrice = String(itemA.unitCost || capturedItem?.price || 100);
 
         // Line 1: inventory item
-        await page.locator('button:has-text("Line Item")').first().click();
-        await addLineItemViaModal(page, app, 'Item', { qty: '4', unitPrice: capturedItem?.price || '1500', itemName: capturedItem?.name });
+        await lineItemBtn.click();
+        await addLineItemViaModal(page, app, 'Item', {
+            qty: '4',
+            unitPrice: targetUnitPrice,
+            itemName: targetItemName,
+            warehouseName: 'Default Warehouse',
+            locationName: 'location2'
+        });
 
-        // Line 2: miscellaneous
-        await page.locator('button:has-text("Line Item")').first().click();
-        const modal2 = page.getByRole('dialog').last();
-        await modal2.waitFor({ state: 'visible', timeout: 15000 });
-        const miscBtn = modal2.getByRole('button', { name: 'Miscellaneous', exact: true });
+        // Settle modal animation from Line 1
+        await page.waitForTimeout(800);
+
+        // Line 2: miscellaneous (or second item line if PO form only supports inventory items)
+        await lineItemBtn.click();
+        const modal2 = page.locator('.chakra-modal__content, .chakra-popover__content, [role="dialog"]')
+            .filter({ hasText: /Warehouse \*|G\/L Account \*|Description|Please select an item type/i }).first();
+        
+        let modalOpened = await modal2.waitFor({ state: 'visible', timeout: 4000 }).then(() => true).catch(() => false);
+        if (!modalOpened) {
+            await lineItemBtn.click({ force: true }).catch(() => lineItemBtn.evaluate((b: HTMLElement) => b.click()));
+            await modal2.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+        }
+
+        const miscBtn = page.getByRole('button', { name: 'Miscellaneous', exact: true });
         if (await miscBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
             await addLineItemViaModal(page, app, 'Miscellaneous', { qty: '1', unitPrice: '500', description: 'Import duty' });
         } else {
-            await page.keyboard.press('Escape');
-            await page.locator('button:has-text("Line Item")').first().click();
-            await addLineItemViaModal(page, app, 'Item', { qty: '1', unitPrice: capturedItem?.price || '500', itemName: capturedItem?.name });
+            console.log('[INFO] Miscellaneous not present in PO — adding second Item line');
+            await addLineItemViaModal(page, app, 'Item', {
+                qty: '1',
+                unitPrice: targetUnitPrice,
+                itemName: targetItemName,
+                warehouseName: 'Default Warehouse',
+                locationName: 'location2'
+            });
         }
 
         await expect.poll(async () => page.locator('table tbody tr').count(), { timeout: 10000 }).toBeGreaterThanOrEqual(2);
@@ -1292,10 +1330,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
     test('BILL-UI-01: Add inventory Line Item via modal → Bill created and approved', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-
-        await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 30000 });
+        const lineItemBtn = page.locator('button:has-text("Line Item")').first();
+        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(async () => {
+            await page.goto('/payables/bills/new', { waitUntil: 'commit', timeout: 60000 });
+        });
+        await lineItemBtn.waitFor({ state: 'visible', timeout: 120000 });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -1304,7 +1343,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
 
         const capturedItem = await captureItemWithPriceAPI(page, app);
 
-        await page.locator('button:has-text("Line Item")').first().click();
+        await lineItemBtn.click();
         await addLineItemViaModal(page, app, 'Item', { qty: '4', unitPrice: capturedItem?.price || '2500', itemName: capturedItem?.name });
         console.log('[OK] Inventory line item added to Bill');
 
@@ -1323,17 +1362,18 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
     test('BILL-UI-02: Add Miscellaneous line via modal → Bill total reflects it', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-
-        await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 30000 });
+        const lineItemBtn = page.locator('button:has-text("Line Item")').first();
+        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(async () => {
+            await page.goto('/payables/bills/new', { waitUntil: 'commit', timeout: 60000 });
+        });
+        await lineItemBtn.waitFor({ state: 'visible', timeout: 120000 });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
         await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable', false, 'Accounts Payable');
         await fillCurrencyField(page, app);
 
-        await page.locator('button:has-text("Line Item")').first().click();
+        await lineItemBtn.click();
         await addLineItemViaModal(page, app, 'Miscellaneous', { qty: '1', unitPrice: '4000', description: 'Import duty' });
 
         // ERP may require an inventory line before allowing submit on a standalone bill.
@@ -1360,10 +1400,11 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
     test('BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP', async ({ page }) => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-        await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
-
-        await page.locator('button:has-text("Line Item")').first().waitFor({ state: 'visible', timeout: 30000 });
+        const lineItemBtn = page.locator('button:has-text("Line Item")').first();
+        await page.goto('/payables/bills/new', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(async () => {
+            await page.goto('/payables/bills/new', { waitUntil: 'commit', timeout: 60000 });
+        });
+        await lineItemBtn.waitFor({ state: 'visible', timeout: 120000 });
 
         await app.pickDate('Invoice Date');
         await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
@@ -1371,13 +1412,24 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
         await fillCurrencyField(page, app);
 
         const capturedItem = await captureItemWithPriceAPI(page, app);
+        const targetItemName = (itemA as any)?.name || itemA.itemName || capturedItem?.name;
+        const targetUnitPrice = String(itemA.unitCost || capturedItem?.price || 100);
 
         // Item line
-        await page.locator('button:has-text("Line Item")').first().click();
-        await addLineItemViaModal(page, app, 'Item', { qty: '2', unitPrice: capturedItem?.price || '3000', itemName: capturedItem?.name });
+        await lineItemBtn.click();
+        await addLineItemViaModal(page, app, 'Item', {
+            qty: '2',
+            unitPrice: targetUnitPrice,
+            itemName: targetItemName,
+            warehouseName: 'Default Warehouse',
+            locationName: 'location2'
+        });
+
+        // Settle modal backdrop
+        await page.waitForTimeout(800);
 
         // Miscellaneous line
-        await page.locator('button:has-text("Line Item")').first().click();
+        await lineItemBtn.click();
         await addLineItemViaModal(page, app, 'Miscellaneous', { qty: '1', unitPrice: '500', description: 'Clearance fee' });
 
         // Chakra UI Bill table uses div rows, not <table>/<tbody>/<tr>

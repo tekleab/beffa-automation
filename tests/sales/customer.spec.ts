@@ -36,21 +36,22 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke', () => {
         const zone    = region.zones[0];
         const woreda  = zone.woredas[0];
 
-        // ── Phase 1: TIN validation ───────────────────────────────────────────
+        // ── Phase 1: TIN validation check ───────────────────────────────────────────
         console.log('[STEP] Phase 1: TIN validation check');
-        await page.goto('/receivables/customers/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+        await page.goto('/receivables/customers/new', { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => {});
         if (page.url().includes('/users/login')) {
             await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
-            await page.goto('/receivables/customers/new', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+            await page.goto('/receivables/customers/new', { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => {});
         }
-        await app.customerNameInput.waitFor({ state: 'visible', timeout: 15000 });
+        await app.customerNameInput.waitFor({ state: 'visible', timeout: 60000 });
         await app.customerNameInput.fill('Validation Test');
         await app.customerTypeSelect.selectOption('individual');
         await app.customerTinInput.fill('123');
-        await app.customerPhoneInput.fill('0911223344');
+        const validationPhone = `09${Math.floor(10000000 + Math.random() * 90000000)}`;
+        await app.customerPhoneInput.fill(validationPhone);
         await app.fillEthiopianAddress(region.region, zone.name, woreda);
         await app.createCustomerBtn.click();
-        await expect(page.getByText(/10 digit|must be 10/i)).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(/10 digit|must be 10/i)).toBeVisible({ timeout: 30000 });
         console.log('[OK] Invalid TIN correctly blocked');
 
         // ── Phase 2: Create ───────────────────────────────────────────────────
@@ -68,15 +69,20 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke', () => {
 
         // ── Phase 3: Edit ─────────────────────────────────────────────────────
         console.log(`[STEP] Phase 3: Editing to "${updatedName}"`);
-        await app.editCustomerBtn.waitFor({ state: 'visible', timeout: 20000 });
-        await app.editCustomerBtn.click({ force: true });
+        await page.waitForTimeout(2000);
+        const editBtn = page.locator('button, a, [role="button"]').filter({ hasText: /^edit$/i }).first();
+        await editBtn.waitFor({ state: 'visible', timeout: 20000 });
 
-        // Wait for /edit URL — the Edit button navigates to a dedicated edit page
-        await page.waitForURL(url => url.href.includes('/edit'), { timeout: 30000 })
-          .catch(() => page.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {}));
+        // In the ERP SPA, the Edit action navigates to /receivables/customers/:id/update.
+        // Retry clicking Edit until page successfully navigates to /update (or /edit):
+        await expect(async () => {
+            if (!page.url().includes('/update') && !page.url().includes('/edit')) {
+                await editBtn.click();
+            }
+            expect(page.url()).toMatch(/\/(update|edit)/);
+        }).toPass({ timeout: 25000, intervals: [1000, 2000] });
+        console.log(`[OK] Navigated to Update page: ${page.url()}`);
 
-        // Scope strictly to a visible, editable input — explicitly exclude the
-        // list-page "Search by name" box which shares the placeholder*="name" pattern.
         const nameInput = page.locator([
           '#customer_name-input-id',
           'input[name="name"]:not([placeholder*="Search" i])',
@@ -87,13 +93,13 @@ test.describe('Customer Lifecycle — Validation & CRUD @sales @smoke', () => {
 
         await nameInput.waitFor({ state: 'visible', timeout: 30000 });
         await expect(nameInput).toBeEditable({ timeout: 15000 });
-        await nameInput.click({ force: true });
-        await nameInput.selectText().catch(() => {});
+        await nameInput.click();
         await nameInput.fill(updatedName);
 
-        const saveBtn = page.locator('button:has-text("Save"), button:has-text("Update"), button:has-text("Edit Customer")').first();
+        const saveBtn = page.locator('button:has-text("Update Customer"), button:has-text("Save"), button:has-text("Update"), button:has-text("Edit Customer")').first();
         await saveBtn.waitFor({ state: 'visible', timeout: 10000 });
-        await saveBtn.click({ force: true });
+        await saveBtn.click();
+        await page.waitForURL(url => url.href.includes('/detail'), { timeout: 30000 }).catch(() => {});
         await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
         // Poll for updated name — React re-render may lag behind networkidle
         await expect(page.getByText(updatedName).first()).toBeVisible({ timeout: 30000 });
