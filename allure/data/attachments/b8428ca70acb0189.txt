@@ -1,0 +1,19 @@
+12:49:37 [PERFORMANCE] API - Auth API Verification: 150074.05ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/22/011001 (ID: b63ebbc5-3e8e-4a8e-9a23-bb76792df4f2)
+12:49:44 [INFO] Advancing inventory-adjustments "b63ebbc5-3e8e-4a8e-9a23-bb76792df4f2"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790081381013 (c7d9c567-8e48-4400-a1b2-7d915a6864c2) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:49:48 [PERFORMANCE] API - Auth API Verification: 160358.40ms
+[AUTH] Session token and local storage injected successfully.
+[AUTH] Reusing cached signed-in session state — skipping login navigation.
+[STEP 1] Creating SO for 10 units...
+12:49:50 [INFO] Advancing sales-orders "07930d78-ee9a-4a03-8850-ba74ddfa74e6"...
+[ATTACK] Attempting to Invoice 50 units against the 10-unit SO...
+[PASS] Over-Invoicing attempt blocked by API: {
+	"code": 400,
+	"message": "sales order balance already exhausted: sales order item d0bd8cde-4d0b-4387-a719-7db089788526 ordered 10, already released 0, requested 50"
+}
+
