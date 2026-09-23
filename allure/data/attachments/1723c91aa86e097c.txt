@@ -1,0 +1,37 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+12:54:25 [PERFORMANCE] API - Auth API Verification: 24461.62ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011719 (ID: d21fd8ac-d757-441a-b854-78155a1a4a9b)
+12:54:43 [INFO] Advancing inventory-adjustments "d21fd8ac-d757-441a-b854-78155a1a4a9b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790168079744 (96933470-2a82-4341-8ba8-5e89e9ab0c55) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:54:48 [PERFORMANCE] API - Auth API Verification: 47391.02ms
+[AUTH] Session token and local storage injected successfully.
+12:54:49 [PERFORMANCE] API - Auth API Verification: 47826.82ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating & approving Bill for 5000...
+12:55:05 [INFO] Advancing bills "6d740986-99fa-440e-9fac-eae4d3c282c8"...
+[BILL] BILL/2026/09/23/004731 (6d740986-99fa-440e-9fac-eae4d3c282c8)
+[ATTACK] Attempting to create a payment of -5000...
+[ACTION] Creating Bill Payment for 6d740986-99fa-440e-9fac-eae4d3c282c8 via API (CashAcct: e8b0574b-87e1-44fd-a021-cb26ddc0b9c0)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Negative Payment Amount Guardrail                                       │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/09/23/004731               │
+  │ Bill ID                          │ 6d740986-99fa-440e-9fac-eae4d3c282c… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $-5000.00                            │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ Bill-Payment API failed: 500 - {
+	"… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Negative payment blocked    │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Negative payment correctly blocked.

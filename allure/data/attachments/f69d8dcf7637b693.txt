@@ -1,0 +1,35 @@
+12:51:04 [INFO] Advancing purchase-orders "de40b54e-374b-47bc-8cd7-c9d87ead8270"...
+12:51:09 [INFO] Advancing bills "f31daf86-e29b-4827-8dd4-60b706ad9687"...
+
+=================== [SYSTEM API RESPONSE] ===================
+Document Pair : PO: PO/2026/09/23/002797 ↔ Bill: BILL/2026/09/23/004729
+PO Gross      : $36000.00 (8 units @ $4500.00)
+Withholding   : -$720.00 (2% statutory AP withholding tax)
+Net Payable   : $35280.00
+Raw Payload   : {
+  "po_id": "de40b54e-374b-47bc-8cd7-c9d87ead8270",
+  "bill_id": "f31daf86-e29b-4827-8dd4-60b706ad9687",
+  "po_total": 36000,
+  "bill_net_due": 35280,
+  "withholding_tax": 720
+}
+=============================================================
+
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ 1:1 Reconciliation Audit — PO/2026/09/23/002797 ↔ BILL/2026/09/23/004729    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ PO Ref                           │ PO/2026/09/23/002797                     │
+  │ Bill Ref                         │ BILL/2026/09/23/004729                   │
+  │ Vendor                           │                                          │
+  │ Qty (PO)                         │ 8 units                                  │
+  │ Unit Price                       │ $4500.00                                 │
+  │ PO Gross Total                   │ $36000.00                                │
+  │ Withholding Tax                  │ -$720.00 (2%)                            │
+  │ Bill Net Payable                 │ $35280.00                                │
+  │ Result                           │ ✓ BALANCED & RECONCILED                  │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+[PASS] 1:1 reconciliation audit succeeded. Bill maps perfectly to Purchase Order.

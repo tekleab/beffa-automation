@@ -1,0 +1,23 @@
+12:40:09 [PERFORMANCE] API - Auth API Verification: 205453.75ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011683 (ID: f7271146-379c-4ea8-b95e-d0382e98c4d5)
+12:40:16 [INFO] Advancing inventory-adjustments "f7271146-379c-4ea8-b95e-d0382e98c4d5"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790167212834 (20ed3aac-5c1b-4673-9b70-da701f23909b) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:40:20 [PERFORMANCE] API - Auth API Verification: 216656.22ms
+[AUTH] Session token and local storage injected successfully.
+12:40:20 [PERFORMANCE] API - Auth API Verification: 216911.81ms
+[AUTH] Session token and local storage injected successfully.
+[ATTACK] Creating Invoice with invalid date: 2018-02-30T00:00:00Z
+[PASS] Invalid date rejected: Standalone Invoice API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"Must be a valid date string in RFC 3339 format, e.g. 2024-01-31 or 2024-01-31T15:04:05Z"
+		]
+	},
+	"message": "Validation error"
+}
+

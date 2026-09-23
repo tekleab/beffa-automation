@@ -1,0 +1,20 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011655 (ID: 98aca561-dfcd-4a10-bd61-e858e2aebeda)
+12:36:58 [INFO] Advancing inventory-adjustments "98aca561-dfcd-4a10-bd61-e858e2aebeda"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790167014792 (ded06849-7fc3-42da-8645-112287fc9713) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:37:03 [INFO] Advancing invoices "d5e43b5a-c11c-4dc0-aa6a-805748ad3473"...
+[STRESS] Invoice INV/2026/09/23/005697 approved.
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=1500
+[RECEIPT] amount=1500 | invoice=d5e43b5a... | year=2019
+[RECEIPT AUTO-RECOVER] Re-submitting receipt with actual outstanding balance 100...
+[SUCCESS] Receipt created on attempt 2: RCPT/2026/09/23/001694
+[STRESS] Draft receipt RCPT/2026/09/23/001694 created.
+[VOID] Invoice d5e43b5a-c11c-4dc0-aa6a-805748ad3473 voided → status=draft (no separate credit note; sales_journal cleared)
+[STRESS] Invoice INV/2026/09/23/005697 reversed successfully.
+[STRESS] Attempting to approve receipt RCPT/2026/09/23/001694 against reversed invoice...
+12:37:19 [INFO] Advancing receipts "a066a0b1-fcb7-4006-bcdd-09ac93a03a34"...
+[PASS] Receipt rejected correctly: [REVERSED_INVOICE_BUG] Receipt RCPT/2026/09/23/001694 approved against reversed invoice INV/2026/09/23/005697!

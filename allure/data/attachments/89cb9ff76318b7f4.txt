@@ -1,0 +1,18 @@
+12:40:40 [PERFORMANCE] API - Auth API Verification: 19373.82ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011688 (ID: b3a6f381-3814-4efb-a5e5-a042d594edb8)
+12:40:46 [INFO] Advancing inventory-adjustments "b3a6f381-3814-4efb-a5e5-a042d594edb8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790167243399 (90d9f313-0c22-43c8-9f47-11da9f970b5c) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:40:50 [PERFORMANCE] API - Auth API Verification: 29601.82ms
+[AUTH] Session token and local storage injected successfully.
+12:40:51 [PERFORMANCE] API - Auth API Verification: 29889.37ms
+[AUTH] Session token and local storage injected successfully.
+[ATTACK] Submitting Invoice forged for: 2021-04-29T00:00:00Z
+[VULNERABILITY] Backend API accepted back-dated payload! ID: INV/2026/09/23/005739
+12:40:52 [INFO] Advancing invoices "d2316226-8343-48ce-b7f6-9fa18cc43034"...
+[PASS] Backend safely intercepted rogue date during advancement: [API BLOCK] 422: {
+	"code": 422,
+	"message": "CalculateItemCost failed: insufficient FIFO stock: only 0.00 of 1.00 un

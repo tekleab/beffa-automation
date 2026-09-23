@@ -1,0 +1,39 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+12:41:20 [PERFORMANCE] API - Auth API Verification: 10190.87ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011694 (ID: 129fc975-0dfa-426d-98db-2a6433432c30)
+12:41:41 [INFO] Advancing inventory-adjustments "129fc975-0dfa-426d-98db-2a6433432c30"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1790167297833 (6fc56cda-2a7a-4cbd-8f94-c352b0a8a668) | method=FIFO | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:41:57 [INFO] Advancing purchase-orders "e2c2698c-8d66-4920-9933-214bf1d72dfe"...
+12:42:01 [INFO] Advancing bills "83c7d4c2-5c80-4b3c-91d8-b9c94631d74d"...
+[SETUP] Bill created and approved: BILL/2026/09/23/004707 (83c7d4c2-5c80-4b3c-91d8-b9c94631d74d)
+12:42:06 [PERFORMANCE] API - Auth API Verification: 56082.47ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=83c7d4c2-5c80-4b3c-91d8-b9c94631d74d...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/09/23/004707
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 1800

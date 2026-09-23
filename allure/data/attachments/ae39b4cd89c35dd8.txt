@@ -1,0 +1,31 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+12:58:33 [PERFORMANCE] API - Auth API Verification: 11223.98ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011734 (ID: 6d8ec33b-e3b7-4114-b228-f9fc9a4945f8)
+12:58:53 [INFO] Advancing inventory-adjustments "6d8ec33b-e3b7-4114-b228-f9fc9a4945f8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790168329335 (23b4c7c7-c120-453b-bb6d-08fc06d3cb3f) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:58:58 [PERFORMANCE] API - Auth API Verification: 36320.04ms
+[AUTH] Session token and local storage injected successfully.
+12:58:58 [PERFORMANCE] API - Auth API Verification: 36948.33ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating & approving PO...
+12:59:14 [INFO] Advancing purchase-orders "d3ef6c09-9bdd-4140-af33-a5c0b2204ba8"...
+[PO] PO/2026/09/23/002815 (d3ef6c09-9bdd-4140-af33-a5c0b2204ba8)
+[STEP 2] Creating first Bill from PO...
+12:59:18 [INFO] Advancing bills "a3142432-48ae-45b1-adfa-b6a98bc6c5b6"...
+[BILL 1] BILL/2026/09/23/004746 (a3142432-48ae-45b1-adfa-b6a98bc6c5b6) — approved
+[ATTACK] Attempting second Bill from same PO PO/2026/09/23/002815...
+[PASS] Double-billing correctly blocked: PO-to-Bill API Failed: 422 - {
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quantity": [
+			"Unable to consume 5 items from purchase order item, only 0 remaining"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

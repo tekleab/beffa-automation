@@ -1,0 +1,24 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+12:59:00 [PERFORMANCE] API - Auth API Verification: 9614.02ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011736 (ID: 4c44f194-2470-4d84-bda1-4308def474c4)
+12:59:20 [INFO] Advancing inventory-adjustments "4c44f194-2470-4d84-bda1-4308def474c4"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790168356839 (976d245d-28c5-4661-8b57-50b442428a79) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:59:24 [PERFORMANCE] API - Auth API Verification: 33789.96ms
+[AUTH] Session token and local storage injected successfully.
+12:59:25 [PERFORMANCE] API - Auth API Verification: 34213.24ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating & approving PO...
+12:59:33 [INFO] Advancing purchase-orders "116ed7ba-298c-4f14-be11-e722c90c3b03"...
+[PO] PO/2026/09/23/002816 (116ed7ba-298c-4f14-be11-e722c90c3b03)
+[STEP 2] Creating & approving linked Bill...
+12:59:36 [INFO] Advancing bills "dcaf4cdb-06c4-4f23-b0a7-91f3070b65c6"...
+[BILL] BILL/2026/09/23/004748 (dcaf4cdb-06c4-4f23-b0a7-91f3070b65c6) — approved
+[ATTACK] Attempting to cancel source PO PO/2026/09/23/002816 after bill BILL/2026/09/23/004748 is approved...
+[INFO] PO PO/2026/09/23/002816 cancel attempt: HTTP 403
+[AUDIT] Bill BILL/2026/09/23/004748 status after PO cancel: approved
+[PASS] Bill BILL/2026/09/23/004748 integrity maintained after PO PO/2026/09/23/002816 cancel attempt.

@@ -1,0 +1,26 @@
+12:42:08 [PERFORMANCE] API - Auth API Verification: 57905.33ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011697 (ID: 4d9bb76a-b2b9-4da7-9eeb-083139998def)
+12:42:22 [INFO] Advancing inventory-adjustments "4d9bb76a-b2b9-4da7-9eeb-083139998def"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790167338318 (a2f1b0e9-700e-46d2-975a-ebb8342933e6) | method=FIFO | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+12:42:34 [INFO] Advancing bills "43c3cf88-bbaf-47c3-ad0b-9d60cadd5106"...
+[BILL] BILL/2026/09/23/004710 approved
+[POLL] Waiting for bill journal entries… attempt 1/10
+[POLL] Waiting for bill journal entries… attempt 2/10
+[POLL] Waiting for bill journal entries… attempt 3/10
+[POLL] Waiting for bill journal entries… attempt 4/10
+[POLL] Waiting for bill journal entries… attempt 5/10
+[POLL] Waiting for bill journal entries… attempt 6/10
+[POLL] Waiting for bill journal entries… attempt 7/10
+[POLL] Waiting for bill journal entries… attempt 8/10
+12:43:53 [WARN] GET http://168.119.175.142:8001/api/bills?sortBy=created_at&sortOrder=desc&pageSize=100&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Timeout 30000ms exceeded.. Retry 1/4 in 1500ms...
+12:44:24 [WARN] GET http://168.119.175.142:8001/api/bills?sortBy=created_at&sortOrder=desc&pageSize=100&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Timeout 30000ms exceeded.. Retry 2/4 in 6000ms...
+[POLL] Waiting for bill journal entries… attempt 9/10
+[POLL] Waiting for bill journal entries… attempt 10/10
+[PRE-REVERSAL] AP credit: 0.00
+[SKIP GL AUDIT] Account mapping not implemented — bill reversal GL assertions skipped.
+[ACTION] Reversing/Voiding Bill 43c3cf88-bbaf-47c3-ad0b-9d60cadd5106 via API...
+[SKIP] Reversal API called: true. GL assertions deferred until account mapping is configured.
