@@ -1,0 +1,33 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+09:31:13 [PERFORMANCE] API - Auth API Verification: 10314.89ms
+[AUTH] Session token and local storage injected successfully.
+[ACTION] Discovering environment metadata...
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+09:31:49 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+09:32:21 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+09:32:56 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+09:33:33 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011414 (ID: 53640f75-a3e0-470c-974b-112b0a86f3a0)
+09:33:42 [INFO] Advancing inventory-adjustments "53640f75-a3e0-470c-974b-112b0a86f3a0"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: FIFO-Item-1790155875886 (0fbdfed0-83bf-4a91-8b19-5ba2f24174c8) | method=FIFO | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[SNAPSHOT] Baseline Item: "FIFO-Item-1790155875886" | Stock: 30
+[STEP 1] Creating Invoice for 10 units...
+09:33:47 [INFO] Advancing invoices "c31c97a9-09f7-48c5-851d-23aabb380662"...
+[SUCCESS] Invoice INV/2026/09/23/005591 approved.
+[INFO] Waiting 5s for Stock Engine sync...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[SNAPSHOT] Post-Sale Stock: 20
+[SUCCESS] Inventory Depletion confirmed. Stock logic is healthy.
+[STEP 2] VOIDING Invoice INV/2026/09/23/005591 via API...
+[VOID] Invoice c31c97a9-09f7-48c5-851d-23aabb380662 voided → status=draft (no separate credit note; sales_journal cleared)
+[SUCCESS] Invoice INV/2026/09/23/005591 marked as REVERSED (VOID).
+[INFO] Waiting 8s for Stock & Ledger Reconciliation...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...

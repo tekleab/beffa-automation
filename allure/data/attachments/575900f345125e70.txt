@@ -1,0 +1,52 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+09:48:36 [PERFORMANCE] API - Auth API Verification: 5712.97ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011476 (ID: 765acd52-6168-446d-8a2b-a0c0fa1790a8)
+09:48:42 [INFO] Advancing inventory-adjustments "765acd52-6168-446d-8a2b-a0c0fa1790a8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790156919294 (b2b540ef-852e-4005-9f4e-c201544d7729) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] FIFO-Item-1790156919294 (b2b540ef-852e-4005-9f4e-c201544d7729) | Stock before: 50
+[STEP 2] Creating Sales Order...
+[SO] Created SO/2026/09/23/001651 (8ecc6365-32ce-4892-aa4b-727bbdf05dcb) | Item id: 912e505f-c043-426e-8185-f1212791bd82
+09:48:47 [INFO] Advancing sales-orders "8ecc6365-32ce-4892-aa4b-727bbdf05dcb"...
+[SO] Approved SO/2026/09/23/001651
+[STEP 3] Invoicing and releasing SO items...
+[INVOICE] Created from SO: INV/2026/09/23/005613 (c5d1c54a-f661-4f78-9e36-e2458141cb45)
+09:48:52 [INFO] Advancing invoices "c5d1c54a-f661-4f78-9e36-e2458141cb45"...
+[INVOICE] Approved INV/2026/09/23/005613
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 45...
+[SUCCESS] API Confirmed: Stock correctly reached 45.
+[STOCK] Expected: 45, Got: 45
+[INVOICE] Outstanding balance after Approval: 510 (invoice total: 510)
+[INVOICE GL] Entries found: 5
+[INVOICE GL] AR debit=510 | Sales credit=500 | Expected: 500
+[STEP 4] Creating Receipt for Invoice...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=510 | Requested receipt amount=510
+[RECEIPT] amount=510 | invoice=c5d1c54a... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/23/001654
+[RECEIPT] Created RCPT/2026/09/23/001654 (b117844c-9433-477b-a902-43ffa0b283d2)
+09:49:05 [INFO] Advancing receipts "b117844c-9433-477b-a902-43ffa0b283d2"...
+[RECEIPT] Approved RCPT/2026/09/23/001654
+[INVOICE] Outstanding balance after Receipt: 0
+[RECEIPT GL] Entries found: 3
+
+  ╔════════════════════════════════════════════════════════════════════╗
+  ║ 📊 GL Receipt Journal Audit                                       ║
+  ╠════════════════════════════════════════════════════════════════════╣
+  ║  Receipt Paid        : $510.00                                                     ║
+  ║  GL Cash Debit       : $1020.00                                                    ║
+  ║  GL AR Credit        : $510.00                                                     ║
+  ║  Difference          : $-510.00                                                    ║
+  ║  Account Mapping     : ⚠️  NOT IMPLEMENTED YET                                    ║
+  ║  Invoice Ref         : INV/2026/09/23/005613                                       ║
+  ║  Receipt Ref         : RCPT/2026/09/23/001654                                      ║
+  ╚════════════════════════════════════════════════════════════════════╝
+
+[SKIP GL AMOUNT CHECK] Account mapping (inventory/sales/payroll GL accounts) is not yet configured in this ERP instance.
+[SKIP GL AMOUNT CHECK] GL amount assertions will be enabled once account mapping is implemented.
+[SKIP GL AMOUNT CHECK] Verifying GL structure only (entries exist, correct account types debited/credited).
+[PASS] Full Order-to-Cash integration cycle completed successfully!

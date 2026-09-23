@@ -1,0 +1,60 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+09:31:12 [PERFORMANCE] API - Auth API Verification: 10389.67ms
+[AUTH] Session token and local storage injected successfully.
+09:31:14 [PERFORMANCE] API - Auth API Verification: 12483.11ms
+[AUTH] Session token and local storage injected successfully.
+09:31:15 [PERFORMANCE] API - Auth API Verification: 12754.17ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating 3 fresh WAC items...
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+09:31:50 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+09:32:22 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+09:32:57 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+09:33:34 [WARN] [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked
+[ADJ] quantity | qty=10 @ $50 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011415 (ID: 8b97437e-31f9-4af5-bffd-fed60c384e60)
+09:33:43 [INFO] Advancing inventory-adjustments "8b97437e-31f9-4af5-bffd-fed60c384e60"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1790155876601 (0072b985-d4da-45db-ba2a-27a6af6623e4) | method=FIFO | stock=10@$50 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011418 (ID: 110a72f4-83a3-43fe-919d-53bd072e2696)
+09:33:51 [INFO] Advancing inventory-adjustments "110a72f4-83a3-43fe-919d-53bd072e2696"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1790156028051 (a69b4c74-0e19-426a-810f-8c67b39897cd) | method=FIFO | stock=10@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=10 @ $120 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011419 (ID: e922b5da-9ea7-4348-ae86-a0d7e707f56a)
+09:34:00 [INFO] Advancing inventory-adjustments "e922b5da-9ea7-4348-ae86-a0d7e707f56a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1790156036043 (8a9405e0-31ba-4eb3-9198-5bbdb6e1fa87) | method=FIFO | stock=10@$120 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM 1] FIFO-Item-1790155876601 | stock:10 | cost:$50
+[ITEM 2] FIFO-Item-1790156028051 | stock:10 | cost:$80
+[ITEM 3] FIFO-Item-1790156036043 | stock:10 | cost:$120
+[STEP 2] Creating multi-item invoice...
+[PASS] Invoice: INV/2026/09/23/005594 (a73256a3-f6e5-4df4-94de-9e2cf8ebd61c)
+09:34:05 [INFO] Advancing invoices "a73256a3-f6e5-4df4-94de-9e2cf8ebd61c"...
+[STEP 4] Verifying stock deductions...
+[ITEM 1] FIFO-Item-1790155876601 | before:10 → after:9 (exp:9)
+[ITEM 2] FIFO-Item-1790156028051 | before:10 → after:9 (exp:9)
+[ITEM 3] FIFO-Item-1790156036043 | before:10 → after:9 (exp:9)
+[STEP 5] Verifying COGS journal entries...
+[JE] 10 entries found
+[JE] Sales () | Dr:0 Cr:50
+[JE] Cash at Bank - CBE () | Dr:50 Cr:0
+[JE] Inventory () | Dr:0 Cr:50
+[JE] Sales () | Dr:0 Cr:80
+[JE] Cash at Bank - CBE () | Dr:80 Cr:0
+[JE] Inventory () | Dr:0 Cr:80
+[JE] Sales () | Dr:0 Cr:120
+[JE] Cash at Bank - CBE () | Dr:120 Cr:0
+[JE] Inventory () | Dr:0 Cr:120
+[JE] Accounts Receivable () | Dr:250 Cr:0
+[AUDIT] Total Dr: $500 | Total Cr: $500 | Expected COGS: $250
+[PASS] COGS journal balanced — Dr:$500 = Cr:$500
+[PASS] Multi-item COGS audit complete — 3 items deducted, journal balanced

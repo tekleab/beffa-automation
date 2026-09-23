@@ -1,0 +1,19 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+09:35:10 [PERFORMANCE] API - Auth API Verification: 9083.65ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011430 (ID: 21fd025b-2040-47b7-a34d-51caf88b1e94)
+09:35:29 [INFO] Advancing inventory-adjustments "21fd025b-2040-47b7-a34d-51caf88b1e94"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1790156125143 (ef72d3c4-052d-47d2-9784-4f668008c109) | method=FIFO | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:35:43 [INFO] Advancing purchase-orders "b76063db-1204-46f2-815e-62c946c6c1e0"...
+09:35:47 [INFO] Advancing bills "130cf614-aa3a-48f2-8706-e1bdfebc9230"...
+[SETUP] Bill created and approved: BILL/2026/09/23/004612 (130cf614-aa3a-48f2-8706-e1bdfebc9230)
+09:35:53 [PERFORMANCE] API - Auth API Verification: 52686.69ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 2] Querying non-existent Bill ID: GET /bills/00000000-0000-0000-0000-000000000000...
+[NEGATIVE DTO] Response Status: 404
+[PASS] Structured Error DTO returned: { code: 404, message: 'Route not found' }

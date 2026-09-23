@@ -1,0 +1,16 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+09:40:42 [PERFORMANCE] API - Auth API Verification: 15322.35ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011455 (ID: 728dc2d5-c178-4437-b1c9-3b35ab9fa32e)
+09:40:47 [INFO] Advancing inventory-adjustments "728dc2d5-c178-4437-b1c9-3b35ab9fa32e"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: FIFO-Item-1790156444166 (92ae1a35-e490-4b36-ad07-1cf2734dd1e8) | method=FIFO | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DEST] Using system location: 87d66495-1719-4402-9b0d-147859d3bc6c | Warehouse: ae638681-f2ae-492a-898e-edab3be6186b
+[SETUP] Item: "FIFO-Item-1790156444166" | Src stock: 30 | Dest stock: 0
+[SETUP] Src loc: 539ab667-5559-4db7-8cd4-24f797d57ebb | Dest loc: 87d66495-1719-4402-9b0d-147859d3bc6c
+[ACTION] API Polling: Waiting for stock at location 87d66495-1719-4402-9b0d-147859d3bc6c to hit 5...
+[WARN] pollStockAPI timed out. Expected 5, actual 0.
+[TC-02] Dest: 0 → 0 (expected: 5)

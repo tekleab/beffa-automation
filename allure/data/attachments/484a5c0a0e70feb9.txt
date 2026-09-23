@@ -1,0 +1,43 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+09:37:55 [PERFORMANCE] API - Auth API Verification: 9756.36ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011441 (ID: e1037186-2541-4a87-a568-8dd53de1877c)
+09:38:17 [INFO] Advancing inventory-adjustments "e1037186-2541-4a87-a568-8dd53de1877c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: FIFO-Item-1790156293786 (be0e649b-951f-458c-a74e-b3873e2234d9) | method=FIFO | stock=30@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:38:23 [PERFORMANCE] API - Auth API Verification: 37428.02ms
+[AUTH] Session token and local storage injected successfully.
+09:38:23 [PERFORMANCE] API - Auth API Verification: 37943.34ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating PO for 10 units...
+09:38:34 [INFO] Advancing purchase-orders "5e8bfa9c-02ea-4434-a4f5-e0e90a8f8a96"...
+[OK] PO PO/2026/09/23/002734 approved.
+[STEP 2] Receiving only 5 / 10 units via partial PO bill...
+09:38:37 [INFO] Advancing bills "26457521-048d-4cce-85ca-3ae68ff38bc6"...
+[OK] Bill BILL/2026/09/23/004622 approved for 5 units.
+[STEP 3] Verifying partial release via bill detail...
+
+  ┌───────────────────────────────────────────────────────────────────┐
+  │ Partial PO Release Audit                                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Ref                       │ PO/2026/09/23/002734             │
+  │ PO ID                        │ 5e8bfa9c-02ea-4434-a4f5-e0e90a8… │
+  │ Bill Ref                     │ BILL/2026/09/23/004622           │
+  │ Bill ID                      │ 26457521-048d-4cce-85ca-3ae68ff… │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Qty Authorized            │ 10 units                         │
+  │ Received (this bill)         │ 5 units                          │
+  │ Remaining on PO              │ 5 units                          │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Unit Price                   │ $5000.00                         │
+  │ Bill Amount                  │ $25000.00                        │
+  │ Remaining Liability          │ $25000.00                        │
+  │ PO Total                     │ $50000.00                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Result                       │ ✓ PASS — Partial tracking corre… │
+  └───────────────────────────────────────────────────────────────────┘
+
+[PASS] Partial PO release confirmed: 5 received, 5 remaining.
