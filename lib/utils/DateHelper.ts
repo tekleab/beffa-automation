@@ -59,15 +59,19 @@ export class DateHelper {
 
       // ── Resolve auth token ──────────────────────────────────────────────
       const token = await page.evaluate(() => {
-        for (const k of ['token', 'auth-token', 'jwt', 'access_token']) {
-          const v = localStorage.getItem(k);
-          if (v && v.length > 50) return v;
+        try {
+          for (const k of ['token', 'auth-token', 'jwt', 'access_token']) {
+            const v = localStorage.getItem(k);
+            if (v && v.length > 50) return v;
+          }
+          for (let i = 0; i < localStorage.length; i++) {
+            const v = localStorage.getItem(localStorage.key(i)!);
+            if (v?.startsWith('ey')) return v;
+          }
+          return null;
+        } catch {
+          return null;
         }
-        for (let i = 0; i < localStorage.length; i++) {
-          const v = localStorage.getItem(localStorage.key(i)!);
-          if (v?.startsWith('ey')) return v;
-        }
-        return null;
       }).catch(() => null);
 
       let resolvedToken = token;

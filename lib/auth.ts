@@ -44,6 +44,7 @@ export class AuthManager extends BasePage {
     const token = session.auth_token || session.token || session.access_token;
     if (!token) throw new Error('No token returned from API');
     this.cachedToken = token;
+    BasePage.globalAuthToken = token;
     return token;
   }
 
@@ -97,7 +98,10 @@ export class AuthManager extends BasePage {
             }
           }, origin.localStorage).catch(() => {});
           const token = origin.localStorage.find((i: any) => i.name === 'auth-token')?.value || origin.localStorage.find((i: any) => i.name === 'token')?.value;
-          if (token) this.cachedToken = token;
+          if (token) {
+            this.cachedToken = token;
+            BasePage.globalAuthToken = token;
+          }
           console.log('[AUTH] Injected session from user.json storage file.');
           return;
         }
@@ -143,6 +147,7 @@ export class AuthManager extends BasePage {
 
       if (!token) throw new Error('No token returned from API');
       this.cachedToken = token;
+      BasePage.globalAuthToken = token;
 
       // 2. Inject localStorage via addInitScript so all future navigations are authenticated
       const resolvedYear = process.env.BEFFA_YEAR || year;
@@ -208,21 +213,33 @@ export class AuthManager extends BasePage {
 
   async _getAuthToken(): Promise<string | null> {
     if (this.cachedToken) return this.cachedToken;
+    if (BasePage.globalAuthToken) {
+      this.cachedToken = BasePage.globalAuthToken;
+      return this.cachedToken;
+    }
     try {
       const token = await this.page.evaluate(() => {
-        const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
-        for (const key of keys) {
-          const val = localStorage.getItem(key) || sessionStorage.getItem(key);
-          if (val && val.length > 50) return val;
+        try {
+          const keys = ['token', 'access_token', 'session_token', 'auth-token', 'jwt', 'user'];
+          for (const key of keys) {
+            const val = localStorage.getItem(key) || sessionStorage.getItem(key);
+            if (val && val.length > 50) return val;
+          }
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i)!;
+            const v = localStorage.getItem(k);
+            if (v && v.startsWith('ey')) return v;
+          }
+          return null;
+        } catch {
+          return null;
         }
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i)!;
-          const v = localStorage.getItem(k);
-          if (v && v.startsWith('ey')) return v;
-        }
-        return null;
-      });
-      if (token) { this.cachedToken = token; return token; }
+      }).catch(() => null);
+      if (token) {
+        this.cachedToken = token;
+        BasePage.globalAuthToken = token;
+        return token;
+      }
     } catch { /* page on about:blank or cross-origin — fall through to API login */ }
     // Re-login via API to get a fresh token (handles about:blank and cross-origin pages)
     try {
@@ -235,7 +252,11 @@ export class AuthManager extends BasePage {
       if (r.ok()) {
         const d = await r.json();
         const t = d.auth_token || d.token;
-        if (t) { this.cachedToken = t; return t; }
+        if (t) {
+          this.cachedToken = t;
+          BasePage.globalAuthToken = t;
+          return t;
+        }
       }
     } catch { /* ignore */ }
     return null;

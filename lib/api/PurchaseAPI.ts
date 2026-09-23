@@ -807,10 +807,20 @@ export class PurchaseAPI extends BasePage {
       if (byName) return byName.id;
     }
     if (preferredId && accounts.some((a: any) => a.id === preferredId)) return preferredId;
-    const typeOf = (a: any) => (a.type || a.account_type || '').toLowerCase();
+    const typeOf = (a: any) => {
+      const t = a.type || a.account_type || '';
+      if (typeof t === 'string') return t.toLowerCase();
+      if (t && typeof t.name === 'string') return t.name.toLowerCase();
+      return '';
+    };
     const cashAccount =
-      accounts.find((a: any) => (typeOf(a).includes('cash') || typeOf(a).includes('bank')) && parseFloat(a.balance || '0') >= 0) ||
+      accounts.find((a: any) => a.name?.toLowerCase().includes('bank') && parseFloat(a.balance || a.current_balance || '0') > 0) ||
+      accounts.find((a: any) => a.name?.toLowerCase().includes('cbe')) ||
+      accounts.find((a: any) => a.name?.toLowerCase().includes('branch')) ||
+      accounts.find((a: any) => (a.account_id || a.code || a.account_code) === '1002') ||
+      accounts.find((a: any) => (typeOf(a).includes('cash') || typeOf(a).includes('bank')) && parseFloat(a.balance || a.current_balance || '0') >= 0) ||
       accounts.find((a: any) => typeOf(a).includes('cash') || typeOf(a).includes('bank')) ||
+      accounts.find((a: any) => a.name?.toLowerCase().includes('cash')) ||
       accounts[0];
     return cashAccount?.id;
   }
@@ -923,9 +933,18 @@ export class PurchaseAPI extends BasePage {
 
     const cashAccountId = await this.resolveCashAccountId(data.cashAccountId);
 
-    const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
-    const currData = await currResp.json();
-    const currency = currData.items?.[0] || currData.data?.[0];
+    let resolvedCurrencyId: string | undefined;
+    try {
+      const meta = await this.discoverMetadataAPI();
+      resolvedCurrencyId = meta?.currencyId;
+    } catch {}
+
+    if (!resolvedCurrencyId) {
+      const currResp = await this.safeGet(`${apiBase}/currency?${params}`, { headers });
+      const currData = await currResp.json().catch(() => null);
+      const currency = Array.isArray(currData) ? currData[0] : (currData?.items?.[0] || currData?.data?.[0] || currData);
+      resolvedCurrencyId = currency?.id;
+    }
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
@@ -935,7 +954,7 @@ export class PurchaseAPI extends BasePage {
       vendor_id: data.vendorId,
       date: _dateIso,
       payment_method: 'cash',
-      currency_id: currency?.id,
+      currency_id: resolvedCurrencyId,
       bill_payments: data.billPayments
     };
 

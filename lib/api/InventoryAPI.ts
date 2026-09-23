@@ -173,7 +173,14 @@ export class InventoryAPI extends BasePage {
         if (loginResp.ok()) {
           const newToken = (await loginResp.json()).auth_token;
           if (newToken) {
-            await this.page.evaluate((t) => { localStorage.setItem('token', t); localStorage.setItem('auth-token', t); }, newToken);
+            BasePage.globalAuthToken = newToken;
+            this.cachedToken = newToken;
+            await this.page.evaluate((t) => {
+              try {
+                localStorage.setItem('token', t);
+                localStorage.setItem('auth-token', t);
+              } catch {}
+            }, newToken).catch(() => {});
             headers['Authorization'] = `Bearer ${newToken}`;
             continue;
           }

@@ -29,6 +29,8 @@ export class BasePage {
   companyBtn: Locator;
   private startTime: number = 0;
   apiBase: string = '';
+  static globalAuthToken: string | null = null;
+  cachedToken: string | null = null;
 
   constructor(page: Page) {
     this.page = page;
@@ -125,9 +127,13 @@ export class BasePage {
     // Bulletproof Company Detection: Pull directly from ERP state
     // .catch(() => null) guards against about:blank / cross-origin SecurityError
     const company = await this.page.evaluate(() => {
-      return localStorage.getItem('currentCompany') ||
-        localStorage.getItem('company');
-    }).catch(() => null) || process.env.BEFFA_COMPANY || 'sample';
+      try {
+        return localStorage.getItem('currentCompany') ||
+          localStorage.getItem('company');
+      } catch {
+        return null;
+      }
+    }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
 
     // Always use the DateHelper-resolved fiscal year so the advance URL matches
     // the journal date of the document being advanced (prevents 422 "closed period").
@@ -663,20 +669,81 @@ ${curlCmd}
    * Internal helper to retrieve the security bearer token from the session.
    */
   async _getAuthToken(): Promise<string | null> {
-    return await this.page.evaluate(() => {
-      const keys = ['token', 'auth-token', 'jwt', 'access_token', 'auth_data', 'session_token'];
-      for (const k of keys) {
-        const v = localStorage.getItem(k);
-        if (v && v.length > 50) return v;
+    if (this.cachedToken) return this.cachedToken;
+    if (BasePage.globalAuthToken) return BasePage.globalAuthToken;
+
+    // Fast check: Try reading from playwright/.auth/user.json if available
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
+      if (fs.existsSync(authFile)) {
+        const authData = JSON.parse(fs.readFileSync(authFile, 'utf8'));
+        const origin = authData.origins?.[0];
+        if (origin?.localStorage?.length) {
+          const token = origin.localStorage.find((i: any) => i.name === 'auth-token')?.value ||
+                        origin.localStorage.find((i: any) => i.name === 'token')?.value;
+          if (token) {
+            this.cachedToken = token;
+            BasePage.globalAuthToken = token;
+            return token;
+          }
+        }
       }
-      // Last-ditch: Scan all keys for a JWT pattern (ey...)
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i)!;
-        const v = localStorage.getItem(k);
-        if (v && v.startsWith('ey')) return v;
+    } catch { /* ignore */ }
+
+    // Next: evaluate page localStorage if page is navigated (safe against about:blank)
+    try {
+      const token = await this.page.evaluate(() => {
+        try {
+          const keys = ['token', 'auth-token', 'jwt', 'access_token', 'auth_data', 'session_token'];
+          for (const k of keys) {
+            const v = localStorage.getItem(k);
+            if (v && v.length > 50) return v;
+          }
+          // Last-ditch: Scan all keys for a JWT pattern (ey...)
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i)!;
+            const v = localStorage.getItem(k);
+            if (v && v.startsWith('ey')) return v;
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      }).catch(() => null);
+      if (token) {
+        this.cachedToken = token;
+        BasePage.globalAuthToken = token;
+        return token;
       }
-      return null;
-    });
+    } catch { /* ignore */ }
+
+    // Fallback: direct API login if credentials present
+    try {
+      if (process.env.BEFFA_USER && process.env.BEFFA_PASS) {
+        const year = process.env.BEFFA_YEAR || '2019';
+        const period = process.env.BEFFA_PERIOD || 'yearly';
+        const calendar = process.env.BEFFA_CALENDAR || 'ec';
+        const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
+        const r = await this.page.request.post(loginUrl, {
+          data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 20000
+        });
+        if (r.ok()) {
+          const d = await r.json();
+          const t = d.auth_token || d.token;
+          if (t) {
+            this.cachedToken = t;
+            BasePage.globalAuthToken = t;
+            return t;
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
+    return null;
   }
 
   async smartSearch(container: Locator | null, text: string): Promise<void> {
@@ -806,7 +873,9 @@ ${curlCmd}
   }
 
   async getActiveCalendarDay(): Promise<number> {
-    const calendarMode = await this.page.evaluate(() => localStorage.getItem('calendar') || 'EC');
+    const calendarMode = await this.page.evaluate(() => {
+      try { return localStorage.getItem('calendar') || 'EC'; } catch { return 'EC'; }
+    }).catch(() => 'EC');
 
     if (calendarMode.toUpperCase() === 'EC') {
       const now = new Date();
@@ -1242,7 +1311,9 @@ ${curlCmd}
 
   async getAccountBalanceAPI(accountId: string, companyOverride?: string): Promise<number> {
     const token = await this._getAuthToken();
-    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
+    const company = companyOverride || await this.page.evaluate(() => {
+      try { return localStorage.getItem('currentCompany'); } catch { return null; }
+    }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -1279,7 +1350,9 @@ ${curlCmd}
 
   async getMultiAccountBalancesAPI(accountIds: string[], companyOverride?: string): Promise<Record<string, number>> {
     const token = await this._getAuthToken();
-    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
+    const company = companyOverride || await this.page.evaluate(() => {
+      try { return localStorage.getItem('currentCompany'); } catch { return null; }
+    }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -1312,7 +1385,9 @@ ${curlCmd}
 
   async getAllAccountsAPI(companyOverride?: string): Promise<any[]> {
     const token = await this._getAuthToken();
-    const company = companyOverride || await this.page.evaluate(() => localStorage.getItem('currentCompany')) || process.env.BEFFA_COMPANY || 'sample';
+    const company = companyOverride || await this.page.evaluate(() => {
+      try { return localStorage.getItem('currentCompany'); } catch { return null; }
+    }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
     const year = process.env.BEFFA_YEAR || '2019';
 
     const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=yearly&calendar=ec`;
@@ -1397,6 +1472,7 @@ ${curlCmd}
   async topUpItemStockAPI(itemId: string, quantity: number, locationId?: string, warehouseId?: string): Promise<void> {
     const { InventoryAPI } = require('./api/InventoryAPI');
     const invApi = new InventoryAPI(this.page);
+    invApi._getAuthToken = this._getAuthToken.bind(this);
 
     // Add a 20-unit buffer so slight timing discrepancies don't cause a second failure
     const topUpQty = quantity + 20;
@@ -1435,7 +1511,7 @@ ${curlCmd}
    */
   async seedCashBalanceAPI(amount: number, cashAccountId?: string): Promise<void> {
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = process.env.BEFFA_COMPANY || 'BM Tech';
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';

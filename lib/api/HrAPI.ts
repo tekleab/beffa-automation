@@ -39,10 +39,14 @@ export class HrAPI extends BasePage {
           const d = await loginResp.json();
           const newToken = d.auth_token || d.token;
           if (newToken) {
+            BasePage.globalAuthToken = newToken;
+            this.cachedToken = newToken;
             await this.page.evaluate((t) => {
-              localStorage.setItem('token', t);
-              localStorage.setItem('auth-token', t);
-            }, newToken);
+              try {
+                localStorage.setItem('token', t);
+                localStorage.setItem('auth-token', t);
+              } catch {}
+            }, newToken).catch(() => {});
             token = newToken;
           }
         }
