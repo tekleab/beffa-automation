@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
-  "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 291,
-  "lastUpdated": "2026-09-23T08:52:27.214Z",
+  "total": 212,
+  "passed": 171,
+  "failed": 18,
+  "skipped": 23,
+  "passRate": 80.7,
+  "avgDurationMs": 17486,
+  "lastUpdated": "2026-09-23T09:20:25.854Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
-      "skipped": 0,
+      "passed": 171,
+      "failed": 18,
+      "skipped": 23,
       "trend": [
-        90.5,
         85.4,
         100,
         89.6,
         100,
         93.9,
-        100
+        100,
+        90.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "797",
+      "commit": "3e8b710",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "61m 47s",
+      "passRate": 80.7,
+      "status": "success"
+    },
     {
       "run": "796",
       "commit": "22a2100",
@@ -95,15 +103,234 @@
       "duration": "0m 6s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "785",
-      "commit": "5c22934",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "72m 4s",
-      "passRate": 90.6,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "critical",
+      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-23T09:00:46.859Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
+      "firstSeen": "2026-09-23T09:01:22.721Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errT",
+      "firstSeen": "2026-09-23T09:02:06.428Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/23/004598 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
+      "firstSeen": "2026-09-23T09:03:21.143Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-09-23T09:05:59.604Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: BUG #12: POST /employees returns null response body — employee created server-side but ID not returned. Cannot proceed with lifecycle test.\n\n  47 |         } catch (e: any) {\n  48 |            ",
+      "firstSeen": "2026-09-23T09:06:00.739Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI: Employees page must load and display employee records",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/employee/\u001b[39m\nReceived string:  \u001b[31m\"http://168.119.175.142:4173/users/logi",
+      "firstSeen": "2026-09-23T09:06:06.466Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "error": "Error: Create employee: could not retrieve created employee \"Lifecycle-Emp-1790154427151-2\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:137\n\n  135 |       await this.page.waitForTimeout(3000);\n  136 ",
+      "firstSeen": "2026-09-23T09:07:06.234Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
+      "firstSeen": "2026-09-23T09:08:13.200Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "error": "Error: [FRESH ITEM] Stock adjustment failed for 7857b95e-0f32-48ba-8b57-7c37e8312a16: [TIMEOUT] Inventory Adjustment exceeded 30000ms — backend may be deadlocked\n\n   at ../lib/api/InventoryAPI.ts:794\n",
+      "firstSeen": "2026-09-23T09:10:12.869Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Bill payment must debit AP and credit Cash/Bank",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
+      "file": "tests/purchase/po-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI: Employees page must load and display employee records",
+      "file": "tests/hr/hr-employees.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "API: Employee must be created with all required fields",
+      "file": "tests/hr/hr-employees.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "file": "tests/hr/hr-lifecycle.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "PO-to-Bill: Loading & Data Resolution State",
+      "file": "tests/cross-module/query-boundary-states.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Full E2E Cycle: SO -> Invoice (Release) -> Receipt -> Ledger & GL Verification",
+      "file": "tests/cross-module/order-to-cash-e2e.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification",
+      "file": "tests/cross-module/procure-to-pay-e2e.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "SO-to-Invoice: Loading & Data Resolution State",
+      "file": "tests/cross-module/query-boundary-states.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "SO-to-Invoice: Empty State Boundary (Fully-Released SO)",
+      "file": "tests/cross-module/query-boundary-states.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    }
+  ]
 }
