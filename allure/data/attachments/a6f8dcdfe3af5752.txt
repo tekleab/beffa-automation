@@ -1,0 +1,52 @@
+08:13:26 [PERFORMANCE] API - Auth API Verification: 131068.92ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011327 (ID: 04f0b898-f77a-4b28-8ae3-8bb5f050c96a)
+08:13:41 [INFO] Advancing inventory-adjustments "04f0b898-f77a-4b28-8ae3-8bb5f050c96a"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790151217636 (ca7a24f8-867c-4e9d-a6fc-c7a0a0243822) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011328 (ID: eae27a2b-39e1-44a7-95a3-f1c08031faa2)
+08:13:49 [INFO] Advancing inventory-adjustments "eae27a2b-39e1-44a7-95a3-f1c08031faa2"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790151225712 (7b2f8773-cd9b-4e8a-a7bd-cfbfc11fd8e6) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+08:13:56 [PERFORMANCE] API - Auth API Verification: 160615.06ms
+[AUTH] Session token and local storage injected successfully.
+08:13:56 [PERFORMANCE] API - Auth API Verification: 160919.24ms
+[AUTH] Session token and local storage injected successfully.
+08:14:02 [INFO] Picking date: "Invoice Date" → target 2026-9-23
+08:14:03 [PASS] "Invoice Date" set to day 13.
+08:14:04 [PERFORMANCE] UI - Pick Date: Invoice Date: 2592.33ms
+[SELECT-OPTION] Vendor (attempt 1): overlayVisible=true, count=20
+08:14:07 [PERFORMANCE] UI - Random Selection: Vendor: 3047.01ms
+[SELECT-OPTION] Accounts Payable (attempt 1): overlayVisible=true, count=2
+08:14:11 [PERFORMANCE] UI - Random Selection: Accounts Payable: 3530.67ms
+[CURRENCY] Selected via button: Birr
+[API PRE-CAPTURE] Using guaranteed-stock item "FIFO-Item-1790151217636" @ $100
+[ITEM MODAL] Clicking item option: "FIFO-Item-1790151217636"
+[ITEM MODAL] Item selected status: true | Button text: "FIFO-Item-1790151217636"
+[MODAL] Selected Warehouse option: "Default Warehouse"
+[MODAL] Selected Location option: "location2"
+[MODAL] Item branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+08:14:27 [PERFORMANCE] UI - Random Selection: G/L Account: 3024.92ms
+[MODAL] Filled Quantity: 2
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+08:14:31 [PERFORMANCE] UI - Random Selection: Tax: 3611.31ms
+[MODAL] Item line item added successfully
+[MODAL] Misc branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+08:14:38 [PERFORMANCE] UI - Random Selection: G/L Account: 3240.05ms
+[MODAL] Filled Miscellaneous Price: 500
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+08:14:43 [PERFORMANCE] UI - Random Selection: Tax: 3464.14ms
+[MODAL] Miscellaneous line item added successfully
+[AUDIT] 45 lines in Bill form (table rows: 45, alt: 4)
+08:14:47 [INFO] Advancing bills "c9587dfd-dca7-43e7-82e5-1234bbf2c8f5"...
+[AUDIT] Journal entries: 0 | Unpaid amount: $779
+[DEBUG] Bill data keys: current_approval_step, id, invoice_date, invoice_number, net_due, paid_amount, vendor, status, unpaid_amount, balance
+[PASS] Bill mixed lines — approved, journal entries and AP impact verified

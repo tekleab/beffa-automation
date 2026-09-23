@@ -1,0 +1,22 @@
+08:01:16 [PERFORMANCE] API - Auth API Verification: 97718.28ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011272 (ID: 58f0d4c2-cf21-4336-aa3e-758a949d9ac7)
+08:01:23 [INFO] Advancing inventory-adjustments "58f0d4c2-cf21-4336-aa3e-758a949d9ac7"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790150479393 (2a8a5874-4327-45b8-a4a0-202b3f728d47) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+08:01:26 [PERFORMANCE] API - Auth API Verification: 108414.96ms
+[AUTH] Session token and local storage injected successfully.
+08:01:27 [PERFORMANCE] API - Auth API Verification: 108735.25ms
+[AUTH] Session token and local storage injected successfully.
+08:01:29 [INFO] Advancing invoices "d1bf43e6-c70c-4e5b-8a31-3a721dc4c4d0"...
+[AUDIT] Invoice INV/2026/09/23/005533 (d1bf43e6-c70c-4e5b-8a31-3a721dc4c4d0): unitPrice=$100, ERP unreceived_amount=$100
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=d1bf43e6... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/23/001632
+08:01:36 [INFO] Advancing receipts "2a2d0707-54d2-4768-ace0-39fdae0783f4"...
+[ACTION] Reversing Receipt RCPT/2026/09/23/001632 (ID: 2a2d0707-54d2-4768-ace0-39fdae0783f4)...
+[AUDIT] Poll 1/8 — unreceived_amount = 100
+[PASS] Receipt reversed. Invoice balance restored to 100.
+[VOID] Invoice d1bf43e6-c70c-4e5b-8a31-3a721dc4c4d0 voided → status=draft (no separate credit note; sales_journal cleared)

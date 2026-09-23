@@ -1,0 +1,39 @@
+08:12:36 [PERFORMANCE] API - Auth API Verification: 77630.76ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011321 (ID: aa0644da-b436-4509-9ea4-a02b6e893672)
+08:12:53 [INFO] Advancing inventory-adjustments "aa0644da-b436-4509-9ea4-a02b6e893672"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790151169353 (93c65c96-a62e-42dc-8349-d0135e1ef92a) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011323 (ID: 2b28ff11-97e6-4553-8997-358118d9d066)
+08:13:01 [INFO] Advancing inventory-adjustments "2b28ff11-97e6-4553-8997-358118d9d066"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790151177766 (9d3ea284-46ab-45f3-b018-388fdf03d463) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+08:13:18 [PERFORMANCE] API - Auth API Verification: 119756.68ms
+[AUTH] Session token and local storage injected successfully.
+08:13:19 [PERFORMANCE] API - Auth API Verification: 120025.20ms
+[AUTH] Session token and local storage injected successfully.
+08:13:23 [INFO] Picking date: "Invoice Date" → target 2026-9-23
+08:13:25 [PASS] "Invoice Date" set to day 13.
+08:13:25 [PERFORMANCE] UI - Pick Date: Invoice Date: 2672.42ms
+08:13:25 [INFO] Picking date: "Due Date" → target 2026-9-23
+08:13:27 [PASS] "Due Date" set to day 13.
+08:13:28 [PERFORMANCE] UI - Pick Date: Due Date: 2297.85ms
+[SELECT-OPTION] Customer (attempt 1): overlayVisible=true, count=20
+08:13:31 [PERFORMANCE] UI - Random Selection: Customer: 3072.72ms
+[SELECT-OPTION] Accounts Receivable (attempt 1): overlayVisible=true, count=2
+08:13:34 [PERFORMANCE] UI - Random Selection: Accounts Receivable: 3114.79ms
+[CURRENCY] Selected via button: Birr
+[MODAL] Misc branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+08:13:39 [PERFORMANCE] UI - Random Selection: G/L Account: 2660.12ms
+[MODAL] Filled Miscellaneous Price: 1500
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+08:13:43 [PERFORMANCE] UI - Random Selection: Tax: 3009.99ms
+[MODAL] Miscellaneous line item added successfully
+[PASS] Invoice with miscellaneous line created
