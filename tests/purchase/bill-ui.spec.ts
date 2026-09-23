@@ -34,7 +34,7 @@ test.describe('Purchase to Bill Flow @purchase @smoke', () => {
         console.log(`[OK] Bill ${billNumber} approved`);
 
         console.log('[STEP] Phase 3: Verify Bill in vendor profile via API');
-        await app.verifyBillInVendorAPI(meta.vendorName, billNumber);
+        await app.verifyBillInVendorAPI(meta.vendorName, billNumber, billId);
 
         console.log('[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection');
         await page.goto(`/payables/vendors/${meta.vendorId}/detail`, { waitUntil: 'domcontentloaded' });

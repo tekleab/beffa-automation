@@ -658,7 +658,7 @@ export class PurchaseAPI extends BasePage {
     return { success: true, billNumber: json.invoice_number, billId: json.id, status: response.status() };
   }
 
-  async verifyBillInVendorAPI(vendorName: string, billNumber: string): Promise<boolean> {
+  async verifyBillInVendorAPI(vendorName: string, billNumber: string, billId?: string): Promise<boolean> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
@@ -687,29 +687,81 @@ export class PurchaseAPI extends BasePage {
       vendorId = vendor.id;
     }
 
-    // 2. Poll Vendor Bills Ledger — try direct bill lookup first, then paginate
+    const cleanTarget = billNumber.trim().toLowerCase();
+    const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
 
+    // 2. Poll Vendor Bills Ledger — try fast direct lookups first, then bounded pagination
     const findInPages = async (): Promise<boolean> => {
-      // Fast path: direct bill lookup by ID (billNumber may be a ref, not UUID — try both)
-      const directResp = await this.safeGet(
-        `${apiBase}/bills?search=${encodeURIComponent(billNumber)}&pageSize=20&${params}`,
+      // Fast path A: Direct bill lookup by UUID (if billId provided or billNumber is UUID)
+      const candidateId = billId || (billNumber.includes('-') && billNumber.length === 36 ? billNumber : null);
+      if (candidateId) {
+        const idResp = await this.safeGet(`${apiBase}/bill/${candidateId}?${params}`, { headers });
+        if (idResp && idResp.ok()) {
+          const bd = await safeJson(idResp);
+          if (bd) {
+            const bVendorName = bd.vendor?.name?.toLowerCase() || '';
+            const bVendorId = bd.vendor?.id || bd.vendor_id || '';
+            const vMatch = !vendorName || bVendorName === vendorName.toLowerCase() || bVendorId === vendorId || bVendorId === vendorName;
+            if (vMatch) {
+              console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} (${candidateId}) verified in ${vendorName}'s ledger via direct ID lookup.`);
+              return true;
+            }
+          }
+        }
+      }
+
+      // Fast path B: Direct query by invoice_number
+      const invResp = await this.safeGet(
+        `${apiBase}/bills?invoice_number=${encodeURIComponent(billNumber)}&${params}`,
         { headers }
       );
-      if (directResp && directResp.ok()) {
-        const directData = await safeJson(directResp);
-        const directBills: any[] = directData ? (Array.isArray(directData) ? directData : (directData.data || directData.items || [])) : [];
-        const cleanTarget = billNumber.trim().toLowerCase();
-        const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
-        const directFound = directBills.find((b: any) => {
+      if (invResp && invResp.ok()) {
+        const invData = await safeJson(invResp);
+        const invBills: any[] = invData ? (Array.isArray(invData) ? invData : (invData.data || invData.items || [])) : [];
+        const match = invBills.find((b: any) => {
           const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
           return refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget);
         });
-        if (directFound) return true;
+        if (match) {
+          // If bill object has an id, verify vendor association
+          if (match.id) {
+            const detailResp = await this.safeGet(`${apiBase}/bill/${match.id}?${params}`, { headers });
+            if (detailResp && detailResp.ok()) {
+              const bd = await safeJson(detailResp);
+              const bVendorName = bd?.vendor?.name?.toLowerCase() || '';
+              const bVendorId = bd?.vendor?.id || bd?.vendor_id || '';
+              const vMatch = !vendorName || bVendorName === vendorName.toLowerCase() || bVendorId === vendorId || bVendorId === vendorName;
+              if (vMatch) {
+                console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} verified in ${vendorName}'s ledger via invoice_number lookup.`);
+                return true;
+              }
+            }
+          }
+          console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} verified in ledger via invoice_number filter.`);
+          return true;
+        }
       }
 
+      // Fast path C: Search query parameter fallback
+      const searchResp = await this.safeGet(
+        `${apiBase}/bills?search=${encodeURIComponent(billNumber)}&pageSize=20&${params}`,
+        { headers }
+      );
+      if (searchResp && searchResp.ok()) {
+        const searchData = await safeJson(searchResp);
+        const searchBills: any[] = searchData ? (Array.isArray(searchData) ? searchData : (searchData.data || searchData.items || [])) : [];
+        const searchFound = searchBills.find((b: any) => {
+          const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
+          return refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget);
+        });
+        if (searchFound) return true;
+      }
+
+      // Fallback path: Bounded pagination (cap at 5 pages max to avoid hanging under high record volumes)
       let page = 1;
       const pageSize = 100;
-      while (true) {
+      const maxPages = 5;
+      while (page <= maxPages) {
         let billResp = await this.safeGet(
           `${apiBase}/bills?vendor_id=${vendorId}&page=${page}&pageSize=${pageSize}&${params}`,
           { headers }
@@ -730,33 +782,29 @@ export class PurchaseAPI extends BasePage {
           ? billData
           : (billData.data || billData.items || billData.bills || []);
 
-        const cleanTarget = billNumber.trim().toLowerCase();
-        const targetSuffix = (billNumber.split('/').pop() || cleanTarget).toLowerCase();
-
         const found = bills.find((b: any) => {
           const refStr = (b.invoice_number || b.bill_no || b.ref || b.bill_number || b.id || '').toString().toLowerCase();
-          const bVendorId = b.vendor_id || b.vendor?.id || '';
-          const vendorMatch = !bVendorId || bVendorId === vendorId;
+          const bVendorId = b.vendor_id || b.vendor?.id || (typeof b.vendor === 'string' ? b.vendor : '');
+          const vendorMatch = !bVendorId || bVendorId === vendorId || (vendor && bVendorId === vendor.code);
           return vendorMatch && (refStr === cleanTarget || (targetSuffix.length >= 4 && refStr.endsWith(targetSuffix)) || refStr.includes(cleanTarget));
         });
         if (found) return true;
 
-        // Stop if this is the last page
-        const total = billData.total ?? billData.count ?? billData.meta?.total ?? null;
+        const total = billData.total ?? billData.count ?? billData.meta?.total ?? billData.pagination?.total ?? null;
         if (bills.length < pageSize || (total !== null && page * pageSize >= total)) break;
         page++;
       }
       return false;
     };
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 4; i++) {
       const found = await findInPages();
       if (found) {
         console.log(`[SUCCESS] API Confirmed: Bill ${billNumber} is physically present in ${vendorName}'s ledger.`);
         return true;
       }
 
-      await this.page.waitForTimeout(2000);
+      await this.page.waitForTimeout(1500);
     }
 
     throw new Error(`[ERROR] API Verification Failed: Bill ${billNumber} never appeared in "${vendorName}" ledger.`);

@@ -856,18 +856,31 @@ export class InventoryAPI extends BasePage {
     await this.advanceDocumentAPI(order.id, 'move-orders');
 
     // Verify move order approval
-    for (let poll = 0; poll < 6; poll++) {
+    let approved = false;
+    for (let poll = 0; poll < 8; poll++) {
       const checkResp = await this.safeGet(`${apiBase}/move-orders/${order.id}?${params}`, { headers });
       if (checkResp.ok()) {
         const checkData = await checkResp.json();
         if (checkData.status === 'approved' || checkData.status === 'completed') {
+          approved = true;
           break;
         }
       }
       await this.page.waitForTimeout(1000);
     }
 
-    return { id: order.id, ref: order.ref, status: 'approved', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
+    if (!approved) {
+      await this.advanceDocumentAPI(order.id, 'move-orders').catch(() => {});
+      const finalCheck = await this.safeGet(`${apiBase}/move-orders/${order.id}?${params}`, { headers });
+      if (finalCheck.ok()) {
+        const cd = await finalCheck.json();
+        if (cd.status === 'approved' || cd.status === 'completed') {
+          approved = true;
+        }
+      }
+    }
+
+    return { id: order.id, ref: order.ref, status: approved ? 'approved' : 'pending', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
   }
 
   async ensureTransferDestinationAPI(fromLocationId: string, itemId?: string): Promise<{ locationId: string; warehouseId: string }> {
