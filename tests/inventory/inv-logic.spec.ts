@@ -44,7 +44,7 @@ test.describe('Location Transfer (Move Order) Audits @inventory @regression', ()
         test.setTimeout(240000);
         const page = await browser.newPage();
         app = new AppManager(page);
-
+        await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
         item = await app.api.inventory.createFreshItemWithStockAPI({ cost_method_code: 'FIFO', quantity: 30, unit_cost: 100 });
         if (!item) throw new Error('[SETUP] No item with minStock=10 found.');

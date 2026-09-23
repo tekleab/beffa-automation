@@ -156,7 +156,7 @@ export class BasePage {
     // Fetch current user once before the loop
     let submittedTo: string | undefined;
     try {
-      const meResp = await this.page.request.get(`${this.apiBase}/users/me`, { headers });
+      const meResp = await this.page.request.get(`${this.apiBase}/users/me?year=${year}&period=${period}&calendar=${calendar}`, { headers });
       if (meResp.ok()) {
         const meData = await meResp.json();
         submittedTo = meData?.user?.id || meData?.id || meData?.user_id;

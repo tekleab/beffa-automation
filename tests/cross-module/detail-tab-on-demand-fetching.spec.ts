@@ -47,8 +47,8 @@ test.describe('Detail Page Tab On-Demand Fetching Suite @cross-module @regressio
                 localStorage.setItem('selectedYear', '2019');
                 localStorage.setItem('calendar', 'EC');
                 localStorage.setItem('period', 'yearly');
-                localStorage.setItem('currentCompany', 'BM Tech');
-            }, token);
+                localStorage.setItem('currentCompany', cmp);
+            }, { jwt: token, cmp: process.env.BEFFA_COMPANY || 'BM Tech' });
         }
     });
 

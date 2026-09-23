@@ -853,8 +853,20 @@ export class InventoryAPI extends BasePage {
     if (!createResp.ok()) throw new Error(`[MOVE ORDER] Create failed: ${createResp.status()} - ${await createResp.text()}`);
     const order = await createResp.json();
     console.log(`[MOVE ORDER] Created: ${order.id} (status: ${order.status})`);
-
     await this.advanceDocumentAPI(order.id, 'move-orders');
+
+    // Verify move order approval
+    for (let poll = 0; poll < 6; poll++) {
+      const checkResp = await this.safeGet(`${apiBase}/move-orders/${order.id}?${params}`, { headers });
+      if (checkResp.ok()) {
+        const checkData = await checkResp.json();
+        if (checkData.status === 'approved' || checkData.status === 'completed') {
+          break;
+        }
+      }
+      await this.page.waitForTimeout(1000);
+    }
+
     return { id: order.id, ref: order.ref, status: 'approved', fromLocationId: data.fromLocationId, toLocationId: data.toLocationId };
   }
 

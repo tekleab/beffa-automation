@@ -94,9 +94,9 @@ export class HrAPI extends BasePage {
     // Initial wait — backend creates the record async after returning null
     await this.page.waitForTimeout(4000);
     for (let attempt = 0; attempt < 7; attempt++) {
-      // Try direct email search first (faster than full list scan)
+      // Try direct email search first with pageSize=100
       const emailResp = await this.safeGet(
-        `${this.apiBase}/employees?page=1&pageSize=10&search=${encodeURIComponent(email)}&${this.params}`, { headers: h });
+        `${this.apiBase}/employees?page=1&pageSize=100&search=${encodeURIComponent(email)}&${this.params}`, { headers: h });
       if (emailResp.ok()) {
         const emailList = (await emailResp.json()).data || [];
         const byEmail = emailList.find((e: any) => e.email === email);
@@ -108,8 +108,10 @@ export class HrAPI extends BasePage {
       if (listResp.ok()) {
         const listJson = await listResp.json();
         const list = listJson.data || listJson.items || (Array.isArray(listJson) ? listJson : []);
-        const totalPages = parseInt(listJson.pagination?.total || listJson.total || '1', 10);
-        console.log(`[HR] Attempt ${attempt + 1}: list total pages=${totalPages} | checking ${list.length} rows for email=${email}`);
+        const totalRecords = parseInt(listJson.pagination?.total || listJson.total || '0', 10);
+        const pageSize = parseInt(listJson.pagination?.pageSize || '100', 10);
+        const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+        console.log(`[HR] Attempt ${attempt + 1}: list total records=${totalRecords} (pages=${totalPages}) | checking ${list.length} rows for email=${email}`);
         let found = list.find((e: any) => e.email === email)
           || list.find((e: any) => e.name === name || e.full_name === name
             || (e.full_name || '').toLowerCase().includes(name.toLowerCase())

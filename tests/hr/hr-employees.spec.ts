@@ -205,9 +205,10 @@ test.describe('HR: Employee Lifecycle @hr @smoke', () => {
         const app = new AppManager(page);
         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
 
-        await page.goto('/human-resources/org-charts', { waitUntil: 'domcontentloaded' });
-        await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
-        await page.waitForTimeout(3000);
+        await page.goto('/human-resources/org-charts');
+        // Wait for SPA workspace loading screen to finish
+        await page.waitForSelector('text=Preparing your workspace', { state: 'detached', timeout: 30000 }).catch(() => {});
+        await page.waitForSelector('main, .react-flow, svg, canvas, [class*="org"], [class*="chart"]', { timeout: 30000 }).catch(() => {});
 
         const hasError = await page.locator('text=/error|failed|something went wrong/i').first()
             .isVisible({ timeout: 5000 }).catch(() => false);
@@ -216,18 +217,9 @@ test.describe('HR: Employee Lifecycle @hr @smoke', () => {
         // Verify we are on the right URL
         expect(page.url()).toMatch(/org-chart/);
 
-        // Accept React Flow canvas OR any visible SVG/div content OR a loading state
-        // The canvas may not fully hydrate in headless — check for any non-error content
-        const anyContent = page.locator(
-            '.react-flow, [class*="react-flow"], svg, canvas, [class*="org"], [class*="chart"], [class*="node"], main, [role="main"]'
-        ).first();
-        const contentVisible = await anyContent.isVisible({ timeout: 20000 }).catch(() => false);
-
-        // If still not visible, reload once
-        if (!contentVisible) {
-            await page.reload({ waitUntil: 'commit' });
-            await page.waitForTimeout(4000);
-        }
+        // Verify Org Chart heading and structure rendered
+        await expect(page.getByRole('heading', { name: /Organization Chart/i }).first()).toBeVisible({ timeout: 20000 });
+        await expect(page.getByRole('tab', { name: /Organization Chart/i }).first()).toBeVisible({ timeout: 10000 });
 
         // Final check: page must not be blank (body must have some text)
         const bodyText = await page.locator('body').textContent().catch(() => '');
