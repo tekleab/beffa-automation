@@ -1,29 +1,37 @@
 {
-  "total": 212,
-  "passed": 190,
-  "failed": 22,
+  "total": 18,
+  "passed": 18,
+  "failed": 0,
   "skipped": 0,
-  "passRate": 89.6,
-  "avgDurationMs": 18215,
-  "lastUpdated": "2026-09-23T07:05:16.878Z",
+  "passRate": 100,
+  "avgDurationMs": 280,
+  "lastUpdated": "2026-09-23T07:58:04.346Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 190,
-      "failed": 22,
+      "passed": 18,
+      "failed": 0,
       "skipped": 0,
       "trend": [
-        91,
         100,
         100,
         90.5,
         85.4,
         100,
-        89.6
+        89.6,
+        100
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "794",
+      "commit": "a154910",
+      "trigger": "push (sanity)",
+      "duration": "0m 5s",
+      "passRate": 100,
+      "status": "success"
+    },
     {
       "run": "793",
       "commit": "cd9b3db",
@@ -95,274 +103,7 @@
       "duration": "0m 4s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "782",
-      "commit": "78095f0",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "72m 3s",
-      "passRate": 89.2,
-      "status": "success"
     }
   ],
-  "criticalBlockers": [
-    {
-      "severity": "critical",
-      "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
-      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
-      "firstSeen": "2026-09-23T06:48:17.449Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
-      "error": "Error: Bill-Payment API failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errTex",
-      "firstSeen": "2026-09-23T06:49:05.908Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-      "error": "Error: Multi-bill payment failed: 500 - {\n\t\"code\": 500,\n\t\"message\": \"Unable to create Payment\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:779\n\n  777 |       const topUp = this.parseInsufficientCashTopUp(errT",
-      "firstSeen": "2026-09-23T06:49:52.121Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
-      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/23/004540 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
-      "firstSeen": "2026-09-23T06:51:13.377Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "TC-01: Source stock must decrease by exact transfer quantity",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m25\u001b[39m\nReceived: \u001b[31m30\u001b[39m\n\n  94 |         const finalSrc = awa",
-      "firstSeen": "2026-09-23T06:53:01.323Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "TC-02: Destination stock must increase by exact transfer quantity",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n  112 |         const finalDest = awa",
-      "firstSeen": "2026-09-23T06:54:29.079Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
-      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
-      "firstSeen": "2026-09-23T06:53:59.726Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Guardrail: Duplicate employee email must be rejected by the system",
-      "error": "Error: BUG #12: POST /employees returns null response body — cannot verify duplicate email guardrail.\n\n  131 |         } catch (e: any) {\n  132 |             if (e.message?.includes('response: null'))",
-      "firstSeen": "2026-09-23T06:54:03.939Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
-      "firstSeen": "2026-09-23T06:55:33.566Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "UI-01: Projects list page loads with all key table columns",
-      "error": "Error: Column \"Project Name\" not visible\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[",
-      "firstSeen": "2026-09-23T06:55:47.196Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    }
-  ],
-  "aiAnalysis": [
-    {
-      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
-      "file": "tests/purchase/bill-gl-audit.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
-      "testTitle": "Audit: Bill payment must debit AP and credit Cash/Bank",
-      "file": "tests/purchase/bill-gl-audit.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
-      "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-      "file": "tests/purchase/po-accounting.spec.ts",
-      "category": "INFRA_FLAKE",
-      "confidence": "HIGH",
-      "reasoning": "Network/browser infrastructure error detected",
-      "suggestedAction": "Retry or check ERP server health"
-    },
-    {
-      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
-      "file": "tests/purchase/po-three-way-match.spec.ts",
-      "category": "KNOWN_BUG",
-      "confidence": "HIGH",
-      "reasoning": "Matches documented ERP defect pattern",
-      "suggestedAction": "Log as known bug, skip in CI"
-    },
-    {
-      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
-      "file": "tests/hr/hr-attendance.spec.ts",
-      "category": "KNOWN_BUG",
-      "confidence": "HIGH",
-      "reasoning": "Matches documented ERP defect pattern",
-      "suggestedAction": "Log as known bug, skip in CI"
-    },
-    {
-      "testTitle": "TC-01: Source stock must decrease by exact transfer quantity",
-      "file": "tests/inventory/inv-logic.spec.ts",
-      "category": "INFRA_FLAKE",
-      "confidence": "HIGH",
-      "reasoning": "Network/browser infrastructure error detected",
-      "suggestedAction": "Retry or check ERP server health"
-    },
-    {
-      "testTitle": "Guardrail: Duplicate employee email must be rejected by the system",
-      "file": "tests/hr/hr-employees.spec.ts",
-      "category": "KNOWN_BUG",
-      "confidence": "HIGH",
-      "reasoning": "Matches documented ERP defect pattern",
-      "suggestedAction": "Log as known bug, skip in CI"
-    },
-    {
-      "testTitle": "TC-02: Destination stock must increase by exact transfer quantity",
-      "file": "tests/inventory/inv-logic.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
-      "file": "tests/project/project-ui-detail.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-02: Filter pills (Workspace, Workflow, Status, Budget) are visible",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-03: Sort and View buttons are visible in toolbar",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-04: Advanced filters and Command filters links are present",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-05: Add Project button and Export button are visible",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-06: Search input is present and accepts text",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-07: Pagination shows rows-per-page and page count",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-01: Projects list page loads with all key table columns",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-08: Project created via API appears in the list",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "UI-09: Clicking project row navigates to detail view",
-      "file": "tests/project/project-ui-list.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
-      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
-      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
-      "testTitle": "RCT-UI-01: Receipt UI — create standalone receipt with line item and verify",
-      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
-      "testTitle": "Full E2E Cycle: PO -> Bill (Receive) -> Payment -> Ledger & GL Verification",
-      "file": "tests/cross-module/procure-to-pay-e2e.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
-      "testTitle": "PAY-API-03: Partial payment → bill balance reduces by exact amount",
-      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-      "category": "KNOWN_BUG",
-      "confidence": "HIGH",
-      "reasoning": "Matches documented ERP defect pattern",
-      "suggestedAction": "Log as known bug, skip in CI"
-    }
-  ]
+  "criticalBlockers": []
 }
