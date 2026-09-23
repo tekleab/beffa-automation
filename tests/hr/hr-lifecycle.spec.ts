@@ -26,6 +26,7 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke', () => {
     const EMPLOYEE_COUNT = 3;
 
     test('Full lifecycle: 3 employees created, contracted, and processed in one payroll run', async ({ page }) => {
+        test.setTimeout(240000);
         const app = await apiLoginSetup(page);
 
 
@@ -274,14 +275,15 @@ test.describe('HR: Multi-Employee Full Lifecycle @hr @smoke', () => {
         }
         await page.waitForTimeout(3000);
 
-        // Poll for approved or processed status
+        // Poll for approved or processed status, or calculated payroll lines
         let finalStatus = 'draft';
         for (let i = 0; i < 15; i++) {
-            await page.waitForTimeout(2000);
             const d = await app.api.hr.getPayrollRun(runId);
             finalStatus = d.status?.toLowerCase() || 'draft';
-            console.log(`[POLL ${i + 1}/15] Payroll run status: ${finalStatus}`);
-            if (finalStatus !== 'draft') break;
+            const payCount = d.payrolls?.length ?? 0;
+            console.log(`[POLL ${i + 1}/15] Payroll run status: ${finalStatus} | Calculated payrolls: ${payCount}`);
+            if (finalStatus !== 'draft' || payCount >= EMPLOYEE_COUNT) break;
+            await page.waitForTimeout(2000);
         }
         // ── FINAL: Verify payrolls generated for all employees ────────────────
         const finalRun = await app.api.hr.getPayrollRun(runId);

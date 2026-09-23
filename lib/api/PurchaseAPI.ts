@@ -40,7 +40,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -137,7 +137,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -238,7 +238,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -355,7 +355,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -484,7 +484,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -566,7 +566,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -620,7 +620,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -662,7 +662,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     // Use DateHelper-resolved year so the ledger query matches the bill's fiscal year
     const { DateHelper: _VDH } = require('../utils/DateHelper');
     const _vResolved = await _VDH.resolve(this.page).catch(() => null);
@@ -829,7 +829,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -924,7 +924,7 @@ export class PurchaseAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -972,7 +972,7 @@ export class PurchaseAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+    const headers = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     const normalizeBill = (b: any) => {
       if (!b) return b;
@@ -1059,7 +1059,7 @@ export class PurchaseAPI extends BasePage {
     const response = await this.page.request.patch(`${apiBase}/bills/${billId}/void?${params}`, {
       data: { status: 'reversed' },
       headers: {
-        'x-company': process.env.BEFFA_COMPANY as string,
+        'x-company': this.company,
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       },
@@ -1108,7 +1108,7 @@ export class PurchaseAPI extends BasePage {
     console.log(`[ACTION] Approving Payment ${paymentId} via API...`);
     const response = await this.page.request.patch(`${apiBase}/payments/${paymentId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      headers: { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '' },
       timeout: 30000
     });
     return response.ok();
@@ -1167,7 +1167,7 @@ export class PurchaseAPI extends BasePage {
       let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
       if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
       if (!apiBase.endsWith('/api')) apiBase += '/api';
-      const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+      const headers = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
       const gjResp = await this.page.request.get(`${apiBase}/general-journals?search=${encodeURIComponent(json.invoice_number || billId)}&pageSize=50&${params}`, { headers });
       if (gjResp.ok()) {

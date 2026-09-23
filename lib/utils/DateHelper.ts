@@ -54,25 +54,31 @@ export class DateHelper {
 
       const period   = process.env.BEFFA_PERIOD   || 'yearly';
       const calendar = process.env.BEFFA_CALENDAR || 'ec';
-      const company  = process.env.BEFFA_COMPANY  || '';
       const baseYear = parseInt(process.env.BEFFA_YEAR || '2019', 10);
 
-      // ── Resolve auth token ──────────────────────────────────────────────
-      const token = await page.evaluate(() => {
+      // ── Resolve auth token and company ─────────────────────────────────
+      const storageInfo = await page.evaluate(() => {
         try {
+          const comp = localStorage.getItem('currentCompany') || localStorage.getItem('company');
+          let tok: string | null = null;
           for (const k of ['token', 'auth-token', 'jwt', 'access_token']) {
             const v = localStorage.getItem(k);
-            if (v && v.length > 50) return v;
+            if (v && v.length > 50) { tok = v; break; }
           }
-          for (let i = 0; i < localStorage.length; i++) {
-            const v = localStorage.getItem(localStorage.key(i)!);
-            if (v?.startsWith('ey')) return v;
+          if (!tok) {
+            for (let i = 0; i < localStorage.length; i++) {
+              const v = localStorage.getItem(localStorage.key(i)!);
+              if (v?.startsWith('ey')) { tok = v; break; }
+            }
           }
-          return null;
+          return { comp, tok };
         } catch {
           return null;
         }
       }).catch(() => null);
+
+      const company = storageInfo?.comp || process.env.BEFFA_COMPANY || 'BM Tech';
+      const token = storageInfo?.tok;
 
       let resolvedToken = token;
       if (!resolvedToken) {

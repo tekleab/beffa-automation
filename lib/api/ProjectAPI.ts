@@ -50,7 +50,7 @@ export class ProjectAPI extends BasePage {
             } catch { /* ignore */ }
         }
         return {
-            'x-company': process.env.BEFFA_COMPANY as string,
+            'x-company': this.company,
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         };

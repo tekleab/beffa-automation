@@ -57,7 +57,7 @@ export class HrAPI extends BasePage {
     }
     return {
       'Authorization': `Bearer ${token}`,
-      'x-company': process.env.BEFFA_COMPANY as string,
+      'x-company': this.company,
       'Content-Type': 'application/json',
     };
   }

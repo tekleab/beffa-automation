@@ -40,7 +40,7 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -139,7 +139,7 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+    const headers = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     // Discover live company environment
     const meta = await this.discoverMetadataAPI();
@@ -273,7 +273,7 @@ export class SalesAPI extends BasePage {
     const token = await this._getAuthToken();
     const response = await this.safePost(`${apiBase}/invoices?${params}`, {
       data: payload,
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      headers: { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '' },
       label: 'Create Invoice'
     });
 
@@ -344,7 +344,7 @@ export class SalesAPI extends BasePage {
     };
 
     const token = await this._getAuthToken();
-    const invoiceHeaders = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' };
+    const invoiceHeaders = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '' };
 
     const maxStockRetries = 3;
     let response = await this.safePost(`${apiBase}/invoices?${params}`, {
@@ -360,7 +360,7 @@ export class SalesAPI extends BasePage {
       payload.accounts_receivable_id = freshMeta.arAccountId;
       payload.currency_id = freshMeta.currencyId;
       const freshToken = await this._getAuthToken();
-      const freshHeaders = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': freshToken ? `Bearer ${freshToken}` : '' };
+      const freshHeaders = { 'x-company': this.company, 'Authorization': freshToken ? `Bearer ${freshToken}` : '' };
       response = await this.safePost(`${apiBase}/invoices?${params}`, {
         data: payload,
         headers: freshHeaders,
@@ -399,7 +399,7 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const company = process.env.BEFFA_COMPANY as string;
+    const company = this.company;
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -485,7 +485,7 @@ export class SalesAPI extends BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
-    const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
+    const headers = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     const response = await this.page.request.patch(`${apiBase}/invoices/${invoiceId}/void?${params}`, {
       data: { status: 'reversed' },
@@ -540,7 +540,7 @@ export class SalesAPI extends BasePage {
     const response = await this.page.request.patch(`${apiBase}/receipts/${receiptId}/void?${params}`, {
       data: { status: 'reversed' },
       headers: {
-        'x-company': process.env.BEFFA_COMPANY as string,
+        'x-company': this.company,
         'Authorization': token ? `Bearer ${token}` : '',
         'Content-Type': 'application/json'
       },
@@ -566,7 +566,7 @@ export class SalesAPI extends BasePage {
 
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'approved' },
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' },
+      headers: { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '' },
       timeout: 30000
     });
     return response.ok();
@@ -806,7 +806,7 @@ export class SalesAPI extends BasePage {
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
 
     const response = await this.safeGet(`${apiBase}/invoice/${invoiceId}?${params}`, {
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': token ? `Bearer ${token}` : '' }
+      headers: { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '' }
     });
     if (!response.ok()) throw new Error(`Failed to fetch Invoice ${invoiceId}: ${response.status()} - ${await response.text().catch(() => 'No Response')}`);
     return await response.json();
@@ -821,7 +821,7 @@ export class SalesAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const qs = `year=${year}&period=${period}&calendar=${calendar}`;
     const response = await this.safeGet(`${apiBase}/customer/${customerId}?${qs}`, {
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok()) return '';
     const json = await response.json();

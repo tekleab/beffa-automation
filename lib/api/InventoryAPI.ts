@@ -56,7 +56,7 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const headers = {
-      'x-company': process.env.BEFFA_COMPANY as string,
+      'x-company': this.company,
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
       'x-role': 'IT Administrator / User Manager'
@@ -269,7 +269,7 @@ export class InventoryAPI extends BasePage {
       
       const response = await this.page.request.post(`${apiBase}/inventory-adjustments/${id}/process`, {
           headers: { 
-            'x-company': process.env.BEFFA_COMPANY as string, 
+            'x-company': this.company, 
             'Authorization': `Bearer ${token}`,
             'x-role': 'IT Administrator / User Manager'
           },
@@ -293,7 +293,7 @@ export class InventoryAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = {
-      'x-company': process.env.BEFFA_COMPANY as string,
+      'x-company': this.company,
       'Authorization': token ? `Bearer ${token}` : '',
       'Content-Type': 'application/json'
     };
@@ -459,7 +459,7 @@ export class InventoryAPI extends BasePage {
     // Now that the port is fixed (8001), the correct list endpoint is indeed the plural /inventory-items.
     let response = await this.safeGet(`${apiBase}/inventory-items?${params}`, {
       headers: { 
-        'x-company': process.env.BEFFA_COMPANY as string, 
+        'x-company': this.company, 
         'Authorization': `Bearer ${token}`,
         'x-role': 'IT Administrator / User Manager'
       }
@@ -469,7 +469,7 @@ export class InventoryAPI extends BasePage {
        console.log(`[WARN] /inventory-items failed (${response.status()}). Trying fallback: /items`);
        response = await this.safeGet(`${apiBase}/items?${params}`, {
          headers: { 
-           'x-company': process.env.BEFFA_COMPANY as string, 
+           'x-company': this.company, 
            'Authorization': `Bearer ${token}`,
            'x-role': 'IT Administrator / User Manager'
          }
@@ -513,7 +513,7 @@ export class InventoryAPI extends BasePage {
         const period = process.env.BEFFA_PERIOD || 'yearly';
         const calendar = process.env.BEFFA_CALENDAR || 'ec';
         const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
-          headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+          headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
         });
         if (locResp.ok()) {
           const locData = await locResp.json();
@@ -566,7 +566,7 @@ export class InventoryAPI extends BasePage {
       const period = process.env.BEFFA_PERIOD || 'yearly';
       const calendar = process.env.BEFFA_CALENDAR || 'ec';
       const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
-        headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
       });
       if (locResp.ok()) {
         const locData = await locResp.json();
@@ -601,7 +601,7 @@ export class InventoryAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers = { 
-      'x-company': process.env.BEFFA_COMPANY as string, 
+      'x-company': this.company, 
       'Authorization': `Bearer ${token}`,
       'x-role': 'IT Administrator / User Manager'
     };
@@ -689,17 +689,17 @@ export class InventoryAPI extends BasePage {
 
     // Try singular invoice endpoint first
     let response = await this.safeGet(`${apiBase}/invoice/${receiptId}?${params}`, {
-      headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+      headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
     });
 
     if (!response.ok() && response.status() === 404) {
       // fallback to plural invoices and generic receipt endpoint if needed
       response = await this.safeGet(`${apiBase}/invoices/${receiptId}?${params}`, {
-        headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+        headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok() && response.status() === 404) {
         response = await this.safeGet(`${apiBase}/receipts/${receiptId}?${params}`, {
-          headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` }
+          headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
         });
       }
     }
@@ -832,7 +832,7 @@ export class InventoryAPI extends BasePage {
     const token = await this._getAuthToken();
     const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const headers = {
-      'x-company': process.env.BEFFA_COMPANY as string,
+      'x-company': this.company,
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
       'x-role': 'IT Administrator / User Manager'
@@ -877,7 +877,7 @@ export class InventoryAPI extends BasePage {
     const token = await this._getAuthToken();
     const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
     const headers = {
-      'x-company': process.env.BEFFA_COMPANY as string,
+      'x-company': this.company,
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
       'x-role': 'IT Administrator / User Manager'
@@ -1043,7 +1043,7 @@ export class InventoryAPI extends BasePage {
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const params   = `year=${year}&period=${period}&calendar=${calendar}`;
     const headers  = {
-      'x-company': process.env.BEFFA_COMPANY as string,
+      'x-company': this.company,
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
       'x-role': 'IT Administrator / User Manager'

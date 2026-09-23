@@ -77,6 +77,22 @@ export class BasePage {
     this.companyBtn = page.locator('header button.chakra-menu__menu-button, .chakra-stack button.chakra-menu__menu-button').first();
   }
 
+  get company(): string {
+    return process.env.BEFFA_COMPANY || 'BM Tech';
+  }
+
+  async _getCompany(): Promise<string> {
+    const fromStorage = await this.page.evaluate(() => {
+      try {
+        return localStorage.getItem('currentCompany') ||
+          localStorage.getItem('company');
+      } catch {
+        return null;
+      }
+    }).catch(() => null);
+    return fromStorage || this.company;
+  }
+
   /** Strip newlines/CR from any value before logging to prevent CWE-117 log injection. */
   private sanitizeLog(value: unknown): string {
     return String(value ?? '').replace(/[\r\n\t]/g, ' ').substring(0, 500);
