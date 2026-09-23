@@ -1,0 +1,60 @@
+08:59:21 [PERFORMANCE] API - Auth API Verification: 126885.04ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011369 (ID: 7c71c01e-b70c-4f4e-86ac-3635515756df)
+08:59:28 [INFO] Advancing inventory-adjustments "7c71c01e-b70c-4f4e-86ac-3635515756df"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790153964261 (4e1dda16-5d9f-4ef2-82ac-3740229bca4f) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] FIFO-Item-1790153964261 | stock:20
+08:59:32 [INFO] Advancing invoices "593391bd-ac60-4634-8802-29a38dd35a37"...
+[INVOICE JOURNAL] INV/2026/09/23/005575 (4 entries)
+  Sales () Dr:0 Cr:100
+  Cash at Bank - CBE () Dr:100 Cr:0
+  Inventory () Dr:0 Cr:100
+  Accounts Receivable () Dr:100 Cr:0
+[PASS] AR debited $100 on INV/2026/09/23/005575
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=593391bd... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/23/001649
+08:59:42 [INFO] Advancing receipts "8f932857-169a-4b80-9829-90881388321d"...
+[RECEIPT JOURNAL] RCPT/2026/09/23/001649 (3 entries)
+  Withholding Tax Receivable Dr:0 Cr:100
+  Accounts Receivable Dr:0 Cr:100
+  Petty Cash Dr:200 Cr:0
+[AUDIT] AR Dr:$100 (inv) Cr:$100 (rct) drift:$0.00
+[PASS] Full cycle GL: AR Dr=$100 = Cr=$100
+
+===============================================================================================
+  GL AUDIT REPORT — BEFFA ERP  |  Company: BM Tech  |  2026-09-23T08:59:48.986Z
+===============================================================================================
+
+  ▶ 1. Invoice (AR Debit)
+    Ref: INV/2026/09/23/005575
+    ID : 593391bd-ac60-4634-8802-29a38dd35a37
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Sales                                |                              |            — |       100.00 |
+  | Cash at Bank - CBE                   |                              |       100.00 |            — |
+  | Inventory                            |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 2. Receipt (AR Credit)
+    Ref: RCPT/2026/09/23/001649
+    ID : 8f932857-169a-4b80-9829-90881388321d
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Withholding Tax Receivable           |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |            — |       100.00 |
+  | Petty Cash                           |                              |       200.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
