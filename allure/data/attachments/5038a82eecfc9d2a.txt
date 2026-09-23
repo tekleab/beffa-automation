@@ -1,0 +1,39 @@
+[DateHelper] ✓ Year 2019: today (2026-09-23T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-23T00:00:00Z (day=23, ecYear=2019)
+06:48:16 [PERFORMANCE] API - Auth API Verification: 8041.64ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/23/011196 (ID: 43d2592a-56df-4f18-96b6-879c7759b520)
+06:48:39 [INFO] Advancing inventory-adjustments "43d2592a-56df-4f18-96b6-879c7759b520"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1790146116021 (2c3617dd-a893-4275-aae3-127062091d08) | method=FIFO | stock=15@$450 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:48:55 [INFO] Advancing purchase-orders "73d4cddd-e3dc-4644-b769-59d29e92578b"...
+06:48:59 [INFO] Advancing bills "e3e5a827-7b62-4096-a8fe-9a497718ba3f"...
+[SETUP] Bill created and approved: BILL/2026/09/23/004529 (e3e5a827-7b62-4096-a8fe-9a497718ba3f)
+06:49:04 [PERFORMANCE] API - Auth API Verification: 55661.32ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=e3e5a827-7b62-4096-a8fe-9a497718ba3f...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "7c3b2c78-0d0c-4b05-8151-9385d83cdab9",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-07-27T11:53:31.579234Z",
+    "description": "Final state",
+    "id": "e38fbf80-59ee-4bb9-9c95-f00b095035ae",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-07-27T11:53:31.579667Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/09/23/004529
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 0
