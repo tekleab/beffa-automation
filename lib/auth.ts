@@ -48,7 +48,7 @@ export class AuthManager extends BasePage {
     return token;
   }
 
-  async login(email: string | undefined, pass: string | undefined, companyName: string = process.env.BEFFA_COMPANY as string): Promise<void> {
+  async login(email: string | undefined, pass: string | undefined, companyName: string = process.env.BEFFA_COMPANY as string, forceFresh: boolean = false): Promise<void> {
     const cleanEmail = (email || '').replace(/['"]+/g, '').trim();
     const cleanPass = (pass || '').replace(/['"]+/g, '').trim();
 
@@ -56,58 +56,79 @@ export class AuthManager extends BasePage {
       throw new Error('CRITICAL: Automation credentials (BEFFA_USER or BEFFA_PASS) are missing or empty. If running in CI, ensure GitHub Secrets are configured for this repository.');
     }
 
-    // Fast-path check: If session token is already set in browser context, reuse it instantly
-    const hasExistingSession = await this.page.evaluate(() => {
-      try {
-        const token = localStorage.getItem('auth-token') || localStorage.getItem('token');
-        if (token) {
-          localStorage.setItem('lastUserActivity', new Date().toISOString());
-          return true;
-        }
-        return false;
-      } catch {
-        return false;
-      }
-    }).catch(() => false);
-
-    if (hasExistingSession) {
-      console.log('[AUTH] Reusing cached signed-in session state — skipping login navigation.');
-      return;
-    }
-
-    // Fast-path 2: If playwright/.auth/user.json exists on disk, inject it into context and page instantly
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
-      if (fs.existsSync(authFile)) {
-        const authData = JSON.parse(fs.readFileSync(authFile, 'utf8'));
-        if (authData.cookies?.length) {
-          await this.page.context().addCookies(authData.cookies).catch(() => {});
-        }
-        const origin = authData.origins?.[0];
-        if (origin?.localStorage?.length) {
-          await this.page.addInitScript((items: any[]) => {
-            for (const item of items) {
-              try { localStorage.setItem(item.name, item.value); } catch {}
-            }
-          }, origin.localStorage);
-          await this.page.evaluate((items: any[]) => {
-            for (const item of items) {
-              try { localStorage.setItem(item.name, item.value); } catch {}
-            }
-          }, origin.localStorage).catch(() => {});
-          const token = origin.localStorage.find((i: any) => i.name === 'auth-token')?.value || origin.localStorage.find((i: any) => i.name === 'token')?.value;
+    if (!forceFresh) {
+      // Fast-path check: If session token is already set in browser context, reuse it instantly
+      const hasExistingSession = await this.page.evaluate(() => {
+        try {
+          const token = localStorage.getItem('auth-token') || localStorage.getItem('token');
           if (token) {
-            this.cachedToken = token;
-            BasePage.globalAuthToken = token;
+            localStorage.setItem('lastUserActivity', new Date().toISOString());
+            return true;
           }
-          console.log('[AUTH] Injected session from user.json storage file.');
-          return;
+          return false;
+        } catch {
+          return false;
         }
+      }).catch(() => false);
+
+      if (hasExistingSession) {
+        console.log('[AUTH] Reusing cached signed-in session state — skipping login navigation.');
+        return;
       }
-    } catch (e: any) {
-      console.warn(`[WARN] Could not restore session from storage file: ${e.message}`);
+
+      // Fast-path 2: If playwright/.auth/user.json exists on disk, inject it into context and page instantly
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
+        if (fs.existsSync(authFile)) {
+          const authData = JSON.parse(fs.readFileSync(authFile, 'utf8'));
+          const origin = authData.origins?.[0];
+          if (origin?.localStorage?.length) {
+            const tokenExpItem = origin.localStorage.find((i: any) => i.name === 'token-expiration');
+            let isExpired = false;
+            if (tokenExpItem) {
+              try {
+                const expTime = JSON.parse(tokenExpItem.value)?.authTokenExpirationTime;
+                if (expTime && new Date(expTime).getTime() <= Date.now() + 300000) {
+                  isExpired = true;
+                }
+              } catch {}
+            }
+            if (!isExpired) {
+              if (authData.cookies?.length) {
+                await this.page.context().addCookies(authData.cookies).catch(() => {});
+              }
+              const updatedStorage = origin.localStorage.map((item: any) =>
+                item.name === 'lastUserActivity' ? { ...item, value: new Date().toISOString() } : item
+              );
+              await this.page.addInitScript((items: any[]) => {
+                for (const item of items) {
+                  try { localStorage.setItem(item.name, item.value); } catch {}
+                }
+                localStorage.setItem('lastUserActivity', new Date().toISOString());
+              }, updatedStorage);
+              await this.page.evaluate((items: any[]) => {
+                for (const item of items) {
+                  try { localStorage.setItem(item.name, item.value); } catch {}
+                }
+                localStorage.setItem('lastUserActivity', new Date().toISOString());
+              }, updatedStorage).catch(() => {});
+              const token = origin.localStorage.find((i: any) => i.name === 'auth-token')?.value || origin.localStorage.find((i: any) => i.name === 'token')?.value;
+              if (token) {
+                this.cachedToken = token;
+                BasePage.globalAuthToken = token;
+              }
+              console.log('[AUTH] Injected session from user.json storage file.');
+              return;
+            } else {
+              console.log('[AUTH] Stored token in user.json is expired or near expiry, obtaining fresh session...');
+            }
+          }
+        }
+      } catch (e: any) {
+        console.warn(`[WARN] Could not restore session from storage file: ${e.message}`);
+      }
     }
 
     // Resolve the correct fiscal year BEFORE any API call so process.env.BEFFA_YEAR

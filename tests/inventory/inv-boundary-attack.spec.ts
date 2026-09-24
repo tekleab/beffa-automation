@@ -193,7 +193,49 @@ test.describe('Inventory Boundary & Costing Attack Audit @inventory @full', () =
         }
     });
 
-    // ── 5. CONCURRENT ADJUSTMENTS ────────────────────────────────────────────
+    // ── 5. DEACTIVATED ITEM STOCK ADJUSTMENT ─────────────────────────────────
+    test('Guardrail: Stock adjustment on a deactivated item must be rejected', async ({ request }) => {
+        // Deactivate the shared item
+        const patchResp = await request.patch(`${API()}/inventory-items/${item.id}?${QS()}`, {
+            headers: h(token),
+            data: { status: 'inactive' }
+        });
+        console.log(`[SETUP] Deactivate item ${item.id}: HTTP ${patchResp.status()}`);
+
+        // Attempt stock adjustment on the now-deactivated item
+        const adjResp = await postAdj(request, { adjusted_quantity: 5, reason: 'E2E — deactivated item attack' });
+        const body = await adjResp.json();
+        console.log(`[RESULT] Deactivated item adj: status=${adjResp.status()} | adj_id=${body.id ?? 'N/A'} | adj_ref=${body.ref ?? 'N/A'}`);
+
+        if (adjResp.ok() && body.id) {
+            // Try to advance it too
+            await advance(request, body.id, 'inventory-adjustments').catch(() => {});
+            const adjData = await (await request.get(`${API()}/inventory-adjustment/${body.id}?${QS()}`, { headers: h(token) })).json().catch(() => ({}));
+            const adjStatus = (adjData.status ?? '').toLowerCase();
+            BUG('BUG-INV-006', 'Stock adjustment accepted on deactivated item — no status validation', {
+                adj_ref: body.ref,
+                adj_id: body.id,
+                adj_status: adjStatus,
+                item_id: item.id,
+                item_name: item.name,
+                item_status: 'inactive',
+                adjusted_quantity: 5,
+                impact: 'Deactivated items can receive stock — inventory count and COGS corrupted'
+            });
+            expect(adjResp.ok(), 'Adjustment on deactivated item must be rejected').toBe(false);
+        } else {
+            expect(adjResp.status()).toBeGreaterThanOrEqual(400);
+            console.log(`[PASS] Adjustment on deactivated item correctly rejected: HTTP ${adjResp.status()}`);
+        }
+
+        // Re-activate so subsequent tests are not affected
+        await request.patch(`${API()}/inventory-items/${item.id}?${QS()}`, {
+            headers: h(token),
+            data: { status: 'active' }
+        });
+    });
+
+    // ── 6. CONCURRENT ADJUSTMENTS ────────────────────────────────────────────
     test('Concurrent adjustments on same item must produce correct final stock', async ({ request }) => {
         // Create isolated item for concurrency test
         const locR2 = await request.get(`${API()}/locations?page=1&pageSize=1&${QS()}`, { headers: h(token) });

@@ -170,7 +170,7 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
     }
 
     async function addLineItemViaModal(page: any, app: AppManager, type: 'Item' | 'Miscellaneous', opts: {
-        unitPrice: string; qty: string; description?: string; itemName?: string; warehouseName?: string; locationName?: string;
+        unitPrice: string; qty: string; description?: string; itemName?: string; warehouseName?: string; locationName?: string; taxName?: string;
     }) {
         const popover = page.locator('[role="dialog"], .chakra-popover__content')
             .filter({ hasText: /Please select an item type/i });
@@ -421,17 +421,24 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
         }
 
         // ── Tax (optional) ────────────────────────────────────────────────────
-        if (await taxBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
-            await app.selectRandomOption(taxBtn, 'Tax', true);
+        if (opts.taxName && await taxBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
+            await app.selectRandomOption(taxBtn, 'Tax', true, opts.taxName);
         }
 
         // ── Click Add / Save and verify modal closes ──────────────────────────
-
-        const addBtn = modal.locator('button:has-text("Add"), button:has-text("Save")').first();
-        await addBtn.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(500);
+        const addBtn = modal.getByRole('button', { name: /^Add$|^Save$/i })
+            .or(modal.locator('button:has-text("Add"), button:has-text("Save")'))
+            .first();
+        await addBtn.scrollIntoViewIfNeeded().catch(() => {});
         await addBtn.click({ force: true }).catch(() => addBtn.evaluate((b: HTMLElement) => b.click()));
 
-        const closed = await modal.waitFor({ state: 'hidden', timeout: 15000 }).then(() => true).catch(() => false);
+        let closed = await modal.waitFor({ state: 'hidden', timeout: 5000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            await page.waitForTimeout(500);
+            await addBtn.click({ force: true }).catch(() => addBtn.evaluate((b: HTMLElement) => b.click()));
+            closed = await modal.waitFor({ state: 'hidden', timeout: 10000 }).then(() => true).catch(() => false);
+        }
         if (!closed) {
             const errorText = await modal.locator(
                 '[class*="error"], [class*="invalid"], [role="alert"], .chakra-form__error-message, [data-status="error"]'
@@ -1408,8 +1415,15 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
         await lineItemBtn.waitFor({ state: 'visible', timeout: 120000 });
 
         await app.pickDate('Invoice Date');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Vendor selector' }), 'Vendor');
-        await app.selectRandomOption(page.getByRole('button', { name: 'Accounts Payable selector' }), 'Accounts Payable', false, 'Accounts Payable');
+        const vendorBtn = page.getByRole('button', { name: /Vendor selector|Select Vendor/i })
+            .or(page.locator('.chakra-form-control, div[role="group"]').filter({ hasText: /Vendor/i }).locator('button'))
+            .first();
+        await app.selectRandomOption(vendorBtn, 'Vendor');
+
+        const apBtn = page.getByRole('button', { name: /Accounts Payable selector|Select Accounts Payable/i })
+            .or(page.locator('.chakra-form-control, div[role="group"]').filter({ hasText: /Accounts Payable/i }).locator('button'))
+            .first();
+        await app.selectRandomOption(apBtn, 'Accounts Payable', false, 'Accounts Payable');
         await fillCurrencyField(page, app);
 
         const capturedItem = await captureItemWithPriceAPI(page, app);

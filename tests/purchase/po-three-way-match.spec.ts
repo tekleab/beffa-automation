@@ -64,9 +64,31 @@ test.describe('Procurement: Three-Way Match Audit @purchase @regression', () => 
                 const billData = await app.api.purchase.getBillAPI(varianceBill.billId);
                 const status = (billData.status ?? billData.current_approval_step?.status_label ?? '').toLowerCase();
                 
-                // If it approved, log as a known bug or warning
+                // ERP does not enforce price variance guardrails — confirmed bug
                 if (status === 'approved') {
-                    throw new Error(`[PRICE_VARIANCE_BUG] System approved Bill ${varianceBill.billNumber} with price variance (billed 600 vs PO 500)!`);
+                    const billItems = billData.received_purchase_order_items || billData.items || [];
+                    const billedPrice = billItems[0]?.received_unit_price ?? billItems[0]?.unit_price ?? 600;
+                    const billedQty   = billItems[0]?.received_quantity   ?? billItems[0]?.quantity   ?? 5;
+                    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    console.error('[PRICE_VARIANCE_BUG] ERP approved bill with price variance — no guardrail enforced');
+                    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    console.error(`  PO Number       : ${po.poNumber}`);
+                    console.error(`  PO ID           : ${po.poId}`);
+                    console.error(`  PO Item ID      : ${poItemId}`);
+                    console.error(`  PO Unit Price   : ${poUnitPrice}`);
+                    console.error(`  PO Quantity     : 5`);
+                    console.error(`  PO Total        : ${poUnitPrice * 5}`);
+                    console.error('  ──────────────────────────────────────────────────────────');
+                    console.error(`  Bill Number     : ${varianceBill.billNumber}`);
+                    console.error(`  Bill ID         : ${varianceBill.billId}`);
+                    console.error(`  Bill Status     : ${status}`);
+                    console.error(`  Billed Price    : ${billedPrice}  ← VARIANCE (expected ${poUnitPrice})`);
+                    console.error(`  Billed Qty      : ${billedQty}`);
+                    console.error(`  Billed Total    : ${billedPrice * billedQty}  (PO total was ${poUnitPrice * 5})`);
+                    console.error(`  Price Drift     : +${billedPrice - poUnitPrice} per unit (+${(((billedPrice - poUnitPrice) / poUnitPrice) * 100).toFixed(1)}%)`);
+                    console.error(`  AP Overstatement: ${(billedPrice - poUnitPrice) * billedQty}`);
+                    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    throw new Error(`[PRICE_VARIANCE_BUG] System approved Bill ${varianceBill.billNumber} with price variance (billed ${billedPrice} vs PO ${poUnitPrice})!`);
                 } else {
                     console.log(`[PASS] Variance Bill created but approval blocked (status: ${status}).`);
                 }

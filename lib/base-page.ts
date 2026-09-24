@@ -1172,6 +1172,10 @@ ${curlCmd}
       }
     }
 
+    if (await popover.isVisible().catch(() => false)) {
+      await this.page.keyboard.press('Escape').catch(() => {});
+    }
+
     await this.page.waitForTimeout(800);
     await this.stopTacticalTimer(`Pick Date: ${label}`, 'UI');
   }
