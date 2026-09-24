@@ -419,4 +419,113 @@ test.describe('Procurement Document Integrity Attacks @purchase @full', () => {
 
         console.log(`[PASS] 1:1 reconciliation audit succeeded. Bill maps perfectly to Purchase Order.`);
     });
+
+    // ── 7. DUPLICATE VENDOR INVOICE NUMBER GUARDRAIL ──────────────────────────
+    test('Guardrail: System must reject duplicate Vendor Invoice Number to prevent double-billing fraud', async ({ page }) => {
+        const app = new AppManager(page);
+        await app.apiLogin(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+        const meta = sharedMeta;
+        const item = sharedItem;
+        const { apiBase, headers, qs } = await app.buildApiContext();
+        const dateIso = (await (require('../../lib/utils/DateHelper').DateHelper.resolve(page))).iso;
+
+        const ts = Date.now().toString().slice(-6);
+        const duplicateVendorInvNumber = `VEND-INV-${ts}`;
+
+        console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        console.log(`[ATTACK] Submitting Bill 1 with Vendor Invoice Number: "${duplicateVendorInvNumber}"...`);
+        console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+
+        const b1Resp = await page.request.post(`${apiBase}/bills?${qs}`, {
+            headers,
+            data: {
+                vendor_id: meta.vendorId,
+                accounts_payable_id: meta.apAccountId,
+                currency_id: meta.currencyId,
+                currency: 'Birr',
+                invoice_date: dateIso,
+                due_date: dateIso,
+                invoice_number: duplicateVendorInvNumber,
+                vendor_invoice_number: duplicateVendorInvNumber,
+                items: [{
+                    item_id: item.itemId,
+                    quantity: 1,
+                    unit_price: 1000,
+                    general_ledger_account_id: meta.withholdingAccountId || meta.apAccountId,
+                    warehouse_id: item.warehouseId,
+                    location_id: item.locationId,
+                }]
+            }
+        });
+
+        if (!b1Resp.ok()) {
+            throw new Error(`Bill 1 creation failed: HTTP ${b1Resp.status()} - ${await b1Resp.text()}`);
+        }
+
+        const b1Data = await b1Resp.json();
+        const bill1Number = b1Data.invoice_number || b1Data.ref || b1Data.id;
+        const bill1Id = b1Data.id;
+
+        console.log(`[AUDIT] Bill 1 Created:`);
+        console.log(`  Bill 1 Ref       : ${bill1Number}`);
+        console.log(`  Bill 1 ID        : ${bill1Id}`);
+        console.log(`  Vendor           : ${meta.vendorName} (${meta.vendorId})`);
+        console.log(`  Vendor Inv Num   : ${duplicateVendorInvNumber}`);
+
+        console.log(`\n[ATTACK] Submitting Bill 2 for SAME Vendor with IDENTICAL Vendor Invoice Number "${duplicateVendorInvNumber}"...`);
+        const b2Resp = await page.request.post(`${apiBase}/bills?${qs}`, {
+            headers,
+            data: {
+                vendor_id: meta.vendorId,
+                accounts_payable_id: meta.apAccountId,
+                currency_id: meta.currencyId,
+                currency: 'Birr',
+                invoice_date: dateIso,
+                due_date: dateIso,
+                invoice_number: duplicateVendorInvNumber,
+                vendor_invoice_number: duplicateVendorInvNumber,
+                items: [{
+                    item_id: item.itemId,
+                    quantity: 1,
+                    unit_price: 1000,
+                    general_ledger_account_id: meta.withholdingAccountId || meta.apAccountId,
+                    warehouse_id: item.warehouseId,
+                    location_id: item.locationId,
+                }]
+            }
+        });
+
+        if (b2Resp.ok()) {
+            const b2Data = await b2Resp.json();
+            const bill2Number = b2Data.invoice_number || b2Data.ref || b2Data.id;
+            const bill2Id = b2Data.id;
+
+            console.error('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.error('🚨 [DUPLICATE_BILL_FRAUD_BUG] ERP accepted duplicate vendor invoice number!');
+            console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.error(`  Vendor Name      : ${meta.vendorName}`);
+            console.error(`  Vendor ID        : ${meta.vendorId}`);
+            console.error(`  Duplicate Inv #  : ${duplicateVendorInvNumber}`);
+            console.error(`  Bill 1 Reference : ${bill1Number}`);
+            console.error(`  Bill 1 ID        : ${bill1Id}`);
+            console.error(`  Bill 2 Reference : ${bill2Number}`);
+            console.error(`  Bill 2 ID        : ${bill2Id}`);
+            console.error(`  Risk             : Duplicate AP liability & double payment fraud`);
+            console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            printAuditTable('VULNERABILITY: Duplicate Vendor Invoice Accepted', [
+                { label: 'Vendor Name',      value: meta.vendorName },
+                { label: 'Vendor ID',        value: meta.vendorId },
+                { label: 'Vendor Inv Num',   value: duplicateVendorInvNumber },
+                { label: 'Bill 1 Reference', value: bill1Number },
+                { label: 'Bill 1 UUID',      value: bill1Id },
+                { label: 'Bill 2 Reference', value: bill2Number },
+                { label: 'Bill 2 UUID',      value: bill2Id },
+                { label: 'Risk',             value: 'Double AP liability & duplicate payment' }
+            ]);
+
+            throw new Error(`[DUPLICATE_BILL_FRAUD_BUG] System accepted two distinct bills (${bill1Number} and ${bill2Number}) with duplicate vendor invoice number "${duplicateVendorInvNumber}" for vendor "${meta.vendorName}"!`);
+        } else {
+            console.log(`[PASS] Duplicate vendor invoice number correctly rejected: HTTP ${b2Resp.status()}`);
+        }
+    });
 });
