@@ -1,0 +1,36 @@
+[DateHelper] ✓ Year 2019: today (2026-09-28T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-28T00:00:00Z (day=28, ecYear=2019)
+11:08:46 [PERFORMANCE] API - Auth API Verification: 6997.12ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/28/011907 (ID: 09cbd0a4-dc61-4ee8-9ef8-7061fe3f5951)
+11:08:59 [INFO] Advancing inventory-adjustments "09cbd0a4-dc61-4ee8-9ef8-7061fe3f5951"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790593736072 (dfa3da79-6144-4855-86f9-589e7234f942) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/28/011908 (ID: 720b207c-fab7-4817-a3a6-14694767a58e)
+11:09:07 [INFO] Advancing inventory-adjustments "720b207c-fab7-4817-a3a6-14694767a58e"...
+11:09:10 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+11:09:10 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790593743953 (8e1bfe5b-7cf1-48be-9a68-8977984e263b) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] ✓ Year 2019: today (2026-09-28T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-28T00:00:00Z (day=28, ecYear=2019)
+11:09:22 [PERFORMANCE] API - Auth API Verification: 42523.21ms
+[AUTH] Session token and local storage injected successfully.
+11:09:22 [PERFORMANCE] API - Auth API Verification: 42906.41ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/28/011911 (ID: 935636f3-4b63-4b39-9fff-64cab4171f26)
+11:09:27 [INFO] Advancing inventory-adjustments "935636f3-4b63-4b39-9fff-64cab4171f26"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790593764033 (575241b7-fa10-4e08-a4e6-8ed38874ba4a) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+11:09:37 [INFO] Advancing bills "aa7b3b7d-203d-43f2-8e50-116f5fdef7ca"...
+[ACTION] Creating Bill Payment for aa7b3b7d-203d-43f2-8e50-116f5fdef7ca via API (CashAcct: e8b0574b-87e1-44fd-a021-cb26ddc0b9c0)...
+[SUCCESS] Payment created: PAY/2026/09/28/001186 (ID: 4d1b4217-afaa-4903-a886-9a1164967410)
+11:09:49 [INFO] Advancing payments "4d1b4217-afaa-4903-a886-9a1164967410"...
+[AUDIT] Bill $6000 | Paid $2000 | Remaining $4000 | Expected $4000
+[PASS] Partial payment reduces bill balance correctly

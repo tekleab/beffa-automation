@@ -1,0 +1,36 @@
+[DateHelper] ✓ Year 2019: today (2026-09-28T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-28T00:00:00Z (day=28, ecYear=2019)
+10:56:54 [PERFORMANCE] API - Auth API Verification: 10679.25ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/28/011865 (ID: e12197f6-d1f1-4e33-b6fa-8696ad6db951)
+10:57:15 [INFO] Advancing inventory-adjustments "e12197f6-d1f1-4e33-b6fa-8696ad6db951"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790593031074 (00981c2c-8f58-4c8b-aed7-b17b3c994075) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+10:57:19 [PERFORMANCE] API - Auth API Verification: 35751.26ms
+[AUTH] Session token and local storage injected successfully.
+10:57:20 [PERFORMANCE] API - Auth API Verification: 36355.94ms
+[AUTH] Session token and local storage injected successfully.
+[ATTACK] Attempting to create Bill with NEGATIVE unit price (-5000)...
+[PASS] Negative price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
+[ATTACK] Attempting to create Bill with ZERO unit price...
+[PASS] Zero price blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"items.0.price": [
+			"price must be positive"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+
