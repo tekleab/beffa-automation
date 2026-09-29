@@ -1,0 +1,25 @@
+06:14:53 [PERFORMANCE] API - Auth API Verification: 112606.35ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012001 (ID: 756adcba-c62b-4b53-8ac8-347b4980df1d)
+06:15:21 [INFO] Advancing inventory-adjustments "756adcba-c62b-4b53-8ac8-347b4980df1d"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790662516074 (16b68836-698a-4b28-be76-e664566788d8) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:15:27 [PERFORMANCE] API - Auth API Verification: 146912.10ms
+[AUTH] Session token and local storage injected successfully.
+06:15:28 [PERFORMANCE] API - Auth API Verification: 148006.79ms
+[AUTH] Session token and local storage injected successfully.
+[TEST] Creating Payment with back date: 2017-12-31T00:00:00Z
+06:15:46 [INFO] Advancing bills "988b727b-de01-4fd1-8ec9-ee3c4c1f27c9"...
+[ACTION] Creating Bill Payment for 988b727b-de01-4fd1-8ec9-ee3c4c1f27c9 via API (CashAcct: b521c276-a826-4a32-a674-6d20550c0b4a)...
+[PASS] Back-dated Payment rejected at creation: Bill-Payment API failed: 422 - {
+	"code": 422,
+	"details": {
+		"bill_payments.0.amount": [
+			"Payment amount (5000.00) exceeds the bill's remaining balance (4900.00)."
+		]
+	},
+	"message": "Validation error when creating payment"
+}
+

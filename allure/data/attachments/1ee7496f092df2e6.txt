@@ -1,0 +1,50 @@
+06:29:04 [PERFORMANCE] API - Auth API Verification: 157286.17ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012072 (ID: 3b8c7853-f2cd-44d6-b80a-86c5a3e97923)
+06:29:44 [INFO] Advancing inventory-adjustments "3b8c7853-f2cd-44d6-b80a-86c5a3e97923"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790663379537 (ca76ec09-bf54-416a-900e-0d5b537fd9f4) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012073 (ID: b388f12a-7c2e-4e62-876e-4eabbf43fc7b)
+06:29:57 [INFO] Advancing inventory-adjustments "b388f12a-7c2e-4e62-876e-4eabbf43fc7b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790663392323 (03495fc1-3059-4cc2-97d6-e6f5c1871140) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] ✓ Year 2019: today (2026-09-29T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-29T00:00:00Z (day=29, ecYear=2019)
+06:30:16 [PERFORMANCE] API - Auth API Verification: 229387.15ms
+[AUTH] Session token and local storage injected successfully.
+06:30:17 [PERFORMANCE] API - Auth API Verification: 229821.14ms
+[AUTH] Session token and local storage injected successfully.
+[SO-UI-01] Using guaranteed-stock item "FIFO-Item-1790663379537" @ $100
+06:30:17 [INFO] [STOCK_TOPUP] Injecting 70 units for item ca76ec09-bf54-416a-900e-0d5b537fd9f4...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012076 (ID: ad9f0f7f-f999-43c9-b43b-9f99af483f43)
+06:30:18 [INFO] Advancing inventory-adjustments "ad9f0f7f-f999-43c9-b43b-9f99af483f43"...
+06:30:23 [INFO] [STOCK_TOPUP] Injected 70 units for item ca76ec09-bf54-416a-900e-0d5b537fd9f4 (adj ADJ/2026/09/29/012076)
+06:30:27 [INFO] Picking date: "Sales Order Date" → target 2026-9-29
+06:30:28 [PASS] "Sales Order Date" set to day 19.
+06:30:29 [PERFORMANCE] UI - Pick Date: Sales Order Date: 2239.02ms
+[SELECT-OPTION] Customer (attempt 1): overlayVisible=true, count=20
+06:30:32 [PERFORMANCE] UI - Random Selection: Customer: 2801.17ms
+[SELECT-OPTION] Accounts Receivable (attempt 1): overlayVisible=true, count=2
+06:30:35 [PERFORMANCE] UI - Random Selection: Accounts Receivable: 2964.79ms
+[SELECT-OPTION] Currency (attempt 1): overlayVisible=true, count=2
+06:30:38 [PERFORMANCE] UI - Random Selection: Currency: 2785.51ms
+[CURRENCY] Selected via button: Birr
+[ITEM MODAL] Clicking item option: "FIFO-Item-1790663379537"
+[ITEM MODAL] Item selected status: true | Button text: "FIFO-Item-1790663379537 — $100.00"
+[MODAL] Selected Warehouse option: "Default Warehouse"
+[MODAL] Selected Location option: "location2"
+[MODAL] Item branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+06:30:53 [PERFORMANCE] UI - Random Selection: G/L Account: 3355.57ms
+[MODAL] Filled Quantity: 3
+[SELECT-OPTION] Tax (attempt 1): overlayVisible=true, count=8
+06:30:57 [PERFORMANCE] UI - Random Selection: Tax: 3227.72ms
+[MODAL] Item line item added successfully
+[OK] Inventory line item added to SO
+06:31:01 [INFO] Advancing sales-orders "2c85635b-8585-4788-a83a-b4406730887e"...
+[PASS] SO with inventory line item created and approved

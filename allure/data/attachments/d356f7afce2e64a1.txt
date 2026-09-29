@@ -1,0 +1,37 @@
+06:10:26 [PERFORMANCE] API - Auth API Verification: 203105.32ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] ✓ Year 2019: today (2026-09-29T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-29T00:00:00Z (day=29, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/011995 (ID: 174c40a7-e325-42aa-8230-b0f659f89a41)
+06:11:04 [INFO] Advancing inventory-adjustments "174c40a7-e325-42aa-8230-b0f659f89a41"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790662256557 (ecf8a2a0-7e20-45e3-bca0-121700d5fa3b) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:11:19 [PERFORMANCE] API - Auth API Verification: 255711.71ms
+[AUTH] Session token and local storage injected successfully.
+06:11:21 [PERFORMANCE] API - Auth API Verification: 258304.83ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating & approving Bill for 5000...
+06:11:58 [WARN] GET http://168.119.175.142:8001/api/vendors?page=1&pageSize=5&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Timeout 30000ms exceeded.. Retry 1/4 in 1500ms...
+06:12:30 [WARN] GET http://168.119.175.142:8001/api/vendors?page=1&pageSize=5&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Timeout 30000ms exceeded.. Retry 2/4 in 6000ms...
+06:12:47 [INFO] Advancing bills "4b211bdc-526d-4d79-bf93-225081eedebb"...
+[BILL] BILL/2026/09/29/004852 (4b211bdc-526d-4d79-bf93-225081eedebb)
+[ATTACK] Attempting to create and approve a 0.00 payment against live bill...
+06:13:22 [WARN] GET http://168.119.175.142:8001/api/vendors?page=1&pageSize=5&year=2019&period=yearly&calendar=ec → apiRequestContext.get: Timeout 30000ms exceeded.. Retry 1/4 in 1500ms...
+[ACTION] Creating Bill Payment for 4b211bdc-526d-4d79-bf93-225081eedebb via API (CashAcct: e8b0574b-87e1-44fd-a021-cb26ddc0b9c0)...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Zero-Amount Payment Guardrail                                           │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Bill Ref                         │ BILL/2026/09/29/004852               │
+  │ Bill ID                          │ 4b211bdc-526d-4d79-bf93-225081eedeb… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Attack Payment Amount            │ $0.00                                │
+  │ Bill Balance After               │ N/A (blocked at creation)            │
+  │ Block Reason                     │ apiRequestContext.post: Test timeou… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Zero-amount payment blocke… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Zero-amount payment correctly blocked.

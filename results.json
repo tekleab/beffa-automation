@@ -1,29 +1,37 @@
 {
-  "total": 212,
-  "passed": 200,
-  "failed": 12,
+  "total": 313,
+  "passed": 278,
+  "failed": 35,
   "skipped": 0,
-  "passRate": 94.3,
-  "avgDurationMs": 18680,
-  "lastUpdated": "2026-09-28T11:12:09.887Z",
+  "passRate": 88.8,
+  "avgDurationMs": 25495,
+  "lastUpdated": "2026-09-29T06:39:23.943Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 200,
-      "failed": 12,
+      "passed": 278,
+      "failed": 35,
       "skipped": 0,
       "trend": [
-        90.5,
         88.2,
         94.8,
         93.9,
         100,
         88.8,
-        94.3
+        94.3,
+        88.8
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "804",
+      "commit": "ffeb76b",
+      "trigger": "workflow_dispatch (full)",
+      "duration": "132m 59s",
+      "passRate": 88.8,
+      "status": "success"
+    },
     {
       "run": "803",
       "commit": "dc09e80",
@@ -95,22 +103,62 @@
       "duration": "66m 13s",
       "passRate": 93.9,
       "status": "success"
-    },
-    {
-      "run": "794",
-      "commit": "a154910",
-      "trigger": "push (sanity)",
-      "duration": "0m 5s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
+      "severity": "medium",
+      "title": "STRESS: Concurrent duplicate receipt submittals against same invoice must be blocked",
+      "error": "Error: [DOUBLE_RECEIPT_BUG] Race condition allowed: both receipts approved concurrently for invoice INV/2026/09/29/005815!\n\n  158 |\n  159 |             if (approvedCount === 2) {\n> 160 |              ",
+      "firstSeen": "2026-09-29T05:56:23.108Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "error": "Error: [CRITICAL_LOGIC_BUG] Concurrency Failure: Approved both invoices for 1 unit. Warehouse desynced.\n\n  138 |                 await app.advanceDocumentAPI(body1.id, 'invoices', { skipStockTopUp: tr",
+      "firstSeen": "2026-09-29T05:58:17.333Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
+      "error": "Error: AR mismatch: expected 5000, got 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m, \u001b[22mprecision\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m5000\u001b[39m\nReceived: \u001b[31m",
+      "firstSeen": "2026-09-29T05:59:30.370Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved back-dated SO from previous fiscal year (2017-12-31T00:00:00Z)!\n\n  77 |             try {\n  78 |                 await app.advanceDocumentAPI(so.id, 'sales-",
+      "firstSeen": "2026-09-29T05:59:40.463Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO: Reject future-dated Sales Order from next fiscal year (2022)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System approved future-dated SO (2022-01-01T00:00:00Z)!\n\n  109 |             try {\n  110 |                 await app.advanceDocumentAPI(so.id, 'sales-orders');\n> 111 |     ",
+      "firstSeen": "2026-09-29T05:59:54.294Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "error": "Error: [PERIOD_CONTROL_BUG] System accepted pre-epoch date (1969-12-31T00:00:00Z)!\n\n  345 |\n  346 |         if (inv.success) {\n> 347 |             throw new Error(`[PERIOD_CONTROL_BUG] System accepted",
+      "firstSeen": "2026-09-29T06:00:10.592Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
       "severity": "critical",
       "title": "Audit: Bill payment must debit AP and credit Cash/Bank",
       "error": "Error: Bill-Payment API failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"bill_payments.0.amount\": [\n\t\t\t\"Payment amount (3500.00) exceeds the bill's remaining balance (3430.00).\"\n\t\t]\n\t},\n\t\"message\": \"Val",
-      "firstSeen": "2026-09-28T10:54:53.662Z",
+      "firstSeen": "2026-09-29T06:01:08.333Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,76 +166,76 @@
       "severity": "medium",
       "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
       "error": "Error: Bill-Payment API failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"bill_payments.0.amount\": [\n\t\t\t\"Payment amount (4000.00) exceeds the bill's remaining balance (3880.00).\"\n\t\t]\n\t},\n\t\"message\": \"Val",
-      "firstSeen": "2026-09-28T10:55:40.405Z",
+      "firstSeen": "2026-09-29T06:01:58.614Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "high",
+      "title": "LOAD: Concurrently approving 5 bill payments must succeed without database deadlocks",
+      "error": "\u001b[31mTest timeout of 240000ms exceeded.\u001b[39m Error: apiRequestContext.post: Target page, context or browser has been closed\n\n   at ../lib/api/PurchaseAPI.ts:821\n\n  819 |   ): Promise<any> {\n  820 |   ",
+      "firstSeen": "2026-09-29T06:02:50.378Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "medium",
-      "title": "Audit: Single payment must correctly reconcile multiple unpaid bills",
-      "error": "Error: Multi-bill payment failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"bill_payments.0.amount\": [\n\t\t\t\"Payment amount (3000.00) exceeds the bill's remaining balance (2940.00).\"\n\t\t]\n\t},\n\t\"message\": \"V",
-      "firstSeen": "2026-09-28T10:56:34.958Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
-      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/28/004796 with price variance (billed 600 vs PO 500)!\n\n  67 |                 // If it approved, log as a known bug or warning\n  68 |     ",
-      "firstSeen": "2026-09-28T10:57:58.596Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
-      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
-      "firstSeen": "2026-09-28T11:00:09.968Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
-      "error": "Error: Create employee: could not retrieve created employee \"Lifecycle-Emp-1790593228042-1\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:137\n\n  135 |       await this.page.waitForTimeout(3000);\n  136 ",
-      "firstSeen": "2026-09-28T11:00:27.205Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
-      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
-      "firstSeen": "2026-09-28T11:01:40.712Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "critical",
-      "title": "INV-API-04: Multi-line invoice → grand total = sum of lines",
-      "error": "Error: Multi-line Invoice failed: HTTP 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse",
-      "firstSeen": "2026-09-28T11:06:56.971Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/pa",
-      "firstSeen": "2026-09-28T11:04:06.902Z",
-      "occurrences": 1,
-      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
-    },
-    {
-      "severity": "medium",
-      "title": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
-      "error": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://168.119.175.142:4173/pa",
-      "firstSeen": "2026-09-28T11:07:48.803Z",
+      "title": "STRESS: Payment against a bill reversed mid-flight must be rejected",
+      "error": "Error: Bill-Payment API failed: 422 - {\n\t\"code\": 422,\n\t\"details\": {\n\t\t\"bill_payments.0.amount\": [\n\t\t\t\"Payment amount (3000.00) exceeds the bill's remaining balance (2940.00).\"\n\t\t]\n\t},\n\t\"message\": \"Val",
+      "firstSeen": "2026-09-29T06:03:08.187Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
   ],
   "aiAnalysis": [
+    {
+      "testTitle": "STRESS: Concurrent duplicate receipt submittals against same invoice must be blocked",
+      "file": "tests/sales/receipt-load-stress.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Guardrail: System must enforce thread-safe serialization for stock reduction limits",
+      "file": "tests/sales/so-concurrency.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "SO: Reject back-dated Sales Order from previous fiscal year (2017)",
+      "file": "tests/sales/so-period-control.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "LOAD: AR balance after 5 concurrent approved invoices must equal sum of all amounts",
+      "file": "tests/sales/so-load.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Edge Case: Reject date with negative timestamp (epoch manipulation)",
+      "file": "tests/sales/so-period-control.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "SO: Reject future-dated Sales Order from next fiscal year (2022)",
+      "file": "tests/sales/so-period-control.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
     {
       "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
       "file": "tests/purchase/bill-gl-audit.spec.ts",
@@ -205,8 +253,96 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
+      "testTitle": "STRESS: Payment against a bill reversed mid-flight must be rejected",
+      "file": "tests/purchase/bill-payment-load-stress.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
       "testTitle": "Audit: Single payment must correctly reconcile multiple unpaid bills",
       "file": "tests/purchase/po-accounting.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "LOAD: Concurrently approving 5 bill payments must succeed without database deadlocks",
+      "file": "tests/purchase/bill-payment-load-stress.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Concurrent identical PO submissions must be deduplicated (prevent duplicate AP liability)",
+      "file": "tests/purchase/po-concurrency.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must maintain performance under 20 concurrent PO creation requests (<30s threshold)",
+      "file": "tests/purchase/po-concurrency.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial PO release correctly tracks remaining unreceived quantity",
+      "file": "tests/purchase/po-partial-release.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject approval of a zero-amount payment",
+      "file": "tests/purchase/po-payment-attacks.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "LOAD: 20 concurrent PO submissions must all succeed within 30s",
+      "file": "tests/purchase/po-load.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "LOAD: Response time must not degrade more than 5x from sequential to burst",
+      "file": "tests/purchase/po-load.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject payment where split array does not match total",
+      "file": "tests/purchase/po-payment-attacks.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must explicitly reject historical back-dated bills",
+      "file": "tests/purchase/po-security.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Guardrail: System must reject payment exceeding bill total",
+      "file": "tests/purchase/po-stress.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
@@ -221,8 +357,48 @@
       "suggestedAction": "Log as known bug, skip in CI"
     },
     {
+      "testTitle": "Audit: Three partial payments must exactly zero out bill balance",
+      "file": "tests/purchase/po-stress.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Bill reversal after payment must roll back stock and restore balance",
+      "file": "tests/purchase/po-stress.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: System must explicitly reject historical back-dated adjustments",
+      "file": "tests/inventory/inv-security.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
       "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
       "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "LOAD: 10 concurrent +5 adjustments must produce exactly +50 net stock",
+      "file": "tests/inventory/inv-load.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: Duplicate employee email must be rejected by the system",
+      "file": "tests/hr/hr-employees.spec.ts",
       "category": "KNOWN_BUG",
       "confidence": "HIGH",
       "reasoning": "Matches documented ERP defect pattern",
@@ -245,6 +421,22 @@
       "suggestedAction": "Review selector or assertion value"
     },
     {
+      "testTitle": "Purchase Bill API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Concurrent AP bill and AR invoice on same item must not corrupt stock",
+      "file": "tests/cross-module/cross-module-stress.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
       "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
       "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
       "category": "APP_BUG",
@@ -253,20 +445,12 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "INV-API-04: Multi-line invoice → grand total = sum of lines",
-      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
       "testTitle": "PAY-API-01: Single bill payment → bill balance settles to zero",
       "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
     },
     {
       "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",

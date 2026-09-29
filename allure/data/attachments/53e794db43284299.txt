@@ -1,0 +1,25 @@
+[DateHelper] ✓ Year 2019: today (2026-09-29T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-29T00:00:00Z (day=29, ecYear=2019)
+06:14:04 [PERFORMANCE] API - Auth API Verification: 12822.21ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/011998 (ID: e9aea3b5-2206-475e-979f-939a9d4c0e2c)
+06:14:31 [INFO] Advancing inventory-adjustments "e9aea3b5-2206-475e-979f-939a9d4c0e2c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790662466856 (a3d6c41b-3095-465e-83af-86d86fc22013) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+06:14:38 [PERFORMANCE] API - Auth API Verification: 46322.30ms
+[AUTH] Session token and local storage injected successfully.
+06:14:38 [PERFORMANCE] API - Auth API Verification: 46917.40ms
+[AUTH] Session token and local storage injected successfully.
+[TEST] Creating PO with back date: 2017-12-31T00:00:00Z
+[PASS] Back-dated PO rejected at creation: PO API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"po_date": [
+			"Purchase order date is not within the current period: between 07/08/2026 and 07/07/2027"
+		]
+	},
+	"message": "Validation error when creating Purchase Order"
+}
+
