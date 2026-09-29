@@ -1,0 +1,25 @@
+10:02:46 [PERFORMANCE] API - Auth API Verification: 257028.16ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating and approving Sales Order...
+10:03:01 [WARN] GET http://168.119.175.142:8001/api/accounts?page=1&pageSize=200&year=2019&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012185 (ID: eae042bf-fc54-411d-82eb-99767d97e1c8)
+10:03:07 [INFO] Advancing inventory-adjustments "eae042bf-fc54-411d-82eb-99767d97e1c8"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1790676173236 (4605654f-de3b-42e4-8474-2415333a947f) | method=FIFO | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+10:03:12 [INFO] Advancing sales-orders "fceda53e-3722-42fa-a509-beb5f8bb7971"...
+[OK] SO SO/2026/09/29/001763 approved.
+[STEP 2] Navigating to Invoice form...
+
+  ┌───────────────────────────────────────────────────────────────────────────────┐
+  │ SO-to-Invoice: Loading & Data Resolution                                    │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ SO Ref                             │ SO/2026/09/29/001763                   │
+  │ SO ID                              │ fceda53e-3722-42fa-a509-beb5f8bb7971   │
+  │ Loading Spinner Detected           │ Fast cache / No spinner                │
+  │ Form Data Resolved & Rendered      │ Yes (Content Visible)                  │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Result                             │ ✓ PASS — Form rendered successfully a… │
+  └───────────────────────────────────────────────────────────────────────────────┘
+

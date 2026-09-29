@@ -1,0 +1,31 @@
+[DateHelper] ✓ Year 2019: today (2026-09-29T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-29T00:00:00Z (day=29, ecYear=2019)
+09:59:41 [PERFORMANCE] API - Auth API Verification: 14831.56ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012172 (ID: 6e4b5a13-060b-4f57-894b-38485503001c)
+10:00:01 [INFO] Advancing inventory-adjustments "6e4b5a13-060b-4f57-894b-38485503001c"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790675997393 (e33f70fd-c88e-4a64-94b8-8b3d93fffefc) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012173 (ID: 373f6cd4-7cbc-4bb0-a744-8817e132e6b6)
+10:00:10 [INFO] Advancing inventory-adjustments "373f6cd4-7cbc-4bb0-a744-8817e132e6b6"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790676006645 (3cadb5aa-8116-4ded-890d-459e4625cac8) | method=FIFO | stock=50@$80 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[DateHelper] ✓ Year 2019: today (2026-09-29T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-29T00:00:00Z (day=29, ecYear=2019)
+10:00:23 [PERFORMANCE] API - Auth API Verification: 56328.27ms
+[AUTH] Session token and local storage injected successfully.
+10:00:23 [PERFORMANCE] API - Auth API Verification: 56594.05ms
+[AUTH] Session token and local storage injected successfully.
+10:00:42 [INFO] Advancing bills "ce9ff7c0-3106-4e50-ac4c-b450755596e6"...
+10:00:42 [INFO] Advancing bills "f2c4e7e7-de60-415a-a40b-8d5b2a2b2225"...
+[ACTION] Creating multi-bill payment of 5000 covering 2 bills...
+[PAYMENT_AUTO_ADJUST] Bill payment [0] capped from 3000 to bill's remaining balance 2940 (reflecting statutory withholding tax deduction)
+[PAYMENT_RETRY] Retrying payment with auto-adjusted balance amount 4940...
+[SUCCESS] Multi-bill payment created: PAY/2026/09/29/001222 (ID: d8a1a9e1-0a36-48a4-b322-e0075b3b7adf)
+10:00:55 [INFO] Advancing payments "d8a1a9e1-0a36-48a4-b322-e0075b3b7adf"...
+[AUDIT] Bill A remaining: $60 (status=approved, unpaid=60, paid=2940)
+[AUDIT] Bill B remaining: $0 (status=approved, unpaid=0, paid=2000)

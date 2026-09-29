@@ -1,0 +1,56 @@
+10:01:39 [PERFORMANCE] API - Auth API Verification: 467677.44ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012180 (ID: 0f12c1c9-71bb-4958-8eed-a10329bb488b)
+10:01:56 [INFO] Advancing inventory-adjustments "0f12c1c9-71bb-4958-8eed-a10329bb488b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1790676112064 (de363d98-0909-43f0-8c73-fdd93f96214e) | method=FIFO | stock=10@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+[ITEM] FIFO-Item-1790676112064 (de363d98-0909-43f0-8c73-fdd93f96214e) | Stock before: 10
+[STEP 2] Creating Purchase Order...
+[PO] Created PO/2026/09/29/002904 (1c70447a-5bef-4a91-9cec-2d4cca22909f)
+10:02:15 [INFO] Advancing purchase-orders "1c70447a-5bef-4a91-9cec-2d4cca22909f"...
+[PO] Approved/Released PO/2026/09/29/002904
+[STEP 3] Billing and Receiving PO items...
+[BILL] Created from PO: BILL/2026/09/29/004926 (6fcb5d7a-e926-418c-964c-d577e7f590a0)
+10:02:20 [INFO] Advancing bills "6fcb5d7a-e926-418c-964c-d577e7f590a0"...
+[BILL] Approved BILL/2026/09/29/004926
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[STOCK] Expected: 15, Got: 15
+[BILL] Outstanding balance after Approval: 2500
+10:03:01 [WARN] GET http://168.119.175.142:8001/api/bills?search=6fcb5d7a-e926-418c-964c-d577e7f590a0&pageSize=20&year=2019&period=yearly&calendar=ec → apiRequestContext.get: socket hang up. Retry 1/4 in 1500ms...
+[BILL GL] Entries found: 0
+[STEP 4] Creating Payment for Bill...
+[ACTION] Creating Bill Payment for 6fcb5d7a-e926-418c-964c-d577e7f590a0 via API (CashAcct: e8b0574b-87e1-44fd-a021-cb26ddc0b9c0)...
+[SUCCESS] Payment created: PAY/2026/09/29/001224 (ID: a2acd54b-bad7-4e38-85cd-f544ca303064)
+[PAYMENT] Created PAY/2026/09/29/001224 (a2acd54b-bad7-4e38-85cd-f544ca303064)
+10:03:45 [INFO] Advancing payments "a2acd54b-bad7-4e38-85cd-f544ca303064"...
+10:03:47 [WARN] Transient network drop/socket hang up on advance attempt 1/4: apiRequestContext.patch: socket hang up Call log:   - → PATCH http://168.119.175.142:8001/api/payments/a2acd54b-bad7-4e38-85cd-f544ca303064/advance?year=2019&period=yearly&calendar=ec     - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36     - accept: */*     - accept-encoding: gzip,deflate,br     - x-company: BM Tech     - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc5MDc2MjQ5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3OTA3NjI0OTl9.K1vmBKkR8bOhe3tapbDL-h_7_lD55007PUPLWgwicZw     - Content-Type: application/json     - x-role: IT Administrator / User Manager     - content-length: 55     - cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc5MDc2MjQ5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3OTA3NjI0OTl9.K1vmBKkR8bOhe3tapbDL-h_7_lD55007PUPLWgwicZw; auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJlZmZhLmNvbSIsImV4cCI6MTc5MDc2MjQ5OSwiaXNzIjoiTWlraWFzIFlvbmFzIiwicmVmcmVzaF9leHAiOjE3OTA3NjI0OTl9.K1vmBKkR8bOhe3tapbDL-h_7_lD55007PUPLWgwicZw . Retrying in 2s...
+[PAYMENT] Approved PAY/2026/09/29/001224
+[BILL] Outstanding balance after Payment: 0
+[PAYMENT GL] Entries found: 2
+[PAYMENT GL DETAILS] [
+  {
+    "account": {
+      "account_id": "2003",
+      "id": "b521c276-a826-4a32-a674-6d20550c0b4a",
+      "name": "Accounts Payable"
+    },
+    "credit": 0,
+    "debit": 2500,
+    "description": "BILL/2026/09/29/004926 bill payment"
+  },
+  {
+    "account": {
+      "account_id": "1005",
+      "id": "e8b0574b-87e1-44fd-a021-cb26ddc0b9c0",
+      "name": "Cash at Bank - CBE"
+    },
+    "credit": 2500,
+    "debit": 0,
+    "description": "Payment - PAY/2026/09/29/001224"
+  }
+]
+[PASS] Full Procure-to-Pay integration cycle completed successfully!

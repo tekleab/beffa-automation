@@ -1,0 +1,17 @@
+09:45:19 [PERFORMANCE] API - Auth API Verification: 159931.03ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012118 (ID: ba676711-1c96-40fd-9010-9ef644081057)
+09:45:26 [INFO] Advancing inventory-adjustments "ba676711-1c96-40fd-9010-9ef644081057"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1790675122720 (563b1f06-bd13-468b-9c8e-23bae82b1e58) | method=FIFO | stock=50@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:45:30 [PERFORMANCE] API - Auth API Verification: 170500.97ms
+[AUTH] Session token and local storage injected successfully.
+09:45:30 [PERFORMANCE] API - Auth API Verification: 170787.73ms
+[AUTH] Session token and local storage injected successfully.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ATTACK] Attempting to create Standalone Invoice with unit_price = 0 ($0.00 free goods)...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[PASS] Zero selling price correctly rejected: HTTP 422

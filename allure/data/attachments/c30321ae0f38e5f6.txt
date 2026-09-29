@@ -1,0 +1,26 @@
+10:03:17 [PERFORMANCE] API - Auth API Verification: 128173.33ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating SO and fully invoicing it...
+[ADJ] quantity | qty=5 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012186 (ID: ad4b8374-e15d-4269-bf6c-4f78e8e0503b)
+10:03:25 [INFO] Advancing inventory-adjustments "ad4b8374-e15d-4269-bf6c-4f78e8e0503b"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 5...
+[SUCCESS] API Confirmed: Stock correctly reached 5.
+[FRESH ITEM] Created: FIFO-Item-1790676200866 (ec2e34cd-9ea7-49a0-940d-84a9b4011b6a) | method=FIFO | stock=5@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+10:03:31 [INFO] Advancing sales-orders "b4a2e630-0655-4ecd-b9e9-bea9618b2fa7"...
+10:03:35 [INFO] Advancing invoices "3c78e4df-c2ce-4ddc-86cd-84b2a23f420c"...
+[OK] SO SO/2026/09/29/001764 fully invoiced via INV/2026/09/29/005923.
+[STEP 2] Navigating to Invoice form for fully-invoiced SO...
+
+  ┌───────────────────────────────────────────────────────────────────────────────┐
+  │ SO-to-Invoice: Empty State Boundary                                         │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ SO Ref                             │ SO/2026/09/29/001764                   │
+  │ SO ID                              │ b4a2e630-0655-4ecd-b9e9-bea9618b2fa7   │
+  │ Empty State Message / Notice       │ Implicit (0 records in table)          │
+  │ Release Rows in Table              │ 0                                      │
+  │ Empty Boundary Verdict             │ Handled Gracefully                     │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Result                             │ ✓ PASS — Empty state handled graceful… │
+  └───────────────────────────────────────────────────────────────────────────────┘
+

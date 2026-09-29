@@ -1,0 +1,25 @@
+09:44:11 [PERFORMANCE] API - Auth API Verification: 91307.46ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012109 (ID: 907cedae-4bd6-4a34-88cd-deb64d6508b7)
+09:44:17 [INFO] Advancing inventory-adjustments "907cedae-4bd6-4a34-88cd-deb64d6508b7"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790675054001 (4ba9c1dd-3294-40a9-a810-1096a7b985ca) | method=FIFO | stock=20@$100 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:44:21 [PERFORMANCE] API - Auth API Verification: 101593.66ms
+[AUTH] Session token and local storage injected successfully.
+09:44:21 [PERFORMANCE] API - Auth API Verification: 101866.89ms
+[AUTH] Session token and local storage injected successfully.
+09:44:23 [INFO] Advancing invoices "267db224-d6ed-4346-bc8e-76fc1649e332"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=40
+[RECEIPT] amount=40 | invoice=267db224... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/09/29/001757
+09:44:31 [INFO] Advancing receipts "8cfeb22b-bc52-457d-b898-b76a8ffe3099"...
+[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=60 | Requested receipt amount=80
+[RECEIPT] amount=80 | invoice=267db224... | year=2019
+[PASS] Overpayment blocked correctly: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/09/29/005895 outstanding balance is 60.00 but 80.00 was applied"
+}
+

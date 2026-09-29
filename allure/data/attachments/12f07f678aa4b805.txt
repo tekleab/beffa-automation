@@ -1,0 +1,30 @@
+[DateHelper] ✓ Year 2019: today (2026-09-29T00:00:00Z) is within open fiscal period
+[DateHelper] Resolved in-period date: 2026-09-29T00:00:00Z (day=29, ecYear=2019)
+09:46:33 [PERFORMANCE] API - Auth API Verification: 19164.00ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/09/29/012129 (ID: 12139dc1-de4f-4bd1-9522-b3dc199c66e3)
+09:46:50 [INFO] Advancing inventory-adjustments "12139dc1-de4f-4bd1-9522-b3dc199c66e3"...
+[ACTION] API Polling: Waiting for stock at location 539ab667-5559-4db7-8cd4-24f797d57ebb to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1790675206140 (bee8c3cf-4dc5-4ec0-979b-efaec5ae270b) | method=FIFO | stock=20@$200 | loc=539ab667-5559-4db7-8cd4-24f797d57ebb
+09:47:04 [INFO] Advancing bills "80082101-9cfd-46b9-960e-ba2f8b65125b"...
+[BILL] BILL/2026/09/29/004904 approved | amount: 3500
+[POLL] Waiting for bill journal entries… attempt 1/10
+[POLL] Waiting for bill journal entries… attempt 2/10
+[POLL] Waiting for bill journal entries… attempt 3/10
+[POLL] Waiting for bill journal entries… attempt 4/10
+[POLL] Waiting for bill journal entries… attempt 5/10
+[POLL] Waiting for bill journal entries… attempt 6/10
+[POLL] Waiting for bill journal entries… attempt 7/10
+[POLL] Waiting for bill journal entries… attempt 8/10
+[POLL] Waiting for bill journal entries… attempt 9/10
+[POLL] Waiting for bill journal entries… attempt 10/10
+[STEP] AP credit on bill: 0.00
+[SKIP GL AUDIT] Account mapping not implemented — bill payment GL assertions skipped.
+[ACTION] Creating Bill Payment for 80082101-9cfd-46b9-960e-ba2f8b65125b via API (CashAcct: e8b0574b-87e1-44fd-a021-cb26ddc0b9c0)...
+[PAYMENT_AUTO_ADJUST] Bill payment [0] capped from 3500 to bill's remaining balance 3430 (reflecting statutory withholding tax deduction)
+[PAYMENT_RETRY] Retrying payment with auto-adjusted balance amount 3430...
+[SUCCESS] Payment created: PAY/2026/09/29/001217 (ID: 51660c79-852a-4bca-aaf2-069e92701561)
+09:48:16 [INFO] Advancing payments "51660c79-852a-4bca-aaf2-069e92701561"...
+[SKIP] Bill balance after payment: 70 (account mapping not configured — GL structure not assertable)
