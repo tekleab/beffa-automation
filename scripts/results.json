@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 213,
+  "passed": 197,
+  "failed": 16,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 274,
-  "lastUpdated": "2026-09-29T09:37:01.651Z",
+  "passRate": 92.5,
+  "avgDurationMs": 21212,
+  "lastUpdated": "2026-09-29T10:09:45.460Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 197,
+      "failed": 16,
       "skipped": 0,
       "trend": [
-        94.8,
         93.9,
         100,
         88.8,
         94.3,
         88.8,
-        100
+        100,
+        92.5
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "806",
+      "commit": "789867f",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "75m 18s",
+      "passRate": 92.5,
+      "status": "success"
+    },
     {
       "run": "805",
       "commit": "7dfde56",
@@ -95,15 +103,218 @@
       "duration": "61m 47s",
       "passRate": 80.7,
       "status": "success"
-    },
-    {
-      "run": "796",
-      "commit": "22a2100",
-      "trigger": "push (sanity)",
-      "duration": "0m 5s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: [VULNERABILITY] Bill BILL/2026/09/29/004906: final balance after full partial settlement is 120, not 0\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[",
+      "firstSeen": "2026-09-29T09:47:06.329Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/09/29/004913 with price variance (billed 600 vs PO 500)!\n\n  89 |                     console.error(`  AP Overstatement: ${(billedPrice - poUn",
+      "firstSeen": "2026-09-29T09:49:56.103Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial billing sequence matching exact PO quantity",
+      "error": "Error: PO API Creation Failed: 422 - {\n\t\"code\": 422,\n\t\"message\": \"Transactions are not allowed outside the open period. Jan 1, 0001 - Jan 1, 0001.\"\n}\n\n\n   at ../lib/api/PurchaseAPI.ts:345\n\n  343 |    ",
+      "firstSeen": "2026-09-29T09:49:57.967Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-09-29T09:51:46.178Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Employee must be created with all required fields",
+      "error": "Error: BUG #12: POST /employees returns null response body — employee created server-side but ID not returned. Cannot proceed with lifecycle test.\n\n  47 |         } catch (e: any) {\n  48 |            ",
+      "firstSeen": "2026-09-29T09:51:47.745Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "error": "Error: Create employee: could not retrieve created employee \"Lifecycle-Emp-1790675535863-2\" - response: null\n\n\n   at ../lib/api/HrAPI.ts:137\n\n  135 |       await this.page.waitForTimeout(3000);\n  136 ",
+      "firstSeen": "2026-09-29T09:52:15.047Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
+      "firstSeen": "2026-09-29T09:53:17.451Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI-10: Add Project button navigates to /projects/new",
+      "error": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n==============================================",
+      "firstSeen": "2026-09-29T09:53:26.476Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Purchase Bill API response matches strict schema contract",
+      "error": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m Error: Failed to fetch Bill b075765a-2cc7-4d22-aeda-1f80798d70d9: 500\n\n   at ../lib/api/PurchaseAPI.ts:1184\n\n  1182 |     }\n  1183 |\n> 1184 |     throw new ",
+      "firstSeen": "2026-09-29T09:53:54.473Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Warehouse & Location API response matches strict schema contract",
+      "error": "Error: apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET http://168.119.175.142:8001/api/locations?page=1&pageSize=5&year=2019&period=yearly&calendar=ec\u001b[22m\n\u001b[2m    - user-agent: Mozilla/",
+      "firstSeen": "2026-09-29T09:54:18.614Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Audit: Partial billing sequence matching exact PO quantity",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "API: Employee must be created with all required fields",
+      "file": "tests/hr/hr-employees.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "file": "tests/hr/hr-lifecycle.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-10: Add Project button navigates to /projects/new",
+      "file": "tests/project/project-ui-form.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Warehouse & Location API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Purchase Bill API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-01: Single bill payment → bill balance settles to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "BILL-UI-01: Add inventory Line Item via modal → Bill created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    }
+  ]
 }
