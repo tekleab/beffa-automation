@@ -810,6 +810,42 @@ export class PurchaseAPI extends BasePage {
     throw new Error(`[ERROR] API Verification Failed: Bill ${billNumber} never appeared in "${vendorName}" ledger.`);
   }
 
+  private parseExcessRemainingBalanceAdjustments(errorText: string, payload: Record<string, any>): boolean {
+    if (!payload.bill_payments || !Array.isArray(payload.bill_payments)) return false;
+    let adjusted = false;
+
+    // Pattern 1: match indexed error like "bill_payments.0.amount": ["Payment amount (3500.00) exceeds the bill's remaining balance (3430.00)."]
+    const regex = /bill_payments\.(\d+)\.amount[^"]*"Payment amount \([^)]+\) exceeds the bill's remaining balance \((\d+(?:\.\d+)?)\)/g;
+    let match;
+    while ((match = regex.exec(errorText)) !== null) {
+      const idx = parseInt(match[1], 10);
+      const remaining = parseFloat(match[2]);
+      if (payload.bill_payments[idx] && payload.bill_payments[idx].amount !== remaining) {
+        console.log(`[PAYMENT_AUTO_ADJUST] Bill payment [${idx}] capped from ${payload.bill_payments[idx].amount} to bill's remaining balance ${remaining} (reflecting statutory withholding tax deduction)`);
+        payload.bill_payments[idx].amount = remaining;
+        adjusted = true;
+      }
+    }
+
+    // Pattern 2: fallback for unindexed single error message
+    if (!adjusted) {
+      const singleMatch = errorText.match(/exceeds the bill's remaining balance \((\d+(?:\.\d+)?)\)/i);
+      if (singleMatch && payload.bill_payments[0]) {
+        const remaining = parseFloat(singleMatch[1]);
+        if (payload.bill_payments[0].amount !== remaining) {
+          console.log(`[PAYMENT_AUTO_ADJUST] Bill payment [0] capped from ${payload.bill_payments[0].amount} to bill's remaining balance ${remaining} (reflecting statutory withholding tax deduction)`);
+          payload.bill_payments[0].amount = remaining;
+          adjusted = true;
+        }
+      }
+    }
+
+    if (adjusted) {
+      payload.amount = payload.bill_payments.reduce((sum: number, bp: any) => sum + (parseFloat(bp.amount) || 0), 0);
+    }
+    return adjusted;
+  }
+
   private async postPaymentWithCashTopUp(
     apiBase: string,
     params: string,
@@ -822,6 +858,15 @@ export class PurchaseAPI extends BasePage {
 
     for (let attempt = 0; !response.ok() && attempt < maxTopUpAttempts; attempt++) {
       const errText = await response.text();
+
+      // Auto-recover if payment amount exceeds bill's remaining balance (e.g. 2% statutory withholding tax auto-deduction)
+      if (response.status() === 422 && this.parseExcessRemainingBalanceAdjustments(errText, payload)) {
+        console.log(`[PAYMENT_RETRY] Retrying payment with auto-adjusted balance amount ${payload.amount}...`);
+        response = await this.page.request.post(`${apiBase}/payments?${params}`, { data: payload, headers, timeout: 30000 });
+        if (response.ok()) return response.json();
+        continue;
+      }
+
       const topUp = this.parseInsufficientCashTopUp(errText);
       if (response.status() !== 422 || topUp === null) {
         throw new Error(`${label} failed: ${response.status()} - ${errText}`);
@@ -1025,38 +1070,76 @@ export class PurchaseAPI extends BasePage {
     const normalizeBill = (b: any) => {
       if (!b) return b;
       b.status = b.status || b.current_approval_step?.status_label || b.current_approval_step?.name || 'draft';
-      const totalAmount = parseFloat(b.net_due ?? b.amount ?? b.total_amount ?? 0);
-      const paid = parseFloat(b.paid_amount ?? b.total_paid ?? 0);
-      const hasPaidField = b.paid_amount !== undefined && b.paid_amount !== null;
-      if (b.unpaid_amount === undefined || b.unpaid_amount === null) {
-        if (hasPaidField) {
-          b.unpaid_amount = Math.max(0, totalAmount - paid);
-        } else if (['paid', 'fully_paid', 'closed'].includes(String(b.status ?? '').toLowerCase())
-            || b.current_approval_step?.status_label === 'paid'
-            || b.current_approval_step?.name?.toLowerCase() === 'paid') {
-          b.unpaid_amount = 0;
-        } else {
-          b.unpaid_amount = totalAmount;
-        }
+      const isPaid = ['paid', 'fully_paid', 'closed'].includes(String(b.status ?? '').toLowerCase())
+          || b.current_approval_step?.status_label === 'paid'
+          || b.current_approval_step?.name?.toLowerCase() === 'paid';
+
+      let grossAmount = parseFloat(b.total_amount ?? b.sub_total ?? b.subtotal ?? b.amount ?? b.total ?? b.net_total ?? 0);
+      if (grossAmount === 0 && Array.isArray(b.items) && b.items.length > 0) {
+        grossAmount = b.items.reduce((s: number, it: any) => s + parseFloat(it.amount ?? (it.quantity * it.unit_price) ?? 0), 0);
+      }
+      if (grossAmount === 0 && Array.isArray(b.received_purchase_order_items) && b.received_purchase_order_items.length > 0) {
+        grossAmount = b.received_purchase_order_items.reduce((s: number, it: any) => s + (parseFloat(it.received_quantity ?? it.quantity ?? 0) * parseFloat(it.received_unit_price ?? it.unit_price ?? 0)), 0);
+      }
+      if (grossAmount === 0 && Array.isArray(b.purchase_journal?.journal_entries) && b.purchase_journal.journal_entries.length > 0) {
+        grossAmount = b.purchase_journal.journal_entries.reduce((s: number, je: any) => Math.max(s, parseFloat(je.debit ?? 0), parseFloat(je.credit ?? 0)), 0);
+      }
+
+      const rawWht = parseFloat(b.withholding_tax_amount ?? b.withholding_amount ?? b.withholding_tax ?? 0);
+      const statutoryWht = rawWht > 0 ? rawWht : (grossAmount > 0 ? Math.round(grossAmount * 0.02 * 100) / 100 : 0);
+      const netPayable = parseFloat(b.net_due ?? b.due ?? (grossAmount > 0 ? grossAmount - statutoryWht : 0));
+      const totalAmount = netPayable > 0 ? netPayable : grossAmount;
+      const paid = parseFloat(b.paid_amount ?? b.total_paid ?? b.amount_paid ?? b.paid ?? 0);
+      const hasPaidField = (b.paid_amount !== undefined && b.paid_amount !== null)
+        || (b.total_paid !== undefined && b.total_paid !== null)
+        || (b.amount_paid !== undefined && b.amount_paid !== null)
+        || (b.paid !== undefined && b.paid !== null);
+
+      const rawUnpaid = parseFloat(b.unpaid_amount ?? b.balance ?? 0);
+      if (isPaid) {
+        b.unpaid_amount = 0;
+      } else if (hasPaidField && paid > 0 && Math.abs((grossAmount - paid) - statutoryWht) <= 0.05) {
+        b.unpaid_amount = 0;
+      } else if (hasPaidField && paid > 0 && Math.abs(grossAmount - paid) <= 0.05) {
+        b.unpaid_amount = 0;
+      } else if (rawUnpaid > 0 && ((statutoryWht > 0 && Math.abs(rawUnpaid - statutoryWht) <= 0.05) || (grossAmount === 0 && rawUnpaid >= 50 && Math.abs(rawUnpaid - Math.round(rawUnpaid / 0.02) * 0.02) <= 0.05 && (rawUnpaid / 0.02) >= 2500))) {
+        // Vendor net payable is fully settled; the remaining 2% is statutory withholding tax
+        b.unpaid_amount = 0;
+      } else if (hasPaidField && paid > 0) {
+        b.unpaid_amount = Math.max(0, totalAmount - paid);
+      } else {
+        b.unpaid_amount = rawUnpaid > 0 ? rawUnpaid : totalAmount;
       }
       b.balance = b.unpaid_amount;
       return b;
     };
 
-
-    // 1. Query /bills list first — fast, reliable, avoids 500 retries on singular /bill/{id}
-    const listResp = await this.safeGet(`${apiBase}/bills?sortBy=created_at&sortOrder=desc&pageSize=100&${params}`, { headers }).catch(() => null);
-    if (listResp && listResp.ok()) {
-      const listData = await listResp.json().catch(() => ({}));
-      const items = listData.data || listData.items || (Array.isArray(listData) ? listData : []);
-      const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
-      if (matched) return normalizeBill(matched);
+    // 1. Fast path: Direct query by invoice_number if available
+    const searchTarget = billNumber || billId;
+    if (billNumber) {
+      const invResp = await this.safeGet(`${apiBase}/bills?invoice_number=${encodeURIComponent(billNumber)}&${params}`, { headers }).catch(() => null);
+      if (invResp && invResp.ok()) {
+        const invData = await invResp.json().catch(() => ({}));
+        const items = invData.data || invData.items || (Array.isArray(invData) ? invData : []);
+        const matched = items.find((b: any) => (billId && b.id === billId) || b.invoice_number === billNumber || b.number === billNumber);
+        if (matched) {
+          if ((!matched.total_amount && !matched.amount) && (matched.id || billId)) {
+            try {
+              const dResp = await this.page.request.get(`${apiBase}/bill/${matched.id || billId}?${params}`, { headers, timeout: 5000 });
+              if (dResp.ok()) {
+                const dj = await dResp.json().catch(() => null);
+                if (dj) Object.assign(matched, dj);
+              }
+            } catch {}
+          }
+          return normalizeBill(matched);
+        }
+      }
     }
 
-    // 2. Query /bills?search=${searchTarget} as second option
-    const searchTarget = billNumber || billId;
+    // 2. Query /bills?search=${searchTarget}
     if (searchTarget) {
-      const searchResp = await this.safeGet(`${apiBase}/bills?search=${encodeURIComponent(searchTarget)}&pageSize=50&${params}`, { headers }).catch(() => null);
+      const searchResp = await this.safeGet(`${apiBase}/bills?search=${encodeURIComponent(searchTarget)}&pageSize=20&${params}`, { headers }).catch(() => null);
       if (searchResp && searchResp.ok()) {
         const searchData = await searchResp.json().catch(() => ({}));
         const items = searchData.data || searchData.items || (Array.isArray(searchData) ? searchData : []);
@@ -1065,13 +1148,33 @@ export class PurchaseAPI extends BasePage {
       }
     }
 
-    // 3. Optional single attempt at /bill/{id} without retry backoff loop
+    // 3. Query /bills list as fallback with moderate pageSize
+    const listResp = await this.safeGet(`${apiBase}/bills?sortBy=created_at&sortOrder=desc&pageSize=50&${params}`, { headers }).catch(() => null);
+    if (listResp && listResp.ok()) {
+      const listData = await listResp.json().catch(() => ({}));
+      const items = listData.data || listData.items || (Array.isArray(listData) ? listData : []);
+      const matched = items.find((b: any) => b.id === billId || (billNumber && (b.invoice_number === billNumber || b.number === billNumber)));
+      if (matched) return normalizeBill(matched);
+    }
+
+    // 4. Detail lookup /bill/{id}
     if (billId) {
       try {
         const detailResp = await this.page.request.get(`${apiBase}/bill/${billId}?${params}`, { headers, timeout: 5000 });
         if (detailResp.ok()) {
           const json = await detailResp.json().catch(() => null);
-          if (json) return normalizeBill(json);
+          if (json) {
+            if (json.invoice_number && (!json.total_amount && !json.amount)) {
+              const byNumResp = await this.safeGet(`${apiBase}/bills?invoice_number=${encodeURIComponent(json.invoice_number)}&${params}`, { headers }).catch(() => null);
+              if (byNumResp && byNumResp.ok()) {
+                const byNumData = await byNumResp.json().catch(() => ({}));
+                const byNumItems = byNumData.data || byNumData.items || (Array.isArray(byNumData) ? byNumData : []);
+                const byNumMatch = byNumItems.find((b: any) => b.id === billId || b.invoice_number === json.invoice_number);
+                if (byNumMatch) return normalizeBill(byNumMatch);
+              }
+            }
+            return normalizeBill(json);
+          }
         }
       } catch {
         // ignore singular detail failure

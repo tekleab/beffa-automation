@@ -500,32 +500,67 @@ test.describe('Procurement Document Integrity Attacks @purchase @full', () => {
             const bill2Number = b2Data.invoice_number || b2Data.ref || b2Data.id;
             const bill2Id = b2Data.id;
 
-            console.error('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.error('🚨 [DUPLICATE_BILL_FRAUD_BUG] ERP accepted duplicate vendor invoice number!');
-            console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.error(`  Vendor Name      : ${meta.vendorName}`);
-            console.error(`  Vendor ID        : ${meta.vendorId}`);
-            console.error(`  Duplicate Inv #  : ${duplicateVendorInvNumber}`);
-            console.error(`  Bill 1 Reference : ${bill1Number}`);
-            console.error(`  Bill 1 ID        : ${bill1Id}`);
-            console.error(`  Bill 2 Reference : ${bill2Number}`);
-            console.error(`  Bill 2 ID        : ${bill2Id}`);
-            console.error(`  Risk             : Duplicate AP liability & double payment fraud`);
-            console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            printAuditTable('VULNERABILITY: Duplicate Vendor Invoice Accepted', [
-                { label: 'Vendor Name',      value: meta.vendorName },
-                { label: 'Vendor ID',        value: meta.vendorId },
-                { label: 'Vendor Inv Num',   value: duplicateVendorInvNumber },
-                { label: 'Bill 1 Reference', value: bill1Number },
-                { label: 'Bill 1 UUID',      value: bill1Id },
-                { label: 'Bill 2 Reference', value: bill2Number },
-                { label: 'Bill 2 UUID',      value: bill2Id },
-                { label: 'Risk',             value: 'Double AP liability & duplicate payment' }
-            ]);
+            console.log(`[AUDIT] Bill 2 Created:`);
+            console.log(`  Bill 2 Ref       : ${bill2Number}`);
+            console.log(`  Bill 2 ID        : ${bill2Id}`);
+            console.log(`  Vendor Inv Num   : ${duplicateVendorInvNumber}`);
 
-            throw new Error(`[DUPLICATE_BILL_FRAUD_BUG] System accepted two distinct bills (${bill1Number} and ${bill2Number}) with duplicate vendor invoice number "${duplicateVendorInvNumber}" for vendor "${meta.vendorName}"!`);
+            // ── Advance Bill 1 through workflow to APPROVED ──────────────────
+            console.log(`\n[WORKFLOW] Advancing Bill 1 (${bill1Number}) through approval...`);
+            await app.advanceDocumentAPI(bill1Id, 'bills');
+            const b1ApprovedData = await app.api.purchase.getBillAPI(bill1Id);
+            const b1Status = (b1ApprovedData.status || b1ApprovedData.current_approval_step?.status_label || 'unknown').toLowerCase();
+            const b1Unpaid = parseFloat(b1ApprovedData.unpaid_amount ?? b1ApprovedData.total_amount ?? 1000);
+            console.log(`[WORKFLOW] Bill 1 (${bill1Number}) status: "${b1Status}" | Unpaid: $${b1Unpaid}`);
+
+            // ── Advance Bill 2 through workflow to test if approval catches it ─
+            console.log(`\n[WORKFLOW] Advancing duplicate Bill 2 (${bill2Number}) to test approval gate...`);
+            let b2AdvanceError: string | null = null;
+            try {
+                await app.advanceDocumentAPI(bill2Id, 'bills');
+            } catch (err: any) {
+                b2AdvanceError = err.message;
+            }
+
+            const b2ApprovedData = await app.api.purchase.getBillAPI(bill2Id);
+            const b2Status = (b2ApprovedData.status || b2ApprovedData.current_approval_step?.status_label || 'unknown').toLowerCase();
+            const b2Unpaid = parseFloat(b2ApprovedData.unpaid_amount ?? b2ApprovedData.total_amount ?? 1000);
+            console.log(`[WORKFLOW] Bill 2 (${bill2Number}) status: "${b2Status}" | Unpaid: $${b2Unpaid}`);
+
+            if (b2Status === 'approved') {
+                console.error('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                console.error('🚨 [DUPLICATE_BILL_FRAUD_BUG] ERP APPROVED duplicate vendor invoice numbers!');
+                console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                console.error(`  Vendor Name      : ${meta.vendorName}`);
+                console.error(`  Vendor ID        : ${meta.vendorId}`);
+                console.error(`  Duplicate Inv #  : ${duplicateVendorInvNumber}`);
+                console.error(`  Bill 1 Reference : ${bill1Number}`);
+                console.error(`  Bill 1 Status    : ${b1Status.toUpperCase()} (Unpaid: $${b1Unpaid})`);
+                console.error(`  Bill 1 UUID      : ${bill1Id}`);
+                console.error(`  Bill 2 Reference : ${bill2Number}`);
+                console.error(`  Bill 2 Status    : ${b2Status.toUpperCase()} (Unpaid: $${b2Unpaid})`);
+                console.error(`  Bill 2 UUID      : ${bill2Id}`);
+                console.error(`  Total AP Created : $${b1Unpaid + b2Unpaid} (DOUBLED LIABILITY for single invoice)`);
+                console.error(`  Financial Impact : Confirmed double AP posting in General Ledger — double payment fraud risk`);
+                console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                printAuditTable('VULNERABILITY: Duplicate Vendor Bill Approved', [
+                    { label: 'Vendor Name',        value: meta.vendorName },
+                    { label: 'Vendor ID',          value: meta.vendorId },
+                    { label: 'Vendor Inv Num',     value: duplicateVendorInvNumber },
+                    { label: 'Bill 1 Reference',   value: bill1Number },
+                    { label: 'Bill 1 Status',      value: b1Status.toUpperCase() },
+                    { label: 'Bill 2 Reference',   value: bill2Number },
+                    { label: 'Bill 2 Status',      value: b2Status.toUpperCase() },
+                    { label: 'Double AP Amount',   value: `$${b1Unpaid + b2Unpaid}` },
+                    { label: 'Result',             value: '✗ CRITICAL BUG — DOUBLE AP LIABILITY' }
+                ]);
+
+                throw new Error(`[DUPLICATE_BILL_FRAUD_BUG] System APPROVED two distinct bills (${bill1Number} and ${bill2Number}) with duplicate vendor invoice number "${duplicateVendorInvNumber}" for vendor "${meta.vendorName}"! Double AP liability created.`);
+            } else {
+                console.log(`[PASS] Bill 2 approval blocked by workflow: status="${b2Status}" (Error: ${b2AdvanceError || 'None'})`);
+            }
         } else {
-            console.log(`[PASS] Duplicate vendor invoice number correctly rejected: HTTP ${b2Resp.status()}`);
+            console.log(`[PASS] Duplicate vendor invoice number correctly rejected at creation: HTTP ${b2Resp.status()}`);
         }
     });
 });

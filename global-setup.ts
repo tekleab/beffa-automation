@@ -79,11 +79,13 @@ async function globalSetup() {
     console.log(`[SETUP] Pinging API      : ${rawApi}`);
     let apiStatus = await httpPing(rawApi);
 
-    if (frontendStatus === 0 && apiStatus === 0) {
-        // Retry once after 2s to absorb transient network glitches
-        await new Promise((r) => setTimeout(r, 2000));
-        frontendStatus = await httpPing(rawBase);
-        apiStatus = await httpPing(rawApi);
+    let attempts = 0;
+    while (frontendStatus === 0 && apiStatus === 0 && attempts < 5) {
+        attempts++;
+        console.log(`[SETUP] Staging host ping retry ${attempts}/5 in 3s...`);
+        await new Promise((r) => setTimeout(r, 3000));
+        frontendStatus = await httpPing(rawBase, 15000);
+        apiStatus = await httpPing(rawApi, 15000);
     }
 
     if (frontendStatus === 0 && apiStatus === 0) {
