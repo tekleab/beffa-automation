@@ -20,6 +20,7 @@ on:
         default: 'BM Tech'
         type: choice
         options:
+          - 'sample'
           - 'BM Tech'
           - 'Beffa-UAT-Practice'
   deployment_status:
@@ -58,7 +59,7 @@ jobs:
       API_URL: ${{ secrets.API_URL }}
       BEFFA_USER: ${{ secrets.BEFFA_USER }}
       BEFFA_PASS: ${{ secrets.BEFFA_PASS }}
-      BEFFA_COMPANY: ${{ github.event.inputs.company || github.event.client_payload.company || 'BM Tech' }}
+      BEFFA_COMPANY: ${{ github.event.inputs.company || github.event.client_payload.company || 'sample' }}
       # push/PR → sanity (absolute minimum gate). Use workflow_dispatch for deeper tiers.
       TEST_TYPE: ${{ github.event.inputs.test_type || github.event.client_payload.test_type || 'sanity' }}
       BEFFA_YEAR: ${{ secrets.BEFFA_YEAR || '2019' }}
