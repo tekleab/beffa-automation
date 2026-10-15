@@ -1076,7 +1076,7 @@ export class PurchaseAPI extends BasePage {
 
       let grossAmount = parseFloat(b.total_amount ?? b.sub_total ?? b.subtotal ?? b.amount ?? b.total ?? b.net_total ?? 0);
       if (grossAmount === 0 && Array.isArray(b.items) && b.items.length > 0) {
-        grossAmount = b.items.reduce((s: number, it: any) => s + parseFloat(it.amount ?? (it.quantity * it.unit_price) ?? 0), 0);
+        grossAmount = b.items.reduce((s: number, it: any) => s + parseFloat(it.amount ?? (it.quantity != null && it.unit_price != null ? it.quantity * it.unit_price : 0)), 0);
       }
       if (grossAmount === 0 && Array.isArray(b.received_purchase_order_items) && b.received_purchase_order_items.length > 0) {
         grossAmount = b.received_purchase_order_items.reduce((s: number, it: any) => s + (parseFloat(it.received_quantity ?? it.quantity ?? 0) * parseFloat(it.received_unit_price ?? it.unit_price ?? 0)), 0);
@@ -1096,6 +1096,7 @@ export class PurchaseAPI extends BasePage {
         || (b.paid !== undefined && b.paid !== null);
 
       const rawUnpaid = parseFloat(b.unpaid_amount ?? b.balance ?? 0);
+      console.log(`[NORMALIZE_BILL_DEBUG] inv=${b.invoice_number || b.number} status=${b.status} gross=${grossAmount} rawWht=${rawWht} statWht=${statutoryWht} rawUnpaid=${rawUnpaid} paid=${paid} keys=${Object.keys(b).join(',')}`);
       if (isPaid) {
         b.unpaid_amount = 0;
       } else if (hasPaidField && paid > 0 && Math.abs((grossAmount - paid) - statutoryWht) <= 0.05) {
