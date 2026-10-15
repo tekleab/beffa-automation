@@ -1,0 +1,36 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://157.180.20.112:8001/api/departments/configs/df845098-4933-4fc0-9609-78f248a29636?year=2018&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `404`
+- **Latency**: `158.17ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "x-company": "sample",
+  "Content-Type": "application/json"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 404,
+	"message": "Route not found"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "x-company: sample" \
+  -H "Content-Type: application/json" \
+  "http://157.180.20.112:8001/api/departments/configs/df845098-4933-4fc0-9609-78f248a29636?year=2018&period=yearly&calendar=ec"
+```

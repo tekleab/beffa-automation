@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 103,
+  "passed": 82,
+  "failed": 21,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 289,
-  "lastUpdated": "2026-10-15T10:41:58.551Z",
+  "passRate": 79.6,
+  "avgDurationMs": 5779,
+  "lastUpdated": "2026-10-15T10:47:19.442Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 82,
+      "failed": 21,
       "skipped": 0,
       "trend": [
-        100,
         92.5,
         100,
         14,
         100,
         78.6,
-        100
+        100,
+        79.6
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "812",
+      "commit": "7231475",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "9m 55s",
+      "passRate": 79.6,
+      "status": "failed"
+    },
     {
       "run": "811",
       "commit": "1b14dc7",
@@ -95,15 +103,258 @@
       "duration": "66m 0s",
       "passRate": 94.3,
       "status": "success"
-    },
-    {
-      "run": "802",
-      "commit": "2f4dd71",
-      "trigger": "workflow_dispatch (full)",
-      "duration": "116m 32s",
-      "passRate": 88.8,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:26.128Z",
+      "occurrences": 2,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI Audit: Customer profile shows zero balance after full payment",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:26.103Z",
+      "occurrences": 2,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Validate TIN, create customer, edit, remove",
+      "error": "TimeoutError: locator.click: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Create Customer\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" cla",
+      "firstSeen": "2026-10-15T10:44:26.219Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Receipt Roster & List Pagination Inspection",
+      "error": "Error: apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    -",
+      "firstSeen": "2026-10-15T10:44:26.191Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Guardrail: Rejection of Invalid/Empty Receipt Payloads",
+      "error": "Error: apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2018&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    -",
+      "firstSeen": "2026-10-15T10:44:27.439Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:28.306Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create fresh invoice via API, then create receipt and link it",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:36.813Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:45.444Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Approved bill must post a debit to Accounts Payable",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:47.114Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "API: Vendor outstanding balance increases after bill approval",
+      "error": "Error: [API BLOCK] 422: {\n\t\"code\": 422,\n\t\"message\": \"Posting failed: the journal date 2026-10-15 falls in a closed or missin\n\n   at ../lib/base-page.ts:257\n\n  255 |             }\n  256 |           }\n>",
+      "firstSeen": "2026-10-15T10:44:48.202Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "API: Receipt Roster & List Pagination Inspection",
+      "file": "tests/sales/receipt-api-standalone.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "Guardrail: Rejection of Invalid/Empty Receipt Payloads",
+      "file": "tests/sales/receipt-api-standalone.spec.ts",
+      "category": "INFRA_FLAKE",
+      "confidence": "HIGH",
+      "reasoning": "Network/browser infrastructure error detected",
+      "suggestedAction": "Retry or check ERP server health"
+    },
+    {
+      "testTitle": "UI Audit: Customer profile shows zero balance after full payment",
+      "file": "tests/sales/customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "file": "tests/sales/customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Full Invoice, Receipt Creation, and Approval Workflow",
+      "file": "tests/sales/receipt-api-standalone.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Create fresh invoice via API, then create receipt and link it",
+      "file": "tests/sales/receipt-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "file": "tests/sales/sales-customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI Audit: Customer profile shows zero balance after full payment",
+      "file": "tests/sales/sales-customer-balance-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Approved bill must post a debit to Accounts Payable",
+      "file": "tests/purchase/procurement-accounting-logic.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Create PO via API, approve, create linked bill, verify in vendor profile",
+      "file": "tests/purchase/bill-ui.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Vendor outstanding balance increases after bill approval",
+      "file": "tests/purchase/procurement-accounting-logic.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must block sales when item stock reaches exact zero",
+      "file": "tests/inventory/inv-lifecycle.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: System must reject overselling beyond available stock",
+      "file": "tests/inventory/inv-management.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Full lifecycle: 3 employees created, contracted, and processed in one payroll run",
+      "file": "tests/hr/hr-lifecycle.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Validate TIN, create customer, edit, remove",
+      "file": "tests/sales/customer.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Sales Invoice API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Purchase Bill API response matches strict schema contract",
+      "file": "tests/cross-module/api-contract-schema.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
+      "file": "tests/cross-module/cross-module-ui-flows.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Sales UI: Partial payment updates invoice Amount Due correctly",
+      "file": "tests/cross-module/cross-module-ui-flows.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    }
+  ]
 }
