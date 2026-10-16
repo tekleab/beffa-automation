@@ -1,0 +1,40 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-16T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-16T00:00:00Z (day=16, ecYear=2019)
+11:22:23 [PERFORMANCE] API - Auth API Verification: 1848.37ms
+[AUTH] Session token and local storage injected successfully.
+[SETUP] Provisioning PO & Linked Bill for DTO Schema Audit...
+[ADJ] quantity | qty=15 @ $450 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/16/000177 (ID: 860b6617-5b3e-4131-8d53-c350e5f6155b)
+11:22:29 [INFO] Advancing inventory-adjustments "860b6617-5b3e-4131-8d53-c350e5f6155b"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1792149746690 (e6af3324-608f-42a1-a479-a7d260492593) | method=FIFO | stock=15@$450 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+11:22:33 [INFO] Advancing purchase-orders "fb3be14f-5041-4d04-837f-d1408783c0a6"...
+11:22:35 [WARN] Create API Bill from PO → 500. Retry 1/3 in 1000ms...
+11:22:37 [INFO] Advancing bills "4221d580-71e2-4306-9b56-cb3c86c26977"...
+[SETUP] Bill created and approved: BILL/2026/10/16/000042 (4221d580-71e2-4306-9b56-cb3c86c26977)
+11:22:39 [PERFORMANCE] API - Auth API Verification: 17664.10ms
+[AUTH] Session token and local storage injected successfully.
+[TEST 1] Querying GET /bills?id=4221d580-71e2-4306-9b56-cb3c86c26977...
+[DTO DATA SUCCESS]: {
+  "current_approval_step": {
+    "approval_flow": null,
+    "approval_flow_id": "4ec6f6ad-65f8-44a6-9ab7-63a236ebb78d",
+    "can_edit": false,
+    "color": "#629033",
+    "created_at": "2026-10-14T08:12:36.980684Z",
+    "description": "Final state",
+    "id": "b6d0999a-4ecb-4299-aa3d-2f377d5159b5",
+    "name": "Approved",
+    "role_ids": null,
+    "roles": null,
+    "status_label": "approved",
+    "step_number": 2,
+    "updated_at": "2026-10-14T08:12:36.981277Z",
+    "verb": "Approve"
+  },
+  "
+[PASS] Bill Number in DTO: BILL/2026/10/16/000042
+[PASS] Bill Status in DTO: approved
+[PASS] Vendor Linkage in DTO: Verified
+[PASS] Total Amount in DTO: 0

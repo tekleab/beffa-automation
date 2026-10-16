@@ -1,0 +1,56 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-16T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-16T00:00:00Z (day=16, ecYear=2019)
+11:32:38 [PERFORMANCE] API - Auth API Verification: 1962.06ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/16/000232 (ID: 42cf2bf4-b750-4662-a940-0203a1a16c6c)
+11:32:44 [INFO] Advancing inventory-adjustments "42cf2bf4-b750-4662-a940-0203a1a16c6c"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1792150361553 (c344800e-f4a2-4e28-8576-6ea49cc29538) | method=FIFO | stock=10@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ITEM] FIFO-Item-1792150361553 (c344800e-f4a2-4e28-8576-6ea49cc29538) | Stock before: 10
+[STEP 2] Creating Purchase Order...
+[PO] Created PO/2026/10/16/000039 (96e3e598-3bfc-42c5-aae9-b189bce52319)
+11:32:48 [INFO] Advancing purchase-orders "96e3e598-3bfc-42c5-aae9-b189bce52319"...
+[PO] Approved/Released PO/2026/10/16/000039
+[STEP 3] Billing and Receiving PO items...
+[BILL] Created from PO: BILL/2026/10/16/000069 (abeff2a3-adf5-404e-8ed3-c9e873e8b70c)
+11:32:50 [INFO] Advancing bills "abeff2a3-adf5-404e-8ed3-c9e873e8b70c"...
+[BILL] Approved BILL/2026/10/16/000069
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[STOCK] Expected: 15, Got: 15
+[BILL] Outstanding balance after Approval: 2500
+[BILL GL] Entries found: 0
+[STEP 4] Creating Payment for Bill...
+[ACTION] Creating Bill Payment for abeff2a3-adf5-404e-8ed3-c9e873e8b70c via API (CashAcct: a63d2e2f-8f2c-4220-a514-abad27b6c0f8)...
+[SUCCESS] Payment created: PAY/2026/10/16/000020 (ID: d54f4dd5-0133-4322-82b9-4ac070d4b8be)
+[PAYMENT] Created PAY/2026/10/16/000020 (d54f4dd5-0133-4322-82b9-4ac070d4b8be)
+11:33:41 [INFO] Advancing payments "d54f4dd5-0133-4322-82b9-4ac070d4b8be"...
+[PAYMENT] Approved PAY/2026/10/16/000020
+[BILL] Outstanding balance after Payment: 0
+[PAYMENT GL] Entries found: 2
+[PAYMENT GL DETAILS] [
+  {
+    "account": {
+      "account_id": "2003",
+      "id": "922ce0b6-c38e-41d4-bac8-3e5751967533",
+      "name": "Accounts Payable"
+    },
+    "credit": 0,
+    "debit": 2500,
+    "description": "BILL/2026/10/16/000069 bill payment"
+  },
+  {
+    "account": {
+      "account_id": "1005",
+      "id": "a63d2e2f-8f2c-4220-a514-abad27b6c0f8",
+      "name": "Cash at Bank - CBE"
+    },
+    "credit": 2500,
+    "debit": 0,
+    "description": "Payment - PAY/2026/10/16/000020"
+  }
+]
+[PASS] Full Procure-to-Pay integration cycle completed successfully!

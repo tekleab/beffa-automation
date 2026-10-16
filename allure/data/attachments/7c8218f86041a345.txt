@@ -1,0 +1,27 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-16T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-16T00:00:00Z (day=16, ecYear=2019)
+11:21:05 [PERFORMANCE] API - Auth API Verification: 1865.47ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/16/000160 (ID: aa469ca8-c826-44b7-982e-a20862786bef)
+11:21:10 [INFO] Advancing inventory-adjustments "aa469ca8-c826-44b7-982e-a20862786bef"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792149667896 (cfe8d93c-f103-4dc6-bb02-69d00d651545) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+11:21:13 [PERFORMANCE] API - Auth API Verification: 10255.25ms
+[AUTH] Session token and local storage injected successfully.
+11:21:13 [PERFORMANCE] API - Auth API Verification: 10482.58ms
+[AUTH] Session token and local storage injected successfully.
+11:21:15 [INFO] Advancing invoices "10a7d6eb-bae6-464c-90fe-b666fba35b3b"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=40
+[RECEIPT] amount=40 | invoice=10a7d6eb... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/10/16/000032
+11:21:19 [INFO] Advancing receipts "94265d88-b260-49c6-b7f1-7407fa5cbb84"...
+[ATTACK] Attempting overpayment: 80.00 (Outstanding is only 60.00)...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=60 | Requested receipt amount=80
+[RECEIPT] amount=80 | invoice=10a7d6eb... | year=2019
+[PASS] Overpayment blocked correctly: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/10/16/000080 outstanding balance is 60.00 but 80.00 was applied"
+}
+
