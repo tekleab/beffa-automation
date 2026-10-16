@@ -1,0 +1,50 @@
+[DateHelper] Resolved in-period date: 2026-10-16T00:00:00Z (day=16, ecYear=2019)
+09:22:31 [PERFORMANCE] API - Auth API Verification: 2271.43ms
+[AUTH] Session token and local storage injected successfully.
+09:22:33 [INFO] Resolved company from user profile: "sample"
+09:22:35 [PERFORMANCE] API - Auth API Verification: 6085.85ms
+[AUTH] Session token and local storage injected successfully.
+09:22:35 [PERFORMANCE] API - Auth API Verification: 6282.34ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating item to deactivate: DEACT-GUARD-1792142555732...
+[OK] Item created: DEACT-GUARD-1792142555732 (ID: d919cb77-e399-49e1-80e8-cca1eefc3f32)
+[STEP 2] Deactivating item via API...
+[OK] Item deactivated.
+[ATTACK] Attempting stock adjustment on deactivated item...
+[ADJ] quantity | qty=10 @ $1 | current=0 loc=0
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║      DEACTIVATED ITEM GUARDRAIL — TEST SUMMARY            ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Item         : DEACT-GUARD-1792142555732              ║
+  ║  Item ID      : d919cb77-e399-49e1-80e8-cca1eefc3f32   ║
+  ║  Status set   : inactive                                   ║
+  ║  Attack       : POST /inventory-adjustments qty=10         ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  System response : BLOCKED ✓                             ║
+  ║  Adjustment was correctly rejected by the API.           ║
+  ║  No inventory record was written to the ledger.          ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Risk    : None — item lifecycle enforced correctly        ║
+  ║                                                           ║
+  ╚══════════════════════════════════════════════════════════╝
+
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Deactivated Item Adjustment Guardrail                                   │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Item Code                        │ DEACT-GUARD-1792142555732            │
+  │ Item ID                          │ d919cb77-e399-49e1-80e8-cca1eefc3f3… │
+  │ Item Status                      │ inactive (set in Step 2)             │
+  │ Attack: Adj Qty                  │ 10 units (write-up)                  │
+  │ Adjustment Ref                   │ N/A                                  │
+  │ Adjustment ID                    │ N/A                                  │
+  │ Block Reason                     │ {
+	"code": 422,
+	"details": {
+		"in… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ ✓ PASS — Inactive item correctly re… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Deactivated item correctly blocked.
