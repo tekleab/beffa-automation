@@ -159,7 +159,7 @@ export class BasePage {
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 
-    const url = `${this.apiBase}/${docType}/${docId}/advance?year=${year}&period=${period}&calendar=${calendar}`;
+    let url = `${this.apiBase}/${docType}/${docId}/advance?year=${year}&period=${period}&calendar=${calendar}`;
     const headers = {
       'x-company': company,
       'Authorization': `Bearer ${token}`,
@@ -227,6 +227,38 @@ export class BasePage {
         } else if (status === 422) {
           if (success) break;
           const text = await resp.text().catch(() => '');
+          // ── Auto-recovery: closed/missing fiscal period ──
+          if (text.includes('closed or missing period') || text.includes('journal date') || _AdvDH.isPeriodError(text)) {
+            Logger.warn(`[CLOSED_PERIOD] Advance 422 — busting DateHelper cache and retrying with fresh date...`);
+            Logger.warn(`[CLOSED_PERIOD] Full 422 body: ${text.substring(0, 300)}`);
+            _AdvDH.clearCache();
+            // For inventory-adjustments, probe the inventory GL period specifically
+            const _fresh = docType === 'inventory-adjustments'
+              ? await _AdvDH.resolveForInventory(this.page).catch(() => null)
+              : await _AdvDH.resolve(this.page).catch(() => null);
+            if (_fresh) {
+              url = `${this.apiBase}/${docType}/${docId}/advance?year=${String(_fresh.ecYear)}&period=${period}&calendar=${calendar}`;
+              // Patch the document's own date field so the journal posts to the new date
+              const dateFieldMap: Record<string, string> = {
+                'invoices': 'invoice_date',
+                'sales-orders': 'so_date',
+                'purchase-orders': 'po_date',
+                'inventory-adjustments': 'date',
+                'bills': 'bill_date',
+                'receipts': 'date',
+                'payments': 'date',
+              };
+              const dateField = dateFieldMap[docType];
+              if (dateField) {
+                await this.page.request.patch(
+                  `${this.apiBase}/${docType}/${docId}?year=${String(_fresh.ecYear)}&period=${period}&calendar=${calendar}`,
+                  { headers, data: { [dateField]: _fresh.iso }, timeout: 15000 }
+                ).catch(() => {});
+              }
+              Logger.info(`[CLOSED_PERIOD] Rebuilt URL with year=${_fresh.ecYear} — retrying...`);
+              continue;
+            }
+          }
           // ── Auto-recovery: insufficient stock during SO/Invoice advance ──
           const stockTypes = ['sales-orders', 'invoices'];
           const stockInfo = this.parseInsufficientStock(text);
@@ -254,7 +286,7 @@ export class BasePage {
               Logger.warn(`[STOCK_TOPUP] Auto-recovery failed: ${e.message}`);
             }
           }
-          throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 100)}`);
+          throw new Error(`[API BLOCK] ${status}: ${text.substring(0, 400)}`);
         } else {
           const errBody = await resp.text().catch(() => '(unreadable)');
           Logger.error(`Advance failed. Status: ${status} | Body: ${Logger.sanitize(errBody)}`);
@@ -315,7 +347,8 @@ export class BasePage {
     // Fall back to env-based re-login if no token is available from the page context.
     let token = await this._getAuthToken().catch(() => null);
     if (!token) {
-      const loginUrl = `${this.apiBase}/users/login?year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`;
+      const { DateHelper: _DH } = require('./utils/DateHelper');
+      const loginUrl = `${this.apiBase}/users/login?${_DH.qs()}&month=6`;
       try {
         const r = await this.page.request.post(loginUrl, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
@@ -326,12 +359,10 @@ export class BasePage {
       } catch { /* ignore */ }
     }
     const company = process.env.BEFFA_COMPANY as string;
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
+    const { DateHelper: _DH2 } = require('./utils/DateHelper');
     return {
       apiBase: this.apiBase,
-      qs: `year=${year}&period=${period}&calendar=${calendar}`,
+      qs: _DH2.qs(),
       headers: {
         'x-company': company,
         'Authorization': `Bearer ${token}`,
@@ -738,10 +769,8 @@ ${curlCmd}
     // Fallback: direct API login if credentials present
     try {
       if (process.env.BEFFA_USER && process.env.BEFFA_PASS) {
-        const year = process.env.BEFFA_YEAR || '2019';
-        const period = process.env.BEFFA_PERIOD || 'yearly';
-        const calendar = process.env.BEFFA_CALENDAR || 'ec';
-        const loginUrl = `${this.apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`;
+        const { DateHelper: _LDH } = require('./utils/DateHelper');
+        const loginUrl = `${this.apiBase}/users/login?${_LDH.qs()}&month=6`;
         const r = await this.page.request.post(loginUrl, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
           headers: { 'Content-Type': 'application/json' },
@@ -958,11 +987,9 @@ ${curlCmd}
    */
   async getOpenPeriodEndDateAPI(): Promise<string | null> {
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
     const company = process.env.BEFFA_COMPANY as string;
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('./utils/DateHelper');
+    const params = _DH.qs();
     const headers = {
       'Authorization': `Bearer ${token}`,
       'x-company': company,
@@ -1334,12 +1361,8 @@ ${curlCmd}
     const company = companyOverride || await this.page.evaluate(() => {
       try { return localStorage.getItem('currentCompany'); } catch { return null; }
     }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-
-    // Fetch all accounts and filter locally to ensure we find the exact UUID
-    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('./utils/DateHelper');
+    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&${_DH.qs()}`;
 
     const response = await this.page.request.get(url, {
       headers: {
@@ -1373,11 +1396,8 @@ ${curlCmd}
     const company = companyOverride || await this.page.evaluate(() => {
       try { return localStorage.getItem('currentCompany'); } catch { return null; }
     }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-
-    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('./utils/DateHelper');
+    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&${_DH.qs()}`;
     const response = await this.page.request.get(url, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -1408,9 +1428,8 @@ ${curlCmd}
     const company = companyOverride || await this.page.evaluate(() => {
       try { return localStorage.getItem('currentCompany'); } catch { return null; }
     }).catch(() => null) || process.env.BEFFA_COMPANY || 'BM Tech';
-    const year = process.env.BEFFA_YEAR || '2019';
-
-    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&year=${year}&period=yearly&calendar=ec`;
+    const { DateHelper: _DH } = require('./utils/DateHelper');
+    const url = `${this.apiBase}/accounts?page=1&pageSize=1000&${_DH.qs()}`;
     const response = await this.page.request.get(url, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -1432,12 +1451,11 @@ ${curlCmd}
   async resolveWarehouseIdFromLocation(loc: any): Promise<string> {
     if (loc.warehouse_id && loc.warehouse_id.length === 36) return loc.warehouse_id;
     if (loc.warehouse?.id) return loc.warehouse.id;
-    // warehouse is a name string — look it up
     if (typeof loc.warehouse === 'string' && loc.warehouse) {
       const token = await this._getAuthToken();
-      const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+      const { DateHelper: _DH } = require('./utils/DateHelper');
       const headers = { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` };
-      const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=50&${params}`, { headers });
+      const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=50&${_DH.qs()}`, { headers });
       if (whResp.ok()) {
         const whJson = await whResp.json();
         const whs: any[] = whJson.items || whJson.data || [];
@@ -1446,10 +1464,9 @@ ${curlCmd}
         if (whs[0]?.id) return whs[0].id;
       }
     }
-    // Last resort: fetch first warehouse
     const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
-    const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=1&${params}`, { headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` } });
+    const { DateHelper: _DH2 } = require('./utils/DateHelper');
+    const whResp = await this.safeGet(`${this.apiBase}/warehouses?page=1&pageSize=1&${_DH2.qs()}`, { headers: { 'x-company': process.env.BEFFA_COMPANY as string, 'Authorization': `Bearer ${token}` } });
     if (whResp.ok()) { const j = await whResp.json(); return (j.items || j.data || [])[0]?.id || ''; }
     return '';
   }
@@ -1532,10 +1549,8 @@ ${curlCmd}
   async seedCashBalanceAPI(amount: number, cashAccountId?: string): Promise<void> {
     const token = await this._getAuthToken();
     const company = process.env.BEFFA_COMPANY || 'BM Tech';
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('./utils/DateHelper');
+    const params = _DH.qs();
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     const acctResp = await this.page.request.get(`${this.apiBase}/accounts?page=1&pageSize=200&${params}`, { headers });

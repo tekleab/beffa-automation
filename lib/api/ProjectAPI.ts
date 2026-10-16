@@ -26,10 +26,8 @@ export class ProjectAPI extends BasePage {
     }
 
     private get qs(): string {
-        const y = process.env.BEFFA_YEAR || '2019';
-        const p = process.env.BEFFA_PERIOD || 'yearly';
-        const c = process.env.BEFFA_CALENDAR || 'ec';
-        return `year=${y}&period=${p}&calendar=${c}`;
+        const { DateHelper } = require('../utils/DateHelper');
+        return DateHelper.qs();
     }
 
     private async h(): Promise<Record<string, string>> {
@@ -38,9 +36,9 @@ export class ProjectAPI extends BasePage {
         // even when the page is on about:blank (page.request fails with status 0 in that state)
         if (!token) {
             try {
-                const y = process.env.BEFFA_YEAR || '2019';
+                const { DateHelper } = require('../utils/DateHelper');
                 const loginResp = await this.page.context().request.post(
-                    `${this.apiBase}/users/login?year=${y}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}&month=6`,
+                    `${this.apiBase}/users/login?${DateHelper.qs()}&month=6`,
                     { data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS }, headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
                 );
                 if (loginResp.ok()) {

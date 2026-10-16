@@ -62,12 +62,10 @@ export class InventoryAPI extends BasePage {
       'x-role': 'IT Administrator / User Manager'
     };
 
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
 
-    // Account + location discovery — single fast call, no retry (fallback UUIDs used on failure)
+    // Account + location discovery
     let incAcct = typeof data !== 'string' ? data.gl_sales_account_id : undefined;
     let expAcct = typeof data !== 'string' ? data.gl_cost_account_id : undefined;
     let invAcct = typeof data !== 'string' ? data.gl_inventory_account_id : undefined;
@@ -209,7 +207,8 @@ export class InventoryAPI extends BasePage {
       'Content-Type': 'application/json',
       'x-role': 'IT Administrator / User Manager'
     };
-    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
 
     const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
     if (locResp.ok()) {
@@ -240,7 +239,8 @@ export class InventoryAPI extends BasePage {
         'Authorization': `Bearer ${token}`,
         'x-role': 'IT Administrator / User Manager'
       };
-      const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+      const { DateHelper: _DH } = require('../utils/DateHelper');
+      const params = _DH.qs();
 
       const { locationId, warehouseId } = await this.ensureDefaultLocationAPI();
 
@@ -287,7 +287,7 @@ export class InventoryAPI extends BasePage {
     const token = await this._getAuthToken();
 
     const { DateHelper: _DH } = require('../utils/DateHelper');
-    const resolvedDate = await _DH.resolve(this.page);
+    const resolvedDate = await (_DH.resolveForInventory(this.page).catch(() => null)) || await _DH.resolve(this.page);
     const year = String(resolvedDate.ecYear);
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
@@ -447,12 +447,10 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `page=1&pageSize=100&year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = `page=1&pageSize=100&${_DH.qs()}`;
 
-    console.log(`[ACTION] Discovering random item via API (Year ${year}) [MinStock: ${minStock}]...`);
+    console.log(`[ACTION] Discovering random item via API (Year ${_DH.activeYear()}) [MinStock: ${minStock}]...`);
     await this.startTacticalTimer();
     
     // The previous error was due to hitting the frontend port 4173. 
@@ -509,10 +507,8 @@ export class InventoryAPI extends BasePage {
       let warehouseId = '';
       try {
         const token = await this._getAuthToken();
-        const year = process.env.BEFFA_YEAR || '2019';
-        const period = process.env.BEFFA_PERIOD || 'yearly';
-        const calendar = process.env.BEFFA_CALENDAR || 'ec';
-        const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
+        const { DateHelper: _DH } = require('../utils/DateHelper');
+        const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&${_DH.qs()}`, {
           headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
         });
         if (locResp.ok()) {
@@ -562,10 +558,8 @@ export class InventoryAPI extends BasePage {
     let warehouseId = '';
     try {
       const token = await this._getAuthToken();
-      const year = process.env.BEFFA_YEAR || '2019';
-      const period = process.env.BEFFA_PERIOD || 'yearly';
-      const calendar = process.env.BEFFA_CALENDAR || 'ec';
-      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&year=${year}&period=${period}&calendar=${calendar}`, {
+      const { DateHelper: _DH } = require('../utils/DateHelper');
+      const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=1&${_DH.qs()}`, {
         headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
       });
       if (locResp.ok()) {
@@ -596,10 +590,8 @@ export class InventoryAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
     const headers = { 
       'x-company': this.company, 
       'Authorization': `Bearer ${token}`,
@@ -830,7 +822,8 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const { DateHelper: _DH_mo } = require('../utils/DateHelper');
+    const params = _DH_mo.qs();
     const headers = {
       'x-company': this.company,
       'Authorization': `Bearer ${token}`,
@@ -888,7 +881,8 @@ export class InventoryAPI extends BasePage {
     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const params = `year=${process.env.BEFFA_YEAR || '2019'}&period=${process.env.BEFFA_PERIOD || 'yearly'}&calendar=${process.env.BEFFA_CALENDAR || 'ec'}`;
+    const { DateHelper: _DH_etd } = require('../utils/DateHelper');
+    const params = _DH_etd.qs();
     const headers = {
       'x-company': this.company,
       'Authorization': `Bearer ${token}`,
@@ -1051,10 +1045,8 @@ export class InventoryAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year     = process.env.BEFFA_YEAR     || '2019';
-    const period   = process.env.BEFFA_PERIOD   || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params   = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH_xfer } = require('../utils/DateHelper');
+    const params   = _DH_xfer.qs();
     const headers  = {
       'x-company': this.company,
       'Authorization': `Bearer ${token}`,

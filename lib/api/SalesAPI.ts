@@ -41,10 +41,8 @@ export class SalesAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = this.company;
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}` };
 
     const safeJson = async (resp: any, label: string) => {
@@ -135,10 +133,8 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
     const headers = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     // Discover live company environment
@@ -170,7 +166,6 @@ export class SalesAPI extends BasePage {
     const unitPrice = data.unitPrice || 10993.05;
     const amount = quantity * unitPrice;
 
-    const { DateHelper: _DH } = require('../utils/DateHelper');
     const _dateIso = (await _DH.resolve(this.page)).iso;
     const payload = {
       accounts_receivable_id: data.arAccountId || meta.arAccountId,
@@ -242,10 +237,8 @@ export class SalesAPI extends BasePage {
   async createInvoiceAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; status?: number; error?: string }> {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
 
     // Discover live company environment
     const meta = await this.discoverMetadataAPI();
@@ -390,6 +383,25 @@ export class SalesAPI extends BasePage {
     }
 
 
+    if (!response.ok()) {
+      const errText = await response.text();
+      // Auto-recover: if the invoice period is wrong, bust cache and retry with fresh year
+      if (response.status() === 422 && (errText.includes('not allowed outside the open period') || errText.includes('current period'))) {
+        _DH.clearCache();
+        const fresh = await _DH.resolve(this.page).catch(() => null);
+        if (fresh && String(fresh.ecYear) !== year) {
+          const freshParams = `year=${fresh.ecYear}&period=${period}&calendar=${calendar}`;
+          payload.date = fresh.iso;
+          payload.posting_date = fresh.iso;
+          payload.invoice_date = fresh.iso;
+          payload.due_date = fresh.iso;
+          response = await this.safePost(`${apiBase}/invoices?${freshParams}`, {
+            data: payload, headers: invoiceHeaders, label: 'Standalone Invoice (period retry)'
+          });
+        }
+      }
+    }
+
     if (!response.ok()) throw new Error(`Standalone Invoice API Creation Failed: ${response.status()} - ${await response.text()}`);
     const json = await response.json();
     return { success: true, ref: json.invoice_number, id: json.id, amountDue: amount, customerId: custId };
@@ -400,10 +412,8 @@ export class SalesAPI extends BasePage {
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
     const company = this.company;
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
     const headers = { 'x-company': company, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     const safeJson = async (resp: any, label: string) => {
@@ -481,10 +491,8 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
     const headers = { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' };
 
     const response = await this.page.request.patch(`${apiBase}/invoices/${invoiceId}/void?${params}`, {
@@ -532,10 +540,8 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
 
     const response = await this.page.request.patch(`${apiBase}/receipts/${receiptId}/void?${params}`, {
       data: { status: 'reversed' },
@@ -559,10 +565,8 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
 
     const response = await this.page.request.patch(`${apiBase}/invoice/${invoiceId}?${params}`, {
       data: { status: 'approved' },
@@ -800,10 +804,8 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const params = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const params = _DH.qs();
 
     const response = await this.safeGet(`${apiBase}/invoice/${invoiceId}?${params}`, {
       headers: { 'x-company': this.company, 'Authorization': token ? `Bearer ${token}` : '' }
@@ -816,10 +818,8 @@ export class SalesAPI extends BasePage {
     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
     if (!apiBase.endsWith('/api')) apiBase += '/api';
     const token = await this._getAuthToken();
-    const year = process.env.BEFFA_YEAR || '2019';
-    const period = process.env.BEFFA_PERIOD || 'yearly';
-    const calendar = process.env.BEFFA_CALENDAR || 'ec';
-    const qs = `year=${year}&period=${period}&calendar=${calendar}`;
+    const { DateHelper: _DH } = require('../utils/DateHelper');
+    const qs = _DH.qs();
     const response = await this.safeGet(`${apiBase}/customer/${customerId}?${qs}`, {
       headers: { 'x-company': this.company, 'Authorization': `Bearer ${token}` }
     });

@@ -14,12 +14,14 @@ export async function apiLoginSetup(page: Page): Promise<AppManager> {
     const baseUrl = (process.env.BASE_URL || 'http://localhost:4173')
         .replace(/['"]+/g, '').replace(/\/$/, '');
 
-    const year = process.env.BEFFA_YEAR || '2019';
+    const { DateHelper } = require('../utils/DateHelper');
+    const qs = DateHelper.qs();
+    const year = DateHelper.activeYear();
     const period = process.env.BEFFA_PERIOD || 'yearly';
     const calendar = process.env.BEFFA_CALENDAR || 'ec';
 
     const r = await page.request.post(
-        `${apiBase}/users/login?year=${year}&period=${period}&calendar=${calendar}&month=6`,
+        `${apiBase}/users/login?${qs}&month=6`,
         {
             data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
             headers: { 'Content-Type': 'application/json' }

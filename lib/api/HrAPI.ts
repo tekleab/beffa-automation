@@ -8,10 +8,8 @@ export class HrAPI extends BasePage {
   }
 
   private get params() {
-    const y = process.env.BEFFA_YEAR || '2019';
-    const p = process.env.BEFFA_PERIOD || 'yearly';
-    const c = process.env.BEFFA_CALENDAR || 'ec';
-    return `year=${y}&period=${p}&calendar=${c}`;
+    const { DateHelper } = require('../utils/DateHelper');
+    return DateHelper.qs();
   }
 
   private async headers() {
@@ -29,7 +27,8 @@ export class HrAPI extends BasePage {
     }
     if (!token) {
       try {
-        const loginUrl = `${this.apiBase}/users/login?year=2018&period=yearly&calendar=ec&month=6`;
+        const { DateHelper } = require('../utils/DateHelper');
+        const loginUrl = `${this.apiBase}/users/login?${DateHelper.qs()}&month=6`;
         const loginResp = await this.page.request.post(loginUrl, {
           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
           headers: { 'Content-Type': 'application/json' },
