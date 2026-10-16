@@ -1,29 +1,37 @@
 {
   "total": 103,
-  "passed": 9,
-  "failed": 87,
+  "passed": 8,
+  "failed": 88,
   "skipped": 7,
-  "passRate": 8.7,
-  "avgDurationMs": 3723,
-  "lastUpdated": "2026-10-16T09:24:14.261Z",
+  "passRate": 7.8,
+  "avgDurationMs": 3889,
+  "lastUpdated": "2026-10-16T09:30:09.522Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 9,
-      "failed": 87,
+      "passed": 8,
+      "failed": 88,
       "skipped": 7,
       "trend": [
-        100,
         78.6,
         100,
         79.6,
         100,
         6.3,
-        9.4
+        9.4,
+        8.3
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "816",
+      "commit": "3656b1e",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "6m 40s",
+      "passRate": 7.8,
+      "status": "failed"
+    },
     {
       "run": "815",
       "commit": "a0ae6a7",
@@ -95,14 +103,6 @@
       "duration": "0m 5s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "806",
-      "commit": "789867f",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "75m 18s",
-      "passRate": 92.5,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
@@ -110,7 +110,7 @@
       "severity": "medium",
       "title": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "error": "Error: Accounts Discovery HTTP 400: {\n\t\"code\": 400,\n\t\"message\": \"Company not found\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:50\n\n  48 |     const safeJson = async (resp: any, label: string) => {\n  49 |       ",
-      "firstSeen": "2026-10-16T09:22:07.100Z",
+      "firstSeen": "2026-10-16T09:27:53.223Z",
       "occurrences": 2,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,7 +118,7 @@
       "severity": "medium",
       "title": "UI Audit: Customer profile shows zero balance after full payment",
       "error": "Error: Accounts Discovery HTTP 400: {\n\t\"code\": 400,\n\t\"message\": \"Company not found\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:50\n\n  48 |     const safeJson = async (resp: any, label: string) => {\n  49 |       ",
-      "firstSeen": "2026-10-16T09:22:07.144Z",
+      "firstSeen": "2026-10-16T09:27:53.112Z",
       "occurrences": 2,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -126,7 +126,7 @@
       "severity": "medium",
       "title": "Validate TIN, create customer, edit, remove",
       "error": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#customer_name-input-id') to be visible\u001b[22m\n\n\n  44 |             await page.goto('/receivables/customer",
-      "firstSeen": "2026-10-16T09:22:07.208Z",
+      "firstSeen": "2026-10-16T09:27:53.214Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -134,7 +134,7 @@
       "severity": "medium",
       "title": "API: Receipt Roster & List Pagination Inspection",
       "error": "Error: apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2019&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    -",
-      "firstSeen": "2026-10-16T09:22:07.316Z",
+      "firstSeen": "2026-10-16T09:27:53.246Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -142,7 +142,7 @@
       "severity": "medium",
       "title": "Guardrail: Rejection of Invalid/Empty Receipt Payloads",
       "error": "Error: apiRequestContext.post: connect ECONNREFUSED 168.119.175.142:8001\nCall log:\n\u001b[2m  - → POST http://168.119.175.142:8001/api/users/login?year=2019&period=yearly&calendar=ec&month=6\u001b[22m\n\u001b[2m    -",
-      "firstSeen": "2026-10-16T09:22:08.569Z",
+      "firstSeen": "2026-10-16T09:27:54.268Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -150,39 +150,39 @@
       "severity": "medium",
       "title": "API: Full Invoice, Receipt Creation, and Approval Workflow",
       "error": "Error: Accounts Discovery HTTP 400: {\n\t\"code\": 400,\n\t\"message\": \"Company not found\"\n}\n\n\n   at ../lib/api/SalesAPI.ts:50\n\n  48 |     const safeJson = async (resp: any, label: string) => {\n  49 |       ",
-      "firstSeen": "2026-10-16T09:22:09.176Z",
+      "firstSeen": "2026-10-16T09:27:55.017Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Create fresh invoice via API, then create receipt and link it",
-      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments 9da84015-c8de-45c8-9ff8-888f7a8decb8: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
-      "firstSeen": "2026-10-16T09:22:11.080Z",
+      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments 83414250-3ca0-438b-bf79-567384429a43: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
+      "firstSeen": "2026-10-16T09:27:56.972Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "Create PO via API, approve, create linked bill, verify in vendor profile",
-      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments 8a0619ae-18e1-4a3a-8bed-76af07d8b135: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
-      "firstSeen": "2026-10-16T09:22:14.015Z",
+      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments 4eb12006-1179-40a3-a7a4-3b7323b62a0b: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
+      "firstSeen": "2026-10-16T09:28:00.375Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "API: Approved bill must post a debit to Accounts Payable",
-      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments fe0995ce-6893-4764-9549-bf2aef4c6fbe: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
-      "firstSeen": "2026-10-16T09:22:15.047Z",
+      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments 5bcc6b43-fdf6-4ad9-abef-36d59a92007d: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
+      "firstSeen": "2026-10-16T09:28:01.238Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
     {
       "severity": "critical",
       "title": "API: Vendor outstanding balance increases after bill approval",
-      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments a2553fa8-f776-4633-8529-6d8e06808c82: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
-      "firstSeen": "2026-10-16T09:22:27.073Z",
+      "error": "Error: [CRITICAL] API Advance Failed for inventory-adjustments b0792954-d1d7-4e3b-9eeb-84d22c590ab1: No successful steps.\n\n   at ../lib/base-page.ts:334\n\n  332 |     if (!success) {\n  333 |       Logg",
+      "firstSeen": "2026-10-16T09:28:13.678Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
@@ -205,7 +205,7 @@
       "suggestedAction": "Retry or check ERP server health"
     },
     {
-      "testTitle": "UI Audit: Customer profile shows zero balance after full payment",
+      "testTitle": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
       "file": "tests/sales/customer-balance-ui.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
@@ -213,7 +213,7 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "UI Audit: Approved invoice reflects outstanding balance in customer profile",
+      "testTitle": "UI Audit: Customer profile shows zero balance after full payment",
       "file": "tests/sales/customer-balance-ui.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
@@ -247,10 +247,10 @@
     {
       "testTitle": "Create fresh invoice via API, then create receipt and link it",
       "file": "tests/sales/receipt-ui.spec.ts",
-      "category": "ENV_CONFIG",
-      "confidence": "HIGH",
-      "reasoning": "Auth/token failure during setup",
-      "suggestedAction": "Check BEFFA_USER/PASS env vars"
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
     },
     {
       "testTitle": "API: Approved bill must post a debit to Accounts Payable",
@@ -285,8 +285,8 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "API: Timesheet must be created and advanced through approval",
-      "file": "tests/hr/hr-attendance.spec.ts",
+      "testTitle": "View: Existing inventory item details render correctly in the UI",
+      "file": "tests/inventory/inv-management.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
@@ -295,6 +295,14 @@
     {
       "testTitle": "Guardrail: System must block sales when item stock reaches exact zero",
       "file": "tests/inventory/inv-lifecycle.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "API: Timesheet must be created and advanced through approval",
+      "file": "tests/hr/hr-attendance.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
@@ -315,6 +323,14 @@
       "confidence": "MEDIUM",
       "reasoning": "Playwright assertion or locator failure",
       "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: System must reject overselling beyond available stock",
+      "file": "tests/inventory/inv-management.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
     },
     {
       "testTitle": "API: Employee roster must be non-empty with valid structure",
@@ -341,14 +357,6 @@
       "suggestedAction": "Review selector or assertion value"
     },
     {
-      "testTitle": "Guardrail: System must reject overselling beyond available stock",
-      "file": "tests/inventory/inv-management.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
       "testTitle": "Guardrail: Duplicate employee email must be rejected by the system",
       "file": "tests/hr/hr-employees.spec.ts",
       "category": "APP_BUG",
@@ -365,20 +373,20 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "UI: Org Chart page must render the department hierarchy",
-      "file": "tests/hr/hr-employees.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
       "testTitle": "API: Leave applications endpoint must respond with valid pagination",
       "file": "tests/hr/hr-leave.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
       "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "UI: Org Chart page must render the department hierarchy",
+      "file": "tests/hr/hr-employees.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
     },
     {
       "testTitle": "Guardrail: Leave application must reject payload missing leave_type_id and reason",
@@ -397,16 +405,24 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "API-01: Create project returns valid id, ref and pending status",
-      "file": "tests/project/project-api-contract.spec.ts",
+      "testTitle": "API: Pay structure must be created with valid name",
+      "file": "tests/hr/hr-payroll.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "API: Pay structure must be created with valid name",
-      "file": "tests/hr/hr-payroll.spec.ts",
+      "testTitle": "Validate TIN, create customer, edit, remove",
+      "file": "tests/sales/customer.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "API-01: Create project returns valid id, ref and pending status",
+      "file": "tests/project/project-api-contract.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
@@ -427,14 +443,6 @@
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
       "suggestedAction": "Investigate ERP response manually"
-    },
-    {
-      "testTitle": "Validate TIN, create customer, edit, remove",
-      "file": "tests/sales/customer.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
     },
     {
       "testTitle": "API-04: LIST projects includes newly created project",
@@ -581,20 +589,20 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "GUARD-06: Non-existent customer_id UUID → 4xx",
-      "file": "tests/project/project-api-validation.spec.ts",
-      "category": "APP_BUG",
-      "confidence": "LOW",
-      "reasoning": "Unclassified — likely business logic failure",
-      "suggestedAction": "Investigate ERP response manually"
-    },
-    {
       "testTitle": "UI: Employees page must load and display employee records",
       "file": "tests/hr/hr-employees.spec.ts",
       "category": "TEST_CODE",
       "confidence": "MEDIUM",
       "reasoning": "Playwright assertion or locator failure",
       "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "GUARD-06: Non-existent customer_id UUID → 4xx",
+      "file": "tests/project/project-api-validation.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
     },
     {
       "testTitle": "GUARD-07: PATCH with invalid status \"cancelled\" → 400 \"Invalid project status\"",
@@ -685,7 +693,7 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "UI-11: Add Project form has all required inputs",
+      "testTitle": "UI-10: Add Project button navigates to /projects/new",
       "file": "tests/project/project-ui-form.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
@@ -693,7 +701,7 @@
       "suggestedAction": "Investigate ERP response manually"
     },
     {
-      "testTitle": "UI-10: Add Project button navigates to /projects/new",
+      "testTitle": "UI-11: Add Project form has all required inputs",
       "file": "tests/project/project-ui-form.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
@@ -853,20 +861,20 @@
       "suggestedAction": "Review selector or assertion value"
     },
     {
-      "testTitle": "BDEV-1138: Verify Pagination on Payables Detail Pages (Bills per Vendor)",
-      "file": "tests/cross-module/data-loading-pagination.spec.ts",
-      "category": "TEST_CODE",
-      "confidence": "MEDIUM",
-      "reasoning": "Playwright assertion or locator failure",
-      "suggestedAction": "Review selector or assertion value"
-    },
-    {
       "testTitle": "Purchase UI: Approved bill reflects outstanding balance in vendor profile",
       "file": "tests/cross-module/cross-module-ui-flows.spec.ts",
       "category": "APP_BUG",
       "confidence": "LOW",
       "reasoning": "Unclassified — likely business logic failure",
       "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "BDEV-1138: Verify Pagination on Payables Detail Pages (Bills per Vendor)",
+      "file": "tests/cross-module/data-loading-pagination.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
     },
     {
       "testTitle": "BDEV-1139: Verify Pagination on Bank Statements",
