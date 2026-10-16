@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 103,
+  "passed": 100,
+  "failed": 3,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 370,
-  "lastUpdated": "2026-10-16T10:43:57.596Z",
+  "passRate": 97.1,
+  "avgDurationMs": 6287,
+  "lastUpdated": "2026-10-16T10:48:55.270Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 100,
+      "failed": 3,
       "skipped": 0,
       "trend": [
-        100,
         79.6,
         100,
         6.3,
         9.4,
         8.3,
-        100
+        100,
+        97.1
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "818",
+      "commit": "6330e4b",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "10m 47s",
+      "passRate": 97.1,
+      "status": "success"
+    },
     {
       "run": "817",
       "commit": "2bc019c",
@@ -95,15 +103,58 @@
       "duration": "0m 7s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "808",
-      "commit": "708a7a1",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "10m 17s",
-      "passRate": 11.7,
-      "status": "failed"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "UI: Attendances page must load and render the attendance module",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\u001b[2m    36 × ",
+      "firstSeen": "2026-10-16T10:47:05.829Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-10-16T10:47:08.143Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
+      "firstSeen": "2026-10-16T10:47:37.825Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI: Attendances page must load and render the attendance module",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    }
+  ]
 }

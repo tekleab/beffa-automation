@@ -1,0 +1,84 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://157.180.20.112:8001/api/inventory-adjustments?year=2019&period=yearly&calendar=ec`
+- **Method**: `POST`
+- **Status Code**: `422`
+- **Latency**: `166.72ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "ABC Trading",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)",
+  "Content-Type": "application/json"
+}
+```
+
+**Body**:
+```json
+{
+  "adjusted_by": "quantity",
+  "adjusted_cost": 0,
+  "adjusted_quantity": 10,
+  "adjustment_account_id": "fe2598a1-9b2a-435f-bb92-ea812ed795ec",
+  "inventory_item_id": "7edc6a2d-e5d3-40b6-bfe7-b9290d768bda",
+  "is_write_down": "false",
+  "location_id": "a3a34c25-0b4f-4c44-a55d-8863ee6cb0f7",
+  "warehouse_id": "8e258054-13a9-4272-bf51-3d29db905a0d",
+  "date": "2026-10-16T00:00:00Z",
+  "reason": "Automated E2E Adjustment",
+  "note": "",
+  "unit_cost": 1,
+  "unit_price": 1,
+  "total_cost": 10,
+  "current_quantity": 0,
+  "location_quantity": 0,
+  "skip_draft": false,
+  "status": "draft"
+}
+```
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 422,
+	"details": {
+		"inventory_item_id": [
+			"Stock adjustments cannot be made on a deactivated item. Please reactivate the item first."
+		]
+	},
+	"message": "Validation error when creating inventory adjustment"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X POST \
+  -H "x-company: ABC Trading" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "adjusted_by": "quantity",
+  "adjusted_cost": 0,
+  "adjusted_quantity": 10,
+  "adjustment_account_id": "fe2598a1-9b2a-435f-bb92-ea812ed795ec",
+  "inventory_item_id": "7edc6a2d-e5d3-40b6-bfe7-b9290d768bda",
+  "is_write_down": "false",
+  "location_id": "a3a34c25-0b4f-4c44-a55d-8863ee6cb0f7",
+  "warehouse_id": "8e258054-13a9-4272-bf51-3d29db905a0d",
+  "date": "2026-10-16T00:00:00Z",
+  "reason": "Automated E2E Adjustment",
+  "note": "",
+  "unit_cost": 1,
+  "unit_price": 1,
+  "total_cost": 10,
+  "current_quantity": 0,
+  "location_quantity": 0,
+  "skip_draft": false,
+  "status": "draft"
+}' \
+  "http://157.180.20.112:8001/api/inventory-adjustments?year=2019&period=yearly&calendar=ec"
+```
