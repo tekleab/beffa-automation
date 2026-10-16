@@ -17,7 +17,7 @@ import { AppManager } from '../../pages/AppManager';
 test.describe('Receipt API Standalone Diagnostics Suite @sales @smoke', () => {
     test.setTimeout(180000);
 
-    const apiBase = 'http://168.119.175.142:8001/api';
+    const apiBase = `${(process.env.API_URL || 'http://localhost:8001').replace(/\/$/, '')}/api`;
     const company = process.env.BEFFA_COMPANY || 'BM Tech';
     const year = process.env.BEFFA_YEAR || '2019';
     const period = process.env.BEFFA_PERIOD || 'yearly';
