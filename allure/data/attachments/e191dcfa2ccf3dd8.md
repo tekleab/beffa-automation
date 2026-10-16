@@ -1,0 +1,227 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: inventory/inv-management.spec.ts >> Inventory Item Management @inventory @smoke >> View: Existing inventory item details render correctly in the UI
+- Location: tests/inventory/inv-management.spec.ts:78:9
+
+# Error details
+
+```
+Error: Item Creation API Failed: 400 - {
+	"code": 400,
+	"message": "Company not found"
+}
+
+```
+
+# Test source
+
+```ts
+  92  |       try {
+  93  |         const locResp = await this.page.request.get(`${apiBase}/locations?page=1&pageSize=10&${params}`, { headers, timeout: 10000 });
+  94  |         if (locResp.ok()) {
+  95  |           const ldata = await locResp.json();
+  96  |           const locs = ldata.items || ldata.data || [];
+  97  |           if (locs[0]) {
+  98  |             locId = locId || locs[0].id;
+  99  |             warehouseId = warehouseId || await this.resolveWarehouseIdFromLocation(locs[0]);
+  100 |           }
+  101 |         }
+  102 |       } catch { /* proceed without location — ERP will use defaults */ }
+  103 |     }
+  104 | 
+  105 |     const payload = {
+  106 |         name,
+  107 |         type: 'inventory',
+  108 |         category: typeof data === 'string' ? "Raw Materials" : (data.category || "Raw Materials"),
+  109 |         cost_method_code: typeof data === 'string' ? "FIFO" : (data.cost_method_code || "FIFO"),
+  110 |         item_class: typeof data === 'string' ? 'MER' : (data.item_class || 'MER'),
+  111 |         item_id: typeof data === 'string' ? `ITM-${Date.now().toString().slice(-6)}` : (data.item_id || `ITM-${Date.now().toString().slice(-6)}`),
+  112 |         unit_of_measurement: "Kilogram (kg)",
+  113 |         part_number: typeof data === 'string' ? `PN-${Date.now().toString().slice(-4)}` : (data.part_number || `PN-${Date.now().toString().slice(-4)}`),
+  114 |         serial: "Z",
+  115 |         status: "active",
+  116 |         description: [
+  117 |             {content: "", type: "item"}, 
+  118 |             {content: "", type: "sales"}, 
+  119 |             {content: "", type: "purchase"}
+  120 |         ],
+  121 |         min_stock: 0,
+  122 |         initial_stock: typeof data === 'string' ? 0 : (data.quantity || 0),
+  123 |         purchase_price: typeof data === 'string' ? 1 : (data.unit_cost || 1),
+  124 |         selling_price: typeof data === 'string' ? 1 : (data.unit_cost || 1),
+  125 |         unit_cost: typeof data === 'string' ? 1 : (data.unit_cost || 1),
+  126 |         gl_sales_account_id: incAcct,
+  127 |         gl_cost_account_id: expAcct,
+  128 |         gl_inventory_account_id: invAcct,
+  129 |         default_location_id: locId,
+  130 |         default_warehouse_id: warehouseId,
+  131 |         quantity: typeof data === 'string' ? 0 : (data.quantity || 0)
+  132 |     };
+  133 | 
+  134 |     // Retry up to 3x for 500/503, connection resets, and invalid location self-healing
+  135 |     for (let attempt = 1; attempt <= 3; attempt++) {
+  136 |       let resp: any;
+  137 |       try {
+  138 |         resp = await this.page.request.post(`${apiBase}/inventory-items?${params}`, { headers, data: payload, timeout: 30000 });
+  139 |       } catch (err: any) {
+  140 |         if (attempt < 3) {
+  141 |           console.warn(`[WARN] Item Creation API connection error on attempt ${attempt} (${err.message}). Retrying in ${attempt * 1000}ms...`);
+  142 |           await new Promise(r => setTimeout(r, attempt * 1000));
+  143 |           continue;
+  144 |         }
+  145 |         throw new Error(`Item Creation API Failed: ${err.message?.split('\n')[0] || 'network error'}`);
+  146 |       }
+  147 |       if (resp.ok()) {
+  148 |         const json = await resp.json();
+  149 |         const cost = typeof data === 'string' ? 1 : (data.unit_cost || 1);
+  150 |         const sellPrice = typeof data === 'string' ? 1 : (data.selling_price || data.unit_cost || 1);
+  151 |         return { itemName: json.name, id: json.id, itemId: json.id, locationId: payload.default_location_id || locId, warehouseId: payload.default_warehouse_id || warehouseId, unitCost: cost, sellingPrice: sellPrice };
+  152 |       }
+  153 |       const status = resp.status();
+  154 |       const text = await resp.text();
+  155 |       if (status === 400 && text.includes('Invalid location ID') && attempt < 3) {
+  156 |         console.warn(`[WARN] Item Creation API failed with "Invalid location ID". Refreshing location metadata for attempt ${attempt + 1}...`);
+  157 |         try {
+  158 |           const freshLoc = await this.ensureDefaultLocationAPI();
+  159 |           payload.default_location_id = freshLoc.locationId;
+  160 |           payload.default_warehouse_id = freshLoc.warehouseId;
+  161 |         } catch {}
+  162 |         await new Promise(r => setTimeout(r, 1000 * attempt));
+  163 |         continue;
+  164 |       }
+  165 |       if (status === 401) {
+  166 |         const loginResp = await this.page.request.post(`${apiBase}/users/login?${params}&month=6`, {
+  167 |           data: { email: process.env.BEFFA_USER, password: process.env.BEFFA_PASS },
+  168 |           headers: { 'Content-Type': 'application/json' },
+  169 |           timeout: 30000
+  170 |         });
+  171 |         if (loginResp.ok()) {
+  172 |           const newToken = (await loginResp.json()).auth_token;
+  173 |           if (newToken) {
+  174 |             BasePage.globalAuthToken = newToken;
+  175 |             this.cachedToken = newToken;
+  176 |             await this.page.evaluate((t) => {
+  177 |               try {
+  178 |                 localStorage.setItem('token', t);
+  179 |                 localStorage.setItem('auth-token', t);
+  180 |               } catch {}
+  181 |             }, newToken).catch(() => {});
+  182 |             headers['Authorization'] = `Bearer ${newToken}`;
+  183 |             continue;
+  184 |           }
+  185 |         }
+  186 |         throw new Error(`Item Creation API Failed: 401 Unauthorized`);
+  187 |       }
+  188 |       if ((status === 500 || status === 503) && attempt < 3) {
+  189 |         await this.page.waitForTimeout(attempt * 2000);
+  190 |         continue;
+  191 |       }
+> 192 |       throw new Error(`Item Creation API Failed: ${status} - ${text}`);
+      |             ^ Error: Item Creation API Failed: 400 - {
+  193 |     }
+  194 |     throw new Error('Item Creation API Failed: exhausted retries');
+  195 |   }
+  196 | 
+  197 |   async ensureDefaultLocationAPI(): Promise<{ locationId: string; warehouseId: string }> {
+  198 |     const company = await this.resolveActiveCompanyAPI();
+  199 |     const token = await this._getAuthToken();
+  200 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+  201 |       .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+  202 |     if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  203 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  204 |     const headers = {
+  205 |       'x-company': company,
+  206 |       'Authorization': `Bearer ${token}`,
+  207 |       'Content-Type': 'application/json',
+  208 |       'x-role': 'IT Administrator / User Manager'
+  209 |     };
+  210 |     const { DateHelper: _DH } = require('../utils/DateHelper');
+  211 |     const params = _DH.qs();
+  212 | 
+  213 |     const locResp = await this.safeGet(`${apiBase}/locations?page=1&pageSize=50&${params}`, { headers });
+  214 |     if (locResp.ok()) {
+  215 |       const locJson = await locResp.json();
+  216 |       const locs = locJson.items || locJson.data || [];
+  217 |       for (const loc of locs) {
+  218 |         if (loc?.id) {
+  219 |           const warehouseId = await this.resolveWarehouseIdFromLocation(loc);
+  220 |           if (warehouseId) return { locationId: loc.id, warehouseId };
+  221 |         }
+  222 |       }
+  223 |     }
+  224 | 
+  225 |     console.log('[SELF-HEALING] No usable location found — creating default warehouse + location...');
+  226 |     const created = await this.ensureTransferLocationAPI(apiBase, params, headers);
+  227 |     return { locationId: created.id, warehouseId: created.warehouse_id };
+  228 |   }
+  229 | 
+  230 |   async discoverMetadataAPI(preferredCompany?: string): Promise<{ locationId: string, warehouseId: string, salesAccountId: string, customerId: string }> {
+  231 |       const company = await this.resolveActiveCompanyAPI(preferredCompany);
+  232 |       const token = await this._getAuthToken();
+  233 |       let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001')
+  234 |         .replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001');
+  235 |       if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  236 |       if (!apiBase.endsWith('/api')) apiBase += '/api';
+  237 |       const headers = { 
+  238 |         'x-company': company, 
+  239 |         'Authorization': `Bearer ${token}`,
+  240 |         'x-role': 'IT Administrator / User Manager'
+  241 |       };
+  242 |       const { DateHelper: _DH } = require('../utils/DateHelper');
+  243 |       const params = _DH.qs();
+  244 | 
+  245 |       const { locationId, warehouseId } = await this.ensureDefaultLocationAPI();
+  246 | 
+  247 |       const acctResp = await this.safeGet(`${apiBase}/accounts?page=1&pageSize=50&${params}`, { headers });
+  248 |       const acctJson = await acctResp.json();
+  249 |       const sales = (acctJson.items || acctJson.data || []).find((a: any) => a.name?.toLowerCase().includes('sales'))?.id;
+  250 | 
+  251 |       const custResp = await this.safeGet(`${apiBase}/customers?page=1&pageSize=1&${params}`, { headers });
+  252 |       const custJson = await custResp.json();
+  253 |       const cust = (custJson.items?.[0] || custJson.data?.[0])?.id;
+  254 |       if (!cust) throw new Error('[METADATA] No customers found. Ensure the environment has at least one customer.');
+  255 | 
+  256 |       return {
+  257 |           locationId,
+  258 |           warehouseId,
+  259 |           salesAccountId: sales,
+  260 |           customerId: cust
+  261 |       };
+  262 |   }
+  263 | 
+  264 |   async processAdjustmentAPI(id: string): Promise<void> {
+  265 |       console.log(`[ACTION] Triggering API Process for Adjustment: ${id}`);
+  266 |       let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  267 |       if (!apiBase.endsWith('/api')) apiBase += '/api';
+  268 |       const token = await this._getAuthToken();
+  269 |       
+  270 |       const response = await this.page.request.post(`${apiBase}/inventory-adjustments/${id}/process`, {
+  271 |           headers: { 
+  272 |             'x-company': this.company, 
+  273 |             'Authorization': `Bearer ${token}`,
+  274 |             'x-role': 'IT Administrator / User Manager'
+  275 |           },
+  276 |           timeout: 30000
+  277 |       });
+  278 |       if (!response.ok() && response.status() !== 404) {
+  279 |           console.warn(`[WARN] Adjustment processing returned ${response.status()}`);
+  280 |       }
+  281 |   }
+  282 | 
+  283 | 
+  284 |   async createInventoryAdjustmentAPI(data: Record<string, any> = {}): Promise<{ success: boolean; ref?: string; id?: string; error?: string }> {
+  285 |     let apiBase = (process.env.API_URL || process.env.BASE_URL || 'http://localhost:8001').replace(/['"+]+/g, '').replace(/\/$/, '').replace(/:4173/, ':8001'); if (!apiBase.startsWith('http')) apiBase = 'http://' + apiBase;
+  286 |     if (!apiBase.endsWith('/api')) apiBase += '/api';
+  287 |     const token = await this._getAuthToken();
+  288 | 
+  289 |     const { DateHelper: _DH } = require('../utils/DateHelper');
+  290 |     const resolvedDate = await (_DH.resolveForInventory(this.page).catch(() => null)) || await _DH.resolve(this.page);
+  291 |     const year = String(resolvedDate.ecYear);
+  292 |     const period = process.env.BEFFA_PERIOD || 'yearly';
+```
