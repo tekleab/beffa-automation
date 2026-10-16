@@ -130,7 +130,7 @@ test.describe('Payroll: Runs & Pay Components @hr @smoke', () => {
             }
         }
         if (!run) {
-            console.log('[KNOWN_BUG] No open fiscal period configured for HR payroll — skipping');
+            test.skip(true, '[KNOWN_BUG] No open fiscal period configured for HR payroll');
             return;
         }
         expect(run).toHaveProperty('id');

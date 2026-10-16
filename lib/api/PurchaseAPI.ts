@@ -1054,7 +1054,6 @@ export class PurchaseAPI extends BasePage {
         || (b.paid !== undefined && b.paid !== null);
 
       const rawUnpaid = parseFloat(b.unpaid_amount ?? b.balance ?? 0);
-      console.log(`[NORMALIZE_BILL_DEBUG] inv=${b.invoice_number || b.number} status=${b.status} gross=${grossAmount} rawWht=${rawWht} statWht=${statutoryWht} rawUnpaid=${rawUnpaid} paid=${paid} keys=${Object.keys(b).join(',')}`);
       if (isPaid) {
         b.unpaid_amount = 0;
       } else if (hasPaidField && paid > 0 && Math.abs((grossAmount - paid) - statutoryWht) <= 0.05) {

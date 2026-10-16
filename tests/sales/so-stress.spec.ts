@@ -97,10 +97,9 @@ test.describe('Sales Stress & Financial Edge Cases @sales @full', () => {
         try {
             const inv2 = await app.api.sales.createInvoiceAPI({ customerId: so.customerId, soItemId: so.soItemId, releasedQuantity: 3, locationId: item.locationId, warehouseId: item.warehouseId });
             await app.advanceDocumentAPI(inv2.id!, 'invoices');
-            expect.soft(false, `[CRITICAL_LOGIC_BUG] Oversell allowed! SO ${so.ref} released 5 units against qty=${soQty}. Stock floor breached.`).toBe(true);
-            Logger.fail(`Oversell bug confirmed on SO ${so.ref}`);
+            throw new Error(`[CRITICAL_LOGIC_BUG] Oversell allowed! SO ${so.ref} released 5 units against qty=${soQty}. Stock floor breached.`);
         } catch (err: any) {
-            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) Logger.fail(err.message);
+            if (err.message.includes('[CRITICAL_LOGIC_BUG]')) throw err;
             else console.log(`[PASS] Oversell correctly blocked: ${err.message.slice(0, 100)}`);
         }
     });

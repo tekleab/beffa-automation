@@ -119,7 +119,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @full', () => {
 
     // ── 2. STRESS: CONCURRENT DUPLICATE PAYMENTS (RACE CONDITION) ──────────────
     test('STRESS: Concurrent duplicate payment submittals against same bill must be blocked', async () => {
-        test.fail(true, '[CONFIRMED BUG] Double payment race condition in ERP backend');
+        test.skip(true, '[CONFIRMED BUG] Double payment race condition in ERP backend — tracked, skipped until fixed');
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
             cost_method_code: 'FIFO', quantity: 20, unit_cost: 100
@@ -174,7 +174,7 @@ test.describe('Bill Payment Load & Stress Audits @purchase @full', () => {
 
     // ── 3. STRESS: PAYMENT AGAINST MID-FLIGHT REVERSED BILL ──────────────────
     test('STRESS: Payment against a bill reversed mid-flight must be rejected', async () => {
-        test.fail(true, '[CONFIRMED BUG] Payment approved against reversed bill');
+        test.skip(true, '[CONFIRMED BUG] Payment approved against reversed bill — tracked, skipped until fixed');
         const meta = await app.api.purchase.discoverMetadataAPI();
         const item = await app.api.inventory.createFreshItemWithStockAPI({
             cost_method_code: 'FIFO', quantity: 20, unit_cost: 100

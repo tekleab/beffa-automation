@@ -224,7 +224,7 @@ test.describe('Procurement Stress & Financial Edge Cases @purchase @full', () =>
                 Math.abs(balance - expectedBalance),
                 `BUG: Bill ${bill.ref} (${bill.id}): Balance drift after partial payment ${i + 1}. Expected ${expectedBalance}, got ${balance}`
             ).toBeLessThanOrEqual(0.01);
-            if (Math.abs(balance - expectedBalance) > 0.01) Logger.fail(`Balance drift: expected ${expectedBalance}, got ${balance}`);
+            if (Math.abs(balance - expectedBalance) > 0.01) throw new Error(`[CRITICAL_LOGIC_BUG] Balance drift: expected ${expectedBalance}, got ${balance}`);
         }
 
         const finalBill = await app.api.purchase.getBillAPI(bill.id);

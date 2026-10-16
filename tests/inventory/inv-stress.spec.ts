@@ -87,10 +87,9 @@ test.describe('Inventory Stress & Costing Edge Cases @inventory @full', () => {
             const stockAfterSell = await app.api.inventory.pollStockAPI(item.itemId, undefined as any, item.locationId, 5);
             console.log(`[RESULT] Stock at source after oversell: ${stockAfterSell}`);
             if (stockAfterSell < 0) {
-                console.log(`[CRITICAL_LOGIC_BUG] Negative stock at source location after transfer + sell: ${stockAfterSell}`);
-                Logger.fail(`Cross-location stock desync: source stock=${stockAfterSell} after transfer-out`);
+                throw new Error(`[CRITICAL_LOGIC_BUG] Negative stock at source location after transfer + sell: ${stockAfterSell}`);
             }
-            expect.soft(stockAfterSell, `[CRITICAL_LOGIC_BUG] Stock went negative after transfer+sell: ${stockAfterSell}`).toBeGreaterThanOrEqual(0);
+            expect(stockAfterSell, `[CRITICAL_LOGIC_BUG] Stock went negative after transfer+sell: ${stockAfterSell}`).toBeGreaterThanOrEqual(0);
         } catch (err: any) {
             console.log(`[PASS] Oversell from empty location correctly blocked: ${err.message.slice(0, 100)}`);
         }

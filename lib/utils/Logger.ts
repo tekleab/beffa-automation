@@ -72,8 +72,9 @@ export class Logger {
     this.log(LogLevel.PASS, message, data);
   }
 
-  static fail(message: string, data?: any): void {
+  static fail(message: string, data?: any): never {
     this.log(LogLevel.FAIL, message, data);
+    throw new Error(message);
   }
 
   static performance(message: string, data?: any): void {

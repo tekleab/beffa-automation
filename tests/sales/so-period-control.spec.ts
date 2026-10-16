@@ -216,7 +216,7 @@ test.describe('Sales Period Control Edge Cases @sales @full', () => {
         const unreceivedAmt = parseFloat(invoiceData.unreceived_amount ?? invoiceData.due ?? '0');
         const invAmount = unreceivedAmt > 0 ? unreceivedAmt : netDue;
         if (invAmount <= 0) {
-            console.log(`[SKIP] Invoice ${inv.ref} already fully paid (balance=${invAmount}). Skipping receipt creation.`);
+            test.skip(true, `[SKIP] Invoice ${inv.ref} already fully paid (balance=${invAmount}). Skipping receipt creation.`);
             return;
         }
 

@@ -232,7 +232,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @full', () => {
         });
 
         if (!bill.success) {
-            console.log(`[SKIP] Could not create bill for payment test`);
+            test.skip(true, '[SKIP] Could not create bill for back-dated payment test');
             return;
         }
 
@@ -286,7 +286,7 @@ test.describe('Procurement Period Control Edge Cases @purchase @full', () => {
         });
 
         if (!bill.success) {
-            console.log(`[SKIP] Could not create bill for payment test`);
+            test.skip(true, '[SKIP] Could not create bill for future-dated payment test');
             return;
         }
 
