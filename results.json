@@ -1,35 +1,43 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 103,
+  "passed": 101,
+  "failed": 2,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 284,
-  "lastUpdated": "2026-10-16T11:13:41.495Z",
+  "passRate": 98.1,
+  "avgDurationMs": 7084,
+  "lastUpdated": "2026-10-16T11:18:31.501Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 101,
+      "failed": 2,
       "skipped": 0,
       "trend": [
-        100,
         6.3,
         9.4,
         8.3,
         100,
         97.1,
-        100
+        91.2,
+        98.1
       ]
     }
   ],
   "last10Runs": [
     {
-      "run": "820",
-      "commit": "965111c",
-      "trigger": "push (sanity)",
-      "duration": "0m 5s",
-      "passRate": 100,
+      "run": "821",
+      "commit": "019bf59",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "12m 9s",
+      "passRate": 98.1,
+      "status": "success"
+    },
+    {
+      "run": "819",
+      "commit": "05516b9",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "65m 47s",
+      "passRate": 91.2,
       "status": "success"
     },
     {
@@ -95,15 +103,42 @@
       "duration": "0m 5s",
       "passRate": 100,
       "status": "success"
-    },
-    {
-      "run": "810",
-      "commit": "38a1a98",
-      "trigger": "workflow_dispatch (smoke)",
-      "duration": "8m 43s",
-      "passRate": 78.6,
-      "status": "failed"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-10-16T11:16:43.112Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
+      "firstSeen": "2026-10-16T11:17:13.874Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    }
+  ]
 }
