@@ -1,0 +1,32 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://157.180.20.112:8001/api/companies?page=1&pageSize=50&year=2019&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `400`
+- **Latency**: `188.27ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"code": 400,
+	"message": "Company Header required"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  "http://157.180.20.112:8001/api/companies?page=1&pageSize=50&year=2019&period=yearly&calendar=ec"
+```
