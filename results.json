@@ -1,29 +1,37 @@
 {
-  "total": 103,
-  "passed": 100,
-  "failed": 3,
+  "total": 217,
+  "passed": 198,
+  "failed": 19,
   "skipped": 0,
-  "passRate": 97.1,
-  "avgDurationMs": 6287,
-  "lastUpdated": "2026-10-16T10:48:55.270Z",
+  "passRate": 91.2,
+  "avgDurationMs": 18189,
+  "lastUpdated": "2026-10-16T11:12:29.015Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 100,
-      "failed": 3,
+      "passed": 198,
+      "failed": 19,
       "skipped": 0,
       "trend": [
-        79.6,
         100,
         6.3,
         9.4,
         8.3,
         100,
-        97.1
+        97.1,
+        91.2
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "819",
+      "commit": "05516b9",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "65m 47s",
+      "passRate": 91.2,
+      "status": "success"
+    },
     {
       "run": "818",
       "commit": "6330e4b",
@@ -95,22 +103,30 @@
       "duration": "8m 43s",
       "passRate": 78.6,
       "status": "failed"
-    },
-    {
-      "run": "809",
-      "commit": "0cdc03a",
-      "trigger": "push (sanity)",
-      "duration": "0m 7s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
   "criticalBlockers": [
     {
       "severity": "medium",
-      "title": "UI: Attendances page must load and render the attendance module",
-      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\u001b[2m    36 × ",
-      "firstSeen": "2026-10-16T10:47:05.829Z",
+      "title": "Guardrail: System must prevent receipts against a voided invoice",
+      "error": "Error: Item Creation API Failed: 409 - {\n\t\"code\": 409,\n\t\"details\": {\n\t\t\"ref\": [\n\t\t\t\"An item with this reference already exists for the selected company.\"\n\t\t]\n\t},\n\t\"message\": \"\"\n}\n\n\n   at ../lib/api/In",
+      "firstSeen": "2026-10-16T10:52:35.750Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: [VULNERABILITY] Bill BILL/2026/10/16/000013: final balance after full partial settlement is 120, not 0\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[",
+      "firstSeen": "2026-10-16T10:53:17.336Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/10/16/000019 with price variance (billed 600 vs PO 500)!\n\n  89 |                     console.error(`  AP Overstatement: ${(billedPrice - poUn",
+      "firstSeen": "2026-10-16T10:54:22.819Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -118,7 +134,7 @@
       "severity": "critical",
       "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
       "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
-      "firstSeen": "2026-10-16T10:47:08.143Z",
+      "firstSeen": "2026-10-16T10:55:13.055Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     },
@@ -126,12 +142,76 @@
       "severity": "medium",
       "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
       "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
-      "firstSeen": "2026-10-16T10:47:37.825Z",
+      "firstSeen": "2026-10-16T10:55:44.283Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI-13: Project detail page shows a status indicator",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  70 |             await page.",
+      "firstSeen": "2026-10-16T10:55:44.302Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI-10: Add Project button navigates to /projects/new",
+      "error": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n==============================================",
+      "firstSeen": "2026-10-16T10:55:54.059Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "error": "TimeoutError: locator.evaluate: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.chakra-modal__content, .chakra-popover__content, [role=\"dialog\"]').filter({ hasText: /Warehouse \\*|G\\/",
+      "firstSeen": "2026-10-16T10:57:31.648Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table",
+      "error": "Error: [MODAL] Line item modal did not close after clicking Add/Save. Validation errors: Validation ErrorPlease check the highlighted fields below and try again.; ; Validation Error; Please check the ",
+      "firstSeen": "2026-10-16T11:05:42.415Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "INV-UI-01: Add inventory Line Item via modal → Invoice created and approved",
+      "error": "TimeoutError: locator.evaluate: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Line Item\")').first()\u001b[22m\n\n\n  763 |         await page.waitForTimeout(500);\n  764 |  ",
+      "firstSeen": "2026-10-16T11:08:29.355Z",
       "occurrences": 1,
       "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
     }
   ],
   "aiAnalysis": [
+    {
+      "testTitle": "Guardrail: System must prevent receipts against a voided invoice",
+      "file": "tests/sales/so-integrity.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
     {
       "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
       "file": "tests/hr/hr-attendance.spec.ts",
@@ -141,8 +221,8 @@
       "suggestedAction": "Log as known bug, skip in CI"
     },
     {
-      "testTitle": "UI: Attendances page must load and render the attendance module",
-      "file": "tests/hr/hr-attendance.spec.ts",
+      "testTitle": "UI-13: Project detail page shows a status indicator",
+      "file": "tests/project/project-ui-detail.spec.ts",
       "category": "TEST_CODE",
       "confidence": "MEDIUM",
       "reasoning": "Playwright assertion or locator failure",
@@ -151,6 +231,110 @@
     {
       "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
       "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-10: Add Project button navigates to /projects/new",
+      "file": "tests/project/project-ui-form.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-01: Single bill payment → bill balance settles to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-02: Add Miscellaneous line via modal → Invoice total reflects it",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "BILL-UI-01: Add inventory Line Item via modal → Bill created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "RCT-UI-01: Receipt UI — create standalone receipt with line item and verify",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-01: Add inventory Line Item via modal → Invoice created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
       "category": "TEST_CODE",
       "confidence": "MEDIUM",
       "reasoning": "Playwright assertion or locator failure",
