@@ -15,15 +15,26 @@ on:
           - full
           - e2e
       company:
-        description: 'Company'
-        required: true
+        description: 'Company hint (auto-scan always overrides with the open-period company)'
+        required: false
         default: 'ABC Trading'
         type: choice
         options:
           - 'ABC Trading'
           - 'sample'
+          - 'Construction BM'
           - 'BM Tech'
           - 'Beffa-UAT-Practice'
+          - 'Ministry of Education'
+          - 'One Company'
+          - 'Quick Test'
+          - 'elias blc'
+          - 'test'
+          - 'new company'
+          - 'smoke test'
+          - 'befa tutorial'
+          - 'The Company'
+          - 'Doloremque sit hic'
   deployment_status:
   repository_dispatch:
     types: [deploy_complete, test_deploy_success]
@@ -127,7 +138,6 @@ jobs:
         fi
 
     - name: Fetch Company from ERP API
-      if: github.event_name != 'workflow_dispatch'
       continue-on-error: true
       run: |
         chmod +x scripts/fetch-company.sh

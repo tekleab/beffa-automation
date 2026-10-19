@@ -114,15 +114,13 @@ export class DateHelper {
       const configuredCompany = storageInfo?.comp || process.env.BEFFA_COMPANY || 'BM Tech';
       let allCompanyNames: string[] = [configuredCompany];
       try {
-        const coResp = await page.request.get(
-          `${base}/companies?page=1&pageSize=50&year=${baseYear}&period=${period}&calendar=${calendar}`,
-          { headers: baseHeaders }
-        );
-        if (coResp.ok()) {
-          const coData = await coResp.json();
-          const names: string[] = (coData.data || coData.items || []).map((c: any) => c.name).filter(Boolean);
+        const meResp = await page.request.get(`${base}/users/me`, { headers: baseHeaders });
+        if (meResp.ok()) {
+          const meData = await meResp.json();
+          const names: string[] = ((meData.user || meData).companies || [])
+            .map((c: any) => c.name).filter(Boolean);
           // Put configured company first, then the rest
-          allCompanyNames = [configuredCompany, ...names.filter(n => n !== configuredCompany)];
+          allCompanyNames = [configuredCompany, ...names.filter((n: string) => n !== configuredCompany)];
         }
       } catch { /* use configured company only */ }
 
@@ -163,7 +161,21 @@ export class DateHelper {
               return DateHelper._fromDate(now, year);
             }
           }
-          // Today is outside this year's period — try the next year
+
+          // Today is outside the period — use periodEnd - 75d as safe transaction date
+          const candidate = new Date(periodEnd.getTime() - 75 * 24 * 60 * 60 * 1000);
+          const candidateIso = DateHelper._toIso(candidate);
+          const candidateR = await page.request.post(`${base}/purchase-orders?${qs}`, {
+            headers,
+            data: { po_date: candidateIso, purchase_type_id: 4, po_items: [] }
+          }).catch(() => null);
+          const candidateText = candidateR ? await candidateR.text().catch(() => '') : '';
+          if (!DateHelper.isPeriodError(candidateText)) {
+            console.log(`[DateHelper] ✓ company="${co}" year=${year}: using in-period date ${candidateIso}`);
+            process.env.BEFFA_COMPANY = co;
+            process.env.BEFFA_YEAR = String(year);
+            return DateHelper._fromDate(candidate, year);
+          }
         }
       }
 
