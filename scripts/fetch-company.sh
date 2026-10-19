@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # scripts/fetch-company.sh
-# Scans ALL companies via /api/users/me and finds the one with an open fiscal period.
-# Exports BEFFA_COMPANY and BEFFA_YEAR to GITHUB_ENV (or prints them for local use).
+# Finds the company+year with an open fiscal period.
+# Priority: selected BEFFA_COMPANY first → then scan all companies as fallback.
+# Exports BEFFA_COMPANY and BEFFA_YEAR to GITHUB_ENV (or prints export statements locally).
 set -uo pipefail
 
 BASE="${API_URL:-${BASE_URL:-http://localhost:8001}}"
@@ -30,7 +31,7 @@ fi
 echo "[OK] Token acquired."
 
 # Fetch all company names from /api/users/me
-COMPANY_NAMES=$(python3 -c "
+ALL_COMPANIES=$(python3 -c "
 import urllib.request, json
 req = urllib.request.Request('${BASE}/api/users/me', headers={'Authorization':'Bearer ${TOKEN}'})
 d = json.loads(urllib.request.urlopen(req, timeout=15).read())
@@ -38,25 +39,19 @@ cos = d.get('user', d).get('companies', [])
 print('\n'.join(c.get('name','') for c in cos if c.get('name')))
 " 2>/dev/null || echo "")
 
-if [ -z "$COMPANY_NAMES" ]; then
+if [ -z "$ALL_COMPANIES" ]; then
   echo "[WARN] No companies returned — keeping existing BEFFA_COMPANY=${BEFFA_COMPANY:-sample}"
   exit 0
 fi
 
-echo "[INFO] Companies found: $(echo "$COMPANY_NAMES" | wc -l | tr -d ' ')"
+echo "[INFO] Companies available: $(echo "$ALL_COMPANIES" | wc -l | tr -d ' ')"
 
-YEARS_TO_TRY="${BASE_YEAR} $((BASE_YEAR+1)) $((BASE_YEAR-1)) $((BASE_YEAR+2)) $((BASE_YEAR-2))"
-FOUND_COMPANY=""
-FOUND_YEAR=""
-
-while IFS= read -r CO; do
-  [ -z "$CO" ] && continue
-  for YEAR in $YEARS_TO_TRY; do
-    QS="year=${YEAR}&period=${PERIOD}&calendar=${CALENDAR}"
-
-    # Probe today's date — a 422 with NO period-error text means the period is open
-    # (the ERP returns po_items/account validation errors instead)
-    PROBE=$(python3 -c "
+# Probe function: returns 0 (success) if company+year has an open period for today
+probe_open() {
+  local CO="$1" YEAR="$2"
+  local QS="year=${YEAR}&period=${PERIOD}&calendar=${CALENDAR}"
+  local RESP
+  RESP=$(python3 -c "
 import urllib.request, json
 req = urllib.request.Request(
   '${BASE}/api/purchase-orders?${QS}',
@@ -70,17 +65,50 @@ except urllib.error.HTTPError as e:
   print(e.read().decode())
 " 2>/dev/null || echo "network_error")
 
-    # Period is open when response has NO period-error AND has ERP validation content
-    if ! echo "$PROBE" | grep -qi "not within the current period\|outside the open period\|current period\|network_error"; then
-      if echo "$PROBE" | grep -qi "account_payable\|currency_id\|po_items\|purchase_type\|vendor_id"; then
+  # Open period = no period error + has ERP field-validation errors (proves the period accepted the date)
+  if echo "$RESP" | grep -qi "not within the current period\|outside the open period\|current period\|network_error"; then
+    return 1
+  fi
+  if echo "$RESP" | grep -qi "account_payable\|currency_id\|po_items\|purchase_type\|vendor_id"; then
+    return 0
+  fi
+  return 1
+}
+
+YEARS_TO_TRY="${BASE_YEAR} $((BASE_YEAR+1)) $((BASE_YEAR-1)) $((BASE_YEAR+2)) $((BASE_YEAR-2))"
+FOUND_COMPANY=""
+FOUND_YEAR=""
+
+# ── Step 1: Try the selected company first ────────────────────────────────────
+SELECTED="${BEFFA_COMPANY:-}"
+if [ -n "$SELECTED" ]; then
+  echo "[INFO] Probing selected company: \"${SELECTED}\"..."
+  for YEAR in $YEARS_TO_TRY; do
+    if probe_open "$SELECTED" "$YEAR"; then
+      echo "[OK] Selected company \"${SELECTED}\" has an open period at year=${YEAR}"
+      FOUND_COMPANY="$SELECTED"
+      FOUND_YEAR="$YEAR"
+      break
+    fi
+  done
+fi
+
+# ── Step 2: Fall back to scanning all companies if selected one has no open period ──
+if [ -z "$FOUND_COMPANY" ]; then
+  [ -n "$SELECTED" ] && echo "[WARN] \"${SELECTED}\" has no open period — scanning all companies..."
+  while IFS= read -r CO; do
+    [ -z "$CO" ] && continue
+    [ "$CO" = "$SELECTED" ] && continue  # already tried above
+    for YEAR in $YEARS_TO_TRY; do
+      if probe_open "$CO" "$YEAR"; then
         echo "[OK] Open period found: company=\"${CO}\" year=${YEAR}"
         FOUND_COMPANY="$CO"
         FOUND_YEAR="$YEAR"
         break 2
       fi
-    fi
-  done
-done <<< "$COMPANY_NAMES"
+    done
+  done <<< "$ALL_COMPANIES"
+fi
 
 if [ -z "$FOUND_COMPANY" ]; then
   echo "[WARN] No company with an open period found — keeping existing BEFFA_COMPANY=${BEFFA_COMPANY:-sample}"
