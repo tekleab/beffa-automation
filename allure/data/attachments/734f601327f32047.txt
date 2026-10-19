@@ -1,0 +1,47 @@
+06:54:11 [PERFORMANCE] API - Auth API Verification: 155267.87ms
+[AUTH] Session token and local storage injected successfully.
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-19T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-19T00:00:00Z (day=19, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000339 (ID: 50da2f95-f1c3-41ef-ba8c-0dedcc436c96)
+06:54:17 [INFO] Advancing inventory-adjustments "50da2f95-f1c3-41ef-ba8c-0dedcc436c96"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392854557 (4e8d2782-b91d-49f4-8a87-4c655d38c5df) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+06:54:19 [PERFORMANCE] API - Auth API Verification: 163662.09ms
+[AUTH] Session token and local storage injected successfully.
+06:54:20 [PERFORMANCE] API - Auth API Verification: 163855.05ms
+[AUTH] Session token and local storage injected successfully.
+
+[STEP 1] Creating Vendor A and Vendor B...
+[VENDOR_TYPE] Discovered system vendor type: "service"
+[VENDOR_TYPE] Discovered system vendor type: "service"
+  Vendor A : IDOR-VendorA-1792392860196 (cccd07dc-c7d1-4179-9b6c-86f4007a7628)
+  Vendor B : IDOR-VendorB-1792392860929 (7416a2f0-9780-4e53-ab67-a24ba8bb32ea)
+
+[STEP 2] Creating Bill for 5000 under Vendor A...
+06:54:22 [INFO] Advancing bills "3af65bbb-e901-4a92-89f7-987d78c0b1bd"...
+  Bill A   : BILL/2026/10/19/000104 (3af65bbb-e901-4a92-89f7-987d78c0b1bd) — belongs to Vendor A
+  Balance before attack: $5000.00
+
+[STEP 3] ATTACK — POST /payments: vendor_id=VendorB, bill_id=VendorA's bill...
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ Cross-Vendor IDOR Payment Allocation Audit                              │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Vendor A (bill owner)            │ IDOR-VendorA-1792392860196           │
+  │ Vendor A ID                      │ cccd07dc-c7d1-4179-9b6c-86f4007a762… │
+  │ Vendor B (attacker)              │ IDOR-VendorB-1792392860929           │
+  │ Vendor B ID                      │ 7416a2f0-9780-4e53-ab67-a24ba8bb32e… │
+  │ Bill (Vendor A)                  │ BILL/2026/10/19/000104 (3af65bbb-e9… │
+  │ Bill Amount                      │ $5000.00                             │
+  │ Balance Before Attack            │ $5000.00                             │
+  │ Attack HTTP Status               │ 422                                  │
+  │ Payment Ref                      │ N/A (blocked at creation)            │
+  │ Balance After Attack             │ N/A                                  │
+  │ Finding                          │ HTTP 422 — rejected at POST /paymen… │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ Result                           │ PASS — Cross-vendor allocation bloc… │
+  └───────────────────────────────────────────────────────────────────────────┘
+
+[PASS] Cross-vendor payment allocation correctly blocked.

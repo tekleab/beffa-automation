@@ -1,0 +1,43 @@
+06:54:24 [PERFORMANCE] API - Auth API Verification: 42298.89ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000342 (ID: fca846d9-9f3b-437d-8e78-5b349ae3a907)
+06:54:29 [INFO] Advancing inventory-adjustments "fca846d9-9f3b-437d-8e78-5b349ae3a907"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392866934 (42d99a8b-8cd1-4b05-baae-9b52ef350504) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+06:54:32 [PERFORMANCE] API - Auth API Verification: 49833.94ms
+[AUTH] Session token and local storage injected successfully.
+06:54:32 [PERFORMANCE] API - Auth API Verification: 50048.78ms
+[AUTH] Session token and local storage injected successfully.
+[TEST] Creating Payment with back date: 2017-12-31T00:00:00Z
+06:54:33 [INFO] Advancing bills "b9b5b03c-fa8c-49f1-b148-08c67cc52244"...
+[ACTION] Creating Bill Payment for b9b5b03c-fa8c-49f1-b148-08c67cc52244 via API (CashAcct: 922ce0b6-c38e-41d4-bac8-3e5751967533)...
+[PAYMENT_AUTO_ADJUST] Bill payment [0] capped from 5000 to bill's remaining balance 4900 (reflecting statutory withholding tax deduction)
+[PAYMENT_RETRY] Retrying payment with auto-adjusted balance amount 4900...
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 2/5) — topping up 1109280106...
+06:54:38 [INFO] Seeding 1109330106 → Dr "Accounts Payable" / Cr "Service Income"
+06:54:38 [INFO] Advancing receipts "c5ccaba8-ac12-47ad-837f-2c7992725ebd"...
+06:54:42 [INFO] Seeded 1109330106 into "Accounts Payable" (receipt RCPT/2026/10/19/000076)
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 3/5) — topping up 2196424710...
+06:54:49 [INFO] Seeding 2196474710 → Dr "Accounts Payable" / Cr "Service Income"
+06:54:49 [INFO] Advancing receipts "45aae25a-3ad7-4fe7-a7d6-b2ee44e7e018"...
+06:54:53 [INFO] Seeded 2196474710 into "Accounts Payable" (receipt RCPT/2026/10/19/000077)
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 4/5) — topping up 4349072865...
+06:55:00 [INFO] Seeding 4349122865 → Dr "Accounts Payable" / Cr "Service Income"
+06:55:00 [INFO] Advancing receipts "e3552843-0d55-4102-a696-6c13f071db8d"...
+06:55:04 [INFO] Seeded 4349122865 into "Accounts Payable" (receipt RCPT/2026/10/19/000078)
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 5/5) — topping up 8611218273...
+06:55:11 [INFO] Seeding 8611268273 → Dr "Accounts Payable" / Cr "Service Income"
+06:55:11 [INFO] Advancing receipts "a9a1236f-6897-4b98-866d-7d6b4b187ce0"...
+06:55:15 [INFO] Seeded 8611268273 into "Accounts Payable" (receipt RCPT/2026/10/19/000079)
+[PASS] Back-dated Payment rejected at creation: Bill-Payment API failed after 5 cash top-up attempts: 422 - {
+	"code": 422,
+	"details": {
+		"cash_account_id": [
+			"insufficient balance in account Accounts Payable: available -17050260780.12, required 4900.00"
+		]
+	},
+	"message": "Validation error when creating payment"
+}
+

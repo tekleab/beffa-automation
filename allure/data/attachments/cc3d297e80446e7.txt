@@ -1,0 +1,62 @@
+06:49:14 [PERFORMANCE] API - Auth API Verification: 30575.51ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000291 (ID: a57cb6a3-adb7-4899-b7c3-650916c53611)
+06:49:19 [INFO] Advancing inventory-adjustments "a57cb6a3-adb7-4899-b7c3-650916c53611"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392556840 (b437852b-3b28-447d-857b-583124a9eeb3) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ITEM] FIFO-Item-1792392556840 | stock:20
+06:49:22 [INFO] Advancing invoices "8baab0eb-e635-47b6-959d-ae895a84019f"...
+06:49:23 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+06:49:23 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[INVOICE JOURNAL] INV/2026/10/19/000135 (4 entries)
+  Sales () Dr:0 Cr:100
+  Cash - Main Office () Dr:100 Cr:0
+  Inventory () Dr:0 Cr:100
+  Accounts Receivable () Dr:100 Cr:0
+[PASS] AR debited $100 on INV/2026/10/19/000135
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=8baab0eb... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/10/19/000069
+06:49:32 [INFO] Advancing receipts "808d5445-2e03-400b-b2e0-8db9154aebe1"...
+[RECEIPT JOURNAL] RCPT/2026/10/19/000069 (3 entries)
+  Withholding Tax Receivable Dr:0 Cr:100
+  Accounts Receivable Dr:0 Cr:100
+  Cash - Branch Office Dr:200 Cr:0
+[AUDIT] AR Dr:$100 (inv) Cr:$100 (rct) drift:$0.00
+[PASS] Full cycle GL: AR Dr=$100 = Cr=$100
+
+===============================================================================================
+  GL AUDIT REPORT — BEFFA ERP  |  Company: ABC Trading  |  2026-10-19T06:49:37.499Z
+===============================================================================================
+
+  ▶ 1. Invoice (AR Debit)
+    Ref: INV/2026/10/19/000135
+    ID : 8baab0eb-e635-47b6-959d-ae895a84019f
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Sales                                |                              |            — |       100.00 |
+  | Cash - Main Office                   |                              |       100.00 |            — |
+  | Inventory                            |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |       100.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+
+  ▶ 2. Receipt (AR Credit)
+    Ref: RCPT/2026/10/19/000069
+    ID : 808d5445-2e03-400b-b2e0-8db9154aebe1
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Account                              | Type                         |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | Withholding Tax Receivable           |                              |            — |       100.00 |
+  | Accounts Receivable                  |                              |            — |       100.00 |
+  | Cash - Branch Office                 |                              |       200.00 |            — |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  | TOTAL                                |                              |       200.00 |       200.00 |
+  | ✓ BALANCED (Dr = Cr)                                                                              |
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+

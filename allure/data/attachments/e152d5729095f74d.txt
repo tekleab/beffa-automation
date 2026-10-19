@@ -1,0 +1,14 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-19T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-19T00:00:00Z (day=19, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000326 (ID: c6ecddbf-307f-47a6-a2be-2e83091a896f)
+06:53:28 [INFO] Advancing inventory-adjustments "c6ecddbf-307f-47a6-a2be-2e83091a896f"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392805791 (a9742c13-5142-499a-a9d2-33e8504f0451) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ATTACK] Injecting Bill with future date: 2028-10-19T00:00:00Z...
+[PASS] Future-dated bill correctly blocked: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"The invoice da

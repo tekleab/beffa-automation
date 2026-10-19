@@ -1,0 +1,22 @@
+06:50:54 [PERFORMANCE] API - Auth API Verification: 10266.88ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000308 (ID: 6449863d-daee-4a8e-9059-e687e65c762c)
+06:50:58 [INFO] Advancing inventory-adjustments "6449863d-daee-4a8e-9059-e687e65c762c"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392655551 (a7e33c18-cd51-4afe-a4d5-c1f2fe263ced) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+
+========== SO SPLIT INVOICE SETUP ==========
+[ITEM]  Item ID     : a7e33c18-cd51-4afe-a4d5-c1f2fe263ced (FIFO-Item-1792392655551)
+[ITEM]  Stock       : 20
+[PLAN]  SO Qty      : 10
+[PLAN]  Batch 1     : 4
+[PLAN]  Batch 2     : 6
+[PLAN]  Over-release: 1 (must be blocked)
+============================================
+
+[STEP 1] Creating & approving SO for 10 units...
+06:51:31 [WARN] [TIMEOUT] Create Sales Order exceeded 30000ms — backend may be deadlocked
+06:51:31 [INFO] Advancing sales-orders ""...
+06:51:32 [WARN] Advance had no successful steps for sales-orders .

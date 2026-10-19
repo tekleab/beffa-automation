@@ -1,0 +1,22 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-19T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-19T00:00:00Z (day=19, ecYear=2019)
+06:51:22 [PERFORMANCE] API - Auth API Verification: 1832.26ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000311 (ID: b5690dd9-0fe2-4a71-bf5c-f4e775a531d6)
+06:51:27 [INFO] Advancing inventory-adjustments "b5690dd9-0fe2-4a71-bf5c-f4e775a531d6"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392684778 (49628f38-6a18-4c16-8998-ba0c9fc29286) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+06:51:30 [PERFORMANCE] API - Auth API Verification: 9319.43ms
+[AUTH] Session token and local storage injected successfully.
+06:51:30 [PERFORMANCE] API - Auth API Verification: 9526.25ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Discovering tax configuration...
+[TAX] Turnover Tax @ 2% | Expected tax amount: 20
+[STEP 2] Creating invoice with tax...
+[OK] Invoice created: INV/2026/10/19/000165 (ID: b50d604c-583f-43e3-b1b7-b11127b64034)
+06:51:30 [INFO] Advancing invoices "b50d604c-583f-43e3-b1b7-b11127b64034"...
+[STEP 3] Fetching journal entries to verify tax account...
+[TAX ENTRY] VAT Payable | CR: 2
+[PASS] Tax GL confirmed: VAT Payable credited 2 on invoice approval.

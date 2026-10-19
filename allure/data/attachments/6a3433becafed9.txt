@@ -1,0 +1,15 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-19T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-19T00:00:00Z (day=19, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/19/000328 (ID: b4ef362b-8533-4598-8de5-b02ce36e1043)
+06:53:31 [INFO] Advancing inventory-adjustments "b4ef362b-8533-4598-8de5-b02ce36e1043"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792392808386 (165564e6-0c8b-41f5-9297-4ef9fa278f28) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+06:53:35 [INFO] Advancing purchase-orders "039aaecb-b6df-44c9-9e81-aff7032c4e8b"...
+06:53:37 [INFO] Advancing bills "3ed2cdfa-5cc9-4cac-a1c2-2f1600be0521"...
+[BILL 1] BILL/2026/10/19/000097 — approved
+[PASS] Second bill rejected: PO-to-Bill API Failed: 422 - {
+	"code": 422,
+	"details": {
+		"received_purchase_order_items.0.quanti
