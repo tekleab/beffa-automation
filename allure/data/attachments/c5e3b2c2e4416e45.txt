@@ -1,0 +1,23 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-20T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-20T00:00:00Z (day=20, ecYear=2019)
+06:03:31 [PERFORMANCE] API - Auth API Verification: 2458.52ms
+[AUTH] Session token and local storage injected successfully.
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/20/000457 (ID: a372a129-9989-4654-b35f-1680e8776c90)
+06:03:36 [INFO] Advancing inventory-adjustments "a372a129-9989-4654-b35f-1680e8776c90"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792476213929 (c8a8e50e-d077-47f5-90c7-9aa4821dbd56) | method=FIFO | stock=20@$500 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[OK] PO created: PO/2026/10/20/000132 for Vendor Gentium Concrite Industry (e4a3aa06-54ca-4e7a-8d96-0519eaec3827)
+06:03:40 [INFO] Advancing purchase-orders "0cfc25f4-f288-446c-aa06-fba4918ebfad"...
+[OK] PO PO/2026/10/20/000132 approved
+[STEP] Phase 2: Create linked Bill via API
+06:03:42 [INFO] Advancing bills "f090f5f7-45a8-4ec4-958c-7be3031e087c"...
+[OK] Bill BILL/2026/10/20/000141 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/10/20/000141 (f090f5f7-45a8-4ec4-958c-7be3031e087c) verified in Gentium Concrite Industry's ledger via direct ID lookup.
+[SUCCESS] API Confirmed: Bill BILL/2026/10/20/000141 is physically present in Gentium Concrite Industry's ledger.
+[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection
+[UI_MATCH] Bill BILL/2026/10/20/000141 verified on page 1 of vendor profile!
+[RESULT] PASSED — PO PO/2026/10/20/000132 → Bill BILL/2026/10/20/000141 verified in Vendor UI table on page 1!

@@ -1,0 +1,26 @@
+
+=======================================================
+  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test 
+=======================================================
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-20T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-20T00:00:00Z (day=20, ecYear=2019)
+06:02:33 [PERFORMANCE] API - Auth API Verification: 4024.37ms
+[AUTH] Session token and local storage injected successfully.
+[OPERATING DATE] Date: 2026-08-14T00:00:00Z
+[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/20/000453 (ID: f9523687-8d2d-4066-8da3-bd6b8772e3b3)
+06:02:38 [INFO] Advancing inventory-adjustments "f9523687-8d2d-4066-8da3-bd6b8772e3b3"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792476155456 (eee1df3b-9f11-4021-9014-36b0a306ea2b) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+  ├── Customer ID      : 35827f1c-db2c-4298-b5de-c23b3a559caf
+  ├── Cash Account ID  : 210fa97b-abcd-4258-aa5b-5a36d13e425b (Cash - Main Office)
+  ├── Currency ID      : 27432c08-1839-44e6-8588-1a7c0e80b8e4 (BRR)
+  ├── AR Account ID    : 5dfd2e47-208c-4c50-8d9b-d21ec178166e (Accounts Receivable)
+  ├── Sales Account ID : 7529c7cf-20e0-47b3-a4e4-e0bf7c625074 (Sales)
+  ├── Warehouse ID     : 8e258054-13a9-4272-bf51-3d29db905a0d
+  ├── Location ID      : 49f24a2b-7516-4104-9964-cdfba6210312
+  └── Inventory Item ID: eee1df3b-9f11-4021-9014-36b0a306ea2b
+[STEP 3A] Creating Sales Order...
+06:03:11 [WARN] [TIMEOUT] Create Sales Order exceeded 30000ms — backend may be deadlocked
