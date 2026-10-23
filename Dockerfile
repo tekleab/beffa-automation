@@ -1,6 +1,9 @@
 # Use the official Playwright base image with the matching version
 FROM mcr.microsoft.com/playwright:v1.58.2-jammy
 
+# Ensure system-level CA certificates are fully updated (distrust revoked eMudhra intermediates)
+RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates && update-ca-certificates && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory inside the container
 WORKDIR /app
 
