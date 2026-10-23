@@ -1,0 +1,51 @@
+### 🚨 API Request Failure Report
+- **Endpoint**: `http://157.180.20.112:8001/api/taxes?year=2019&period=yearly&calendar=ec`
+- **Method**: `GET`
+- **Status Code**: `400`
+- **Latency**: `163.01ms`
+
+#### 📋 Request Details
+**Headers**:
+```json
+{
+  "x-company": "ABC Trading",
+  "Authorization": "Bearer eyJhbGciOiJIUzI... (truncated)"
+}
+```
+
+
+
+#### 💥 Response Details
+**Response Body**:
+```json
+{
+	"data": [
+		{
+			"active": true,
+			"applies_for": "sales",
+			"code": "TOT",
+			"created_at": "2026-06-10T11:08:57.160007Z",
+			"created_by": "00000000-0000-0000-0000-000000000000",
+			"deduction": 0,
+			"deleted_by": "00000000-0000-0000-0000-000000000000",
+			"id": "ebcdc065-df4e-494b-9de2-76e9764ed81d",
+			"max": 0,
+			"min": 0,
+			"name": "Turnover Tax",
+			"rate": 2,
+			"updated_at": "2026-06-10T11:08:57.160025Z",
+			"updated_by": "00000000-0000-0000-0000-000000000000"
+		}
+	],
+	"error": "conn busy"
+}
+
+```
+
+#### 💻 Replay with curl
+```bash
+curl -i -X GET \
+  -H "x-company: ABC Trading" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI... (truncated)" \
+  "http://157.180.20.112:8001/api/taxes?year=2019&period=yearly&calendar=ec"
+```

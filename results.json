@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 103,
+  "passed": 99,
+  "failed": 4,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 321,
-  "lastUpdated": "2026-10-23T13:00:33.522Z",
+  "passRate": 96.1,
+  "avgDurationMs": 7080,
+  "lastUpdated": "2026-10-23T13:05:32.353Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 99,
+      "failed": 4,
       "skipped": 0,
       "trend": [
-        98.1,
         89.4,
         84.6,
         100,
         100,
         93.2,
-        100
+        100,
+        96.1
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "828",
+      "commit": "359560f",
+      "trigger": "workflow_dispatch (smoke)",
+      "duration": "12m 9s",
+      "passRate": 96.1,
+      "status": "success"
+    },
     {
       "run": "827",
       "commit": "38b35d0",
@@ -95,15 +103,74 @@
       "duration": "10m 47s",
       "passRate": 97.1,
       "status": "success"
-    },
-    {
-      "run": "817",
-      "commit": "2bc019c",
-      "trigger": "push (sanity)",
-      "duration": "0m 6s",
-      "passRate": 100,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "UI: Attendances page must load and render the attendance module",
+      "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table, [role=\"table\"], h1, h2, [role=\"heading\"], .chakra-text').first() to be visible\u001b[22m\n\u001b[2m    35 × ",
+      "firstSeen": "2026-10-23T13:03:38.756Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-10-23T13:03:40.647Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
+      "firstSeen": "2026-10-23T13:04:16.587Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI-13: Project detail page shows a status indicator",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  70 |             await page.",
+      "firstSeen": "2026-10-23T13:04:16.895Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI: Attendances page must load and render the attendance module",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-13: Project detail page shows a status indicator",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    }
+  ]
 }
