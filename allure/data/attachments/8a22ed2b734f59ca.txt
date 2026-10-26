@@ -1,0 +1,25 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-26T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-26T00:00:00Z (day=26, ecYear=2019)
+07:32:56 [PERFORMANCE] API - Auth API Verification: 2489.46ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000585 (ID: 4539453e-6b41-42bf-b884-d6216bb08b77)
+07:33:00 [INFO] Advancing inventory-adjustments "4539453e-6b41-42bf-b884-d6216bb08b77"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999977637 (1266ed35-2eb5-4eca-bd15-e00e320b1419) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ATTACK] Triggering 2 CONCURRENT adjustments (+10 each) for FIFO-Item-1792999977637...
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[ADJ] quantity | qty=10 @ $100 | current=20 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000586 (ID: 073984b6-af70-4999-a6cf-ff6e1d01c0c8)
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000587 (ID: 0716a15e-d62e-497f-8b27-a182c738840a)
+[INFO] Adjustment 1 ID: 073984b6-af70-4999-a6cf-ff6e1d01c0c8 | Adjustment 2 ID: 0716a15e-d62e-497f-8b27-a182c738840a
+07:33:03 [INFO] Advancing inventory-adjustments "073984b6-af70-4999-a6cf-ff6e1d01c0c8"...
+[SUCCESS] Advanced Adjustment 1 to approved: 073984b6-af70-4999-a6cf-ff6e1d01c0c8
+07:33:04 [INFO] Advancing inventory-adjustments "0716a15e-d62e-497f-8b27-a182c738840a"...
+[SUCCESS] Advanced Adjustment 2 to approved: 0716a15e-d62e-497f-8b27-a182c738840a
+[ACTION] Verifying Final Stock Integrity...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 40...
+[SUCCESS] API Confirmed: Stock correctly reached 40.
+[SNAPSHOT] Start: 20 | Final: 40 | Expected: 40
+[PASS] Inventory Concurrency verified. No lost updates detected.

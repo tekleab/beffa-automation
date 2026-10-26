@@ -1,0 +1,22 @@
+07:31:10 [PERFORMANCE] API - Auth API Verification: 35493.56ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000568 (ID: 8105199f-6490-42ae-b14f-5a388f4667b0)
+07:31:15 [INFO] Advancing inventory-adjustments "8105199f-6490-42ae-b14f-5a388f4667b0"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999872722 (40319533-fca7-414e-93d5-aed57defd7fc) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:31:18 [PERFORMANCE] API - Auth API Verification: 43503.37ms
+[AUTH] Session token and local storage injected successfully.
+07:31:18 [PERFORMANCE] API - Auth API Verification: 43713.68ms
+[AUTH] Session token and local storage injected successfully.
+[PASS] Back-dated Bill correctly rejected at creation: Bill API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"invoice_date": [
+			"The invoice date 2017-12-31 falls in a closed or missing accounting period. Please open the period for this date or update the document date"
+		]
+	},
+	"message": "Validation error when creating Bill"
+}
+

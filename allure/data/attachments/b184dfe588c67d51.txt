@@ -1,0 +1,58 @@
+07:42:31 [PERFORMANCE] API - Auth API Verification: 59542.76ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Metadata & Inventory Setup...
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000656 (ID: 3213314b-7014-4486-944a-e70e334f38e8)
+07:42:36 [INFO] Advancing inventory-adjustments "3213314b-7014-4486-944a-e70e334f38e8"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1793000553607 (543b8ad0-1e26-49cb-a3af-10e42ec55396) | method=FIFO | stock=10@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ITEM] FIFO-Item-1793000553607 (543b8ad0-1e26-49cb-a3af-10e42ec55396) | Stock before: 10
+[STEP 2] Creating Purchase Order...
+[PO] Created PO/2026/10/26/000212 (dc72b412-0d62-477e-a1f3-389913da3cf7)
+07:42:40 [INFO] Advancing purchase-orders "dc72b412-0d62-477e-a1f3-389913da3cf7"...
+[PO] Approved/Released PO/2026/10/26/000212
+[STEP 3] Billing and Receiving PO items...
+[BILL] Created from PO: BILL/2026/10/26/000222 (fca4d2ec-7292-4d55-84b0-547ecde48fbd)
+07:42:42 [INFO] Advancing bills "fca4d2ec-7292-4d55-84b0-547ecde48fbd"...
+[BILL] Approved BILL/2026/10/26/000222
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[STOCK] Expected: 15, Got: 15
+[BILL] Outstanding balance after Approval: 2500
+[BILL GL] Entries found: 0
+[STEP 4] Creating Payment for Bill...
+[ACTION] Creating Bill Payment for fca4d2ec-7292-4d55-84b0-547ecde48fbd via API (CashAcct: a63d2e2f-8f2c-4220-a514-abad27b6c0f8)...
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 1/5) — topping up 1996...
+07:43:29 [INFO] Seeding 19960 → Dr "Cash at Bank - CBE" / Cr "Service Income"
+07:43:29 [INFO] Advancing receipts "c2ae6fb4-9f4d-487a-98c0-09693f83b178"...
+07:43:33 [INFO] Seeded 19960 into "Cash at Bank - CBE" (receipt RCPT/2026/10/26/000126)
+[SUCCESS] Payment created: PAY/2026/10/26/000069 (ID: 1ca92042-5e6e-4103-b976-a1551e331b92)
+[PAYMENT] Created PAY/2026/10/26/000069 (1ca92042-5e6e-4103-b976-a1551e331b92)
+07:43:39 [INFO] Advancing payments "1ca92042-5e6e-4103-b976-a1551e331b92"...
+[PAYMENT] Approved PAY/2026/10/26/000069
+[BILL] Outstanding balance after Payment: 0
+[PAYMENT GL] Entries found: 2
+[PAYMENT GL DETAILS] [
+  {
+    "account": {
+      "account_id": "2003",
+      "id": "922ce0b6-c38e-41d4-bac8-3e5751967533",
+      "name": "Accounts Payable"
+    },
+    "credit": 0,
+    "debit": 2500,
+    "description": "BILL/2026/10/26/000222 bill payment"
+  },
+  {
+    "account": {
+      "account_id": "1005",
+      "id": "a63d2e2f-8f2c-4220-a514-abad27b6c0f8",
+      "name": "Cash at Bank - CBE"
+    },
+    "credit": 2500,
+    "debit": 0,
+    "description": "Payment - PAY/2026/10/26/000069"
+  }
+]
+[PASS] Full Procure-to-Pay integration cycle completed successfully!

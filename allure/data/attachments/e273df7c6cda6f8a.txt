@@ -1,0 +1,17 @@
+07:28:15 [PERFORMANCE] API - Auth API Verification: 13091.20ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000536 (ID: b012e081-9fe4-49b9-a1f6-fe87f722a725)
+07:28:20 [INFO] Advancing inventory-adjustments "b012e081-9fe4-49b9-a1f6-fe87f722a725"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1792999697633 (68762fb1-ab86-4c12-af87-83725b2ccddd) | method=FIFO | stock=50@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:28:23 [PERFORMANCE] API - Auth API Verification: 20880.15ms
+[AUTH] Session token and local storage injected successfully.
+07:28:23 [PERFORMANCE] API - Auth API Verification: 21100.05ms
+[AUTH] Session token and local storage injected successfully.
+[ATTACK] Creating standalone invoice with unit_price=0...
+07:28:24 [INFO] Advancing invoices "2943251a-88c4-42c1-8176-2cf9c1235009"...
+07:28:25 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+07:28:25 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[RESULT] Zero-price invoice INV/2026/10/26/000262 approved | net_due=100

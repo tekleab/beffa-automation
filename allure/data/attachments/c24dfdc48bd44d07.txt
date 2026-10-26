@@ -1,0 +1,23 @@
+07:31:08 [PERFORMANCE] API - Auth API Verification: 31156.53ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000566 (ID: 3f378c42-f547-4b35-a2fe-2345e52561dc)
+07:31:14 [INFO] Advancing inventory-adjustments "3f378c42-f547-4b35-a2fe-2345e52561dc"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999871309 (9e983e50-8d15-4b49-bbf9-16541b0ee8f9) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:31:16 [PERFORMANCE] API - Auth API Verification: 39021.96ms
+[AUTH] Session token and local storage injected successfully.
+07:31:16 [PERFORMANCE] API - Auth API Verification: 39234.65ms
+[AUTH] Session token and local storage injected successfully.
+[TEST] Creating PO with back date: 2017-12-31T00:00:00Z
+[PASS] Back-dated PO rejected at creation: PO API Creation Failed: 422 - {
+	"code": 422,
+	"details": {
+		"po_date": [
+			"Purchase order date is not within the current period: between 07/08/2026 and 07/07/2027"
+		]
+	},
+	"message": "Validation error when creating Purchase Order"
+}
+

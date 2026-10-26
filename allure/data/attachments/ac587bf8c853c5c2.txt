@@ -1,0 +1,19 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-26T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-26T00:00:00Z (day=26, ecYear=2019)
+07:27:07 [PERFORMANCE] API - Auth API Verification: 2440.09ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000519 (ID: 8c14a214-0dee-4b48-8da7-039d53357df5)
+07:27:12 [INFO] Advancing inventory-adjustments "8c14a214-0dee-4b48-8da7-039d53357df5"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1792999629463 (ea8f56a0-bdd9-4795-93f9-1da6805f5785) | method=FIFO | stock=50@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:27:15 [PERFORMANCE] API - Auth API Verification: 10208.63ms
+[AUTH] Session token and local storage injected successfully.
+07:27:15 [PERFORMANCE] API - Auth API Verification: 10431.21ms
+[AUTH] Session token and local storage injected successfully.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ATTACK] Attempting to create Standalone Invoice with unit_price = 0 ($0.00 free goods)...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[PASS] Zero selling price correctly rejected: HTTP 422

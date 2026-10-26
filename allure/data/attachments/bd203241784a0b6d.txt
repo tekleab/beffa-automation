@@ -1,0 +1,55 @@
+07:26:51 [PERFORMANCE] API - Auth API Verification: 142807.84ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000515 (ID: ff8de1eb-a702-42e5-8135-70f5b2b9c0ef)
+07:26:56 [INFO] Advancing inventory-adjustments "ff8de1eb-a702-42e5-8135-70f5b2b9c0ef"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999613585 (f1c22b18-9bbe-4d06-995b-cf37a69998bc) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:26:59 [PERFORMANCE] API - Auth API Verification: 150618.21ms
+[AUTH] Session token and local storage injected successfully.
+07:26:59 [PERFORMANCE] API - Auth API Verification: 150839.27ms
+[AUTH] Session token and local storage injected successfully.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ATTACK] Testing Duplicate Customer Invoice / Reference Guardrail in Sales...
+  Customer        : 35827f1c-db2c-4298-b5de-c23b3a559caf (35827f1c-db2c-4298-b5de-c23b3a559caf)
+  Target Ref Num  : CUST-REF-132177
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ATTACK] Submitting Invoice 1 with Reference "CUST-REF-132177"...
+[AUDIT] Invoice 1 Created:
+  Invoice 1 Ref    : INV/2026/10/26/000229
+  Invoice 1 ID     : d56c9600-76f3-448f-8b4e-eba9d659c01c
+  Customer         : 35827f1c-db2c-4298-b5de-c23b3a559caf (35827f1c-db2c-4298-b5de-c23b3a559caf)
+  Customer Ref Num : CUST-REF-132177
+
+[ATTACK] Submitting Invoice 2 for SAME Customer with IDENTICAL Reference "CUST-REF-132177"...
+[AUDIT] Invoice 2 Created:
+  Invoice 2 Ref    : INV/2026/10/26/000230
+  Invoice 2 ID     : a1bcc794-96b0-42fe-83ab-aa504617094d
+  Customer Ref Num : CUST-REF-132177
+
+[WORKFLOW] Advancing Invoice 1 (INV/2026/10/26/000229) through approval...
+07:26:59 [INFO] Advancing invoices "d56c9600-76f3-448f-8b4e-eba9d659c01c"...
+[WORKFLOW] Invoice 1 (INV/2026/10/26/000229) status: "approved" | AR Amount: $100
+
+[WORKFLOW] Advancing duplicate Invoice 2 (INV/2026/10/26/000230) to test approval gate...
+07:27:01 [INFO] Advancing invoices "a1bcc794-96b0-42fe-83ab-aa504617094d"...
+[WORKFLOW] Invoice 2 (INV/2026/10/26/000230) status: "approved" | AR Amount: $100
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Duplicate Sales Invoice Approved                             │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Customer Name                    │ 35827f1c-db2c-4298-b5de-c23b3a559caf     │
+  │ Customer ID                      │ 35827f1c-db2c-4298-b5de-c23b3a559caf     │
+  │ Duplicate Ref Num                │ CUST-REF-132177                          │
+  │ Invoice 1 Reference              │ INV/2026/10/26/000229                    │
+  │ Invoice 1 Status                 │ APPROVED                                 │
+  │ Invoice 2 Reference              │ INV/2026/10/26/000230                    │
+  │ Invoice 2 Status                 │ APPROVED                                 │
+  │ Doubled AR Amount                │ $200                                     │
+  │ Result                           │ ✗ CRITICAL BUG — DOUBLE AR ASSET         │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

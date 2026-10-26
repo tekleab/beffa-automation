@@ -1,0 +1,43 @@
+07:37:13 [PERFORMANCE] API - Auth API Verification: 80460.98ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000632 (ID: 979bf00b-33be-4e29-a6da-b929e14e877e)
+07:37:19 [INFO] Advancing inventory-adjustments "979bf00b-33be-4e29-a6da-b929e14e877e"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1793000237015 (e3f359db-e1a2-470b-ae69-84bd60586743) | method=FIFO | stock=50@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000636 (ID: 8c4e903a-e35c-4ab9-a90f-85c15db615c7)
+07:37:25 [INFO] Advancing inventory-adjustments "8c4e903a-e35c-4ab9-a90f-85c15db615c7"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1793000242988 (f4f8c041-ff5a-413c-87e7-5b306bd1b578) | method=FIFO | stock=50@$80 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-26T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-26T00:00:00Z (day=26, ecYear=2019)
+07:37:29 [PERFORMANCE] API - Auth API Verification: 96773.90ms
+[AUTH] Session token and local storage injected successfully.
+07:37:29 [PERFORMANCE] API - Auth API Verification: 97004.87ms
+[AUTH] Session token and local storage injected successfully.
+[SO-UI-01] Using guaranteed-stock item "FIFO-Item-1793000237015" @ $100
+07:37:29 [INFO] [STOCK_TOPUP] Injecting 70 units for item e3f359db-e1a2-470b-ae69-84bd60586743...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000640 (ID: 64928c6e-9f41-482c-b402-49742a47ab27)
+07:37:30 [INFO] Advancing inventory-adjustments "64928c6e-9f41-482c-b402-49742a47ab27"...
+07:37:35 [INFO] [STOCK_TOPUP] Injected 70 units for item e3f359db-e1a2-470b-ae69-84bd60586743 (adj ADJ/2026/10/26/000640)
+07:37:38 [INFO] Picking date: "Sales Order Date" → target 2026-10-26
+07:37:41 [PASS] "Sales Order Date" set to day 26.
+07:37:42 [PERFORMANCE] UI - Pick Date: Sales Order Date: 3640.09ms
+[SELECT-OPTION] Customer (attempt 1): overlayVisible=true, count=20
+07:37:45 [PERFORMANCE] UI - Random Selection: Customer: 3213.55ms
+[SELECT-OPTION] Accounts Receivable (attempt 1): overlayVisible=false, count=1
+07:37:47 [PERFORMANCE] UI - Random Selection: Accounts Receivable: 1990.66ms
+[CURRENCY] Selected via button: Birr
+[ITEM MODAL] Clicking item option: "FIFO-Item-1793000237015"
+[ITEM MODAL] Item selected status: true | Button text: "FIFO-Item-1793000237015 — $100.00"
+[MODAL] Selected Warehouse option: "Default Warehouse"
+[SELECT-OPTION] Location (attempt 1): overlayVisible=true, count=8
+07:39:31 [PERFORMANCE] UI - Random Selection: Location: 2996.52ms
+[MODAL] Item branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+07:39:34 [PERFORMANCE] UI - Random Selection: G/L Account: 2691.73ms
+[MODAL] Filled Quantity: 3

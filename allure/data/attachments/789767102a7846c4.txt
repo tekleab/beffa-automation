@@ -1,0 +1,22 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-26T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-26T00:00:00Z (day=26, ecYear=2019)
+07:28:05 [PERFORMANCE] API - Auth API Verification: 2464.54ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000533 (ID: ad133666-c2c3-479b-bc77-c30036466c2e)
+07:28:11 [INFO] Advancing inventory-adjustments "ad133666-c2c3-479b-bc77-c30036466c2e"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999688051 (3740e565-19af-406d-b33c-065e55a8bb2d) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:28:13 [PERFORMANCE] API - Auth API Verification: 10118.67ms
+[AUTH] Session token and local storage injected successfully.
+07:28:13 [PERFORMANCE] API - Auth API Verification: 10337.99ms
+[AUTH] Session token and local storage injected successfully.
+[TEST] Creating SO with valid date, Invoice with back date
+07:28:15 [INFO] Advancing sales-orders "ef204eb9-44f6-4796-ac03-a1d66ce5f0c1"...
+07:28:18 [INFO] Advancing invoices "bd57c244-15d7-47fc-8c03-8ff1ffb316a2"...
+[PASS] Back-dated Invoice in chain blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "CalculateItemCost failed: insufficient FIFO stock: only 0.00 of 1.00 units available"
+}
+

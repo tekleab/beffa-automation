@@ -1,0 +1,27 @@
+07:26:33 [PERFORMANCE] API - Auth API Verification: 124563.59ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+07:26:38 [WARN] Inventory Adjustment → 500. Retry 1/3 in 1000ms...
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000512 (ID: 5e054dd5-9a0e-4af3-a8e9-5b729d7945cb)
+07:26:39 [INFO] Advancing inventory-adjustments "5e054dd5-9a0e-4af3-a8e9-5b729d7945cb"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999595291 (1de865c1-9ba6-4065-a47e-be9bf84111f4) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:26:42 [PERFORMANCE] API - Auth API Verification: 133599.83ms
+[AUTH] Session token and local storage injected successfully.
+07:26:42 [PERFORMANCE] API - Auth API Verification: 133808.96ms
+[AUTH] Session token and local storage injected successfully.
+07:26:42 [WARN] GET http://157.180.20.112:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+07:26:45 [INFO] Advancing invoices "c3dcb1f5-af8c-4fc3-9aa7-51f8f7ba02c0"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=100 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=c3dcb1f5... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/10/26/000111
+07:26:49 [INFO] Advancing receipts "d121a49f-88dc-41ff-8f18-aac6cb049b0c"...
+[ATTACK] Attempting second receipt on fully paid invoice...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=0 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=c3dcb1f5... | year=2019
+[PASS] Second receipt correctly rejected: Invoice-Receipt API Creation Failed after 3 attempts. Last error: Attempt 3: Validation Error (422): {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/10/26/000228 has no outstanding balance"
+}
+

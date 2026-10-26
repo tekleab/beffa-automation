@@ -1,0 +1,18 @@
+07:26:37 [PERFORMANCE] API - Auth API Verification: 128868.54ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000513 (ID: ef149dda-1b17-4cd0-bcaf-0655986e20fa)
+07:26:42 [INFO] Advancing inventory-adjustments "ef149dda-1b17-4cd0-bcaf-0655986e20fa"...
+07:26:42 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+07:26:42 [WARN] Transient 500 on advance. Retry 1/4 in 2000ms...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999599649 (f30904ad-3883-4147-a98f-85dd32696608) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:26:47 [PERFORMANCE] API - Auth API Verification: 138849.68ms
+[AUTH] Session token and local storage injected successfully.
+07:26:47 [PERFORMANCE] API - Auth API Verification: 139061.50ms
+[AUTH] Session token and local storage injected successfully.
+07:26:48 [INFO] Advancing sales-orders "c2a5c560-7773-4c45-9b02-9d7d321acdc3"...
+[OK] SO SO/2026/10/26/000034 approved.
+[ATTACK] Attempting to modify SO quantity after approval...
+[PASS] SO modification correctly rejected with status 404.

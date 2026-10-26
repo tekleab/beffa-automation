@@ -1,0 +1,19 @@
+07:27:39 [PERFORMANCE] API - Auth API Verification: 35063.97ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000528 (ID: 82aae491-1735-43b8-a008-7cd6c3f88dc2)
+07:27:45 [INFO] Advancing inventory-adjustments "82aae491-1735-43b8-a008-7cd6c3f88dc2"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999662138 (7f701743-8284-45d3-853e-261506e2da07) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:27:47 [PERFORMANCE] API - Auth API Verification: 42767.43ms
+[AUTH] Session token and local storage injected successfully.
+07:27:47 [PERFORMANCE] API - Auth API Verification: 42997.09ms
+[AUTH] Session token and local storage injected successfully.
+[TEST] Creating Invoice with future date: 2022-01-01T00:00:00Z
+07:27:49 [INFO] Advancing invoices "0c8b47a1-27b6-4e97-9a0b-ad460ec921a7"...
+[PASS] Future-dated Invoice blocked at approval: [API BLOCK] 422: {
+	"code": 422,
+	"message": "CalculateItemCost failed: insufficient FIFO stock: only 0.00 of 1.00 units available"
+}
+

@@ -1,0 +1,30 @@
+07:30:08 [PERFORMANCE] API - Auth API Verification: 50821.15ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000551 (ID: 2d8402c2-02c6-4ed3-8118-bb434fe2e958)
+07:30:14 [INFO] Advancing inventory-adjustments "2d8402c2-02c6-4ed3-8118-bb434fe2e958"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999811532 (5eb26daa-fe38-408d-8d5b-0a0c586066f7) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:30:17 [PERFORMANCE] API - Auth API Verification: 58875.44ms
+[AUTH] Session token and local storage injected successfully.
+
+[STEP 1] Preparing burst traffic of 20 concurrent PO creation requests...
+[BURST] Firing 20 PO creation API requests simultaneously...
+
+  ┌───────────────────────────────────────────────────────────────────────────────┐
+  │ 20 Concurrent PO Creation Performance Audit                                 │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Concurrent Requests Fired            │ 20                                   │
+  │ Successful Creations                 │ 20 / 20                              │
+  │ Failed Requests                      │ 0                                    │
+  │ Timed-Out Requests (≥30s)            │ 0                                    │
+  │ Total Wall Execution Time            │ 2.96s                                │
+  │ Min Request Latency                  │ 2.26s                                │
+  │ Avg Request Latency                  │ 2.68s                                │
+  │ Max Request Latency                  │ 2.96s                                │
+  ├───────────────────────────────────────────────────────────────────────────────┤
+  │ Result                               │ PASS — System maintained <30s laten… │
+  └───────────────────────────────────────────────────────────────────────────────┘
+
+[PASS] 20 concurrent PO creations processed cleanly under threshold.

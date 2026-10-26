@@ -1,0 +1,43 @@
+07:30:47 [PERFORMANCE] API - Auth API Verification: 12810.44ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=30 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000562 (ID: 9d5677c3-5cc1-490a-972b-4da8f2cabc3a)
+07:30:53 [INFO] Advancing inventory-adjustments "9d5677c3-5cc1-490a-972b-4da8f2cabc3a"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 30...
+[SUCCESS] API Confirmed: Stock correctly reached 30.
+[FRESH ITEM] Created: FIFO-Item-1792999850297 (d7ce29ef-5bf9-4498-a674-3a067cfa5719) | method=FIFO | stock=30@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:30:55 [PERFORMANCE] API - Auth API Verification: 21056.66ms
+[AUTH] Session token and local storage injected successfully.
+07:30:55 [PERFORMANCE] API - Auth API Verification: 21282.35ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating PO for 10 units...
+07:30:57 [INFO] Advancing purchase-orders "d57a9acb-98d8-4865-bcd9-4defe5cd18ff"...
+[OK] PO PO/2026/10/26/000188 approved.
+[STEP 2] Receiving only 5 / 10 units via partial PO bill...
+07:30:59 [INFO] Advancing bills "3b9e956d-dca9-4ab6-8763-a181c9ad72b5"...
+07:31:01 [ERROR] Advance failed. Status: 500 | Body: {  "code": 500,  "message": "Internal Server Error" } 
+07:31:01 [WARN] Transient 500 on advance. Retry 2/4 in 4000ms...
+[OK] Bill BILL/2026/10/26/000182 approved for 5 units.
+[STEP 3] Verifying partial release via bill detail...
+
+  ┌───────────────────────────────────────────────────────────────────┐
+  │ Partial PO Release Audit                                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Ref                       │ PO/2026/10/26/000188             │
+  │ PO ID                        │ d57a9acb-98d8-4865-bcd9-4defe5c… │
+  │ Bill Ref                     │ BILL/2026/10/26/000182           │
+  │ Bill ID                      │ 3b9e956d-dca9-4ab6-8763-a181c9a… │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ PO Qty Authorized            │ 10 units                         │
+  │ Received (this bill)         │ 5 units                          │
+  │ Remaining on PO              │ 5 units                          │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Unit Price                   │ $5000.00                         │
+  │ Bill Amount                  │ $25000.00                        │
+  │ Remaining Liability          │ $25000.00                        │
+  │ PO Total                     │ $50000.00                        │
+  ├───────────────────────────────────────────────────────────────────┤
+  │ Result                       │ ✓ PASS — Partial tracking corre… │
+  └───────────────────────────────────────────────────────────────────┘
+
+[PASS] Partial PO release confirmed: 5 received, 5 remaining.

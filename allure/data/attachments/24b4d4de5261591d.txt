@@ -1,0 +1,21 @@
+07:29:34 [PERFORMANCE] API - Auth API Verification: 57839.93ms
+[AUTH] Session token and local storage injected successfully.
+[STEP] Phase 1: Create PO via API
+[ADJ] quantity | qty=20 @ $500 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000547 (ID: 762b63a9-8f25-478f-b041-b5e47d482b6c)
+07:29:40 [INFO] Advancing inventory-adjustments "762b63a9-8f25-478f-b041-b5e47d482b6c"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999777395 (c48c5d19-dce8-4380-a57d-3474dd355817) | method=FIFO | stock=20@$500 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[OK] PO created: PO/2026/10/26/000140 for Vendor Gentium Concrite Industry (e4a3aa06-54ca-4e7a-8d96-0519eaec3827)
+07:29:43 [INFO] Advancing purchase-orders "91ac3ae2-4f74-46e1-9b92-fb3f65326fdf"...
+[OK] PO PO/2026/10/26/000140 approved
+[STEP] Phase 2: Create linked Bill via API
+07:29:46 [INFO] Advancing bills "e39d2889-cc0b-42ec-8d8c-4231d63eaeaf"...
+[OK] Bill BILL/2026/10/26/000170 approved
+[STEP] Phase 3: Verify Bill in vendor profile via API
+[SUCCESS] API Confirmed: Bill BILL/2026/10/26/000170 (e39d2889-cc0b-42ec-8d8c-4231d63eaeaf) verified in Gentium Concrite Industry's ledger via direct ID lookup.
+[SUCCESS] API Confirmed: Bill BILL/2026/10/26/000170 is physically present in Gentium Concrite Industry's ledger.
+[STEP] Phase 4: Verify Bill in vendor profile UI with pagination inspection
+[UI_MATCH] Bill BILL/2026/10/26/000170 verified on page 1 of vendor profile!
+[RESULT] PASSED — PO PO/2026/10/26/000140 → Bill BILL/2026/10/26/000170 verified in Vendor UI table on page 1!

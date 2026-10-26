@@ -1,0 +1,48 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-26T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-26T00:00:00Z (day=26, ecYear=2019)
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000556 (ID: f859faae-6c55-4e11-82bc-620de664bb7d)
+07:30:28 [INFO] Advancing inventory-adjustments "f859faae-6c55-4e11-82bc-620de664bb7d"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999825438 (354dfb5c-9292-410a-8d40-d2a42a3c9bf2) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ATTACK] Submitting Bill 1 with Vendor Invoice Number: "VEND-INV-831127"...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[AUDIT] Bill 1 Created:
+  Bill 1 Ref       : BILL/2026/10/26/000179
+  Bill 1 ID        : 30914db0-124c-470a-972a-aba4feb8a753
+  Vendor           : Gentium Concrite Industry (e4a3aa06-54ca-4e7a-8d96-0519eaec3827)
+  Vendor Inv Num   : VEND-INV-831127
+
+[ATTACK] Submitting Bill 2 for SAME Vendor with IDENTICAL Vendor Invoice Number "VEND-INV-831127"...
+[AUDIT] Bill 2 Created:
+  Bill 2 Ref       : BILL/2026/10/26/000180
+  Bill 2 ID        : c7d249a0-79d1-43be-b47e-c94d4e11ff67
+  Vendor Inv Num   : VEND-INV-831127
+
+[WORKFLOW] Advancing Bill 1 (BILL/2026/10/26/000179) through approval...
+07:30:31 [INFO] Advancing bills "30914db0-124c-470a-972a-aba4feb8a753"...
+[WORKFLOW] Bill 1 (BILL/2026/10/26/000179) status: "approved" | Unpaid: $1000
+
+[WORKFLOW] Advancing duplicate Bill 2 (BILL/2026/10/26/000180) to test approval gate...
+07:30:34 [INFO] Advancing bills "c7d249a0-79d1-43be-b47e-c94d4e11ff67"...
+[WORKFLOW] Bill 2 (BILL/2026/10/26/000180) status: "approved" | Unpaid: $1000
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ VULNERABILITY: Duplicate Vendor Bill Approved                               │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Field                            │ Value                                    │
+  ├─────────────────────────────────────────────────────────────────────────────┤
+  │ Vendor Name                      │ Gentium Concrite Industry                │
+  │ Vendor ID                        │ e4a3aa06-54ca-4e7a-8d96-0519eaec3827     │
+  │ Vendor Inv Num                   │ VEND-INV-831127                          │
+  │ Bill 1 Reference                 │ BILL/2026/10/26/000179                   │
+  │ Bill 1 Status                    │ APPROVED                                 │
+  │ Bill 2 Reference                 │ BILL/2026/10/26/000180                   │
+  │ Bill 2 Status                    │ APPROVED                                 │
+  │ Double AP Amount                 │ $2000                                    │
+  │ Result                           │ ✗ CRITICAL BUG — DOUBLE AP LIABILITY     │
+  └─────────────────────────────────────────────────────────────────────────────┘
+

@@ -1,0 +1,40 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-10-26T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-10-26T00:00:00Z (day=26, ecYear=2019)
+07:31:50 [PERFORMANCE] API - Auth API Verification: 2432.71ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000576 (ID: 38d43bbf-f3f2-4943-b1aa-b95bd2e4d812)
+07:31:56 [INFO] Advancing inventory-adjustments "38d43bbf-f3f2-4943-b1aa-b95bd2e4d812"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999913168 (b9c8a61b-39ed-4249-aac5-6384d42def50) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:31:58 [PERFORMANCE] API - Auth API Verification: 10215.59ms
+[AUTH] Session token and local storage injected successfully.
+07:31:58 [PERFORMANCE] API - Auth API Verification: 10452.50ms
+[AUTH] Session token and local storage injected successfully.
+[STEP 1] Creating & approving Bill for 2000...
+07:32:00 [INFO] Advancing bills "cb59aa51-e70e-4dbd-af40-e467e16b1801"...
+[BILL] BILL/2026/10/26/000197 (cb59aa51-e70e-4dbd-af40-e467e16b1801) | Amount: 2000
+[STEP 2] Fully paying bill BILL/2026/10/26/000197...
+[ACTION] Creating Bill Payment for cb59aa51-e70e-4dbd-af40-e467e16b1801 via API (CashAcct: a63d2e2f-8f2c-4220-a514-abad27b6c0f8)...
+[SUCCESS] Payment created: PAY/2026/10/26/000058 (ID: 369f3d95-fb80-42b0-8058-955680544e7d)
+07:32:04 [INFO] Advancing payments "369f3d95-fb80-42b0-8058-955680544e7d"...
+[PAYMENT] PAY/2026/10/26/000058 (369f3d95-fb80-42b0-8058-955680544e7d) | Amount: 2000
+[AUDIT] Bill BILL/2026/10/26/000197 balance after full payment: 0
+[ATTACK] Attempting ghost payment against fully-paid bill BILL/2026/10/26/000197...
+[ACTION] Creating Bill Payment for cb59aa51-e70e-4dbd-af40-e467e16b1801 via API (CashAcct: a63d2e2f-8f2c-4220-a514-abad27b6c0f8)...
+[CASH_TOPUP] Bill-Payment API: insufficient balance (attempt 1/5) — topping up 2405...
+07:32:09 [WARN] GET http://157.180.20.112:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+07:32:11 [INFO] Seeding 24050 → Dr "Cash at Bank - CBE" / Cr "Service Income"
+07:32:11 [INFO] Advancing receipts "b85e9bfd-96ef-4179-b04d-7ffd6ffdde22"...
+07:32:15 [INFO] Seeded 24050 into "Cash at Bank - CBE" (receipt RCPT/2026/10/26/000122)
+[PASS] Ghost payment correctly blocked: Bill-Payment API failed: 422 - {
+	"code": 422,
+	"details": {
+		"bill_payments.0.bill_id": [
+			"This bill has already been fully paid. No further payments are accepted."
+		]
+	},
+	"message": "Validation error when creating payment"
+}
+

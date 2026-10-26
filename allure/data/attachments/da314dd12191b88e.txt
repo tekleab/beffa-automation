@@ -1,0 +1,31 @@
+07:25:22 [PERFORMANCE] API - Auth API Verification: 53663.96ms
+[AUTH] Session token and local storage injected successfully.
+07:25:22 [PERFORMANCE] API - Auth API Verification: 53896.13ms
+[AUTH] Session token and local storage injected successfully.
+[STEP] Phase 1: Creating fresh Sales Order & Invoice via API
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/10/26/000498 (ID: 035ceb3d-bcb6-4ddb-89f5-b581c868cdf7)
+07:25:26 [INFO] Advancing inventory-adjustments "035ceb3d-bcb6-4ddb-89f5-b581c868cdf7"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1792999523431 (10755e58-a4dd-4201-b098-d674041d7be1) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[OK] Created fresh item: "FIFO-Item-1792999523431" | Stock: 20
+07:25:29 [WARN] GET http://157.180.20.112:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+07:25:31 [INFO] Advancing sales-orders "7c1e04f2-de8f-4f58-b8f1-d10015b46d34"...
+[OK] Sales Order SO/2026/10/26/000031 approved via API
+07:25:33 [WARN] GET http://157.180.20.112:8001/api/currency?year=2019&period=yearly&calendar=ec → 500. Retry 1/4 in 1500ms...
+07:25:36 [INFO] Advancing invoices "47cb406f-a574-464c-9908-6a74401f8bda"...
+[OK] Invoice INV/2026/10/26/000217 approved via API
+[INFO] Document Setup Complete: INV/2026/10/26/000217 for Base Ethiopia
+[STEP] Phase 2: Creating linked receipt via API
+[INFO] Invoice outstanding: 102
+[RECEIPT PRE-FLIGHT] Invoice outstanding=102 | Requested receipt amount=102
+[RECEIPT] amount=102 | invoice=47cb406f... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/10/26/000107
+[OK] Receipt created via API: RCPT/2026/10/26/000107
+[STEP] Phase 3: Approval flow
+07:25:41 [INFO] Advancing receipts "e3241955-0d29-490d-8dc4-198903ff9820"...
+[OK] Receipt approved via Fast-API
+[OK] Receipt approved
+[STEP] Phase 4: Verifying RCPT/2026/10/26/000107 in customer profile
+[RESULT] Sales Receipt: PASSED — RCPT/2026/10/26/000107 verified
