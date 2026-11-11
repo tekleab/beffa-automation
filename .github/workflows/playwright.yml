@@ -81,6 +81,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Setup Bun Environment
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -90,8 +95,8 @@ jobs:
     - name: Update System CA Certificates (eMudhra Revocation)
       run: apt-get update && apt-get install --no-install-recommends -y ca-certificates && update-ca-certificates
 
-    - name: Install dependencies
-      run: npm ci
+    - name: Install dependencies (Bun with npm fallback)
+      run: bun install --frozen-lockfile || npm ci
 
     - name: Get installed Playwright version
       id: playwright-version

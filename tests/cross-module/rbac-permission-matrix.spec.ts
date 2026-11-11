@@ -46,7 +46,7 @@ async function apiLogin(request: any) {
     return token;
 }
 
-test.describe('RBAC & Multi-Tenant Permission Matrix Audit @regression', () => {
+test.describe('RBAC & Multi-Tenant Permission Matrix Audit @cross-module @regression', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(120000);
 

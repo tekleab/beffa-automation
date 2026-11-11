@@ -1,120 +1,26 @@
 #!/usr/bin/env node
-import { spawn } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import * as readline from "readline";
+import { spawn } from "child_process";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
 
 /**
  * =============================================================================
  * BEFFA QA & TEST INTELLIGENCE MCP SERVER
- * Model Context Protocol (MCP) JSON-RPC Standard over STDIO
+ * Powered by the official @modelcontextprotocol/sdk (STDIO transport)
  * =============================================================================
  */
 
-interface ToolDefinition {
-  name: string;
-  description: string;
-  inputSchema: {
-    type: "object";
-    properties: Record<string, any>;
-    required?: string[];
-  };
-}
+// ── Handler Functions ─────────────────────────────────────────────────────────
 
-const TOOLS: ToolDefinition[] = [
-  {
-    name: "run_playwright_test",
-    description: "Runs Playwright test suites by file path, tag (e.g. @smoke, @regression, @sales), or title grep pattern, returning parsed results and failures.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        target: {
-          type: "string",
-          description: "File path (e.g., tests/sales/so-cogs.spec.ts) or pattern"
-        },
-        grep: {
-          type: "string",
-          description: "Tag or title filter (e.g. @smoke, @sales, @security, or keyword)"
-        },
-        project: {
-          type: "string",
-          description: "Playwright project name (e.g. Sales, Purchase, HR, Cross-Module)"
-        },
-        maxFailures: {
-          type: "number",
-          description: "Stop after N failures"
-        }
-      }
-    }
-  },
-  {
-    name: "get_qa_dashboard",
-    description: "Returns an executive and technical QA summary of the latest test run, including pass/fail rates, execution time, module health, and discovered defects.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        includeDefects: {
-          type: "boolean",
-          description: "Whether to list detailed backend defects found during the run"
-        }
-      }
-    }
-  },
-  {
-    name: "analyze_test_failure",
-    description: "Deeply analyzes a specific failing test from recent test artifacts, extracting HTTP response codes, SQL leaks, stack traces, and suggested fixes.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        testName: {
-          type: "string",
-          description: "Name or substring of the failing test"
-        }
-      },
-      required: ["testName"]
-    }
-  },
-  {
-    name: "compare_test_runs",
-    description: "Compares current test execution results against previous baseline runs to highlight regressions, newly failing tests, and fixed tests.",
-    inputSchema: {
-      type: "object",
-      properties: {}
-    }
-  },
-  {
-    name: "search_test_catalog",
-    description: "Searches the 275+ test repository by module, keyword, tag, or ERP feature area without running tests.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        query: {
-          type: "string",
-          description: "Search keyword, tag (@smoke, @security), or module name"
-        }
-      },
-      required: ["query"]
-    }
-  },
-  {
-    name: "explain_erp_rule",
-    description: "Explains ERP domain business invariants and accounting rules (Double-Entry GL balancing, Ethiopian Calendar period rules, Sales read-only unit price).",
-    inputSchema: {
-      type: "object",
-      properties: {
-        topic: {
-          type: "string",
-          description: "ERP topic (e.g. cogs, double-entry, ec-calendar, unit-price, rbac)"
-        }
-      },
-      required: ["topic"]
-    }
-  }
-];
-
-// ── Handlers ─────────────────────────────────────────────────────────────────
-
-async function handleRunTest(args: any): Promise<any> {
+async function handleRunTest(args: {
+  target?: string;
+  grep?: string;
+  project?: string;
+  maxFailures?: number;
+}): Promise<any> {
   const cmdArgs = ["playwright", "test"];
   if (args.target) cmdArgs.push(args.target);
   if (args.grep) cmdArgs.push("-g", args.grep);
@@ -145,7 +51,7 @@ async function handleRunTest(args: any): Promise<any> {
   });
 }
 
-function handleGetDashboard(args: any): any {
+function handleGetDashboard(args: { includeDefects?: boolean }): any {
   const allureDir = path.join(process.cwd(), "allure-results");
   let total = 0;
   let passed = 0;
@@ -187,7 +93,7 @@ function handleGetDashboard(args: any): any {
   };
 }
 
-function handleAnalyzeFailure(args: any): any {
+function handleAnalyzeFailure(args: { testName: string }): any {
   const query = (args.testName || "").toLowerCase();
   const allureDir = path.join(process.cwd(), "allure-results");
   if (!fs.existsSync(allureDir)) return { error: "No test results directory found." };
@@ -249,7 +155,7 @@ function handleCompareRuns(): any {
   };
 }
 
-function handleSearchCatalog(args: any): any {
+function handleSearchCatalog(args: { query: string }): any {
   const query = (args.query || "").toLowerCase();
   const testsDir = path.join(process.cwd(), "tests");
   const matches: { file: string; testName: string }[] = [];
@@ -283,7 +189,7 @@ function handleSearchCatalog(args: any): any {
   };
 }
 
-function handleExplainRule(args: any): any {
+function handleExplainRule(args: { topic: string }): any {
   const rules: Record<string, string> = {
     cogs: "COGS & Stock Invariant: Deducts inventory count and posts balanced Cost of Goods Sold journal entry (Dr: COGS Expense = Cr: Inventory Asset) based on WAC unit cost.",
     "double-entry": "Accounting Invariant: Every financial transaction (Invoice, Bill, Payment, Receipt) must post balanced General Ledger journals where Sum(Debits) === Sum(Credits).",
@@ -296,76 +202,95 @@ function handleExplainRule(args: any): any {
   return { topic: key, explanation: rules[key] };
 }
 
-// ── JSON-RPC Stdio Server ────────────────────────────────────────────────────
+// ── MCP Server ────────────────────────────────────────────────────────────────
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
-
-rl.on("line", async (line) => {
-  if (!line.trim()) return;
-  try {
-    const request = JSON.parse(line);
-    const { id, method, params } = request;
-
-    if (method === "tools/list") {
-      const response = { jsonrpc: "2.0", id, result: { tools: TOOLS } };
-      process.stdout.write(JSON.stringify(response) + "\n");
-      return;
-    }
-
-    if (method === "tools/call") {
-      const toolName = params?.name;
-      const args = params?.arguments || {};
-      let resultData: any;
-
-      switch (toolName) {
-        case "run_playwright_test":
-          resultData = await handleRunTest(args);
-          break;
-        case "get_qa_dashboard":
-          resultData = handleGetDashboard(args);
-          break;
-        case "analyze_test_failure":
-          resultData = handleAnalyzeFailure(args);
-          break;
-        case "compare_test_runs":
-          resultData = handleCompareRuns();
-          break;
-        case "search_test_catalog":
-          resultData = handleSearchCatalog(args);
-          break;
-        case "explain_erp_rule":
-          resultData = handleExplainRule(args);
-          break;
-        default:
-          resultData = { error: `Unknown tool: ${toolName}` };
-      }
-
-      const response = {
-        jsonrpc: "2.0",
-        id,
-        result: { content: [{ type: "text", text: JSON.stringify(resultData, null, 2) }] }
-      };
-      process.stdout.write(JSON.stringify(response) + "\n");
-      return;
-    }
-
-    // Default ping/initialize
-    if (method === "initialize") {
-      const response = {
-        jsonrpc: "2.0",
-        id,
-        result: {
-          protocolVersion: "2024-11-05",
-          capabilities: { tools: {} },
-          serverInfo: { name: "beffa-qa-mcp-server", version: "1.0.0" }
-        }
-      };
-      process.stdout.write(JSON.stringify(response) + "\n");
-    }
-  } catch (err: any) {
-    const errorResponse = { jsonrpc: "2.0", id: null, error: { code: -32603, message: err.message } };
-    process.stdout.write(JSON.stringify(errorResponse) + "\n");
-  }
+const server = new McpServer({
+  name: "beffa-qa",
+  version: "1.0.0"
 });
 
-console.error("[BEFFA QA MCP SERVER] Ready on stdio");
+server.tool(
+  "run_playwright_test",
+  "Runs Playwright test suites by file path, tag (e.g. @smoke, @regression, @sales), or title grep pattern, returning parsed results and failures.",
+  {
+    target: z.string().optional().describe("File path (e.g., tests/sales/so-cogs.spec.ts) or pattern"),
+    grep: z.string().optional().describe("Tag or title filter (e.g. @smoke, @sales, @security, or keyword)"),
+    project: z.string().optional().describe("Playwright project name (e.g. Sales, Purchase, HR, Cross-Module)"),
+    maxFailures: z.number().optional().describe("Stop after N failures")
+  },
+  async ({ target, grep, project, maxFailures }) => {
+    const result = await handleRunTest({ target, grep, project, maxFailures });
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "get_qa_dashboard",
+  "Returns an executive and technical QA summary of the latest test run, including pass/fail rates, execution time, module health, and discovered defects.",
+  {
+    includeDefects: z.boolean().optional().describe("Whether to list detailed backend defects found during the run")
+  },
+  async ({ includeDefects }) => {
+    const result = handleGetDashboard({ includeDefects });
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "analyze_test_failure",
+  "Deeply analyzes a specific failing test from recent test artifacts, extracting HTTP response codes, SQL leaks, stack traces, and suggested fixes.",
+  {
+    testName: z.string().describe("Name or substring of the failing test")
+  },
+  async ({ testName }) => {
+    const result = handleAnalyzeFailure({ testName });
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "compare_test_runs",
+  "Compares current test execution results against previous baseline runs to highlight regressions, newly failing tests, and fixed tests.",
+  {},
+  async () => {
+    const result = handleCompareRuns();
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "search_test_catalog",
+  "Searches the 275+ test repository by module, keyword, tag, or ERP feature area without running tests.",
+  {
+    query: z.string().describe("Search keyword, tag (@smoke, @security), or module name")
+  },
+  async ({ query }) => {
+    const result = handleSearchCatalog({ query });
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "explain_erp_rule",
+  "Explains ERP domain business invariants and accounting rules (Double-Entry GL balancing, Ethiopian Calendar period rules, Sales read-only unit price).",
+  {
+    topic: z.string().describe("ERP topic (e.g. cogs, double-entry, ec-calendar, unit-price, rbac)")
+  },
+  async ({ topic }) => {
+    const result = handleExplainRule({ topic });
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("[BEFFA QA MCP SERVER] Ready on stdio — powered by @modelcontextprotocol/sdk");
+}
+
+main().catch((err) => {
+  console.error("[BEFFA QA MCP SERVER] Fatal error:", err);
+  process.exit(1);
+});

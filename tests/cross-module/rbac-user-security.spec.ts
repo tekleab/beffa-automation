@@ -42,7 +42,7 @@ function h(token: string) {
     return { 'Authorization': `Bearer ${token}`, 'x-company': process.env.BEFFA_COMPANY as string, 'Content-Type': 'application/json' };
 }
 
-test.describe('RBAC & User Management Security Audit @regression', () => {
+test.describe('RBAC & User Management Security Audit @cross-module @regression', () => {
     test.describe.configure({ mode: 'serial' });
     test.setTimeout(120000);
 

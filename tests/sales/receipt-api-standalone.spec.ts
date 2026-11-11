@@ -181,7 +181,9 @@ test.describe('Receipt API Standalone Diagnostics Suite @sales @smoke', () => {
         console.log(`[STEP 3A] Creating Sales Order...`);
         const soResult = await app.api.sales.createSalesOrderAPI({
             customerId: customer.id,
-            itemData: freshItem,
+            itemId: freshItem.itemId,
+            locationId: freshItem.locationId,
+            warehouseId: freshItem.warehouseId,
             quantity: 1,
             unitPrice: 1000
         });

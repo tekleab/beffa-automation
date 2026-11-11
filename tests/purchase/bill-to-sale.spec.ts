@@ -20,7 +20,7 @@ import { AppManager } from '../../pages/AppManager';
  *       → SO (API) → Invoice (API) → Verify stock decrease
  */
 
-test.describe('E2E: Purchase to Sale Flow @full', () => {
+test.describe('E2E: Purchase to Sale Flow @purchase @full', () => {
     test.setTimeout(600000);
 
     test('Full cycle: PO → Bill → SO → Invoice → stock reconciled', async ({ page }) => {

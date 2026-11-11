@@ -1,17 +1,23 @@
 # Use the official Playwright base image with the matching version
 FROM mcr.microsoft.com/playwright:v1.58.2-jammy
 
-# Ensure system-level CA certificates are fully updated (distrust revoked eMudhra intermediates)
-RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates && update-ca-certificates && rm -rf /var/lib/apt/lists/*
+# Ensure system-level CA certificates are fully updated and install Bun
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y ca-certificates curl unzip && \
+    update-ca-certificates && \
+    curl -fsSL https://bun.sh/install | bash && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/root/.bun/bin:${PATH}"
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to install dependencies first (for better caching)
-COPY package*.json ./
+# Copy dependency definitions and lockfiles
+COPY package*.json bun.lock* ./
 
-# Install project dependencies
-RUN npm ci
+# Install project dependencies with Bun (fast cached install)
+RUN bun install --frozen-lockfile || npm ci
 
 # Copy the rest of the application files
 # The .dockerignore will prevent node_modules, reports, and .env from being copied

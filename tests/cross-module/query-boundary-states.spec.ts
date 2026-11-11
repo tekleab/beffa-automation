@@ -11,7 +11,7 @@ import { AppManager } from '../../pages/AppManager';
  * =============================================================================
  */
 
-test.describe('Query Boundary States: PO-to-Bill & SO-to-Invoice Forms @purchase @sales @regression', () => {
+test.describe('Query Boundary States: PO-to-Bill & SO-to-Invoice Forms @cross-module @purchase @sales @regression', () => {
     test.setTimeout(180000);
 
     const printAuditTable = (title: string, rows: [string, string][], result: boolean, verdict: string) => {

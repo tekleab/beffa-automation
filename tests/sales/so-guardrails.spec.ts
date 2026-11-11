@@ -116,8 +116,8 @@ test.describe('Sales SO Guardrails @sales @regression', () => {
             headers,
             data: {
                 customer_id: meta.customerId,
-                accounts_receivable: meta.accountsReceivableId,
-                accounts_receivable_id: meta.accountsReceivableId,
+                accounts_receivable: meta.arAccountId,
+                accounts_receivable_id: meta.arAccountId,
                 currency_id: meta.currencyId,
                 currency: 'Birr',
                 invoice_date: dateIso,
@@ -153,14 +153,16 @@ test.describe('Sales SO Guardrails @sales @regression', () => {
             console.error('Copyable cURL Reproduction:');
             console.error(`curl -X POST "${apiBase}/invoices?${qs}" \\
   -H "Authorization: Bearer <TOKEN>" \\
-  -H "x-company: BM Tech" \\
+  -H "x-company: ${headers['x-company'] || 'ABC Trading'}" \\
   -H "Content-Type: application/json" \\
-  -d '{"customer_id":"${meta.customerId}","accounts_receivable_id":"${meta.accountsReceivableId}","currency":"Birr","invoice_date":"${dateIso}","due_date":"${dateIso}","items":[{"item_id":"${item.itemId}","quantity":5,"unit_price":0}]}'`);
+  -d '{"customer_id":"${meta.customerId}","accounts_receivable_id":"${meta.arAccountId}","currency":"Birr","invoice_date":"${dateIso}","due_date":"${dateIso}","items":[{"item_id":"${item.itemId}","quantity":5,"unit_price":0}]}'`);
             console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
             throw new Error(`[SELLING_PRICE_IMMUTABILITY_BUG] Invoice ${invNumber} accepted with unit_price=0 on inventory item "${item.itemName}"!`);
         } else {
-            console.log(`[PASS] Zero selling price correctly rejected: HTTP ${resp.status()}`);
+            const errText = await resp.text();
+            console.log(`[PASS] Zero selling price correctly rejected: HTTP ${resp.status()} | Body: ${errText}`);
+            console.log(`[DEBUG] Company: ${headers['x-company'] || process.env.BEFFA_COMPANY} | Item ID: ${item.itemId} (${item.itemName}) | Customer ID: ${meta.customerId}`);
         }
     });
 });

@@ -35,7 +35,7 @@ import { assertValidationRejection } from '../../lib/utils/ValidationHelper';
  *   - Guardrail: zero-qty line → $0 or rejected
  *   - Guardrail: negative price line → rejected or flagged
  */
-test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', () => {
+test.describe('Line Item & Miscellaneous Audit @cross-module @sales @purchase @regression', () => {
     test.setTimeout(600000);
 
     let salesMeta: Awaited<ReturnType<AppManager['api']['sales']['discoverMetadataAPI']>>;
@@ -828,7 +828,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
             await page.waitForURL(/invoices\/.*\/detail/, { timeout: 30000 }).catch(() => {});
             console.log('[PASS] Invoice with miscellaneous line created');
         } else {
-            const tableRow = page.locator('table tbody tr, [role="row"]').filter({ hasText: /Consulting fee|1500/i }).first();
+            const tableRow = page.locator('[role="tabpanel"]:not([hidden]) table tbody tr, [role="tabpanel"]:not([hidden]) [role="row"], table tbody tr:visible, [role="row"]:visible')
+                .filter({ hasText: /Consulting fee/i })
+                .first();
             await expect(tableRow).toBeVisible({ timeout: 10000 });
             console.log('[PASS] Miscellaneous line item successfully added to Invoice and rendered in table (Add Now disabled per ERP business rule requiring inventory line)');
         }
@@ -1399,7 +1401,9 @@ test.describe('Line Item & Miscellaneous Audit @sales @purchase @regression', ()
                 await miscTab.click().catch(() => {});
                 await page.waitForTimeout(500);
             }
-            const tableRow = page.locator('table tbody tr, [role="row"]').filter({ hasText: /Import duty|4000/i }).first();
+            const tableRow = page.locator('[role="tabpanel"]:not([hidden]) table tbody tr, [role="tabpanel"]:not([hidden]) [role="row"], table tbody tr:visible, [role="row"]:visible')
+                .filter({ hasText: /Import duty/i })
+                .first();
             await expect(tableRow).toBeVisible({ timeout: 10000 });
             console.log('[PASS] Miscellaneous line added to Bill table (Add Now disabled — ERP requires inventory line to submit standalone bill)');
         }
