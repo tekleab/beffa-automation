@@ -1,29 +1,37 @@
 {
-  "total": 18,
-  "passed": 18,
-  "failed": 0,
+  "total": 272,
+  "passed": 231,
+  "failed": 41,
   "skipped": 0,
-  "passRate": 100,
-  "avgDurationMs": 330,
-  "lastUpdated": "2026-11-11T07:07:56.929Z",
+  "passRate": 84.9,
+  "avgDurationMs": 16632,
+  "lastUpdated": "2026-11-11T07:35:49.842Z",
   "moduleBreakdown": [
     {
       "module": "Other",
-      "passed": 18,
-      "failed": 0,
+      "passed": 231,
+      "failed": 41,
       "skipped": 0,
       "trend": [
-        82,
         84,
         86,
         88,
         90,
         92,
-        100
+        100,
+        84.9
       ]
     }
   ],
   "last10Runs": [
+    {
+      "run": "832",
+      "commit": "1293977",
+      "trigger": "workflow_dispatch (regression)",
+      "duration": "75m 23s",
+      "passRate": 84.9,
+      "status": "success"
+    },
     {
       "run": "831",
       "commit": "5cc5ad4",
@@ -95,15 +103,418 @@
       "duration": "92m 42s",
       "passRate": 83.8,
       "status": "success"
-    },
-    {
-      "run": "822",
-      "commit": "71e146a",
-      "trigger": "workflow_dispatch (regression)",
-      "duration": "68m 22s",
-      "passRate": 89.4,
-      "status": "success"
     }
   ],
-  "criticalBlockers": []
+  "criticalBlockers": [
+    {
+      "severity": "medium",
+      "title": "Guardrail: Standalone Invoice must reject $0.00 selling price to enforce catalog price immutability",
+      "error": "Error: [SELLING_PRICE_IMMUTABILITY_BUG] Invoice INV/2026/11/11/000304 accepted with unit_price=0 on inventory item \"FIFO-Item-1794381151851\"!\n\n  159 |             console.error('━━━━━━━━━━━━━━━━━━━━━━",
+      "firstSeen": "2026-11-11T07:12:26.948Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "error": "Error: [VULNERABILITY] Bill BILL/2026/11/11/000229: final balance after full partial settlement is 120, not 0\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[",
+      "firstSeen": "2026-11-11T07:13:19.584Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "error": "Error: [PRICE_VARIANCE_BUG] System approved Bill BILL/2026/11/11/000236 with price variance (billed 600 vs PO 500)!\n\n  89 |                     console.error(`  AP Overstatement: ${(billedPrice - poUn",
+      "firstSeen": "2026-11-11T07:14:31.132Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "error": "Error: [TIMESHEET_INVALID_EMPLOYEE_BUG] Server failed validation on invalid employee_id.\n  HTTP Status: 500 (Expected: 422)\n  Raw SQL Exposed: true\n  Response Body: {\n\t\"message\": \"failed to create tim",
+      "firstSeen": "2026-11-11T07:15:33.378Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  56 |             await page.",
+      "firstSeen": "2026-11-11T07:16:07.110Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI-13: Project detail page shows a status indicator",
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  70 |             await page.",
+      "firstSeen": "2026-11-11T07:16:07.566Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "UI-10: Add Project button navigates to /projects/new",
+      "error": "TimeoutError: page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n==============================================",
+      "firstSeen": "2026-11-11T07:16:16.638Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "critical",
+      "title": "[P0-CRITICAL] HR: POST /timesheets with invalid employee_id must not leak raw SQL FK error",
+      "error": "Error: [P0-CRITICAL] POST /timesheets invalid employee + negative hours: Server crashed with HTTP 500. Raw response (may contain leaked SQL/stack): {\"message\":\"failed to create timesheet: ERROR: inser",
+      "firstSeen": "2026-11-11T07:16:55.116Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "[P1-FORMAT] HR: POST /departments with empty payload must return 422 not 400",
+      "error": "Error: [P1-FORMAT] POST /departments returned HTTP 400 with flat string message. Must return 422 with structured details.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m",
+      "firstSeen": "2026-11-11T07:16:54.447Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    },
+    {
+      "severity": "medium",
+      "title": "[P1-FORMAT] HR: POST /payroll-runs with empty payload must return 422 not 400",
+      "error": "Error: [P1-FORMAT] POST /payroll-runs returned HTTP 400 with flat string message. Must return 422 with structured details.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39",
+      "firstSeen": "2026-11-11T07:16:56.503Z",
+      "occurrences": 1,
+      "allureUrl": "https://tekleab.github.io/beffa-automation/allure/#behaviors"
+    }
+  ],
+  "aiAnalysis": [
+    {
+      "testTitle": "Guardrail: Standalone Invoice must reject $0.00 selling price to enforce catalog price immutability",
+      "file": "tests/sales/so-guardrails.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Audit: Partial payment GL — AP partially cleared, cash reduced exactly",
+      "file": "tests/purchase/bill-gl-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "Guardrail: Price variance between PO and Bill must be blocked or rejected",
+      "file": "tests/purchase/po-three-way-match.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "Guardrail: Server must validate employee_id and return 422 (not 500 with SQL leak)",
+      "file": "tests/hr/hr-attendance.spec.ts",
+      "category": "KNOWN_BUG",
+      "confidence": "HIGH",
+      "reasoning": "Matches documented ERP defect pattern",
+      "suggestedAction": "Log as known bug, skip in CI"
+    },
+    {
+      "testTitle": "UI-12: Project detail page shows financial data (budget / revenue / balance)",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-13: Project detail page shows a status indicator",
+      "file": "tests/project/project-ui-detail.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "UI-10: Add Project button navigates to /projects/new",
+      "file": "tests/project/project-ui-form.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "[P1-FORMAT] HR: POST /departments with empty payload must return 422 not 400",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[P0-CRITICAL] HR: POST /timesheets with invalid employee_id must not leak raw SQL FK error",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "[P1-FORMAT] HR: POST /employees negative salary must include \"base_salary\" field in details",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "[P1-FORMAT] HR: POST /payroll-runs with empty payload must return 422 not 400",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[P1-FORMAT] PROJECT: POST /projects negative budget must include \"budget\" field in details",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "[P1-FORMAT] SALES: POST /receipts negative amount must include \"amount\" field in details",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "[P1-FORMAT] PROJECT: POST /tasks missing project_id must include \"project\" field in details",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[P1-FORMAT] PURCHASE: POST /payments negative amount must include \"amount\" field in details",
+      "file": "tests/cross-module/api-validation-defects.spec.ts",
+      "category": "APP_BUG",
+      "confidence": "LOW",
+      "reasoning": "Unclassified — likely business logic failure",
+      "suggestedAction": "Investigate ERP response manually"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Invoices: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Invoices: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Receipts: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Receipts: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Sales Orders: Data Resolution & Loading State",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Customers: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Customers: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Bills: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Bills: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Payments: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Payments: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Purchase Orders: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Purchase Orders: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Vendors: Empty State Boundary (0 Records)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "[INDEX BOUNDARY] Vendors: Error Boundary State (API 500 Failure)",
+      "file": "tests/cross-module/index-query-boundaries.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-01: Add inventory Line Item via modal → PO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-01: Add inventory Line Item via modal → SO created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "BILL-UI-03: Mixed Item + Miscellaneous → both rows in Bill table, approve and verify AP",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-01: Single bill payment → bill balance settles to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PAY-API-02: Multi-bill payment → all bills settle to zero",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "PO-UI-03: Mixed Item + Miscellaneous lines → both rows in PO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-03: Mixed Item + Miscellaneous lines → both rows in table, totals accumulate",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "BILL-UI-01: Add inventory Line Item via modal → Bill created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "SO-UI-03: Add both Item + Miscellaneous lines → totals shown in SO table",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "RCT-UI-01: Receipt UI — create standalone receipt with line item and verify",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    },
+    {
+      "testTitle": "INV-UI-01: Add inventory Line Item via modal → Invoice created and approved",
+      "file": "tests/cross-module/line-item-miscellaneous-audit.spec.ts",
+      "category": "TEST_CODE",
+      "confidence": "MEDIUM",
+      "reasoning": "Playwright assertion or locator failure",
+      "suggestedAction": "Review selector or assertion value"
+    }
+  ]
 }

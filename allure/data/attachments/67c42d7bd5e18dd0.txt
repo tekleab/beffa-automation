@@ -1,0 +1,38 @@
+07:15:22 [PERFORMANCE] API - Auth API Verification: 22395.86ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=15 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000732 (ID: aec9a158-6945-493c-88db-3edf34299f86)
+07:15:28 [INFO] Advancing inventory-adjustments "aec9a158-6945-493c-88db-3edf34299f86"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 15...
+[SUCCESS] API Confirmed: Stock correctly reached 15.
+[FRESH ITEM] Created: FIFO-Item-1794381325142 (dea09793-f313-49c5-af29-48188822dc2d) | method=FIFO | stock=15@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Concurrent Dual Sales Orders (Total 20 units against 15 stock)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Simultaneously submit Order 1 (10 units) and Order 2 (10 units)
+Endpoint    : POST http://157.180.20.112:8001/api/invoices
+Tenant      : ABC Trading
+HTTP Status : ✅ 200 OK / CREATED 
+Verdict     : Both draft invoices created — advancing documents to test approval-time concurrency barrier
+
+📦 Request Payload:
+{
+  "order1Quantity": 10,
+  "order2Quantity": 10,
+  "availableStock": 15
+}
+
+📥 Server Response:
+{
+  "order1Created": true,
+  "order2Created": true
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/invoices" -H "x-company: ABC Trading"  -H "Content-Type: application/json" -d '{"order1Quantity":10,"order2Quantity":10,"availableStock":15}'
+════════════════════════════════════════════════════════════════════════════════════
+
+07:15:32 [INFO] Advancing invoices "92b76543-bd3d-402f-b4e8-cc0fec10b19a"...
+07:15:34 [INFO] Advancing invoices "66b004a9-b01b-4616-9918-c7765e56e316"...
+[CONCURRENCY AUDIT] Invoice Approval Results: Inv1=true, Inv2=false

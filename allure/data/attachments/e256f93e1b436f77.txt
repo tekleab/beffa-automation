@@ -1,0 +1,55 @@
+07:15:20 [PERFORMANCE] API - Auth API Verification: 28005.11ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=5 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000731 (ID: c32e3277-2c0b-4a57-862a-9e5fc035204c)
+07:15:25 [INFO] Advancing inventory-adjustments "c32e3277-2c0b-4a57-862a-9e5fc035204c"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 5...
+[SUCCESS] API Confirmed: Stock correctly reached 5.
+[FRESH ITEM] Created: FIFO-Item-1794381322084 (4750f3d7-5ccf-4300-a03f-4e39c50c2d32) | method=FIFO | stock=5@$80 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Return to Vendor Over-Depletion Guardrail
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Attempt negative adjustment of -10 units on stock of 5
+Endpoint    : POST http://157.180.20.112:8001/api/inventory-adjustments?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 422 CLIENT ERROR / VALIDATION (207ms)
+Verdict     : PASSED: System correctly rejected over-depletion
+
+📦 Request Payload:
+{
+  "adjustment_date": "2026-11-11T00:00:00Z",
+  "posting_date": "2026-11-11T00:00:00Z",
+  "description": "Guardrail Test: Return-to-Vendor Over-Depletion",
+  "items": [
+    {
+      "item_id": "4750f3d7-5ccf-4300-a03f-4e39c50c2d32",
+      "quantity": -10,
+      "unit_cost": 80,
+      "location_id": "49f24a2b-7516-4104-9964-cdfba6210312",
+      "warehouse_id": "8e258054-13a9-4272-bf51-3d29db905a0d"
+    }
+  ]
+}
+
+📥 Server Response:
+{
+  "code": 422,
+  "details": {
+    "adjusted_by": [
+      "Adjusted By is invalid. Must be either 'cost' or 'quantity'"
+    ],
+    "adjustment_account_id": [
+      "Unable to find Business Account."
+    ],
+    "inventory_item_id": [
+      "Unable to find Inventory Item."
+    ]
+  },
+  "message": "Validation error when creating inventory adjustment"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/inventory-adjustments?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"adjustment_date":"2026-11-11T00:00:00Z","posting_date":"2026-11-11T00:00:00Z","description":"Guardrail Test: Return-to-Vendor Over-Depletion","items":[{"item_id":"4750f3d7-5ccf-4300-a03f-4e39c50c2d32","quantity":-10,"unit_cost":80,"location_id":"49f24a2b-7516-4104-9964-cdfba6210312","warehouse_id":"8e258054-13a9-4272-bf51-3d29db905a0d"}]}'
+════════════════════════════════════════════════════════════════════════════════════
+

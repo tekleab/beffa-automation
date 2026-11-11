@@ -1,0 +1,21 @@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 [SELLING_PRICE_IMMUTABILITY_BUG] ERP accepted $0.00 selling price on invoice!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Customer ID      : 35827f1c-db2c-4298-b5de-c23b3a559caf
+  Item Name        : FIFO-Item-1794381151851
+  Item ID          : 31a60365-c424-43e3-bc54-a1b9c3368868
+  Catalog Cost     : $100
+  Billed Price     : $0.00  ← ZERO-PRICE DEPLETION
+  Invoice Number   : INV/2026/11/11/000304
+  Invoice ID       : fc978e73-6a99-4a1c-9479-fb43ab3c7690
+  Risk             : Inventory depletion at $0 without promotional discount policy
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/invoices?year=2019&period=yearly&calendar=ec" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "x-company: ABC Trading" \
+  -H "Content-Type: application/json" \
+  -d '{"customer_id":"35827f1c-db2c-4298-b5de-c23b3a559caf","accounts_receivable_id":"5dfd2e47-208c-4c50-8d9b-d21ec178166e","currency":"Birr","invoice_date":"2026-11-11T00:00:00Z","due_date":"2026-11-11T00:00:00Z","items":[{"item_id":"31a60365-c424-43e3-bc54-a1b9c3368868","quantity":5,"unit_price":0}]}'
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

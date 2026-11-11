@@ -1,0 +1,54 @@
+07:24:56 [PERFORMANCE] API - Auth API Verification: 42440.27ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000761 (ID: a0222ec2-507b-4b40-aef5-48dfab24718c)
+07:25:01 [INFO] Advancing inventory-adjustments "a0222ec2-507b-4b40-aef5-48dfab24718c"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1794381898892 (afaf7d1c-eaf3-4203-908d-1ecece0abb3f) | method=FIFO | stock=10@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Cross-Tenant Relational UUID Injection (Anti-Grafting)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Tenant "ABC Trading" submits invoice linking customer "7dbec658-191f-4fb9-8d26-91e73dc8995a" owned by "sample"
+Endpoint    : POST http://157.180.20.112:8001/api/invoices?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 422 CLIENT ERROR / VALIDATION (218ms)
+Verdict     : PASSED GUARDRAIL: Foreign customer UUID rejected with 422/404
+
+📦 Request Payload:
+{
+  "customer_id": "7dbec658-191f-4fb9-8d26-91e73dc8995a",
+  "accounts_receivable_id": "5dfd2e47-208c-4c50-8d9b-d21ec178166e",
+  "currency_id": "27432c08-1839-44e6-8588-1a7c0e80b8e4",
+  "date": "2026-11-11T00:00:00Z",
+  "posting_date": "2026-11-11T00:00:00Z",
+  "invoice_date": "2026-11-11T00:00:00Z",
+  "due_date": "2026-11-11T00:00:00Z",
+  "items": [
+    {
+      "item_id": "afaf7d1c-eaf3-4203-908d-1ecece0abb3f",
+      "quantity": 1,
+      "unit_price": 100,
+      "location_id": "49f24a2b-7516-4104-9964-cdfba6210312",
+      "warehouse_id": "8e258054-13a9-4272-bf51-3d29db905a0d",
+      "general_ledger_account_id": "7529c7cf-20e0-47b3-a4e4-e0bf7c625074"
+    }
+  ]
+}
+
+📥 Server Response:
+{
+  "code": 422,
+  "details": {
+    "customer_id": [
+      "Unable to find customer."
+    ]
+  },
+  "message": "Validation error when creating invoice"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/invoices?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"customer_id":"7dbec658-191f-4fb9-8d26-91e73dc8995a","accounts_receivable_id":"5dfd2e47-208c-4c50-8d9b-d21ec178166e","currency_id":"27432c08-1839-44e6-8588-1a7c0e80b8e4","date":"2026-11-11T00:00:00Z","posting_date":"2026-11-11T00:00:00Z","invoice_date":"2026-11-11T00:00:00Z","due_date":"2026-11-11T00:00:00Z","items":[{"item_id":"afaf7d1c-eaf3-4203-908d-1ecece0abb3f","quantity":1,"unit_price":100,"location_id":"49f24a2b-7516-4104-9964-cdfba6210312","warehouse_id":"8e258054-13a9-4272-bf51-3d29db905a0d","general_ledger_account_id":"7529c7cf-20e0-47b3-a4e4-e0bf7c625074"}]}'
+════════════════════════════════════════════════════════════════════════════════════
+

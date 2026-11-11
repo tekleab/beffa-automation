@@ -1,0 +1,22 @@
+07:24:55 [PERFORMANCE] API - Auth API Verification: 41422.17ms
+[AUTH] Session token and local storage injected successfully.
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Cross-Tenant Customer Entity Read (IDOR)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Tenant "ABC Trading" attempts GET customer UUID "7dbec658-191f-4fb9-8d26-91e73dc8995a" owned by "sample"
+Endpoint    : GET http://157.180.20.112:8001/api/customers/7dbec658-191f-4fb9-8d26-91e73dc8995a?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 404 CLIENT ERROR / VALIDATION (173ms)
+Verdict     : PASSED GUARDRAIL: Cross-tenant read strictly blocked (404/403)
+
+📥 Server Response:
+{
+  "code": 404,
+  "message": "Route not found"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X GET "http://157.180.20.112:8001/api/customers/7dbec658-191f-4fb9-8d26-91e73dc8995a?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json"
+════════════════════════════════════════════════════════════════════════════════════
+

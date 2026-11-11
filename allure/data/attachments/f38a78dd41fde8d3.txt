@@ -1,0 +1,53 @@
+07:15:41 [PERFORMANCE] API - Auth API Verification: 13020.49ms
+[AUTH] Session token and local storage injected successfully.
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Negative Base Salary Validation (-15,000 ETB)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : POST /employees with negative base_salary
+Endpoint    : POST http://157.180.20.112:8001/api/employees?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 422 CLIENT ERROR / VALIDATION (214ms)
+Verdict     : PASSED GUARDRAIL: Negative salary correctly rejected with 422/400
+
+📦 Request Payload:
+{
+  "first_name": "Audit",
+  "last_name": "NegativeSalary",
+  "email": "audit.neg.1794381341979@example.com",
+  "phone": "0911000000",
+  "base_salary": -15000,
+  "employment_type": "Full-Time",
+  "status": "Active"
+}
+
+📥 Server Response:
+{
+  "code": 422,
+  "details": {
+    "address": [
+      "Address is required"
+    ],
+    "bank_account_number": [
+      "Bank account number is required"
+    ],
+    "bank_name": [
+      "Bank name is required"
+    ],
+    "emergency_contacts": [
+      "At least one emergency contact is required"
+    ],
+    "gender": [
+      "Invalid gender"
+    ],
+    "name": [
+      "Employee name is required"
+    ]
+  },
+  "message": "Validation error when creating employee"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/employees?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"first_name":"Audit","last_name":"NegativeSalary","email":"audit.neg.1794381341979@example.com","phone":"0911000000","base_salary":-15000,"employment_type":"Full-Time","status":"Active"}'
+════════════════════════════════════════════════════════════════════════════════════
+

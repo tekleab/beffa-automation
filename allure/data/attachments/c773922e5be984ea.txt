@@ -1,0 +1,34 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-11-11T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-11-11T00:00:00Z (day=11, ecYear=2019)
+07:31:13 [PERFORMANCE] API - Auth API Verification: 2786.79ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000777 (ID: ee9fc756-0841-4675-8bb6-c964a459dbfb)
+07:31:21 [INFO] Advancing inventory-adjustments "ee9fc756-0841-4675-8bb6-c964a459dbfb"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1794382277969 (dd8336c1-24d7-4bdd-a50b-f681c7fd8056) | method=FIFO | stock=50@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000778 (ID: 08ed0dc6-66ac-4ae7-89ac-d20667d7575a)
+07:31:27 [INFO] Advancing inventory-adjustments "08ed0dc6-66ac-4ae7-89ac-d20667d7575a"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1794382284463 (880dce54-eaeb-4195-bfe6-ae1ed8013e11) | method=FIFO | stock=50@$80 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-11-11T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-11-11T00:00:00Z (day=11, ecYear=2019)
+07:31:32 [PERFORMANCE] API - Auth API Verification: 20833.89ms
+[AUTH] Session token and local storage injected successfully.
+07:31:32 [PERFORMANCE] API - Auth API Verification: 21084.72ms
+[AUTH] Session token and local storage injected successfully.
+07:31:32 [INFO] [STOCK_TOPUP] Injecting 70 units for item dd8336c1-24d7-4bdd-a50b-f681c7fd8056...
+[ADJ] quantity | qty=70 @ $100 | current=50 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000779 (ID: e46111e2-b587-483d-a2c1-7768c03e668f)
+07:31:32 [INFO] Advancing inventory-adjustments "e46111e2-b587-483d-a2c1-7768c03e668f"...
+07:31:37 [INFO] [STOCK_TOPUP] Injected 70 units for item dd8336c1-24d7-4bdd-a50b-f681c7fd8056 (adj ADJ/2026/11/11/000779)
+07:31:39 [INFO] Advancing invoices "9994b30e-f07f-451e-b6a9-9df20c6c79ad"...
+[RECEIPT PRE-FLIGHT] Invoice outstanding=300 | Requested receipt amount=100
+[RECEIPT] amount=100 | invoice=9994b30e... | year=2019
+[SUCCESS] Receipt created on attempt 1: RCPT/2026/11/11/000141
+07:31:43 [INFO] Advancing receipts "263560e3-f2aa-4d80-86a0-3372b5a43bd4"...
+[AUDIT] Invoice $300 | Received $100 | Unreceived $200
+[PASS] Partial receipt reduces invoice Amount Due correctly

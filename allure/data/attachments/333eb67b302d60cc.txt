@@ -1,0 +1,47 @@
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-11-11T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-11-11T00:00:00Z (day=11, ecYear=2019)
+07:13:04 [PERFORMANCE] API - Auth API Verification: 2735.44ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $200 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000708 (ID: edb3d722-147a-4c3e-a6fe-f25e66c14403)
+07:13:08 [INFO] Advancing inventory-adjustments "edb3d722-147a-4c3e-a6fe-f25e66c14403"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1794381185638 (5da284fc-6c0a-4f19-b812-f2d3d1bb8e3b) | method=FIFO | stock=20@$200 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ITEM] FIFO-Item-1794381185638 | stock:20
+07:13:12 [INFO] Advancing bills "45e6a40c-0e61-42e8-9917-b430ee6849bd"...
+[BILL] BILL/2026/11/11/000224 (45e6a40c-0e61-42e8-9917-b430ee6849bd) approved | amount: 4000
+[POLL] Waiting for bill journal entries… attempt 1/10
+[POLL] Waiting for bill journal entries… attempt 2/10
+[POLL] Waiting for bill journal entries… attempt 3/10
+[POLL] Waiting for bill journal entries… attempt 4/10
+[POLL] Waiting for bill journal entries… attempt 5/10
+[POLL] Waiting for bill journal entries… attempt 6/10
+[POLL] Waiting for bill journal entries… attempt 7/10
+[POLL] Waiting for bill journal entries… attempt 8/10
+[POLL] Waiting for bill journal entries… attempt 9/10
+[POLL] Waiting for bill journal entries… attempt 10/10
+
+===================================================================
+  AP GL AUDIT — Bill Approval
+  Ref: BILL/2026/11/11/000224 | ID: 45e6a40c-0e61-42e8-9917-b430ee6849bd
+===================================================================
+  | Account                              |        Debit |       Credit |
+  ───────────────────────────────────────────────────────────────────
+  ───────────────────────────────────────────────────────────────────
+  | TOTAL                                |         0.00 |         0.00 |
+  | ✓ BALANCED (Dr = Cr)                                                |
+  ───────────────────────────────────────────────────────────────────
+
+
+  ╔════════════════════════════════════════════════════════════════════╗
+  ║ ⚠️  GL AUDIT SKIPPED — Account Mapping NOT Implemented Yet        ║
+  ╠════════════════════════════════════════════════════════════════════╣
+  ║  Bill Ref       : BILL/2026/11/11/000224                                      ║
+  ║  Bill Amount    : $4000.00                                                    ║
+  ║  Journal Entries: 0                                                           ║
+  ║  Reason         : AP/Expense/Inventory GL account mapping not configured.    ║
+  ║  Action         : Configure account mapping to enable full GL assertions.    ║
+  ╚════════════════════════════════════════════════════════════════════╝
+
+[SKIP GL AUDIT] Bill GL journal assertions skipped — account mapping not yet implemented.

@@ -1,0 +1,31 @@
+07:15:42 [PERFORMANCE] API - Auth API Verification: 8448.80ms
+[AUTH] Session token and local storage injected successfully.
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Concurrent Overlapping Leave Booking Collision
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Submit second leave booking for employee 97393418-2db0-4fbd-b9fc-13012bc30956 on identical dates (2026-11-11T00:00:00Z)
+Endpoint    : POST http://157.180.20.112:8001/api/leave-requests?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 404 CLIENT ERROR / VALIDATION (176ms)
+Verdict     : PASSED GUARDRAIL: Overlapping leave request blocked with conflict error
+
+📦 Request Payload:
+{
+  "employee_id": "97393418-2db0-4fbd-b9fc-13012bc30956",
+  "start_date": "2026-11-11T00:00:00Z",
+  "end_date": "2026-11-11T00:00:00Z",
+  "leave_type": "Sick",
+  "reason": "Conflicting Overlapping Leave Booking"
+}
+
+📥 Server Response:
+{
+  "code": 404,
+  "message": "Route not found"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/leave-requests?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"employee_id":"97393418-2db0-4fbd-b9fc-13012bc30956","start_date":"2026-11-11T00:00:00Z","end_date":"2026-11-11T00:00:00Z","leave_type":"Sick","reason":"Conflicting Overlapping Leave Booking"}'
+════════════════════════════════════════════════════════════════════════════════════
+

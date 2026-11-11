@@ -1,0 +1,94 @@
+07:15:09 [PERFORMANCE] API - Auth API Verification: 18774.61ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000729 (ID: cd498c60-e468-4e6c-8bed-1012cbaa993d)
+07:15:15 [INFO] Advancing inventory-adjustments "cd498c60-e468-4e6c-8bed-1012cbaa993d"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1794381312510 (ba1fed96-4ed1-49b8-862e-bc87ee570f86) | method=FIFO | stock=10@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[PPV AUDIT] Created PO: PO/2026/11/11/000224 (ID: e78f6238-110a-4c17-a74f-4f58f97af466)
+07:15:19 [INFO] Advancing purchase-orders "e78f6238-110a-4c17-a74f-4f58f97af466"...
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: 3-Way Match Price Variance (PO $100 -> Bill $120)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Submit Vendor Bill with higher unit cost than approved PO
+Endpoint    : POST http://157.180.20.112:8001/api/bills?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : ✅ 201 OK / CREATED (258ms)
+Verdict     : Bill accepted with price variance — verifying inventory valuation conservation
+
+📦 Request Payload:
+{
+  "vendor_id": "e4a3aa06-54ca-4e7a-8d96-0519eaec3827",
+  "purchase_order_id": "e78f6238-110a-4c17-a74f-4f58f97af466",
+  "accounts_payable_id": "922ce0b6-c38e-41d4-bac8-3e5751967533",
+  "currency_id": "27432c08-1839-44e6-8588-1a7c0e80b8e4",
+  "date": "2026-11-11T00:00:00Z",
+  "posting_date": "2026-11-11T00:00:00Z",
+  "invoice_date": "2026-11-11T00:00:00Z",
+  "due_date": "2026-11-11T00:00:00Z",
+  "vendor_invoice_number": "VIN-PPV-1794381321445",
+  "items": [
+    {
+      "item_id": "ba1fed96-4ed1-49b8-862e-bc87ee570f86",
+      "quantity": 10,
+      "unit_price": 120,
+      "location_id": "49f24a2b-7516-4104-9964-cdfba6210312",
+      "warehouse_id": "8e258054-13a9-4272-bf51-3d29db905a0d",
+      "general_ledger_account_id": "922ce0b6-c38e-41d4-bac8-3e5751967533"
+    }
+  ]
+}
+
+📥 Server Response:
+{
+  "accounts_payable": null,
+  "accounts_payable_id": "922ce0b6-c38e-41d4-bac8-3e5751967533",
+  "bill_payments": null,
+  "created_at": "2026-11-11T07:15:21.587506Z",
+  "created_by": "42477a9a-1f16-40b9-a64d-f0cc067a0b7c",
+  "currency": null,
+  "currency_id": "27432c08-1839-44e6-8588-1a7c0e80b8e4",
+  "current_approval_step": null,
+  "current_approval_step_id": null,
+  "deleted_by": "00000000-0000-0000-0000-000000000000",
+  "dff_values": null,
+  "due": 0,
+  "due_date": "2026-11-11T00:00:00Z",
+  "fiscal_budget": null,
+  "fiscal_budget_id": null,
+  "id": "bb798bd4-0d24-4001-b7c2-8606e83157be",
+  "invoice_date": "2026-11-11T00:00:00Z",
+  "invoice_number": "BILL/2026/11/11/000241",
+  "items": [
+    {
+      "amount": 1200,
+      "asset_class_id": null,
+      "asset_id": null,
+      "bill": null,
+      "bill_id": "bb798bd4-0d24-4001-b7c2-8606e83157be",
+      "created_at": "2026-11-11T07:15:21.599131Z",
+      "description": "",
+      "general_ledger_account_id": "922ce0b6-c38e-41d4-bac8-3e5751967533",
+      "id": "fe4cdbe4-dc7c-40b7-beff-e9d064d55a77",
+      "item_id": "ba1fed96-4ed1-49b8-862e-bc87ee570f86",
+      "lease_id": null,
+      "location_id": "49f24a2b-7516-4104-9964-cdfba6210312",
+      "project_id": null,
+      "quantity": 10,
+      "service_event_id": null,
+      "service_id": null,
+      "tax": null,
+      "tax_id": null,
+      "unit_price": 120,
+      "updated_at": "2026-11-11T07:15:21.603796522Z",
+      "warehouse_id": "8e258054-13a9-4272-bf51-3d29db905a0d",
+      "wi
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/bills?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"vendor_id":"e4a3aa06-54ca-4e7a-8d96-0519eaec3827","purchase_order_id":"e78f6238-110a-4c17-a74f-4f58f97af466","accounts_payable_id":"922ce0b6-c38e-41d4-bac8-3e5751967533","currency_id":"27432c08-1839-44e6-8588-1a7c0e80b8e4","date":"2026-11-11T00:00:00Z","posting_date":"2026-11-11T00:00:00Z","invoice_date":"2026-11-11T00:00:00Z","due_date":"2026-11-11T00:00:00Z","vendor_invoice_number":"VIN-PPV-1794381321445","items":[{"item_id":"ba1fed96-4ed1-49b8-862e-bc87ee570f86","quantity":10,"unit_price":120,"location_id":"49f24a2b-7516-4104-9964-cdfba6210312","warehouse_id":"8e258054-13a9-4272-bf51-3d29db905a0d","general_ledger_account_id":"922ce0b6-c38e-41d4-bac8-3e5751967533"}]}'
+════════════════════════════════════════════════════════════════════════════════════
+
+07:15:21 [INFO] Advancing bills "bb798bd4-0d24-4001-b7c2-8606e83157be"...
+[PPV AUDIT] Final Item Stock Level: 20

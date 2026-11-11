@@ -1,0 +1,228 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cross-module/api-validation-defects.spec.ts >> API Validation Defects — Compliance Assertions @cross-module @smoke >> [P1-FORMAT] HR: POST /departments with empty payload must return 422 not 400
+- Location: tests/cross-module/api-validation-defects.spec.ts:134:9
+
+# Error details
+
+```
+Error: [P1-FORMAT] POST /departments returned HTTP 400 with flat string message. Must return 422 with structured details.
+
+expect(received).toBe(expected) // Object.is equality
+
+Expected: 422
+Received: 400
+```
+
+# Test source
+
+```ts
+  40  | }
+  41  | 
+  42  | /** Assert route returns standard JSON 404 envelope (not plain text) */
+  43  | function assertGlobal404Json(status: number, body: any, label: string) {
+  44  |     expect(status, `[${label}] Unmapped route must return HTTP 404`).toBe(404);
+  45  |     expect(body, `[${label}] Body must be an object, not plain text`).toBeTruthy();
+  46  |     expect(typeof body, `[${label}] Body must be JSON object`).toBe('object');
+  47  |     expect(body.code, `[${label}] Response code must be 404`).toBe(404);
+  48  |     expect(body.message, `[${label}] Message must be 'Route not found'`).toBe('Route not found');
+  49  | }
+  50  | 
+  51  | test.describe('API Validation Defects — Compliance Assertions @cross-module @smoke', () => {
+  52  |     test.setTimeout(180000);
+  53  | 
+  54  |     let apiBase: string;
+  55  |     let headers: Record<string, string>;
+  56  |     let qs: string;
+  57  | 
+  58  |     test.beforeAll(async ({ browser }) => {
+  59  |         const page = await browser.newPage();
+  60  |         const app = new AppManager(page);
+  61  |         await app.login(process.env.BEFFA_USER, process.env.BEFFA_PASS);
+  62  |         const ctx = await app.buildApiContext();
+  63  |         apiBase = ctx.apiBase;
+  64  |         headers = ctx.headers;
+  65  |         qs = ctx.qs;
+  66  |         await page.close();
+  67  |     });
+  68  | 
+  69  |     async function post(page: import('@playwright/test').Page, endpoint: string, payload: any) {
+  70  |         const resp = await page.request.post(`${apiBase}${endpoint}?${qs}`, { headers, data: payload });
+  71  |         const status = resp.status();
+  72  |         const body = await resp.json().catch(async () => resp.text());
+  73  |         return { status, body };
+  74  |     }
+  75  | 
+  76  |     // =========================================================================
+  77  |     // P0 CRITICAL — HTTP 500 crashes
+  78  |     // =========================================================================
+  79  | 
+  80  |     test('[P0-CRITICAL] SALES: POST /receipts with null payload must not crash with HTTP 500', async ({ page }) => {
+  81  |         const { status, body } = await post(page, '/receipts', { customer_id: null, amount: 0, cash_account_id: null });
+  82  |         assertNot500(status, body, 'POST /receipts null payload');
+  83  |         expect(status, `Must return 4xx validation error, got ${status}`).toBeGreaterThanOrEqual(400);
+  84  |         expect(status, `Must return 4xx validation error, got ${status}`).toBeLessThan(500);
+  85  |     });
+  86  | 
+  87  |     test('[P0-CRITICAL] HR: POST /timesheets with invalid employee_id must not leak raw SQL FK error', async ({ page }) => {
+  88  |         const resolvedDate = await DateHelper.resolve(page);
+  89  |         const { status, body } = await post(page, '/timesheets', {
+  90  |             employee_id: '00000000-0000-0000-0000-000000000000',
+  91  |             date: resolvedDate.iso,
+  92  |             hours: -12
+  93  |         });
+  94  |         assertNot500(status, body, 'POST /timesheets invalid employee + negative hours');
+  95  |         const raw = typeof body === 'string' ? body : JSON.stringify(body);
+  96  |         expect(
+  97  |             raw,
+  98  |             `[P0-CRITICAL] Raw PostgreSQL FK error leaked in response: "${raw.slice(0, 200)}"`
+  99  |         ).not.toMatch(/SQLSTATE|foreign key constraint|fk_employees|violates|ERROR:/i);
+  100 |         expect(status).toBeGreaterThanOrEqual(400);
+  101 |         expect(status).toBeLessThan(500);
+  102 |     });
+  103 | 
+  104 |     // =========================================================================
+  105 |     // P1 FORMAT — Wrong status code (400 instead of 422)
+  106 |     // =========================================================================
+  107 | 
+  108 |     test('[P1-FORMAT] SALES: POST /invoices with invalid date must return 422 not 400', async ({ page }) => {
+  109 |         const { status, body } = await post(page, '/invoices', {
+  110 |             customer_id: '00000000-0000-0000-0000-000000000000',
+  111 |             invoice_date: 'invalid-date',
+  112 |             invoice_items: []
+  113 |         });
+  114 |         assertNot500(status, body, 'POST /invoices invalid date');
+  115 |         expect(
+  116 |             status,
+  117 |             `[P1-FORMAT] POST /invoices invalid date returned HTTP ${status} (raw Go parser string). Must return 422 with structured details.`
+  118 |         ).toBe(422);
+  119 |     });
+  120 | 
+  121 |     test('[P1-FORMAT] SALES: POST /customers with integer phone must return 422 not 400', async ({ page }) => {
+  122 |         const { status, body } = await post(page, '/customers', {
+  123 |             name: 'Type Mismatch Customer',
+  124 |             phone: 123456789,
+  125 |             tin: '1234567890'
+  126 |         });
+  127 |         assertNot500(status, body, 'POST /customers integer phone');
+  128 |         expect(
+  129 |             status,
+  130 |             `[P1-FORMAT] POST /customers phone type mismatch returned HTTP ${status}. Must return 422 with structured details.`
+  131 |         ).toBe(422);
+  132 |     });
+  133 | 
+  134 |     test('[P1-FORMAT] HR: POST /departments with empty payload must return 422 not 400', async ({ page }) => {
+  135 |         const { status, body } = await post(page, '/departments', {});
+  136 |         assertNot500(status, body, 'POST /departments empty payload');
+  137 |         expect(
+  138 |             status,
+  139 |             `[P1-FORMAT] POST /departments returned HTTP ${status} with flat string message. Must return 422 with structured details.`
+> 140 |         ).toBe(422);
+      |           ^ Error: [P1-FORMAT] POST /departments returned HTTP 400 with flat string message. Must return 422 with structured details.
+  141 |         assert422Structured(status, body, 'POST /departments empty payload');
+  142 |     });
+  143 | 
+  144 |     test('[P1-FORMAT] HR: POST /payroll-runs with empty payload must return 422 not 400', async ({ page }) => {
+  145 |         const { status, body } = await post(page, '/payroll-runs', {});
+  146 |         assertNot500(status, body, 'POST /payroll-runs empty payload');
+  147 |         expect(
+  148 |             status,
+  149 |             `[P1-FORMAT] POST /payroll-runs returned HTTP ${status} with flat string message. Must return 422 with structured details.`
+  150 |         ).toBe(422);
+  151 |         assert422Structured(status, body, 'POST /payroll-runs empty payload');
+  152 |     });
+  153 | 
+  154 |     // =========================================================================
+  155 |     // P1 FORMAT — Missing field attribution in details map
+  156 |     // =========================================================================
+  157 | 
+  158 |     test('[P1-FORMAT] SALES: POST /receipts negative amount must include "amount" field in details', async ({ page }) => {
+  159 |         const { status, body } = await post(page, '/receipts', {
+  160 |             customer_id: '00000000-0000-0000-0000-000000000000',
+  161 |             amount: -2500
+  162 |         });
+  163 |         assertNot500(status, body, 'POST /receipts negative amount');
+  164 |         expect(status).toBeGreaterThanOrEqual(400);
+  165 |         const raw = JSON.stringify(body).toLowerCase();
+  166 |         expect(
+  167 |             raw,
+  168 |             `[P1-FORMAT] POST /receipts negative amount: "amount" field missing from error details map. Got: ${raw.slice(0, 200)}`
+  169 |         ).toMatch(/amount/);
+  170 |     });
+  171 | 
+  172 |     test('[P1-FORMAT] PURCHASE: POST /payments negative amount must include "amount" field in details', async ({ page }) => {
+  173 |         const { status, body } = await post(page, '/payments', {
+  174 |             vendor_id: '00000000-0000-0000-0000-000000000000',
+  175 |             amount: -1000,
+  176 |             bill_payments: []
+  177 |         });
+  178 |         assertNot500(status, body, 'POST /payments negative amount');
+  179 |         expect(status).toBeGreaterThanOrEqual(400);
+  180 |         const raw = JSON.stringify(body).toLowerCase();
+  181 |         expect(
+  182 |             raw,
+  183 |             `[P1-FORMAT] POST /payments negative amount: "amount" field missing from error details map. Got: ${raw.slice(0, 200)}`
+  184 |         ).toMatch(/amount/);
+  185 |     });
+  186 | 
+  187 |     test('[P1-FORMAT] HR: POST /employees negative salary must include "base_salary" field in details', async ({ page }) => {
+  188 |         const { status, body } = await post(page, '/employees', {
+  189 |             first_name: 'Negative',
+  190 |             last_name: 'Salary',
+  191 |             email: 'valid.email@example.com',
+  192 |             base_salary: -5000
+  193 |         });
+  194 |         assertNot500(status, body, 'POST /employees negative salary');
+  195 |         expect(status).toBeGreaterThanOrEqual(400);
+  196 |         const raw = JSON.stringify(body).toLowerCase();
+  197 |         expect(
+  198 |             raw,
+  199 |             `[P1-FORMAT] POST /employees negative salary: "base_salary" field missing from error details map. Got: ${raw.slice(0, 200)}`
+  200 |         ).toMatch(/salary|base_salary/);
+  201 |     });
+  202 | 
+  203 |     test('[P1-FORMAT] PROJECT: POST /projects negative budget must include "budget" field in details', async ({ page }) => {
+  204 |         const resolvedDate = await DateHelper.resolve(page);
+  205 |         const { status, body } = await post(page, '/projects', {
+  206 |             name: 'Negative Budget Project',
+  207 |             budget: -100000,
+  208 |             start_date: resolvedDate.iso
+  209 |         });
+  210 |         assertNot500(status, body, 'POST /projects negative budget');
+  211 |         expect(status).toBeGreaterThanOrEqual(400);
+  212 |         const raw = JSON.stringify(body).toLowerCase();
+  213 |         expect(
+  214 |             raw,
+  215 |             `[P1-FORMAT] POST /projects negative budget: "budget" field missing from error details map. Got: ${raw.slice(0, 200)}`
+  216 |         ).toMatch(/budget/);
+  217 |     });
+  218 | 
+  219 |     test('[P1-FORMAT] PROJECT: POST /tasks missing project_id must include "project" field in details', async ({ page }) => {
+  220 |         const { status, body } = await post(page, '/tasks', {
+  221 |             title: 'Orphan Task Without Project',
+  222 |             estimated_hours: 8
+  223 |         });
+  224 |         assertNot500(status, body, 'POST /tasks missing project_id');
+  225 |         expect(status).toBeGreaterThanOrEqual(400);
+  226 |         const raw = JSON.stringify(body).toLowerCase();
+  227 |         expect(
+  228 |             raw,
+  229 |             `[P1-FORMAT] POST /tasks missing project_id: "project" field missing from error details map. Got: ${raw.slice(0, 200)}`
+  230 |         ).toMatch(/project/);
+  231 |     });
+  232 | 
+  233 |     // =========================================================================
+  234 |     // P1 ROUTE — Standard JSON 404 Contract on Unmapped Endpoints
+  235 |     // (Acknowledged by backend dev Segni: Routes not yet implemented;
+  236 |     // must return structured JSON envelope {"code": 404, "message": "Route not found"})
+  237 |     // =========================================================================
+  238 | 
+  239 |     test('[P1-ROUTE] INVENTORY: POST /inventory-transfers returns standard JSON 404', async ({ page }) => {
+  240 |         const { status, body } = await post(page, '/inventory-transfers', {});
+```

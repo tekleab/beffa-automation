@@ -1,0 +1,50 @@
+07:11:54 [PERFORMANCE] API - Auth API Verification: 101899.12ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=10 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000693 (ID: 8562eb8a-8308-4489-920e-6e6c59917b02)
+07:11:59 [INFO] Advancing inventory-adjustments "8562eb8a-8308-4489-920e-6e6c59917b02"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 10...
+[SUCCESS] API Confirmed: Stock correctly reached 10.
+[FRESH ITEM] Created: FIFO-Item-1794381116850 (785fd288-5553-438a-a4f9-2ce8e7ee48c5) | method=FIFO | stock=10@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+07:12:03 [INFO] Advancing invoices "b5ff8107-0819-4448-901b-684505c56c58"...
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Invoice Overpayment Receipt Guardrail ($2,000 on $500 Balance)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Attempt to link receipt amount exceeding invoice balance due
+Endpoint    : POST http://157.180.20.112:8001/api/receipts?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 422 CLIENT ERROR / VALIDATION (202ms)
+Verdict     : PASSED GUARDRAIL: Overpayment rejected with 422
+
+📦 Request Payload:
+{
+  "customer_id": "35827f1c-db2c-4298-b5de-c23b3a559caf",
+  "receipt_date": "2026-11-11T00:00:00Z",
+  "posting_date": "2026-11-11T00:00:00Z",
+  "cash_account_id": "700459c6-98c1-4f23-8a49-cb6a25855d72",
+  "currency_id": "27432c08-1839-44e6-8588-1a7c0e80b8e4",
+  "amount": 2000,
+  "invoices": [
+    {
+      "invoice_id": "b5ff8107-0819-4448-901b-684505c56c58",
+      "amount_to_pay": 2000
+    }
+  ]
+}
+
+📥 Server Response:
+{
+  "code": 422,
+  "details": {
+    "payment_method": [
+      "Invalid Payment Method."
+    ]
+  },
+  "message": "Validation error when creating Receipt"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/receipts?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"customer_id":"35827f1c-db2c-4298-b5de-c23b3a559caf","receipt_date":"2026-11-11T00:00:00Z","posting_date":"2026-11-11T00:00:00Z","cash_account_id":"700459c6-98c1-4f23-8a49-cb6a25855d72","currency_id":"27432c08-1839-44e6-8588-1a7c0e80b8e4","amount":2000,"invoices":[{"invoice_id":"b5ff8107-0819-4448-901b-684505c56c58","amount_to_pay":2000}]}'
+════════════════════════════════════════════════════════════════════════════════════
+

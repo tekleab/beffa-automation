@@ -1,0 +1,51 @@
+07:11:51 [PERFORMANCE] API - Auth API Verification: 99246.87ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000691 (ID: b2ddefa3-d559-405c-aeac-e12b7e8f27b3)
+07:11:57 [INFO] Advancing inventory-adjustments "b2ddefa3-d559-405c-aeac-e12b7e8f27b3"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1794381114206 (e878f670-cd50-4bb2-a3be-5486eb746780) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[VOID ARBITRAGE] Created Invoice: INV/2026/11/11/000297 (ID: 9817e417-8b38-4875-a191-3e306b1fbe49)
+07:12:01 [INFO] Advancing invoices "9817e417-8b38-4875-a191-3e306b1fbe49"...
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Partial Receipt Registration ($400 on $1000 Invoice)
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Record partial payment receipt against approved invoice
+Endpoint    : POST http://157.180.20.112:8001/api/receipts?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 422 CLIENT ERROR / VALIDATION (200ms)
+Verdict     : Partial receipt creation rejected
+
+📦 Request Payload:
+{
+  "customer_id": "35827f1c-db2c-4298-b5de-c23b3a559caf",
+  "receipt_date": "2026-11-11T00:00:00Z",
+  "posting_date": "2026-11-11T00:00:00Z",
+  "cash_account_id": "700459c6-98c1-4f23-8a49-cb6a25855d72",
+  "currency_id": "27432c08-1839-44e6-8588-1a7c0e80b8e4",
+  "amount": 400,
+  "invoices": [
+    {
+      "invoice_id": "9817e417-8b38-4875-a191-3e306b1fbe49",
+      "amount_to_pay": 400
+    }
+  ]
+}
+
+📥 Server Response:
+{
+  "code": 422,
+  "details": {
+    "payment_method": [
+      "Invalid Payment Method."
+    ]
+  },
+  "message": "Validation error when creating Receipt"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/receipts?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"customer_id":"35827f1c-db2c-4298-b5de-c23b3a559caf","receipt_date":"2026-11-11T00:00:00Z","posting_date":"2026-11-11T00:00:00Z","cash_account_id":"700459c6-98c1-4f23-8a49-cb6a25855d72","currency_id":"27432c08-1839-44e6-8588-1a7c0e80b8e4","amount":400,"invoices":[{"invoice_id":"9817e417-8b38-4875-a191-3e306b1fbe49","amount_to_pay":400}]}'
+════════════════════════════════════════════════════════════════════════════════════
+

@@ -1,0 +1,37 @@
+07:19:25 [PERFORMANCE] API - Auth API Verification: 26173.21ms
+[AUTH] Session token and local storage injected successfully.
+[ADJ] quantity | qty=50 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000741 (ID: 2f2bf454-1d26-41cf-af3e-f41135e2cb9f)
+07:19:32 [INFO] Advancing inventory-adjustments "2f2bf454-1d26-41cf-af3e-f41135e2cb9f"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1794381569400 (48ad55f5-6124-4e93-b46c-9dcc1aa49fe7) | method=FIFO | stock=50@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[ADJ] quantity | qty=50 @ $80 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000745 (ID: fcea8e27-3d50-4106-87d6-60c466413c1f)
+07:19:38 [INFO] Advancing inventory-adjustments "fcea8e27-3d50-4106-87d6-60c466413c1f"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 50...
+[SUCCESS] API Confirmed: Stock correctly reached 50.
+[FRESH ITEM] Created: FIFO-Item-1794381575841 (ae00c901-6e05-463f-8382-4567b2bb85d7) | method=FIFO | stock=50@$80 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+[DateHelper] ✓ company="ABC Trading" year=2019: today (2026-11-11T00:00:00Z) is within open period
+[DateHelper] Resolved in-period date: 2026-11-11T00:00:00Z (day=11, ecYear=2019)
+07:19:43 [PERFORMANCE] API - Auth API Verification: 44159.27ms
+[AUTH] Session token and local storage injected successfully.
+07:19:43 [PERFORMANCE] API - Auth API Verification: 44401.54ms
+[AUTH] Session token and local storage injected successfully.
+07:19:46 [INFO] Picking date: "Invoice Date" → target 2026-11-11
+07:19:49 [PASS] "Invoice Date" set to day 11.
+07:19:50 [PERFORMANCE] UI - Pick Date: Invoice Date: 3770.22ms
+07:19:50 [INFO] Picking date: "Due Date" → target 2026-11-11
+07:19:52 [PASS] "Due Date" set to day 11.
+07:19:53 [PERFORMANCE] UI - Pick Date: Due Date: 3165.49ms
+[SELECT-OPTION] Customer (attempt 1): overlayVisible=true, count=20
+07:19:56 [PERFORMANCE] UI - Random Selection: Customer: 3092.49ms
+[SELECT-OPTION] Accounts Receivable (attempt 1): overlayVisible=true, count=2
+07:19:59 [PERFORMANCE] UI - Random Selection: Accounts Receivable: 2859.03ms
+[CURRENCY] Currency field not present on this form — skipping.
+[MODAL] Misc branch - G/L selector visible: true
+[SELECT-OPTION] G/L Account (attempt 1): overlayVisible=true, count=20
+07:20:04 [PERFORMANCE] UI - Random Selection: G/L Account: 2873.88ms
+[MODAL] Filled Miscellaneous Price: 1500
+[MODAL] Miscellaneous line item added successfully
+[PASS] Miscellaneous line item successfully added to Invoice and rendered in table (Add Now disabled per ERP business rule requiring inventory line)

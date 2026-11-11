@@ -1,0 +1,29 @@
+07:15:43 [PERFORMANCE] API - Auth API Verification: 14320.88ms
+[AUTH] Session token and local storage injected successfully.
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Malformed Payroll Run SQL Leak Defense
+────────────────────────────────────────────────────────────────────────────────────
+Action      : Submit invalid date and dummy UUID to /payroll-runs
+Endpoint    : POST http://157.180.20.112:8001/api/payroll-runs?year=2019&period=yearly&calendar=ec
+Tenant      : ABC Trading
+HTTP Status : 🛡️ 400 CLIENT ERROR / VALIDATION (210ms)
+Verdict     : PASSED: Clean JSON validation error returned without database leaks
+
+📦 Request Payload:
+{
+  "payroll_date": "invalid-date-format",
+  "department_id": "00000000-0000-0000-0000-000000000000",
+  "entries": []
+}
+
+📥 Server Response:
+{
+	"message": "invalid start_date: invalid date format. Supported formats: RFC3339, YYYY-MM-DD, YYYY-MM-DD HH:MM:SS, MM/DD/YYYY, DD/MM/YYYY"
+}
+
+
+💻 Copyable cURL Reproduction:
+curl -X POST "http://157.180.20.112:8001/api/payroll-runs?year=2019&period=yearly&calendar=ec" -H "x-company: ABC Trading" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json" -d '{"payroll_date":"invalid-date-format","department_id":"00000000-0000-0000-0000-000000000000","entries":[]}'
+════════════════════════════════════════════════════════════════════════════════════
+

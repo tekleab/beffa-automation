@@ -1,0 +1,42 @@
+07:25:05 [PERFORMANCE] API - Auth API Verification: 52016.24ms
+[AUTH] Session token and local storage injected successfully.
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Missing x-company Tenant Header Guardrail
+────────────────────────────────────────────────────────────────────────────────────
+Action      : GET /invoices without x-company header
+Endpoint    : GET http://157.180.20.112:8001/api/invoices?page=1&pageSize=5&year=2019&period=yearly&calendar=ec
+Tenant      : (none)
+HTTP Status : 🛡️ 400 CLIENT ERROR / VALIDATION 
+Verdict     : PASSED GUARDRAIL: Request without tenant header rejected
+
+📥 Server Response:
+{
+  "code": 400,
+  "message": "Company Header required"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X GET "http://157.180.20.112:8001/api/invoices?page=1&pageSize=5&year=2019&period=yearly&calendar=ec" -H "x-company: (none)" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json"
+════════════════════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════════════════════════
+📋 DEV FORENSIC AUDIT: Fictitious x-company Header Guardrail
+────────────────────────────────────────────────────────────────────────────────────
+Action      : GET /invoices with non-existent tenant "NonExistent_EvilCorp_99999"
+Endpoint    : GET http://157.180.20.112:8001/api/invoices?page=1&pageSize=5&year=2019&period=yearly&calendar=ec
+Tenant      : NonExistent_EvilCorp_99999
+HTTP Status : 🛡️ 400 CLIENT ERROR / VALIDATION 
+Verdict     : PASSED GUARDRAIL: Non-existent company header rejected
+
+📥 Server Response:
+{
+  "code": 400,
+  "message": "Company not found"
+}
+
+💻 Copyable cURL Reproduction:
+curl -X GET "http://157.180.20.112:8001/api/invoices?page=1&pageSize=5&year=2019&period=yearly&calendar=ec" -H "x-company: NonExistent_EvilCorp_99999" -H "Authorization: Bearer eyJhbGciOiJIUzI1Ni..." -H "Content-Type: application/json"
+════════════════════════════════════════════════════════════════════════════════════
+

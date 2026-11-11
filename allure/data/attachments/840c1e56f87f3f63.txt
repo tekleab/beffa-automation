@@ -1,0 +1,50 @@
+
+=======================================================
+  [RECEIPT API] 3. Full Invoice & Receipt Workflow Test 
+=======================================================
+07:10:34 [PERFORMANCE] API - Auth API Verification: 22331.97ms
+[AUTH] Session token and local storage injected successfully.
+[OPERATING DATE] Date: 2026-08-14T00:00:00Z
+[METADATA DISCOVERY] Discovering Customer, Cash Account, Currency, Warehouse, Location, and Inventory Item...
+[ADJ] quantity | qty=20 @ $100 | current=0 loc=0
+[SUCCESS] Adjustment created via API: ADJ/2026/11/11/000681 (ID: 0353b262-27b8-43aa-990b-959177116295)
+07:10:40 [INFO] Advancing inventory-adjustments "0353b262-27b8-43aa-990b-959177116295"...
+[ACTION] API Polling: Waiting for stock at location 49f24a2b-7516-4104-9964-cdfba6210312 to hit 20...
+[SUCCESS] API Confirmed: Stock correctly reached 20.
+[FRESH ITEM] Created: FIFO-Item-1794381037440 (b288a7b2-9e24-460c-bd0d-d9662598afec) | method=FIFO | stock=20@$100 | loc=49f24a2b-7516-4104-9964-cdfba6210312
+  ├── Customer ID      : 35827f1c-db2c-4298-b5de-c23b3a559caf
+  ├── Cash Account ID  : 210fa97b-abcd-4258-aa5b-5a36d13e425b (Cash - Main Office)
+  ├── Currency ID      : 27432c08-1839-44e6-8588-1a7c0e80b8e4 (BRR)
+  ├── AR Account ID    : 5dfd2e47-208c-4c50-8d9b-d21ec178166e (Accounts Receivable)
+  ├── Sales Account ID : 7529c7cf-20e0-47b3-a4e4-e0bf7c625074 (Sales)
+  ├── Warehouse ID     : 8e258054-13a9-4272-bf51-3d29db905a0d
+  ├── Location ID      : 49f24a2b-7516-4104-9964-cdfba6210312
+  └── Inventory Item ID: b288a7b2-9e24-460c-bd0d-d9662598afec
+[STEP 3A] Creating Sales Order...
+[PASS] Sales Order Created: SO/2026/11/11/000053
+07:10:44 [INFO] Advancing sales-orders "8d8b1211-c752-4aac-a95c-1bd84422d50e"...
+[STEP 3B] Creating Sales Invoice...
+[PASS] Invoice Created: INV/2026/11/11/000290
+07:10:48 [INFO] Advancing invoices "e40df60b-1d5d-4155-a559-39c19208b7e9"...
+[STEP 3C] Creating Receipt linked to Invoice e40df60b-1d5d-4155-a559-39c19208b7e9...
+[HTTP POST] /api/receipts (linked to invoice) -> Status: 422
+[⚠️ BACKEND DEFECT DETECTED] Linking invoice to receipt returned HTTP 422
+[SERVER RESPONSE] {
+	"code": 422,
+	"message": "invoice is already fully paid: invoice INV/2026/11/11/000290 outstanding balance is 102.00 but 1000.00 was applied"
+}
+
+[STEP 3D] Creating Standalone Customer Receipt (unlinked to draft invoice)...
+[HTTP POST] /api/receipts (standalone customer receipt) -> Status: 201
+[PASS] Standalone Receipt Created Successfully!
+  ├── Receipt ID  : 303fe81d-7759-4ac9-9919-1635a27a0a74
+  ├── Ref Number  : RCPT/2026/11/11/000132
+  ├── Status      : draft
+  └── Amount      : 0
+[STEP 3E] Verifying Direct GET /api/receipt/303fe81d-7759-4ac9-9919-1635a27a0a74...
+[HTTP GET] Direct Receipt Inspection -> Status: 200
+[STEP 3F] Approving Receipt via Document Workflow...
+[FALLBACK] PATCH /api/receipt/303fe81d-7759-4ac9-9919-1635a27a0a74/advance returned 404. Trying plural...
+[HTTP PATCH] Advance Receipt -> Status: 200
+[PASS] Receipt 303fe81d-7759-4ac9-9919-1635a27a0a74 Approved Successfully!
+[DIAGNOSTIC STATUS] ✅ Receipt API Diagnostics Completed Successfully.
