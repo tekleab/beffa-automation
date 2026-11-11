@@ -81,6 +81,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Container Prerequisites (unzip, ca-certificates)
+      run: apt-get update && apt-get install --no-install-recommends -y unzip curl ca-certificates && update-ca-certificates
+
     - name: Setup Bun Environment
       uses: oven-sh/setup-bun@v2
       with:
@@ -91,9 +94,6 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-
-    - name: Update System CA Certificates (eMudhra Revocation)
-      run: apt-get update && apt-get install --no-install-recommends -y ca-certificates && update-ca-certificates
 
     - name: Install dependencies (Bun with npm fallback)
       run: bun install --frozen-lockfile || npm ci
@@ -260,13 +260,14 @@ jobs:
 
     - name: Cache Allure CLI
       uses: actions/cache@v4
+      if: always()
       id: allure-cli-cache
       with:
         path: ~/.npm-global
         key: allure-cli-2.32.0
 
     - name: Install Allure CLI
-      if: steps.allure-cli-cache.outputs.cache-hit != 'true'
+      if: always() && steps.allure-cli-cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p ~/.npm-global
         npm install -g --prefix ~/.npm-global allure-commandline@2.32.0
@@ -315,7 +316,7 @@ jobs:
         if [ -f "allure-categories.json" ]; then
           cp allure-categories.json allure-results/categories.json
         fi
-        allure generate allure-results --clean -o temp-report
+        (allure generate allure-results --clean -o temp-report || npx allure generate allure-results --clean -o temp-report)
         if [ ! -f "temp-report/index.html" ]; then
           echo "ERROR: Allure report index.html not found"; exit 1
         fi
